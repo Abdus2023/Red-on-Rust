@@ -18,7 +18,8 @@ layers that share it:
 Exit code: 0 if all checks pass, 1 if any check flags records.  The tool
 is deliberately deterministic and stdlib-only.  It makes no changes.
 
-Usage: python3 audit/spec_check.py [--verbose] [--min-overlap F]
+Usage: python3 audit/spec_check.py [--verbose] [--strict] [--min-overlap F]
+                        [--records PATH] [--spec01 PATH] [--matrix PATH]
 """
 
 from __future__ import annotations
@@ -135,10 +136,11 @@ def parse_spec01(path: Path | None = None) -> dict[str, tuple[str, list[tuple[in
     return out
 
 
-def parse_matrix() -> dict[str, str]:
+def parse_matrix(path: Path | None = None) -> dict[str, str]:
     """ID -> short description from the obligation matrix."""
+    src = Path(path) if path else MATRIX
     out: dict[str, str] = {}
-    for line in MATRIX.read_text(encoding="utf-8").splitlines():
+    for line in src.read_text(encoding="utf-8").splitlines():
         m = re.match(r"^\|\s*(R-[A-Z]+-\d+)\s*\|\s*([^|]+)\|", line)
         if m:
             out[m.group(1)] = m.group(2)
@@ -225,15 +227,17 @@ def main() -> int:
         MIN_OVERLAP = float(ap[ap.index("--min-overlap") + 1])
     records_path = Path(ap[ap.index("--records") + 1]) if "--records" in ap else None
     spec01_path = Path(ap[ap.index("--spec01") + 1]) if "--spec01" in ap else None
+    matrix_path = Path(ap[ap.index("--matrix") + 1]) if "--matrix" in ap else None
 
     records = parse_records(records_path)
     spec01 = parse_spec01(spec01_path)
-    matrix = parse_matrix()
+    matrix = parse_matrix(matrix_path)
     src = source_lines()
 
     print(f"parsed: {len(records)} records, {len(spec01)} spec/01 obligations, {len(matrix)} matrix rows"
           + (f" (spec01={spec01_path})" if spec01_path else "")
-          + (f" (records={records_path})" if records_path else ""))
+          + (f" (records={records_path})" if records_path else "")
+          + (f" (matrix={matrix_path})" if matrix_path else ""))
 
     # D1 (records' Original vs Normalized rule identity) is the SEC-023 gate:
     # any D1 flag hard-fails.  D2/D3 are supporting signals with known
