@@ -1,0 +1,5672 @@
+{
+  "meta": {
+    "specification": "Red-on-Rust frozen technical specification (canonicalized)",
+    "source_of_record": {
+      "file": "Red-on-Rust.md",
+      "lines": 42312,
+      "turns": 60,
+      "description": "60-turn design conversation; turns [1]-[60]; final orientation document in README.md (turn [60])"
+    },
+    "source_state": "FROZEN (architecture, specification, reference contract, verification contract)",
+    "repository_state": "BOOTSTRAP - no implementation, tests, or proof artifacts present; all obligations SPECIFIED",
+    "canonicalized_on": "2026-09-02",
+    "status_ladder": [
+      "SPECIFIED",
+      "IMPLEMENTED",
+      "TESTED",
+      "VERIFIED",
+      "PROVEN"
+    ],
+    "evidence_rule": "A claim is promoted only with repository evidence; none exists, so all obligations are SPECIFIED.",
+    "governing_invariants": [
+      "LLMOutput AND UntrustedInput does not imply ExternalEffect",
+      "ExternalEffect(E) implies ValidatedPlan(P) AND Authorized(E,kappa,t) AND CapabilityWithinCeiling(E) AND BudgetAvailable(E) AND DeadlineValid(E,t) AND HostPolicyOK(E) AND Issued(E)"
+    ],
+    "trust_model": {
+      "security_boundary": "the evaluator/runtime machine (compiler boundary, capability kernel, CEK machine, scheduler, budget system, canonical serializer, WAL/recovery, effect boundary)",
+      "not_a_boundary": [
+        "the Red-like language (Block data)"
+      ],
+      "llm_role": "probabilistic proposal engine; never an authority; LLMOutput in Data"
+    },
+    "id_schemes": {
+      "S-NN": "specification section (24)",
+      "R-AREA-NN": "normative requirement/obligation (148)",
+      "C-NN": "contradiction/ambiguity finding (44; 45 rows incl. pointer C-39)",
+      "U-NN": "unresolved item requiring explicit decision (16)",
+      "M-NN": "milestone M0-M11",
+      "TAG": "source verification-obligation tags (17)",
+      "M0NN": "baseline mutation registry (18)",
+      "ROR-NNN": "first-sprint tasks (16)"
+    },
+    "documents": {
+      "01-canonical-specification.md": "cleaned normative text with inline requirement IDs",
+      "02-section-hierarchy.md": "section index with provenance and supersession",
+      "03-obligation-matrix.md": "all requirements with stable IDs, status, provenance",
+      "04-dependency-graph.md": "section/object/verification dependency graphs + DOT",
+      "05-terminology.md": "glossary, normalization rules, under-specified terms",
+      "06-contradictions-ambiguities.md": "findings C-01..C-45 with severity and status",
+      "07-implementation-mapping.md": "obligations -> crates/modules; actual repo state; milestone crosswalk",
+      "08-verification-mapping.md": "obligations -> tags/tests/evidence; claim ladder per theorem",
+      "09-unresolved-decisions.md": "items U-NN requiring explicit architectural decisions",
+      "10-index.json": "this file (machine-readable index)"
+    }
+  },
+  "sections": [
+    {
+      "id": "S-01",
+      "part": "Part I — Foundations",
+      "title": "Scope, status, conventions",
+      "requirements": [
+        "R-SCOPE-01",
+        "R-SCOPE-02",
+        "R-SCOPE-03",
+        "R-SCOPE-04"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37640-37695",
+          "41280-41320"
+        ]
+      },
+      "related_unresolved": null
+    },
+    {
+      "id": "S-02",
+      "part": "Part I — Foundations",
+      "title": "Core thesis and central invariants",
+      "requirements": [
+        "R-CORE-01",
+        "R-CORE-02",
+        "R-CORE-03",
+        "R-CORE-04",
+        "R-CORE-05",
+        "R-CORE-06",
+        "R-CORE-07",
+        "R-CORE-08",
+        "R-CORE-09",
+        "R-CORE-10"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27485-27654",
+          "41320-41770"
+        ]
+      },
+      "related_unresolved": null
+    },
+    {
+      "id": "S-03",
+      "part": "Part I — Foundations",
+      "title": "Trust model and trusted computing base",
+      "requirements": [
+        "R-TRUST-01",
+        "R-TRUST-02",
+        "R-TRUST-03"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27611-27624",
+          "28178-28230",
+          "37722-37748"
+        ]
+      },
+      "related_unresolved": null
+    },
+    {
+      "id": "S-04",
+      "part": "Part I — Foundations",
+      "title": "System architecture and component boundaries",
+      "requirements": [
+        "R-ARCH-01",
+        "R-ARCH-02",
+        "R-ARCH-03",
+        "R-ARCH-04"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37750-37790",
+          "9059-9118",
+          "39036-39195"
+        ]
+      },
+      "related_unresolved": null
+    },
+    {
+      "id": "S-05",
+      "part": "Part I — Foundations",
+      "title": "LLM / planner boundary",
+      "requirements": [
+        "R-PLANNER-01",
+        "R-PLANNER-02",
+        "R-PLANNER-03",
+        "R-PLANNER-04",
+        "R-PLANNER-05"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27150-27480",
+          "27920-27931",
+          "37750-37790"
+        ]
+      },
+      "related_unresolved": null
+    },
+    {
+      "id": "S-06",
+      "part": "Part I — Foundations",
+      "title": "Compilation boundary",
+      "requirements": [
+        "R-COMPILE-01",
+        "R-COMPILE-02",
+        "R-COMPILE-03",
+        "R-COMPILE-04",
+        "R-COMPILE-05"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37750-37790",
+          "9059-9097",
+          "39253-39308",
+          "1722-1775"
+        ]
+      },
+      "related_unresolved": [
+        "U-22"
+      ]
+    },
+    {
+      "id": "S-07",
+      "part": "Part II — Language and machine semantics",
+      "title": "Core calculus (syntax)",
+      "requirements": [
+        "R-CALC-01",
+        "R-CALC-02",
+        "R-CALC-03",
+        "R-CALC-04",
+        "R-CALC-05",
+        "R-CALC-06",
+        "R-CALC-07",
+        "R-CALC-08"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "12075-12195",
+          "3368-4062",
+          "23726-23820",
+          "8653-8707"
+        ]
+      },
+      "related_unresolved": [
+        "U-04",
+        "U-06"
+      ]
+    },
+    {
+      "id": "S-08",
+      "part": "Part II — Language and machine semantics",
+      "title": "CEK machine",
+      "requirements": [
+        "R-CEK-01",
+        "R-CEK-02",
+        "R-CEK-03",
+        "R-CEK-04",
+        "R-CEK-05",
+        "R-CEK-06",
+        "R-CEK-07"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "16861-18084",
+          "23821-23856",
+          "37800-37862",
+          "14632-14642"
+        ]
+      },
+      "related_unresolved": null
+    },
+    {
+      "id": "S-09",
+      "part": "Part II — Language and machine semantics",
+      "title": "Capability algebra",
+      "requirements": [
+        "R-CAP-01",
+        "R-CAP-02",
+        "R-CAP-03",
+        "R-CAP-04",
+        "R-CAP-05",
+        "R-CAP-06",
+        "R-CAP-07",
+        "R-CAP-08",
+        "R-CAP-09"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "6344-6671",
+          "6672-6815"
+        ]
+      },
+      "related_unresolved": null
+    },
+    {
+      "id": "S-10",
+      "part": "Part II — Language and machine semantics",
+      "title": "Capability kernel",
+      "requirements": [
+        "R-KERN-01",
+        "R-KERN-02",
+        "R-KERN-03"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "6672-6729",
+          "19077-19200",
+          "9119-9135",
+          "39370-39410"
+        ]
+      },
+      "related_unresolved": null
+    },
+    {
+      "id": "S-11",
+      "part": "Part III — Resources",
+      "title": "Budget model",
+      "requirements": [
+        "R-BUDGET-01",
+        "R-BUDGET-02",
+        "R-BUDGET-03",
+        "R-BUDGET-04",
+        "R-BUDGET-05",
+        "R-BUDGET-06",
+        "R-BUDGET-07",
+        "R-BUDGET-08"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "8653-9050",
+          "9140-9245",
+          "28203-28240"
+        ]
+      },
+      "related_unresolved": [
+        "U-01",
+        "U-07"
+      ]
+    },
+    {
+      "id": "S-12",
+      "part": "Part IV — Effects",
+      "title": "Effect model and request sequence",
+      "requirements": [
+        "R-EFFECT-01",
+        "R-EFFECT-02",
+        "R-EFFECT-03",
+        "R-EFFECT-04",
+        "R-EFFECT-05",
+        "R-EFFECT-06",
+        "R-EFFECT-07"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37891-37922",
+          "23857-24002",
+          "25799-25825"
+        ]
+      },
+      "related_unresolved": [
+        "C-01"
+      ]
+    },
+    {
+      "id": "S-13",
+      "part": "Part IV — Effects",
+      "title": "Transactional issuance and durability boundary",
+      "requirements": [
+        "R-DUR-01",
+        "R-DUR-02",
+        "R-DUR-03",
+        "R-DUR-04",
+        "R-DUR-05"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35078-35258",
+          "37908-37981"
+        ]
+      },
+      "related_unresolved": null
+    },
+    {
+      "id": "S-14",
+      "part": "Part IV — Effects",
+      "title": "Host boundary and replay",
+      "requirements": [
+        "R-HOST-01",
+        "R-HOST-02",
+        "R-HOST-03",
+        "R-HOST-04",
+        "R-HOST-05"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25972-25996",
+          "37985-38000",
+          "24003-24030"
+        ]
+      },
+      "related_unresolved": [
+        "U-06"
+      ]
+    },
+    {
+      "id": "S-15",
+      "part": "Part V — Concurrency",
+      "title": "Actors and deterministic scheduling",
+      "requirements": [
+        "R-ACTOR-01",
+        "R-ACTOR-02",
+        "R-ACTOR-03",
+        "R-ACTOR-04",
+        "R-ACTOR-05",
+        "R-ACTOR-06",
+        "R-ACTOR-07",
+        "R-ACTOR-08"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25457-26108",
+          "24069-25428"
+        ]
+      },
+      "related_unresolved": [
+        "U-03",
+        "U-05"
+      ]
+    },
+    {
+      "id": "S-16",
+      "part": "Part V — Concurrency",
+      "title": "Marshalling and delegation",
+      "requirements": [
+        "R-MARSHAL-01",
+        "R-MARSHAL-02",
+        "R-MARSHAL-03",
+        "R-MARSHAL-04"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25674-26001",
+          "37946-37959",
+          "8695-8698"
+        ]
+      },
+      "related_unresolved": [
+        "U-09"
+      ]
+    },
+    {
+      "id": "S-17",
+      "part": "Part VI — Persistence",
+      "title": "Canonical serialization (15A frozen wire format)",
+      "requirements": [
+        "R-CANON-01",
+        "R-CANON-02",
+        "R-CANON-03",
+        "R-CANON-04",
+        "R-CANON-05",
+        "R-CANON-06",
+        "R-CANON-07",
+        "R-CANON-08",
+        "R-CANON-09",
+        "R-CANON-10",
+        "R-CANON-11"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "32936-33707",
+          "29451-31298",
+          "34987-35024"
+        ]
+      },
+      "related_unresolved": [
+        "C-02"
+      ]
+    },
+    {
+      "id": "S-18",
+      "part": "Part VI — Persistence",
+      "title": "Persistence protocol (15B)",
+      "requirements": [
+        "R-PERSIST-01",
+        "R-PERSIST-02",
+        "R-PERSIST-03",
+        "R-PERSIST-04",
+        "R-PERSIST-05",
+        "R-PERSIST-06"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35078-35258",
+          "33757-34916"
+        ]
+      },
+      "related_unresolved": [
+        "U-02",
+        "U-16"
+      ]
+    },
+    {
+      "id": "S-19",
+      "part": "Part VI — Persistence",
+      "title": "Crash recovery",
+      "requirements": [
+        "R-RECOV-01",
+        "R-RECOV-02",
+        "R-RECOV-03",
+        "R-RECOV-04",
+        "R-RECOV-05",
+        "R-RECOV-06",
+        "R-RECOV-07"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35159-35258",
+          "26109-27484"
+        ]
+      },
+      "related_unresolved": [
+        "U-15",
+        "U-17"
+      ]
+    },
+    {
+      "id": "S-20",
+      "part": "Part VII — Verification",
+      "title": "Independent reference model and differential verification",
+      "requirements": [
+        "R-REF-01",
+        "R-REF-02",
+        "R-REF-03",
+        "R-REF-04",
+        "R-REF-05",
+        "R-REF-06"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35272-37168",
+          "37985-38560",
+          "28590-28717"
+        ]
+      },
+      "related_unresolved": null
+    },
+    {
+      "id": "S-21",
+      "part": "Part VII — Verification",
+      "title": "Test infrastructure, mutation, CI",
+      "requirements": [
+        "R-TEST-01",
+        "R-TEST-02",
+        "R-TEST-03",
+        "R-TEST-04",
+        "R-TEST-05",
+        "R-TEST-06",
+        "R-TEST-07",
+        "R-TEST-08",
+        "R-TEST-09",
+        "R-TEST-10",
+        "R-TEST-11"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38587-38970",
+          "37169-37338",
+          "37339-37459"
+        ]
+      },
+      "related_unresolved": null
+    },
+    {
+      "id": "S-22",
+      "part": "Part VIII — Engineering and claims",
+      "title": "Repository structure and crate responsibilities",
+      "requirements": [
+        "R-REPO-01",
+        "R-REPO-02",
+        "R-REPO-03"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "39036-41273"
+        ]
+      },
+      "related_unresolved": null
+    },
+    {
+      "id": "S-23",
+      "part": "Part VIII — Engineering and claims",
+      "title": "Milestones and implementation order",
+      "requirements": [
+        "R-ORDER-01",
+        "R-ORDER-02",
+        "R-ORDER-03",
+        "R-ORDER-04",
+        "R-ORDER-05"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "40763-41273",
+          "37793-37812",
+          "42108-42266"
+        ]
+      },
+      "related_unresolved": null
+    },
+    {
+      "id": "S-24",
+      "part": "Part VIII — Engineering and claims",
+      "title": "Conformance claims and prohibited shortcuts",
+      "requirements": [
+        "R-CLAIM-01",
+        "R-CLAIM-02",
+        "R-CLAIM-03",
+        "R-CLAIM-04"
+      ],
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37416-37459",
+          "38858-38970",
+          "42030-42090"
+        ]
+      },
+      "related_unresolved": null
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R-SCOPE-01",
+      "section": "S-01",
+      "title": "Thesis: deterministic, capability-scoped, resource-bounded, crash-recoverable execution machine",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41293-41300"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-SCOPE-02",
+      "section": "S-01",
+      "title": "Architecture/specification/reference/verification contracts FROZEN; frozen != verified",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38929-38942",
+          "41297-41315"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [],
+      "verification": [],
+      "related_findings": [
+        "C-09"
+      ]
+    },
+    {
+      "id": "R-SCOPE-03",
+      "section": "S-01",
+      "title": "STOP-and-report on ambiguity; no silent semantic modification",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37664-37686"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "all"
+      ],
+      "verification": [
+        "R-TEST-09"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-SCOPE-04",
+      "section": "S-01",
+      "title": "Zero shared core logic between production and reference",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37696-37721"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-reference",
+        "ror-differential"
+      ],
+      "verification": [
+        "R-REF-02",
+        "dependency-graph review"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CORE-01",
+      "section": "S-02",
+      "title": "LLMOutput AND UntrustedInput does not imply ExternalEffect",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41320-41335",
+          "27505-27513"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "all"
+      ],
+      "verification": [
+        "R-PLANNER-05",
+        "M004",
+        "M005",
+        "M006",
+        "M007",
+        "M008"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CORE-02",
+      "section": "S-02",
+      "title": "External-effect chain (7 conjuncts)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41337-41351",
+          "27491-27509"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "all"
+      ],
+      "verification": [
+        "R-TEST-07"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CORE-03",
+      "section": "S-02",
+      "title": "NOT Authorized implies NOT ExternalEffect",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "42056-42064",
+          "7413-7419"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel",
+        "ror-runtime"
+      ],
+      "verification": [
+        "M004",
+        "M005"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CORE-04",
+      "section": "S-02",
+      "title": "derive(A,C) <= A (no authority amplification)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "42066-42072",
+          "6399-6406"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel"
+      ],
+      "verification": [
+        "CAP-DERIVE-NO-AMPLIFICATION",
+        "M006"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CORE-05",
+      "section": "S-02",
+      "title": "Budget partition conservation (no teleportation)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "42074-42080",
+          "28203-28240"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core",
+        "ror-runtime"
+      ],
+      "verification": [
+        "BUDGET-CONSUMPTION-CONSERVATION",
+        "BUDGET-ESCROW-CONSERVATION",
+        "M007",
+        "M009"
+      ],
+      "related_findings": [
+        "U-01"
+      ]
+    },
+    {
+      "id": "R-CORE-06",
+      "section": "S-02",
+      "title": "HostInvoked implies DurableIssued",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "42082-42088",
+          "35150-35156"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime",
+        "ror-persistence",
+        "ror-host"
+      ],
+      "verification": [
+        "EFFECT-ISSUE-DURABLE-BEFORE-HOST"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CORE-07",
+      "section": "S-02",
+      "title": "Ordinary marshalling rejects raw capabilities",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "42090-42098",
+          "25972-26001"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "MARSHAL-NO-RAW-CAPABILITY"
+      ],
+      "related_findings": [
+        "U-09"
+      ]
+    },
+    {
+      "id": "R-CORE-08",
+      "section": "S-02",
+      "title": "Determinism: initial state + scheduler trace + host trace implies unique machine trace",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41623-41646",
+          "27518-27547"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "SCHED-FIFO",
+        "R-REF-05"
+      ],
+      "related_findings": [
+        "U-07"
+      ]
+    },
+    {
+      "id": "R-CORE-09",
+      "section": "S-02",
+      "title": "Causal crash recovery (qualified theorem); never infer NotExecuted",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27551-27569",
+          "35159-35176"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "RECOVERY-ISSUED-INDETERMINATE"
+      ],
+      "related_findings": [
+        "U-15"
+      ]
+    },
+    {
+      "id": "R-CORE-10",
+      "section": "S-02",
+      "title": "No silent recovery corruption",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "42100-42105",
+          "35196-35208"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "M015",
+        "M016",
+        "negative recovery tests"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-TRUST-01",
+      "section": "S-03",
+      "title": "Trust table (LLM/Block No; host Partial; rest Yes)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41823-41841",
+          "27610-27624"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-TRUST-02",
+      "section": "S-03",
+      "title": "TCB composition; LLM output not in TCB authority",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "28178-28230"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-TRUST-03",
+      "section": "S-03",
+      "title": "No hidden authority; evaluator sees references only",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37722-37748",
+          "19153-19175"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel",
+        "ror-runtime"
+      ],
+      "verification": [
+        "Track B mock kernel",
+        "visibility checks"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-ARCH-01",
+      "section": "S-04",
+      "title": "End-to-end pipeline (LLM to host)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37750-37780",
+          "27287-27310"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-agent",
+        "ror-compiler",
+        "ror-runtime"
+      ],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-ARCH-02",
+      "section": "S-04",
+      "title": "Independent verification architecture",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41406-41424"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-differential"
+      ],
+      "verification": [
+        "R-REF-01"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-ARCH-03",
+      "section": "S-04",
+      "title": "Block has no path into step(); plan constructors private",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "9086-9097",
+          "39296-39318"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-compiler",
+        "ror-runtime"
+      ],
+      "verification": [
+        "R-ORDER-03"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-ARCH-04",
+      "section": "S-04",
+      "title": "Dependency direction (algebra to kernel to plan to actor to global to scheduler to host)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "9059-9085"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "all"
+      ],
+      "verification": [
+        "Cargo dependency review"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-PLANNER-01",
+      "section": "S-05",
+      "title": "PlanProposal data; LLMOutput in Data",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27176-27198"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-agent"
+      ],
+      "verification": [],
+      "related_findings": [
+        "U-13"
+      ]
+    },
+    {
+      "id": "R-PLANNER-02",
+      "section": "S-05",
+      "title": "Planner cannot allocate/authorize/modify/invoke/bypass",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27271-27285",
+          "37781-37790"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-agent"
+      ],
+      "verification": [
+        "R-PLANNER-05(1)"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-PLANNER-03",
+      "section": "S-05",
+      "title": "Staleness check; StalePlan rejection without state mutation",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27199-27236",
+          "28373"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-agent",
+        "ror-runtime"
+      ],
+      "verification": [
+        "R-PLANNER-05(2)"
+      ],
+      "related_findings": [
+        "U-13"
+      ]
+    },
+    {
+      "id": "R-PLANNER-04",
+      "section": "S-05",
+      "title": "Planner need not be deterministic; PlannerAccepted recording",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27392-27414"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-agent"
+      ],
+      "verification": [
+        "R-PLANNER-05(3)"
+      ],
+      "related_findings": [
+        "U-13"
+      ]
+    },
+    {
+      "id": "R-PLANNER-05",
+      "section": "S-05",
+      "title": "LLM outer-loop conformance (3 test obligations)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27920-27931",
+          "28513-28521"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-agent",
+        "ror-testkit"
+      ],
+      "verification": [
+        "15E suite"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-COMPILE-01",
+      "section": "S-06",
+      "title": "Block != ExecutablePlan",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41440-41452",
+          "3834-3838"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-compiler"
+      ],
+      "verification": [
+        "R-ORDER-03"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-COMPILE-02",
+      "section": "S-06",
+      "title": "Pipeline stages; any failure implies fault; no bypass",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "39253-39267"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-compiler"
+      ],
+      "verification": [
+        "malformed-Block rejection"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-COMPILE-03",
+      "section": "S-06",
+      "title": "Combined static judgment (type, effects, capability req, budget bound)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "3874-3905"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-compiler"
+      ],
+      "verification": [
+        "U-22 (J2 gap)"
+      ],
+      "related_findings": [
+        "U-22"
+      ]
+    },
+    {
+      "id": "R-COMPILE-04",
+      "section": "S-06",
+      "title": "Plan immutability / temporal integrity",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1722-1745",
+          "2052-2070"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-compiler"
+      ],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-COMPILE-05",
+      "section": "S-06",
+      "title": "ExecutablePlan constructors private to compiler",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "39296-39318"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-compiler"
+      ],
+      "verification": [
+        "visibility review"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CALC-01",
+      "section": "S-07",
+      "title": "Machine Value domain (11 variants); Capability is opaque data",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "12290-12312"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [],
+      "related_findings": [
+        "C-03",
+        "U-09"
+      ]
+    },
+    {
+      "id": "R-CALC-02",
+      "section": "S-07",
+      "title": "Frozen Expr AST (12 constructors, declarative only)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "12132-12170"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [],
+      "related_findings": [
+        "C-04",
+        "U-04",
+        "U-05"
+      ]
+    },
+    {
+      "id": "R-CALC-03",
+      "section": "S-07",
+      "title": "Symbol(u32) runtime identity; compiler maps names",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "12250-12270"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core",
+        "ror-compiler"
+      ],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-CALC-04",
+      "section": "S-07",
+      "title": "Effect immutable data; EffectDigest=SHA-256(canonical); ID vs digest roles",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "9288-9348",
+          "23726-23772"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "EFFECT-RECEIPT-DIGEST-VALIDATION"
+      ],
+      "related_findings": [
+        "U-21"
+      ]
+    },
+    {
+      "id": "R-CALC-05",
+      "section": "S-07",
+      "title": "EffectCost {issue, complete_max, reserve}",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25799-25825"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "R-EFFECT-05"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CALC-06",
+      "section": "S-07",
+      "title": "Frozen Fault taxonomy",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "23784-23819",
+          "27236"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "fault-coverage metric"
+      ],
+      "related_findings": [
+        "C-08",
+        "U-08"
+      ]
+    },
+    {
+      "id": "R-CALC-07",
+      "section": "S-07",
+      "title": "Effect replayability/reversibility/idempotence properties (table non-normative)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "2141-2156",
+          "3858-3873",
+          "26669-26735"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "U-06"
+      ],
+      "related_findings": [
+        "C-05",
+        "U-06"
+      ]
+    },
+    {
+      "id": "R-CALC-08",
+      "section": "S-07",
+      "title": "Sigma and G configurations; global vs local state split",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "7119-7144",
+          "8653-8682",
+          "24148-24163"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core",
+        "ror-runtime"
+      ],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-CEK-01",
+      "section": "S-08",
+      "title": "Explicit CEK; no recursive evaluation",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41484-41499",
+          "37800-37812"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "deep-call stress"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CEK-02",
+      "section": "S-08",
+      "title": "Value-return invariant (terminal iff continuation empty)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "16878-16905",
+          "37826-37838"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime",
+        "ror-reference"
+      ],
+      "verification": [
+        "push/pop structural invariants"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CEK-03",
+      "section": "S-08",
+      "title": "Frozen frame set; closure env != caller env",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "16927-16958",
+          "23821-23856"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "CEK-CLOSURE-LEXICAL-CAPTURE"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CEK-04",
+      "section": "S-08",
+      "title": "Lambda: lexical capture, pure, value-return path",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "16971-16995"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "CEK-CLOSURE-LEXICAL-CAPTURE"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CEK-05",
+      "section": "S-08",
+      "title": "Call: LTR evaluation; arity precheck before args; closure-env application",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "16878-16905",
+          "37840-37862"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "CEK-CALL-ARITY-PRECHECK",
+        "CEK-CALL-ARGS-LTR",
+        "M001",
+        "M002",
+        "M003"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CEK-06",
+      "section": "S-08",
+      "title": "Continuation preservation (+1/-1 per entry/resume)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "14632-14642"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "structural invariant tests"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CEK-07",
+      "section": "S-08",
+      "title": "Progress and preservation",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "7441-7453",
+          "8850"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "differential equivalence"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CAP-01",
+      "section": "S-09",
+      "title": "Five semantic domains (O,S,Q,R,T) with orders and meets",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "6354-6379"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core",
+        "ror-kernel"
+      ],
+      "verification": [
+        "algebra property tests"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CAP-02",
+      "section": "S-09",
+      "title": "Operation-indexed authority",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "6370-6380"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel"
+      ],
+      "verification": [
+        "cross-op contamination tests"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CAP-03",
+      "section": "S-09",
+      "title": "Authority partial order",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "6381-6390"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel"
+      ],
+      "verification": [
+        "monotonicity property"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CAP-04",
+      "section": "S-09",
+      "title": "Constraint != Authority (narrowing request)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "6391-6396",
+          "6406"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core",
+        "ror-kernel"
+      ],
+      "verification": [],
+      "related_findings": [
+        "U-02"
+      ]
+    },
+    {
+      "id": "R-CAP-05",
+      "section": "S-09",
+      "title": "derive = per-op meet; derive(A,C) <= A",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "6397-6404"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel"
+      ],
+      "verification": [
+        "CAP-DERIVE-NO-AMPLIFICATION",
+        "M006"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CAP-06",
+      "section": "S-09",
+      "title": "Canonical Authorized(A,E,t) predicate (5 conjuncts)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "6406-6421",
+          "6647-6656"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel"
+      ],
+      "verification": [
+        "Track B mock-kernel tests"
+      ],
+      "related_findings": [
+        "U-21"
+      ]
+    },
+    {
+      "id": "R-CAP-07",
+      "section": "S-09",
+      "title": "Valid(c,t) incl. ancestor liveness; lazy revocation",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "6434-6445",
+          "6647-6656"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel"
+      ],
+      "verification": [
+        "CAP-REVOCATION-ANCESTOR",
+        "M004"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CAP-08",
+      "section": "S-09",
+      "title": "Algebra theorems 1-3 (stated; proof sketches only; NOT proven)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "6422-6433",
+          "6657-6671"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel"
+      ],
+      "verification": [
+        "property tests"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CAP-09",
+      "section": "S-09",
+      "title": "Explicit logical time; no wall-clock",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "6434-6436",
+          "38858-38890"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core",
+        "ror-runtime"
+      ],
+      "verification": [
+        "determinism tests"
+      ],
+      "related_findings": [
+        "U-07"
+      ]
+    },
+    {
+      "id": "R-KERN-01",
+      "section": "S-10",
+      "title": "CapRef opaque, generation-safe, private fields, kernel-only construction",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "9127-9133",
+          "10178-10208"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core",
+        "ror-kernel"
+      ],
+      "verification": [
+        "visibility review"
+      ],
+      "related_findings": [
+        "C-14"
+      ]
+    },
+    {
+      "id": "R-KERN-02",
+      "section": "S-10",
+      "title": "Kernel API: authorize/derive/validate with logical time",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "6672-6728",
+          "19153-19175"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel"
+      ],
+      "verification": [
+        "exactly-one-call mock tests"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-KERN-03",
+      "section": "S-10",
+      "title": "Authority internals inaccessible to evaluator/runtime",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "39397-39407"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel"
+      ],
+      "verification": [
+        "visibility + mutation M005-class"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-BUDGET-01",
+      "section": "S-11",
+      "title": "Budget structure <C=<F,I,D>, R=<M,S>, W>",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "8683-8700",
+          "9161-9175"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "U-01 (D semantics)"
+      ],
+      "related_findings": [
+        "U-01"
+      ]
+    },
+    {
+      "id": "R-BUDGET-02",
+      "section": "S-11",
+      "title": "Checked arithmetic; no saturating_sub",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "9207-9245",
+          "38044-38046"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "M007",
+        "M009"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-BUDGET-03",
+      "section": "S-11",
+      "title": "ReserveOK / ReleaseOK predicates",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "7487-7520",
+          "8692-8696"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "reservation property tests"
+      ],
+      "related_findings": [
+        "C-07"
+      ]
+    },
+    {
+      "id": "R-BUDGET-04",
+      "section": "S-11",
+      "title": "WithinBudget dual gate (runtime + capability ceiling)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "8692-8696"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime",
+        "ror-kernel"
+      ],
+      "verification": [
+        "short-circuit Track C"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-BUDGET-05",
+      "section": "S-11",
+      "title": "Conservation (consumables, reserved, deadline, global partition)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "7408-7425",
+          "28203-28240",
+          "35210-35215"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core",
+        "ror-runtime"
+      ],
+      "verification": [
+        "BUDGET-*-CONSERVATION",
+        "teleportation test"
+      ],
+      "related_findings": [
+        "U-01"
+      ]
+    },
+    {
+      "id": "R-BUDGET-06",
+      "section": "S-11",
+      "title": "Time advancement delta_t (pure=0, host/scheduler>0, t+delta<=W)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "8698-8700",
+          "10164-10168"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "U-07"
+      ],
+      "related_findings": [
+        "U-07"
+      ]
+    },
+    {
+      "id": "R-BUDGET-07",
+      "section": "S-11",
+      "title": "CostModel contract; Consumable != Reserved typing",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "9155-9205",
+          "10171-10177"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [],
+      "related_findings": [
+        "C-30",
+        "U-09"
+      ]
+    },
+    {
+      "id": "R-BUDGET-08",
+      "section": "S-11",
+      "title": "NOT BudgetOK implies fault(BudgetExhausted); no partial debit",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "7345-7352",
+          "7410-7419"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "Track C budget-gate test"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-EFFECT-01",
+      "section": "S-12",
+      "title": "Request = construct-authorize-account-log-Pending-yield",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "12177-12194"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-EFFECT-02",
+      "section": "S-12",
+      "title": "Gated transition shape Pre AND BudgetOK AND AuthOK",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "7145-7155",
+          "8700-8710"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-EFFECT-03",
+      "section": "S-12",
+      "title": "Frozen 16-step request sequence",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37891-37908"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime",
+        "ror-persistence"
+      ],
+      "verification": [
+        "gate short-circuit matrix"
+      ],
+      "related_findings": [
+        "C-01"
+      ]
+    },
+    {
+      "id": "R-EFFECT-04",
+      "section": "S-12",
+      "title": "Denial short-circuits all subsequent gates",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "24003-24045"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "Track C (5 assertions per gate)"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-EFFECT-05",
+      "section": "S-12",
+      "title": "complete_max affordability at issuance",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25799-25825"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "budget escrow tests"
+      ],
+      "related_findings": [
+        "C-23"
+      ]
+    },
+    {
+      "id": "R-EFFECT-06",
+      "section": "S-12",
+      "title": "Receipt validates ID + digest; mismatch implies ReplayCorruption, no resume",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "23949-24002",
+          "25952-25970"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "EFFECT-RECEIPT-DIGEST-VALIDATION",
+        "M017",
+        "M018"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-EFFECT-07",
+      "section": "S-12",
+      "title": "Completion accounting (charge complete, release reservation, log, resume)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "23949-24002"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "conservation tests"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-DUR-01",
+      "section": "S-13",
+      "title": "HostInvoked implies DurableIssued",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35150-35156",
+          "37910"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime",
+        "ror-persistence"
+      ],
+      "verification": [
+        "EFFECT-ISSUE-DURABLE-BEFORE-HOST"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-DUR-02",
+      "section": "S-13",
+      "title": "Issuance transaction order (7 steps, 2 fsyncs)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35150-35158"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "crash harness T0-T4"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-DUR-03",
+      "section": "S-13",
+      "title": "Causal effect protocol (Issued=>Prepared; Completed=>Issued; Reconciled=>Issued; ID+digest identity)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35111-35144",
+          "37953-37965"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "journal validator",
+        "M017"
+      ],
+      "related_findings": [
+        "C-44"
+      ]
+    },
+    {
+      "id": "R-DUR-04",
+      "section": "S-13",
+      "title": "Prepared AND NOT Issued implies Discard; Issued AND NOT Completed implies Indeterminate (never NotExecuted)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35159-35176",
+          "37967-37981"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "RECOVERY-ISSUED-INDETERMINATE",
+        "crash harness"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-DUR-05",
+      "section": "S-13",
+      "title": "Escrow survives crash",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35210-35215"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "post-recovery invariant check",
+        "M008"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-HOST-01",
+      "section": "S-14",
+      "title": "Host independently validates OS authority (defense in depth)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "8560-8580",
+          "10168-10172"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-host"
+      ],
+      "verification": [
+        "host policy tests"
+      ],
+      "related_findings": [
+        "C-27"
+      ]
+    },
+    {
+      "id": "R-HOST-02",
+      "section": "S-14",
+      "title": "Host performs only issued effects; partially trusted",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41823-41841",
+          "27644"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-host"
+      ],
+      "verification": [
+        "PanicHost harness"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-HOST-03",
+      "section": "S-14",
+      "title": "Ordered ReplayHost; ID+digest per entry; no unordered map",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25972-25996",
+          "37985-38000"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-host",
+        "ror-reference"
+      ],
+      "verification": [
+        "replay property tests"
+      ],
+      "related_findings": [
+        "C-22"
+      ]
+    },
+    {
+      "id": "R-HOST-04",
+      "section": "S-14",
+      "title": "Replay correspondence (machine replay valid; real-world replay per effect class)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "3946-3958",
+          "26249-26262"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-host",
+        "ror-reference"
+      ],
+      "verification": [
+        "R-REF-01 recovery equivalence"
+      ],
+      "related_findings": [
+        "U-06"
+      ]
+    },
+    {
+      "id": "R-HOST-05",
+      "section": "S-14",
+      "title": "Replay validates trace, not just final state",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38278-38300"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-host"
+      ],
+      "verification": [
+        "trace comparison"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-ACTOR-01",
+      "section": "S-15",
+      "title": "Actor isolation (heaps, envs, continuations, mailboxes, budgets, caps)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41623-41641",
+          "24268-24290"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "Track D",
+        "isolation properties"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-ACTOR-02",
+      "section": "S-15",
+      "title": "GlobalState shape; logical time global",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "24148-24163",
+          "25514-25546"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [],
+      "related_findings": [
+        "C-42"
+      ]
+    },
+    {
+      "id": "R-ACTOR-03",
+      "section": "S-15",
+      "title": "Deterministic ID allocation; no address/PID/UUID/wall-clock identity",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "24226-24245"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "determinism tests"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-ACTOR-04",
+      "section": "S-15",
+      "title": "FIFO scheduler; at-most-once membership; 1 transition/turn; non-runnable never scheduled",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25558-25615",
+          "37924-37937"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "SCHED-FIFO",
+        "SCHED-BLOCKED-NOT-SCHEDULED",
+        "M011",
+        "M012",
+        "M013",
+        "starvation test"
+      ],
+      "related_findings": [
+        "C-18",
+        "C-37"
+      ]
+    },
+    {
+      "id": "R-ACTOR-05",
+      "section": "S-15",
+      "title": "Spawn: escrow + derived capabilities only; no wholesale clone",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25573-25615",
+          "37940-37951"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime",
+        "ror-kernel"
+      ],
+      "verification": [
+        "Track D",
+        "amplification test"
+      ],
+      "related_findings": [
+        "U-03",
+        "U-05"
+      ]
+    },
+    {
+      "id": "R-ACTOR-06",
+      "section": "S-15",
+      "title": "Send async + deterministic wakeup; Receive blocks without fuel; FIFO mailbox",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25702-25749",
+          "37940-37951"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "Track D",
+        "M013"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-ACTOR-07",
+      "section": "S-15",
+      "title": "Deterministic concurrency theorem",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25759-25766"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "global differential (Track D)"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-ACTOR-08",
+      "section": "S-15",
+      "title": "No amplification / no teleportation theorems",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "26048-26070"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "teleportation test",
+        "amplification test"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-MARSHAL-01",
+      "section": "S-16",
+      "title": "Recursive capability rejection in ordinary marshalling",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41647-41658",
+          "25674-25701",
+          "37946-37951"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "MARSHAL-NO-RAW-CAPABILITY"
+      ],
+      "related_findings": [
+        "U-09"
+      ]
+    },
+    {
+      "id": "R-MARSHAL-02",
+      "section": "S-16",
+      "title": "Explicit delegation only; DelegatedCapability envelope; <= parent",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25972-26001",
+          "37953-37959"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime",
+        "ror-kernel"
+      ],
+      "verification": [
+        "Track C (delegation)"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-MARSHAL-03",
+      "section": "S-16",
+      "title": "MarshalledValue = canonical bytes; unmarshal(marshal(v)) = v",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25674-25701",
+          "26073-26079"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "Track B (marshalling)"
+      ],
+      "related_findings": [
+        "U-09"
+      ]
+    },
+    {
+      "id": "R-MARSHAL-04",
+      "section": "S-16",
+      "title": "Semantic marshalling rule (CapRef not in marshal(v))",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "8695-8698"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "Track B"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CANON-01",
+      "section": "S-17",
+      "title": "Serialization independent of Rust layout/serializers",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "28185-28228",
+          "28453-28465"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "format review"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CANON-02",
+      "section": "S-17",
+      "title": "Universal envelope (version/tag/len/payload)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "30532-30543",
+          "33290-33347"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "golden vectors"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CANON-03",
+      "section": "S-17",
+      "title": "Frozen standalone type tags (0x00,0x20,0x30,0x40,0x41)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "33087-33154"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "golden vectors"
+      ],
+      "related_findings": [
+        "C-02"
+      ]
+    },
+    {
+      "id": "R-CANON-04",
+      "section": "S-17",
+      "title": "Value discriminants + nested-complete-envelope rule",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "30544-30552",
+          "33155-33265"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "golden vectors",
+        "round-trip"
+      ],
+      "related_findings": [
+        "C-02"
+      ]
+    },
+    {
+      "id": "R-CANON-05",
+      "section": "S-17",
+      "title": "Primitive payloads (Symbol/CapRef/ActorId/EffectId)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "33087-33154"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "golden vectors"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CANON-06",
+      "section": "S-17",
+      "title": "Collections: count-prefixed; maps semantically ordered; duplicate keys rejected",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "30566-30573",
+          "34987-35024",
+          "38164-38172"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "M014",
+        "duplicate-key regression (ROR-011)"
+      ],
+      "related_findings": [
+        "C-41"
+      ]
+    },
+    {
+      "id": "R-CANON-07",
+      "section": "S-17",
+      "title": "Strict decoder contract (5 checks; explicit discriminants; CanonicalError set)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "30575-30586",
+          "32948-33049"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "malformed-input suite (ROR-010)"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CANON-08",
+      "section": "S-17",
+      "title": "Checked arithmetic; no attacker preallocation; bounded nested cursors; fallible envelope",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "30574-30578",
+          "32948-33265"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "hostile-input property tests"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CANON-09",
+      "section": "S-17",
+      "title": "Digest rules + when-to-compare-bytes rule",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "28185-28228",
+          "30588-30590"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "digest property tests"
+      ],
+      "related_findings": [
+        "C-12",
+        "C-13"
+      ]
+    },
+    {
+      "id": "R-CANON-10",
+      "section": "S-17",
+      "title": "Injectivity as structural property + scoped evidence claim",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "30592-30598",
+          "35068"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "round-trip + differential"
+      ],
+      "related_findings": [
+        "C-12"
+      ]
+    },
+    {
+      "id": "R-CANON-11",
+      "section": "S-17",
+      "title": "Golden vectors as normative fixtures",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "30599-30646",
+          "31948-32010",
+          "33266-33286"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core (vectors/)"
+      ],
+      "verification": [
+        "M1 acceptance"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-PERSIST-01",
+      "section": "S-18",
+      "title": "Persistence = recording, not a semantic machine; no secondary serialization",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "33757-33790",
+          "35078-35087"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "dependency review"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-PERSIST-02",
+      "section": "S-18",
+      "title": "Two-level framing; WalFrame checksum; 8 rejection classes",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "33802-33830",
+          "35088-35110"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "negative parsing tests",
+        "M016"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-PERSIST-03",
+      "section": "S-18",
+      "title": "Record taxonomy; EventEnvelope monotonic sequence",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "33860-33900",
+          "35111-35144"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "sequence property"
+      ],
+      "related_findings": [
+        "U-16"
+      ]
+    },
+    {
+      "id": "R-PERSIST-04",
+      "section": "S-18",
+      "title": "Snapshot content (include/exclude lists)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "26293-26330"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "snapshot review"
+      ],
+      "related_findings": [
+        "U-02"
+      ]
+    },
+    {
+      "id": "R-PERSIST-05",
+      "section": "S-18",
+      "title": "Atomic snapshot protocol; ValidSnapshot iff commit+digest",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "26216-26240",
+          "35177-35188"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "SNAPSHOT-COMMIT-INTEGRITY",
+        "crash harness T6"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-PERSIST-06",
+      "section": "S-18",
+      "title": "WAL sequence continuity; gaps rejected",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35088-35110",
+          "35189-35208"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "WAL-SEQUENCE-CONTINUITY",
+        "WAL-GAP-REJECT",
+        "M015"
+      ],
+      "related_findings": [
+        "U-16"
+      ]
+    },
+    {
+      "id": "R-RECOV-01",
+      "section": "S-19",
+      "title": "D = <S,L,H>; Recover = Replay",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "26122-26140"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "recovery differential"
+      ],
+      "related_findings": [
+        "C-40"
+      ]
+    },
+    {
+      "id": "R-RECOV-02",
+      "section": "S-19",
+      "title": "Normative crash matrix T0-T6",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35159-35176",
+          "28467-28493"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "crash harness",
+        "M10"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-RECOV-03",
+      "section": "S-19",
+      "title": "Recovery algorithm (12 steps)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35189-35208",
+          "26271-26300"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "recovery differential (R-REF-01)"
+      ],
+      "related_findings": [
+        "U-02",
+        "U-17"
+      ]
+    },
+    {
+      "id": "R-RECOV-04",
+      "section": "S-19",
+      "title": "Independent recovery implementation",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35189-35195",
+          "38858-38890"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence",
+        "ror-reference"
+      ],
+      "verification": [
+        "dependency review"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-RECOV-05",
+      "section": "S-19",
+      "title": "Invalid(D) implies RecoveryFault; never silently repair",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35196-35208",
+          "38254-38272"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "negative corruption tests"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-RECOV-06",
+      "section": "S-19",
+      "title": "Budget partition invariant survives crash",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35210-35215"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "post-recovery invariant"
+      ],
+      "related_findings": [
+        "U-01"
+      ]
+    },
+    {
+      "id": "R-RECOV-07",
+      "section": "S-19",
+      "title": "Reconciliation is the only resolution path for Indeterminate",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35111-35144",
+          "26249-26262"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence",
+        "ror-host"
+      ],
+      "verification": [
+        "U-15",
+        "reconciliation tests"
+      ],
+      "related_findings": [
+        "U-06",
+        "U-15"
+      ]
+    },
+    {
+      "id": "R-REF-01",
+      "section": "S-20",
+      "title": "Observe_P = Observe_R (+ recovery equivalence); evidence not proof",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35281-35310",
+          "38935-38953"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-differential"
+      ],
+      "verification": [
+        "the gate itself"
+      ],
+      "related_findings": [
+        "C-34"
+      ]
+    },
+    {
+      "id": "R-REF-02",
+      "section": "S-20",
+      "title": "Independence boundary (10 forbidden production deps)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35330-35375",
+          "37696-37721"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-reference"
+      ],
+      "verification": [
+        "dependency graph review"
+      ],
+      "related_findings": [
+        "C-33"
+      ]
+    },
+    {
+      "id": "R-REF-03",
+      "section": "S-20",
+      "title": "Reference models all 12 semantic areas; clarity over speed",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41848-41866",
+          "35281-35322",
+          "35341"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-reference"
+      ],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-REF-04",
+      "section": "S-20",
+      "title": "Reference non-goals",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35326-35339"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-reference"
+      ],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-REF-05",
+      "section": "S-20",
+      "title": "Normalized observations; first divergence; no final-value-only comparison",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38420-38470",
+          "41869-41906"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-differential"
+      ],
+      "verification": [
+        "comparator review"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-REF-06",
+      "section": "S-20",
+      "title": "PanicHost / MockKernel boundary enforcement",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27891-27902"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-testkit"
+      ],
+      "verification": [
+        "harness tests"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-TEST-01",
+      "section": "S-21",
+      "title": "Three execution modes + frozen baselines; time != semantics",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38587-38715",
+          "37251-37268"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "tests/"
+      ],
+      "verification": [
+        "CI"
+      ],
+      "related_findings": [
+        "C-11",
+        "C-29",
+        "C-31"
+      ]
+    },
+    {
+      "id": "R-TEST-02",
+      "section": "S-21",
+      "title": "Reproducible counterexample artifact (16 fields)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38890-38920",
+          "37293-37315"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-differential"
+      ],
+      "verification": [
+        "artifact schema"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-TEST-03",
+      "section": "S-21",
+      "title": "Shrinking protocol (10 ordered priorities)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38441-38463"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-differential"
+      ],
+      "verification": [
+        "shrinking tests"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-TEST-04",
+      "section": "S-21",
+      "title": "Baseline mutation registry M001-M018; additive",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38473-38492"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "mutations/"
+      ],
+      "verification": [
+        "registry review"
+      ],
+      "related_findings": [
+        "C-10"
+      ]
+    },
+    {
+      "id": "R-TEST-05",
+      "section": "S-21",
+      "title": "100% kill rate (non-equivalent); adjudication for equivalents",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38494-38500",
+          "37390-37400"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [],
+      "verification": [
+        "M9 gate"
+      ],
+      "related_findings": [
+        "C-32"
+      ]
+    },
+    {
+      "id": "R-TEST-06",
+      "section": "S-21",
+      "title": "Mutation validation (verification system tested)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38515-38540"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-testkit"
+      ],
+      "verification": [
+        "framework tests"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-TEST-07",
+      "section": "S-21",
+      "title": "Semantic coverage by obligation tags; metrics != oracle",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38522-38560",
+          "37402-37414"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-differential"
+      ],
+      "verification": [
+        "coverage report"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-TEST-08",
+      "section": "S-21",
+      "title": "Crash-injection matrix T0-T6",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38830-38846",
+          "35216-35236"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-testkit"
+      ],
+      "verification": [
+        "M10 gate"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-TEST-09",
+      "section": "S-21",
+      "title": "Fault adjudication (4-way classification)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38848-38862",
+          "37404-37414"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "process"
+      ],
+      "verification": [
+        "R-SCOPE-03"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-TEST-10",
+      "section": "S-21",
+      "title": "CI gates (PR / nightly / release)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38864-38890",
+          "37287-37292"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "CI"
+      ],
+      "verification": [
+        "gates"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-TEST-11",
+      "section": "S-21",
+      "title": "Final acceptance condition (3 conjuncts)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38885-38911",
+          "41196-41210"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [],
+      "verification": [
+        "M11"
+      ],
+      "related_findings": [
+        "C-34"
+      ]
+    },
+    {
+      "id": "R-REPO-01",
+      "section": "S-22",
+      "title": "Workspace layout; boundaries frozen, names flexible",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "39140-39195"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "workspace"
+      ],
+      "verification": [
+        "R-ARCH-02"
+      ],
+      "related_findings": [
+        "C-21"
+      ]
+    },
+    {
+      "id": "R-REPO-02",
+      "section": "S-22",
+      "title": "Ten crate contracts (contents + prohibitions)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "39196-40762"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "crates/"
+      ],
+      "verification": [
+        "dependency + visibility review"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-REPO-03",
+      "section": "S-22",
+      "title": "Boundaries enforced structurally (deps, visibility, types, traits, tests)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41223-41273"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "workspace"
+      ],
+      "verification": [
+        "mutation + differential"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-ORDER-01",
+      "section": "S-23",
+      "title": "20-step implementation order; tests before dependents; reference early",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37793-37812",
+          "42108-42142"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "process"
+      ],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-ORDER-02",
+      "section": "S-23",
+      "title": "M0-M11 acceptance criteria",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "40763-41100"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "process"
+      ],
+      "verification": [
+        "milestones"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-ORDER-03",
+      "section": "S-23",
+      "title": "First security gate (Block not-=> ExecutablePlan; 7-form differential)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41155-41195"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-compiler",
+        "ror-runtime"
+      ],
+      "verification": [
+        "gate"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-ORDER-04",
+      "section": "S-23",
+      "title": "Sprint 1 task set ROR-001..ROR-016",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41091-41112"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "process"
+      ],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-ORDER-05",
+      "section": "S-23",
+      "title": "Definition of done (7 components)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41124-41142"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "process"
+      ],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-CLAIM-01",
+      "section": "S-24",
+      "title": "Scoped conformance claim (frozen wording)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38913-38917",
+          "42191-42265"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [],
+      "verification": [],
+      "related_findings": [
+        "C-34"
+      ]
+    },
+    {
+      "id": "R-CLAIM-02",
+      "section": "S-24",
+      "title": "16 prohibited shortcuts",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38858-38890",
+          "42144-42188"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "all"
+      ],
+      "verification": [
+        "mutation + review"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-CLAIM-03",
+      "section": "S-24",
+      "title": "Engineering response format; CONFLICT reporting",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38808-38846"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "process"
+      ],
+      "verification": [],
+      "related_findings": []
+    },
+    {
+      "id": "R-CLAIM-04",
+      "section": "S-24",
+      "title": "Start condition (no new semantic phase; reference alongside)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38921-38928"
+        ]
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "process"
+      ],
+      "verification": [],
+      "related_findings": []
+    }
+  ],
+  "findings": [
+    {
+      "id": "C-01",
+      "title": "Request-sequence numbering: 15 rules / 14 gates / 14 steps / 16 steps",
+      "severity": "MAJOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "open:U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "7156-7248",
+          "7331-7407",
+          "11053-11090",
+          "23857-23948",
+          "37891-37908"
+        ]
+      }
+    },
+    {
+      "id": "C-02",
+      "title": "Stale primitive type tags in revised 15A grammar section 1.3",
+      "severity": "MAJOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "30566",
+          "30599-30646",
+          "33087-33265"
+        ]
+      }
+    },
+    {
+      "id": "C-03",
+      "title": "Two different Value domains share one name",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-09",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "12290-12312",
+          "33155-33265"
+        ]
+      }
+    },
+    {
+      "id": "C-04",
+      "title": "await elimination and isolation-level spawn: not re-declared in frozen documents",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-04;U-05",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "3830-3873",
+          "2310-2342",
+          "12132-12170",
+          "2718-2751"
+        ]
+      }
+    },
+    {
+      "id": "C-05",
+      "title": "Effect property values outside declared domain",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-06",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "3890-3905"
+        ]
+      }
+    },
+    {
+      "id": "C-06",
+      "title": "Budget vector dimension drift across versions",
+      "severity": "MAJOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-01 (residual)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1960",
+          "6730-6736",
+          "7119-7144",
+          "41537"
+        ]
+      }
+    },
+    {
+      "id": "C-07",
+      "title": "BudgetOK reserved-capacity direction error",
+      "severity": "MAJOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "7314-7330",
+          "7487-7520",
+          "8692-8696"
+        ]
+      }
+    },
+    {
+      "id": "C-08",
+      "title": "Fault naming inconsistency for capability denial",
+      "severity": "MINOR",
+      "status": "open",
+      "resolved_into": "U-08",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1995",
+          "7363",
+          "7435",
+          "23784"
+        ]
+      }
+    },
+    {
+      "id": "C-09",
+      "title": "README internal status contradiction (IN PROGRESS vs READY)",
+      "severity": "MINOR",
+      "status": "info-superseded",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "README 22-28",
+          " 655-661"
+        ]
+      }
+    },
+    {
+      "id": "C-10",
+      "title": "Mutation registry presented three ways",
+      "severity": "MINOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37239-37249",
+          "38472-38492",
+          "41916"
+        ]
+      }
+    },
+    {
+      "id": "C-11",
+      "title": "<2 minutes exhaustive-mode target",
+      "severity": "MINOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37261",
+          "37381-37386",
+          "38633"
+        ]
+      }
+    },
+    {
+      "id": "C-12",
+      "title": "Surjectivity misnomer for injectivity",
+      "severity": "MINOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "28465",
+          "30592-30598"
+        ]
+      }
+    },
+    {
+      "id": "C-13",
+      "title": "State-digest byte-equality claim overstated",
+      "severity": "MAJOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27881-27883",
+          "28229-28240"
+        ]
+      }
+    },
+    {
+      "id": "C-14",
+      "title": "CapRef never-serialized comment vs 15A encoding vs snapshot content",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-02",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "6446",
+          "33087",
+          "26178-26195"
+        ]
+      }
+    },
+    {
+      "id": "C-15",
+      "title": "15A frozen tag set does not cover machine-state types",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-02",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "33087-33265",
+          "26178-26195"
+        ]
+      }
+    },
+    {
+      "id": "C-16",
+      "title": "Constraint in AST but no frozen data encoding",
+      "severity": "MINOR",
+      "status": "open",
+      "resolved_into": "U-02",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "12155",
+          "26002",
+          "6391"
+        ]
+      }
+    },
+    {
+      "id": "C-17",
+      "title": "invoke vs request naming",
+      "severity": "MINOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1930",
+          "3840",
+          "12157"
+        ]
+      }
+    },
+    {
+      "id": "C-18",
+      "title": "RunState vs ActorStatus double enum",
+      "severity": "MINOR",
+      "status": "info-both-kept",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25514-25546",
+          "23784-23796"
+        ]
+      }
+    },
+    {
+      "id": "C-19",
+      "title": "Isolation ladder (WASM/OS) dropped without retraction",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-05",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1292-1313",
+          "3960"
+        ]
+      }
+    },
+    {
+      "id": "C-20",
+      "title": "15 Core Invariants table has 10 rows",
+      "severity": "MINOR",
+      "status": "info",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27904-27918"
+        ]
+      }
+    },
+    {
+      "id": "C-21",
+      "title": "Three overlapping work-item numbering systems",
+      "severity": "MINOR",
+      "status": "info",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "26109+",
+          "40763-41100",
+          "37800-37812",
+          "41090-41112"
+        ]
+      }
+    },
+    {
+      "id": "C-22",
+      "title": "ReplayHost HashMap vs ordered form",
+      "severity": "MAJOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "24003-24030",
+          "25972-25996",
+          "37985-38000"
+        ]
+      }
+    },
+    {
+      "id": "C-23",
+      "title": "EffectCost complete -> complete_max evolution",
+      "severity": "MAJOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "23726-23740",
+          "25808-25825"
+        ]
+      }
+    },
+    {
+      "id": "C-24",
+      "title": "Spawn budget-split policy (A2) never closed",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-03",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "3960-3970",
+          "12161",
+          "25573"
+        ]
+      }
+    },
+    {
+      "id": "C-25",
+      "title": "Separate durable effect journal vs unified WAL",
+      "severity": "MINOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "26146-26150",
+          "35111-35144"
+        ]
+      }
+    },
+    {
+      "id": "C-26",
+      "title": "Snapshot includes runnable queue AND recovery reconstructs it",
+      "severity": "MINOR",
+      "status": "open",
+      "resolved_into": "U-17",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "26178-26195",
+          "35207"
+        ]
+      }
+    },
+    {
+      "id": "C-27",
+      "title": "Host policy gate placement",
+      "severity": "MINOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "11069",
+          "37890",
+          "8560-8580"
+        ]
+      }
+    },
+    {
+      "id": "C-28",
+      "title": "E-BudgetFault zeroing of consumables",
+      "severity": "MINOR",
+      "status": "info",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "7345-7352",
+          "7430-7434"
+        ]
+      }
+    },
+    {
+      "id": "C-29",
+      "title": "Stress depth bound 50k+ vs 50k-100k",
+      "severity": "MINOR",
+      "status": "info",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37263",
+          "38665"
+        ]
+      }
+    },
+    {
+      "id": "C-30",
+      "title": "AdmissibleConstraint trait orphaned",
+      "severity": "MINOR",
+      "status": "open",
+      "resolved_into": "U-09",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "10171"
+        ]
+      }
+    },
+    {
+      "id": "C-31",
+      "title": "Exhaustive baseline wording variance",
+      "severity": "MINOR",
+      "status": "info",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37253",
+          "38629"
+        ]
+      }
+    },
+    {
+      "id": "C-32",
+      "title": "100% kill rate scope",
+      "severity": "MINOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37243",
+          "38494",
+          "40946"
+        ]
+      }
+    },
+    {
+      "id": "C-33",
+      "title": "Reference model distinct-language suggestion vs Rust crate",
+      "severity": "MINOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "28499",
+          "39140+"
+        ]
+      }
+    },
+    {
+      "id": "C-34",
+      "title": "property tests prove the code obeys the calculus (un-corrected claim)",
+      "severity": "MAJOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "37331",
+          "28246-28268",
+          "37444-37452",
+          "38955"
+        ]
+      }
+    },
+    {
+      "id": "C-35",
+      "title": "Compilation judgment: 4 judgments vs 1 combined",
+      "severity": "MINOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-22 (gap)",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1953-1981",
+          "3874-3905"
+        ]
+      }
+    },
+    {
+      "id": "C-36",
+      "title": "Spawn isolation/trust parameter vs budget parameter",
+      "severity": "MINOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-05",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "3850",
+          "12161"
+        ]
+      }
+    },
+    {
+      "id": "C-37",
+      "title": "Deterministic interleaving wording for scheduler",
+      "severity": "INFO",
+      "status": "info",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "41641",
+          "25769"
+        ]
+      }
+    },
+    {
+      "id": "C-38",
+      "title": "observation_sequence vs current_planning_epoch check",
+      "severity": "MINOR",
+      "status": "open",
+      "resolved_into": "U-13",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27236",
+          "28373",
+          "27918"
+        ]
+      }
+    },
+    {
+      "id": "C-40",
+      "title": "Recover(D) unqualified vs qualified theorem",
+      "severity": "MAJOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "26133",
+          "27551-27569"
+        ]
+      }
+    },
+    {
+      "id": "C-41",
+      "title": "15A frozen declared before duplicate-key patch",
+      "severity": "MINOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "33266",
+          "34987-35024"
+        ]
+      }
+    },
+    {
+      "id": "C-42",
+      "title": "GlobalState vs GlobalConfig naming",
+      "severity": "MINOR",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "8653",
+          "24148",
+          "25514"
+        ]
+      }
+    },
+    {
+      "id": "C-43",
+      "title": "Theorems stated vs proven",
+      "severity": "MAJOR",
+      "status": "info-status-discipline",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "2028-2084",
+          "3940-4062",
+          "6422-6433",
+          "7408-7453",
+          "26048-26070",
+          "27485-27607"
+        ]
+      }
+    },
+    {
+      "id": "C-44",
+      "title": "Effect journal causal chain wording variance",
+      "severity": "INFO",
+      "status": "resolved-by-later-text",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "26155-26170",
+          "35140-35144"
+        ]
+      }
+    },
+    {
+      "id": "C-45",
+      "title": "Value::Map vs machine-only variants (split of C-03)",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-09",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "12290-12312",
+          "33155-33265"
+        ]
+      }
+    }
+  ],
+  "unresolved": [
+    {
+      "id": "U-01",
+      "title": "Operational meaning of duration consumable D",
+      "blocking": "BLOCKING",
+      "section": "S-11",
+      "affects": [
+        "R-BUDGET-01",
+        "R-CORE-05",
+        "R-BUDGET-05",
+        "R-RECOV-06"
+      ]
+    },
+    {
+      "id": "U-02",
+      "title": "Canonical encoding of machine (non-data) state not frozen (incl. Authority, Expr, Frame, Environment, Constraint, SchedulerState, GlobalState)",
+      "blocking": "BLOCKING",
+      "section": "S-17;S-18;S-19",
+      "affects": [
+        "R-PERSIST-04",
+        "R-RECOV-03",
+        "R-CANON-02",
+        "R-KERN-01"
+      ]
+    },
+    {
+      "id": "U-03",
+      "title": "Spawn budget-allocation policy (BudgetAllocationSpec validation rules)",
+      "blocking": "BLOCKING",
+      "section": "S-15",
+      "affects": [
+        "R-ACTOR-05"
+      ]
+    },
+    {
+      "id": "U-04",
+      "title": "await constructor: explicit retraction or retention",
+      "blocking": "BLOCKING",
+      "section": "S-07",
+      "affects": [
+        "R-CALC-02"
+      ]
+    },
+    {
+      "id": "U-05",
+      "title": "Isolation ladder (WASM/OS): retired or deferred?",
+      "blocking": "BLOCKING",
+      "section": "S-07;S-15",
+      "affects": [
+        "R-CALC-02",
+        "R-ACTOR-05"
+      ]
+    },
+    {
+      "id": "U-06",
+      "title": "Effect replayability/reversibility/idempotence semantics + link to effect classes",
+      "blocking": "BLOCKING",
+      "section": "S-07;S-14;S-19",
+      "affects": [
+        "R-CALC-07",
+        "R-HOST-04",
+        "R-RECOV-07"
+      ]
+    },
+    {
+      "id": "U-07",
+      "title": "Per-transition logical-time deltas",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-11",
+      "affects": [
+        "R-BUDGET-06",
+        "R-CORE-08",
+        "R-CAP-09"
+      ]
+    },
+    {
+      "id": "U-08",
+      "title": "Fault taxonomy unification (names + variant enumeration)",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-07",
+      "affects": [
+        "R-CALC-06"
+      ]
+    },
+    {
+      "id": "U-09",
+      "title": "Value domain collision + orphaned AdmissibleConstraint",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-07;S-16;S-17",
+      "affects": [
+        "R-CALC-01",
+        "R-MARSHAL-03",
+        "R-BUDGET-07"
+      ]
+    },
+    {
+      "id": "U-13",
+      "title": "PlannerMetadata / ProposalDigest definitions + exact staleness predicate",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-05",
+      "affects": [
+        "R-PLANNER-01",
+        "R-PLANNER-03",
+        "R-PLANNER-04"
+      ]
+    },
+    {
+      "id": "U-14",
+      "title": "Error-variant enumeration (fold into U-08)",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-07",
+      "affects": [
+        "R-CALC-06"
+      ]
+    },
+    {
+      "id": "U-15",
+      "title": "ReconciliationOutcome variants + per-class admissibility",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-19",
+      "affects": [
+        "R-RECOV-07"
+      ]
+    },
+    {
+      "id": "U-16",
+      "title": "EventSequence vs WalSequence relationship",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-18",
+      "affects": [
+        "R-PERSIST-03",
+        "R-PERSIST-06"
+      ]
+    },
+    {
+      "id": "U-17",
+      "title": "Runnable queue: snapshot field vs recovery reconstruction authority",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-18;S-19",
+      "affects": [
+        "R-PERSIST-04",
+        "R-RECOV-03"
+      ]
+    },
+    {
+      "id": "U-21",
+      "title": "Op / Target / Params domain definitions + canonical encoding",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-07;S-09",
+      "affects": [
+        "R-CALC-04",
+        "R-CAP-01",
+        "R-CAP-06"
+      ]
+    },
+    {
+      "id": "U-22",
+      "title": "Static effect-set inference (J2) not present in frozen pipeline",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-06",
+      "affects": [
+        "R-COMPILE-03"
+      ]
+    }
+  ],
+  "mutations": [
+    {
+      "id": "M001",
+      "defect": "reverse argument evaluation",
+      "kills_evidence_for": [
+        "R-CEK-05"
+      ]
+    },
+    {
+      "id": "M002",
+      "defect": "skip arity precheck",
+      "kills_evidence_for": [
+        "R-CEK-05"
+      ]
+    },
+    {
+      "id": "M003",
+      "defect": "allow non-function application",
+      "kills_evidence_for": [
+        "R-CEK-05"
+      ]
+    },
+    {
+      "id": "M004",
+      "defect": "accept revoked capability",
+      "kills_evidence_for": [
+        "R-CAP-07",
+        "R-CORE-03"
+      ]
+    },
+    {
+      "id": "M005",
+      "defect": "omit capability ceiling",
+      "kills_evidence_for": [
+        "R-CAP-06"
+      ]
+    },
+    {
+      "id": "M006",
+      "defect": "permit capability amplification",
+      "kills_evidence_for": [
+        "R-CAP-05",
+        "R-CORE-04"
+      ]
+    },
+    {
+      "id": "M007",
+      "defect": "omit budget gate",
+      "kills_evidence_for": [
+        "R-BUDGET-04",
+        "R-BUDGET-08"
+      ]
+    },
+    {
+      "id": "M008",
+      "defect": "release indeterminate escrow",
+      "kills_evidence_for": [
+        "R-DUR-05"
+      ]
+    },
+    {
+      "id": "M009",
+      "defect": "permit negative resources",
+      "kills_evidence_for": [
+        "R-BUDGET-02"
+      ]
+    },
+    {
+      "id": "M010",
+      "defect": "allocate EffectId before authorization",
+      "kills_evidence_for": [
+        "R-EFFECT-03",
+        "R-EFFECT-04"
+      ]
+    },
+    {
+      "id": "M011",
+      "defect": "schedule blocked actor",
+      "kills_evidence_for": [
+        "R-ACTOR-04"
+      ]
+    },
+    {
+      "id": "M012",
+      "defect": "duplicate runnable queue entry",
+      "kills_evidence_for": [
+        "R-ACTOR-04"
+      ]
+    },
+    {
+      "id": "M013",
+      "defect": "break mailbox FIFO",
+      "kills_evidence_for": [
+        "R-ACTOR-06"
+      ]
+    },
+    {
+      "id": "M014",
+      "defect": "accept duplicate canonical map key",
+      "kills_evidence_for": [
+        "R-CANON-06"
+      ]
+    },
+    {
+      "id": "M015",
+      "defect": "ignore WAL sequence gap",
+      "kills_evidence_for": [
+        "R-PERSIST-06"
+      ]
+    },
+    {
+      "id": "M016",
+      "defect": "ignore checksum mismatch",
+      "kills_evidence_for": [
+        "R-PERSIST-02"
+      ]
+    },
+    {
+      "id": "M017",
+      "defect": "accept mismatched EffectDigest",
+      "kills_evidence_for": [
+        "R-EFFECT-06",
+        "R-DUR-03"
+      ]
+    },
+    {
+      "id": "M018",
+      "defect": "resume after corrupted receipt",
+      "kills_evidence_for": [
+        "R-EFFECT-06"
+      ]
+    }
+  ],
+  "verification_tags": [
+    {
+      "tag": "CEK-CALL-ARITY-PRECHECK",
+      "obligations": [
+        "R-CEK-05"
+      ],
+      "milestone": "M3"
+    },
+    {
+      "tag": "CEK-CALL-ARGS-LTR",
+      "obligations": [
+        "R-CEK-05"
+      ],
+      "milestone": "M3"
+    },
+    {
+      "tag": "CEK-CLOSURE-LEXICAL-CAPTURE",
+      "obligations": [
+        "R-CEK-03",
+        "R-CEK-04"
+      ],
+      "milestone": "M3"
+    },
+    {
+      "tag": "CAP-DERIVE-NO-AMPLIFICATION",
+      "obligations": [
+        "R-CAP-05",
+        "R-CORE-04"
+      ],
+      "milestone": "M4"
+    },
+    {
+      "tag": "CAP-REVOCATION-ANCESTOR",
+      "obligations": [
+        "R-CAP-07"
+      ],
+      "milestone": "M4"
+    },
+    {
+      "tag": "BUDGET-CONSUMPTION-CONSERVATION",
+      "obligations": [
+        "R-BUDGET-05",
+        "R-CORE-05"
+      ],
+      "milestone": "M5"
+    },
+    {
+      "tag": "BUDGET-ESCROW-CONSERVATION",
+      "obligations": [
+        "R-EFFECT-05",
+        "R-DUR-05"
+      ],
+      "milestone": "M5;M10"
+    },
+    {
+      "tag": "EFFECT-ISSUE-DURABLE-BEFORE-HOST",
+      "obligations": [
+        "R-DUR-01",
+        "R-CORE-06"
+      ],
+      "milestone": "M5;M10"
+    },
+    {
+      "tag": "EFFECT-RECEIPT-DIGEST-VALIDATION",
+      "obligations": [
+        "R-EFFECT-06"
+      ],
+      "milestone": "M5"
+    },
+    {
+      "tag": "SCHED-FIFO",
+      "obligations": [
+        "R-ACTOR-04"
+      ],
+      "milestone": "M6"
+    },
+    {
+      "tag": "SCHED-BLOCKED-NOT-SCHEDULED",
+      "obligations": [
+        "R-ACTOR-04"
+      ],
+      "milestone": "M6"
+    },
+    {
+      "tag": "MARSHAL-NO-RAW-CAPABILITY",
+      "obligations": [
+        "R-MARSHAL-01",
+        "R-CORE-07"
+      ],
+      "milestone": "M6"
+    },
+    {
+      "tag": "MARSHAL-CAPABILITY-REJECT",
+      "obligations": [
+        "R-MARSHAL-01",
+        "R-CORE-07"
+      ],
+      "milestone": "M6 (README alias of MARSHAL-NO-RAW-CAPABILITY)"
+    },
+    {
+      "tag": "WAL-SEQUENCE-CONTINUITY",
+      "obligations": [
+        "R-PERSIST-06"
+      ],
+      "milestone": "M7"
+    },
+    {
+      "tag": "WAL-GAP-REJECT",
+      "obligations": [
+        "R-PERSIST-06"
+      ],
+      "milestone": "M7 (alias emphasis)"
+    },
+    {
+      "tag": "RECOVERY-ISSUED-INDETERMINATE",
+      "obligations": [
+        "R-DUR-04",
+        "R-RECOV-02"
+      ],
+      "milestone": "M10"
+    },
+    {
+      "tag": "SNAPSHOT-COMMIT-INTEGRITY",
+      "obligations": [
+        "R-PERSIST-05"
+      ],
+      "milestone": "M7;M10"
+    }
+  ],
+  "crash_matrix": [
+    {
+      "id": "T0",
+      "point": "before Prepared",
+      "durable_state": "none",
+      "required_recovery_result": "effect does not exist; no budget mutation; resume normally"
+    },
+    {
+      "id": "T1",
+      "point": "after Prepared",
+      "durable_state": "Prepared only",
+      "required_recovery_result": "discard incomplete preparation; resume normally"
+    },
+    {
+      "id": "T2",
+      "point": "after Issued",
+      "durable_state": "Prepared + Issued",
+      "required_recovery_result": "Indeterminate; requires reconciliation"
+    },
+    {
+      "id": "T3",
+      "point": "host invoked",
+      "durable_state": "Prepared + Issued",
+      "required_recovery_result": "Indeterminate (host may have executed)"
+    },
+    {
+      "id": "T4",
+      "point": "host completed (not durable)",
+      "durable_state": "Prepared + Issued",
+      "required_recovery_result": "Indeterminate (completion not durable)"
+    },
+    {
+      "id": "T5",
+      "point": "after Completed",
+      "durable_state": "Completed durable",
+      "required_recovery_result": "reconstruct completed effect; resume continuation"
+    },
+    {
+      "id": "T6",
+      "point": "after SnapshotCommit",
+      "durable_state": "snapshot + WAL",
+      "required_recovery_result": "recover snapshot base; replay subsequent WAL records"
+    }
+  ],
+  "milestones": [
+    {
+      "id": "M0",
+      "name": "Workspace",
+      "acceptance": [
+        "cargo check/test/fmt/clippy pass",
+        "no semantic functionality required"
+      ],
+      "obligations": [
+        "R-REPO-01",
+        "R-ORDER-04"
+      ]
+    },
+    {
+      "id": "M1",
+      "name": "Canonical serialization",
+      "acceptance": [
+        "golden vectors pass",
+        "round trips pass",
+        "malformed inputs reject",
+        "duplicate keys reject",
+        "canonical bytes deterministic"
+      ],
+      "obligations": [
+        "R-CANON-01",
+        "R-CANON-02",
+        "R-CANON-03",
+        "R-CANON-04",
+        "R-CANON-05",
+        "R-CANON-06",
+        "R-CANON-07",
+        "R-CANON-08",
+        "R-CANON-09",
+        "R-CANON-10",
+        "R-CANON-11"
+      ]
+    },
+    {
+      "id": "M2",
+      "name": "Pure CEK",
+      "acceptance": [
+        "differential equivalence for Value Var Let Seq If"
+      ],
+      "obligations": [
+        "R-CEK-01",
+        "R-CEK-02",
+        "R-CEK-06",
+        "R-CEK-07",
+        "R-REF-01"
+      ]
+    },
+    {
+      "id": "M3",
+      "name": "Lambda / Call",
+      "acceptance": [
+        "CEK-CALL-ARITY-PRECHECK",
+        "CEK-CALL-ARGS-LTR",
+        "CEK-CLOSURE-LEXICAL-CAPTURE",
+        "deep-call stress"
+      ],
+      "obligations": [
+        "R-CEK-03",
+        "R-CEK-04",
+        "R-CEK-05"
+      ]
+    },
+    {
+      "id": "M4",
+      "name": "Capability / Attenuation",
+      "acceptance": [
+        "CAP-DERIVE-NO-AMPLIFICATION",
+        "revocation",
+        "expiration",
+        "lexical capability binding",
+        "independent reference capability algebra"
+      ],
+      "obligations": [
+        "R-CAP-01",
+        "R-CAP-02",
+        "R-CAP-03",
+        "R-CAP-04",
+        "R-CAP-05",
+        "R-CAP-06",
+        "R-CAP-07",
+        "R-CAP-08",
+        "R-CAP-09",
+        "R-KERN-01",
+        "R-KERN-02",
+        "R-KERN-03"
+      ]
+    },
+    {
+      "id": "M5",
+      "name": "Effects",
+      "acceptance": [
+        "authorization",
+        "budget gates",
+        "deadline",
+        "host policy",
+        "EffectId",
+        "EffectDigest",
+        "durable issuance",
+        "receipt validation"
+      ],
+      "obligations": [
+        "R-EFFECT-01",
+        "R-EFFECT-02",
+        "R-EFFECT-03",
+        "R-EFFECT-04",
+        "R-EFFECT-05",
+        "R-EFFECT-06",
+        "R-EFFECT-07",
+        "R-DUR-01",
+        "R-DUR-02",
+        "R-DUR-03",
+        "R-DUR-04",
+        "R-DUR-05",
+        "R-HOST-01",
+        "R-HOST-02",
+        "R-HOST-03",
+        "R-HOST-04",
+        "R-HOST-05"
+      ]
+    },
+    {
+      "id": "M6",
+      "name": "Actors",
+      "acceptance": [
+        "FIFO scheduler",
+        "FIFO mailbox",
+        "spawn isolation",
+        "send/receive",
+        "delegation",
+        "blocked/wakeup semantics"
+      ],
+      "obligations": [
+        "R-ACTOR-01",
+        "R-ACTOR-02",
+        "R-ACTOR-03",
+        "R-ACTOR-04",
+        "R-ACTOR-05",
+        "R-ACTOR-06",
+        "R-ACTOR-07",
+        "R-ACTOR-08",
+        "R-MARSHAL-01",
+        "R-MARSHAL-02",
+        "R-MARSHAL-03",
+        "R-MARSHAL-04"
+      ]
+    },
+    {
+      "id": "M7",
+      "name": "Persistence",
+      "acceptance": [
+        "WAL",
+        "snapshot",
+        "effect journal",
+        "checksum",
+        "sequence continuity",
+        "recovery"
+      ],
+      "obligations": [
+        "R-PERSIST-01",
+        "R-PERSIST-02",
+        "R-PERSIST-03",
+        "R-PERSIST-04",
+        "R-PERSIST-05",
+        "R-PERSIST-06",
+        "R-RECOV-01",
+        "R-RECOV-03",
+        "R-RECOV-04",
+        "R-RECOV-05",
+        "R-RECOV-06"
+      ]
+    },
+    {
+      "id": "M8",
+      "name": "Differential system",
+      "acceptance": [
+        "generated programs",
+        "reference execution",
+        "production execution",
+        "normalized comparison",
+        "first-divergence reporting",
+        "shrinking"
+      ],
+      "obligations": [
+        "R-REF-01",
+        "R-REF-02",
+        "R-REF-03",
+        "R-REF-04",
+        "R-REF-05",
+        "R-REF-06",
+        "R-TEST-02",
+        "R-TEST-03",
+        "R-TEST-07"
+      ]
+    },
+    {
+      "id": "M9",
+      "name": "Mutation gate",
+      "acceptance": [
+        "MutationKillRate = 100% for all registered non-equivalent mutants"
+      ],
+      "obligations": [
+        "R-TEST-04",
+        "R-TEST-05",
+        "R-TEST-06"
+      ]
+    },
+    {
+      "id": "M10",
+      "name": "Crash/recovery gate",
+      "acceptance": [
+        "T0..T6 all produce the frozen expected classification"
+      ],
+      "obligations": [
+        "R-RECOV-02",
+        "R-TEST-08",
+        "R-DUR-04"
+      ]
+    },
+    {
+      "id": "M11",
+      "name": "Release candidate",
+      "acceptance": [
+        "exhaustive",
+        "property",
+        "mutation",
+        "differential",
+        "crash",
+        "stress",
+        "determinism",
+        "serialization",
+        "security all green"
+      ],
+      "obligations": [
+        "R-TEST-10",
+        "R-TEST-11",
+        "R-CLAIM-01"
+      ]
+    }
+  ],
+  "first_sprint": [
+    {
+      "id": "ROR-001",
+      "task": "Create Cargo workspace",
+      "obligations": [
+        "R-REPO-01"
+      ]
+    },
+    {
+      "id": "ROR-002",
+      "task": "Pin Rust toolchain",
+      "obligations": [
+        "R-REPO-01"
+      ]
+    },
+    {
+      "id": "ROR-003",
+      "task": "Create ror-core domain types",
+      "obligations": [
+        "R-CALC-01",
+        "R-CALC-02",
+        "R-CALC-03",
+        "R-CALC-04",
+        "R-BUDGET-01",
+        "R-KERN-01"
+      ]
+    },
+    {
+      "id": "ROR-004",
+      "task": "Implement canonical cursor",
+      "obligations": [
+        "R-CANON-07",
+        "R-CANON-08"
+      ]
+    },
+    {
+      "id": "ROR-005",
+      "task": "Implement canonical envelope",
+      "obligations": [
+        "R-CANON-02",
+        "R-CANON-08"
+      ]
+    },
+    {
+      "id": "ROR-006",
+      "task": "Implement primitive canonical types",
+      "obligations": [
+        "R-CANON-05"
+      ]
+    },
+    {
+      "id": "ROR-007",
+      "task": "Implement Value canonical encoding",
+      "obligations": [
+        "R-CANON-04",
+        "R-CANON-06"
+      ]
+    },
+    {
+      "id": "ROR-008",
+      "task": "Implement independent Value canonical decoding",
+      "obligations": [
+        "R-CANON-07"
+      ]
+    },
+    {
+      "id": "ROR-009",
+      "task": "Add canonical golden vectors",
+      "obligations": [
+        "R-CANON-11"
+      ]
+    },
+    {
+      "id": "ROR-010",
+      "task": "Add malformed-input suite",
+      "obligations": [
+        "R-CANON-07"
+      ]
+    },
+    {
+      "id": "ROR-011",
+      "task": "Add duplicate-map-key regression",
+      "obligations": [
+        "R-CANON-06"
+      ]
+    },
+    {
+      "id": "ROR-012",
+      "task": "Create reference-model crate",
+      "obligations": [
+        "R-REF-02",
+        "R-REF-03"
+      ]
+    },
+    {
+      "id": "ROR-013",
+      "task": "Create differential observation API",
+      "obligations": [
+        "R-REF-05"
+      ]
+    },
+    {
+      "id": "ROR-014",
+      "task": "Implement pure reference CEK",
+      "obligations": [
+        "R-REF-03"
+      ]
+    },
+    {
+      "id": "ROR-015",
+      "task": "Implement pure production CEK",
+      "obligations": [
+        "R-CEK-01",
+        "R-CEK-02"
+      ]
+    },
+    {
+      "id": "ROR-016",
+      "task": "Add first production/reference differential tests",
+      "obligations": [
+        "R-REF-01"
+      ]
+    }
+  ],
+  "crates": [
+    {
+      "name": "ror-core",
+      "responsibility": "Lowest-level semantic domain types; std-only",
+      "obligations": [
+        "R-CALC-01",
+        "R-CALC-02",
+        "R-CALC-03",
+        "R-CALC-04",
+        "R-CALC-05",
+        "R-CALC-06",
+        "R-CALC-08",
+        "R-BUDGET-01",
+        "R-BUDGET-02",
+        "R-BUDGET-03",
+        "R-BUDGET-04",
+        "R-BUDGET-05",
+        "R-BUDGET-06",
+        "R-BUDGET-07",
+        "R-CAP-01",
+        "R-KERN-01",
+        "R-CANON-01",
+        "R-CANON-02",
+        "R-CANON-03",
+        "R-CANON-04",
+        "R-CANON-05",
+        "R-CANON-06",
+        "R-CANON-07",
+        "R-CANON-08",
+        "R-CANON-09",
+        "R-CANON-10",
+        "R-CANON-11"
+      ],
+      "depends_on": []
+    },
+    {
+      "name": "ror-compiler",
+      "responsibility": "Block -> ExecutablePlan; plan constructors private",
+      "obligations": [
+        "R-ARCH-03",
+        "R-COMPILE-01",
+        "R-COMPILE-02",
+        "R-COMPILE-03",
+        "R-COMPILE-04",
+        "R-COMPILE-05",
+        "R-ORDER-03"
+      ],
+      "depends_on": [
+        "ror-core"
+      ]
+    },
+    {
+      "name": "ror-kernel",
+      "responsibility": "CapabilityKernel: derive/authorize/validate/revocation; authority storage",
+      "obligations": [
+        "R-CAP-02",
+        "R-CAP-03",
+        "R-CAP-04",
+        "R-CAP-05",
+        "R-CAP-06",
+        "R-CAP-07",
+        "R-CAP-08",
+        "R-CAP-09",
+        "R-KERN-01",
+        "R-KERN-02",
+        "R-KERN-03",
+        "R-TRUST-03"
+      ],
+      "depends_on": [
+        "ror-core"
+      ]
+    },
+    {
+      "name": "ror-runtime",
+      "responsibility": "CEK machine, actors, scheduler, effects, marshalling",
+      "obligations": [
+        "R-ARCH-01",
+        "R-CORE-08",
+        "R-CEK-01",
+        "R-CEK-02",
+        "R-CEK-03",
+        "R-CEK-04",
+        "R-CEK-05",
+        "R-CEK-06",
+        "R-CEK-07",
+        "R-EFFECT-01",
+        "R-EFFECT-02",
+        "R-EFFECT-03",
+        "R-EFFECT-04",
+        "R-EFFECT-05",
+        "R-EFFECT-06",
+        "R-EFFECT-07",
+        "R-ACTOR-01",
+        "R-ACTOR-02",
+        "R-ACTOR-03",
+        "R-ACTOR-04",
+        "R-ACTOR-05",
+        "R-ACTOR-06",
+        "R-ACTOR-07",
+        "R-ACTOR-08",
+        "R-MARSHAL-01",
+        "R-MARSHAL-02",
+        "R-MARSHAL-03",
+        "R-MARSHAL-04"
+      ],
+      "depends_on": [
+        "ror-core",
+        "ror-kernel"
+      ]
+    },
+    {
+      "name": "ror-persistence",
+      "responsibility": "WAL, snapshots, effect journal, recovery",
+      "obligations": [
+        "R-DUR-01",
+        "R-DUR-02",
+        "R-DUR-03",
+        "R-DUR-04",
+        "R-DUR-05",
+        "R-PERSIST-01",
+        "R-PERSIST-02",
+        "R-PERSIST-03",
+        "R-PERSIST-04",
+        "R-PERSIST-05",
+        "R-PERSIST-06",
+        "R-RECOV-01",
+        "R-RECOV-02",
+        "R-RECOV-03",
+        "R-RECOV-04",
+        "R-RECOV-05",
+        "R-RECOV-06",
+        "R-RECOV-07"
+      ],
+      "depends_on": [
+        "ror-core"
+      ]
+    },
+    {
+      "name": "ror-host",
+      "responsibility": "Host execution and replay boundaries",
+      "obligations": [
+        "R-HOST-01",
+        "R-HOST-02",
+        "R-HOST-03",
+        "R-HOST-04",
+        "R-HOST-05"
+      ],
+      "depends_on": [
+        "ror-core"
+      ]
+    },
+    {
+      "name": "ror-agent",
+      "responsibility": "Planner/observation/supervisor integration",
+      "obligations": [
+        "R-ARCH-01",
+        "R-PLANNER-01",
+        "R-PLANNER-02",
+        "R-PLANNER-03",
+        "R-PLANNER-04",
+        "R-PLANNER-05"
+      ],
+      "depends_on": [
+        "ror-core",
+        "ror-compiler",
+        "ror-runtime"
+      ]
+    },
+    {
+      "name": "ror-reference",
+      "responsibility": "Independent executable semantic model",
+      "obligations": [
+        "R-REF-01",
+        "R-REF-02",
+        "R-REF-03",
+        "R-REF-04"
+      ],
+      "depends_on": [
+        "frozen semantics only (no production core deps)"
+      ]
+    },
+    {
+      "name": "ror-differential",
+      "responsibility": "Generator, runner, comparator, shrinking",
+      "obligations": [
+        "R-REF-01",
+        "R-REF-05",
+        "R-TEST-02",
+        "R-TEST-03",
+        "R-TEST-07"
+      ],
+      "depends_on": [
+        "ror-reference",
+        "ror-runtime (black box)",
+        "ror-testkit"
+      ]
+    },
+    {
+      "name": "ror-testkit",
+      "responsibility": "Test infrastructure and controlled doubles",
+      "obligations": [
+        "R-REF-06",
+        "R-TEST-06",
+        "R-TEST-08"
+      ],
+      "depends_on": [
+        "ror-core"
+      ]
+    }
+  ],
+  "dependency_graph": {
+    "section_edges": [
+      {
+        "from": "S-01",
+        "to": "S-02"
+      },
+      {
+        "from": "S-01",
+        "to": "S-03"
+      },
+      {
+        "from": "S-01",
+        "to": "S-04"
+      },
+      {
+        "from": "S-03",
+        "to": "S-04"
+      },
+      {
+        "from": "S-04",
+        "to": "S-05"
+      },
+      {
+        "from": "S-05",
+        "to": "S-06"
+      },
+      {
+        "from": "S-06",
+        "to": "S-07"
+      },
+      {
+        "from": "S-07",
+        "to": "S-08"
+      },
+      {
+        "from": "S-08",
+        "to": "S-09"
+      },
+      {
+        "from": "S-09",
+        "to": "S-10"
+      },
+      {
+        "from": "S-08",
+        "to": "S-11"
+      },
+      {
+        "from": "S-08",
+        "to": "S-12"
+      },
+      {
+        "from": "S-10",
+        "to": "S-12"
+      },
+      {
+        "from": "S-11",
+        "to": "S-12"
+      },
+      {
+        "from": "S-12",
+        "to": "S-13"
+      },
+      {
+        "from": "S-17",
+        "to": "S-13"
+      },
+      {
+        "from": "S-13",
+        "to": "S-14"
+      },
+      {
+        "from": "S-08",
+        "to": "S-15"
+      },
+      {
+        "from": "S-15",
+        "to": "S-16"
+      },
+      {
+        "from": "S-10",
+        "to": "S-16"
+      },
+      {
+        "from": "S-16",
+        "to": "S-17"
+      },
+      {
+        "from": "S-17",
+        "to": "S-18"
+      },
+      {
+        "from": "S-18",
+        "to": "S-19"
+      },
+      {
+        "from": "S-19",
+        "to": "S-20"
+      },
+      {
+        "from": "S-07",
+        "to": "S-20"
+      },
+      {
+        "from": "S-13",
+        "to": "S-20"
+      },
+      {
+        "from": "S-20",
+        "to": "S-21"
+      },
+      {
+        "from": "S-21",
+        "to": "S-24"
+      },
+      {
+        "from": "S-20",
+        "to": "S-24"
+      },
+      {
+        "from": "S-22",
+        "to": "S-07"
+      },
+      {
+        "from": "S-22",
+        "to": "S-10"
+      },
+      {
+        "from": "S-22",
+        "to": "S-18"
+      },
+      {
+        "from": "S-23",
+        "to": "S-22"
+      },
+      {
+        "from": "S-21",
+        "to": "S-23"
+      }
+    ],
+    "object_chain": [
+      "CanonicalEncoding(15A)",
+      "SemanticDomains(CapabilityAlgebra v0.2)",
+      "CapabilityKernel",
+      "Effect/EffectCost",
+      "ExecutablePlan(compiler artifact)",
+      "BudgetAlgebra",
+      "ActorState",
+      "GlobalState",
+      "Scheduler",
+      "EffectIssuance(durable boundary)",
+      "Marshalling/Delegation",
+      "HostExecutor/ReplayHost",
+      "WAL/Snapshot/EffectJournal(15B)",
+      "Recovery(independent)"
+    ],
+    "verification_chain": [
+      "frozen semantics",
+      "production implementation",
+      "reference implementation (independent)",
+      "normalized observations",
+      "differential comparator (first divergence)",
+      "exhaustive/property/crash/mutation evidence",
+      "acceptance R-TEST-11 -> M11"
+    ],
+    "cycles_detected": []
+  },
+  "claims": {
+    "implemented_obligations": 0,
+    "tested_obligations": 0,
+    "verified_obligations": 0,
+    "proven_theorems": 0,
+    "conformance_claim_wording": "The independent reference model, exhaustive/property-based tests, mutation testing, and crash-injection suite provide machine-checked evidence that the implementation conforms to the frozen calculus over the tested state space.",
+    "note": "Counts are zero because no implementation or evidence exists in the repository; no claim may be promoted without evidence (R-CLAIM-01, 00-overview section 2)."
+  }
+}

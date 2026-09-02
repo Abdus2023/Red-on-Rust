@@ -16,6 +16,24 @@ Its purpose is to establish a **small, explicit, deterministic machine boundary*
  
 The architecture defines required behavior. Independent reference execution, differential testing, mutation testing, crash injection, stress testing, and security review provide the evidence that an implementation conforms to that specification.
   
+## Canonical Specification Document Set
+
+The frozen source (`Red-on-Rust.md`) has been canonicalized into the document set in `spec/`:
+
+- `spec/00-overview.md` — method, status ladder (`SPECIFIED → IMPLEMENTED → TESTED → VERIFIED → PROVEN`), identifier scheme
+- `spec/01-canonical-specification.md` — cleaned normative specification (24 sections, `S-01`…`S-24`)
+- `spec/02-section-hierarchy.md` — stable section index with provenance and supersession records
+- `spec/03-obligation-matrix.md` — 148 stable requirement IDs (`R-…`) with status and provenance
+- `spec/04-dependency-graph.md` — section, object, and verification dependency graphs
+- `spec/05-terminology.md` — glossary and normalization rules
+- `spec/06-contradictions-ambiguities.md` — 44 consistency findings (`C-…`)
+- `spec/07-implementation-mapping.md` — obligations → crate/module mapping; actual repository state
+- `spec/08-verification-mapping.md` — obligations → conformance tests and evidence status
+- `spec/09-unresolved-decisions.md` — 16 items (`U-…`) requiring explicit architectural decisions
+- `spec/10-index.json` — machine-readable cross-index
+
+**Status discipline:** the repository currently contains no implementation, tests, or proofs; every obligation is therefore `SPECIFIED`, and no claim has been promoted beyond that level. Where the canonicalized text and `Red-on-Rust.md` differ, the source's latest frozen text governs.
+
 # Core Thesis
  
  
