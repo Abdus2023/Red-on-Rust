@@ -310,10 +310,10 @@ _The consumer calls the provider during execution (a real call edge in the froze
 | `MOD-05 EVALUATOR -> MOD-06 ACTOR` | R19-machine-call | prose | in-machine call/sequence coupling: request sequence, scheduling, suspension/resume, issuance, replay (R-EFFECT-03, R-ACTOR-04, R-HOST-01) |
 | `MOD-05 EVALUATOR -> MOD-07 SCHEDULER` | R19-machine-call | prose | in-machine call/sequence coupling: request sequence, scheduling, suspension/resume, issuance, replay (R-EFFECT-03, R-ACTOR-04, R-HOST-01) |
 | `MOD-05 EVALUATOR -> MOD-08 EFFECT` | R19-machine-call | prose+1 req | in-machine call/sequence coupling: request sequence, scheduling, suspension/resume, issuance, replay (R-EFFECT-03, R-ACTOR-04, R-HOST-01) |
-| `MOD-05 EVALUATOR -> MOD-13 AGENT` | R19-machine-call | crate-table | in-machine call/sequence coupling: request sequence, scheduling, suspension/resume, issuance, replay (R-EFFECT-03, R-ACTOR-04, R-HOST-01) |
+| `MOD-05 EVALUATOR -> MOD-13 AGENT` | R19b-planner-consumes-machine | crate-table | the consumer here is the PLANNER, not the machine, so this is not an in-machine call: `spec/07` §6 lists `ror-agent -> ror-core, ror-compiler, ror-runtime`, i.e. the agent crate names the machine's runtime types/results. REQ-ARCH-001's stage order puts the planner upstream of the machine boundary; the reverse direction (machine -> planner) is R18 and is what SC-3 tests |
 | `MOD-06 ACTOR -> MOD-07 SCHEDULER` | R19-machine-call | prose+2 req | in-machine call/sequence coupling: request sequence, scheduling, suspension/resume, issuance, replay (R-EFFECT-03, R-ACTOR-04, R-HOST-01) |
 | `MOD-06 ACTOR -> MOD-08 EFFECT` | R19-machine-call | prose+1 req | in-machine call/sequence coupling: request sequence, scheduling, suspension/resume, issuance, replay (R-EFFECT-03, R-ACTOR-04, R-HOST-01) |
-| `MOD-06 ACTOR -> MOD-13 AGENT` | R19-machine-call | prose+2 req | in-machine call/sequence coupling: request sequence, scheduling, suspension/resume, issuance, replay (R-EFFECT-03, R-ACTOR-04, R-HOST-01) |
+| `MOD-06 ACTOR -> MOD-13 AGENT` | R19b-planner-consumes-machine | prose+2 req | the consumer here is the PLANNER, not the machine, so this is not an in-machine call: `spec/07` §6 lists `ror-agent -> ror-core, ror-compiler, ror-runtime`, i.e. the agent crate names the machine's runtime types/results. REQ-ARCH-001's stage order puts the planner upstream of the machine boundary; the reverse direction (machine -> planner) is R18 and is what SC-3 tests |
 | `MOD-07 SCHEDULER -> MOD-06 ACTOR` | R19-machine-call | 5 req | in-machine call/sequence coupling: request sequence, scheduling, suspension/resume, issuance, replay (R-EFFECT-03, R-ACTOR-04, R-HOST-01) |
 | `MOD-07 SCHEDULER -> MOD-08 EFFECT` | R19-machine-call | prose+1 req | in-machine call/sequence coupling: request sequence, scheduling, suspension/resume, issuance, replay (R-EFFECT-03, R-ACTOR-04, R-HOST-01) |
 | `MOD-08 EFFECT -> MOD-05 EVALUATOR` | R19-machine-call | 1 req | in-machine call/sequence coupling: request sequence, scheduling, suspension/resume, issuance, replay (R-EFFECT-03, R-ACTOR-04, R-HOST-01) |
@@ -683,42 +683,44 @@ At section level the same test gives 5 forward references: `S-22 -> S-07` (S-07 
 
 Edges are `spec/10-index.json` `dependency_graph.section_edges`, generated from `spec/_build_index.py` `section_edges`, which restates `spec/04` §A and its DOT block. Kinds are assigned by `dep/_edges.py` `SECTION_KIND_RULES`.
 
-| `A -> B` (B depends on A) | Kind |
-|---|---|
-| `S-01 -> S-02` | TYPE_DEPENDENCY |
-| `S-01 -> S-03` | TYPE_DEPENDENCY |
-| `S-01 -> S-04` | TYPE_DEPENDENCY |
-| `S-03 -> S-04` | SECURITY_DEPENDENCY |
-| `S-04 -> S-05` | SEMANTIC_DEPENDENCY |
-| `S-05 -> S-06` | SEMANTIC_DEPENDENCY |
-| `S-06 -> S-07` | SEMANTIC_DEPENDENCY |
-| `S-07 -> S-08` | TYPE_DEPENDENCY |
-| `S-07 -> S-20` | VERIFICATION_DEPENDENCY |
-| `S-08 -> S-09` | RUNTIME_DEPENDENCY |
-| `S-08 -> S-11` | RUNTIME_DEPENDENCY |
-| `S-08 -> S-12` | SECURITY_DEPENDENCY |
-| `S-08 -> S-15` | RUNTIME_DEPENDENCY |
-| `S-09 -> S-10` | SECURITY_DEPENDENCY |
-| `S-10 -> S-12` | SECURITY_DEPENDENCY |
-| `S-10 -> S-16` | SECURITY_DEPENDENCY |
-| `S-11 -> S-12` | SECURITY_DEPENDENCY |
-| `S-12 -> S-13` | PERSISTENCE_DEPENDENCY |
-| `S-13 -> S-14` | SEMANTIC_DEPENDENCY |
-| `S-13 -> S-20` | VERIFICATION_DEPENDENCY |
-| `S-15 -> S-16` | SECURITY_DEPENDENCY |
-| `S-16 -> S-17` | SEMANTIC_DEPENDENCY |
-| `S-17 -> S-13` | SERIALIZATION_DEPENDENCY |
-| `S-17 -> S-18` | SERIALIZATION_DEPENDENCY |
-| `S-18 -> S-19` | PERSISTENCE_DEPENDENCY |
-| `S-19 -> S-20` | PERSISTENCE_DEPENDENCY |
-| `S-20 -> S-21` | VERIFICATION_DEPENDENCY |
-| `S-20 -> S-24` | VERIFICATION_DEPENDENCY |
-| `S-21 -> S-23` | VERIFICATION_DEPENDENCY |
-| `S-21 -> S-24` | VERIFICATION_DEPENDENCY |
-| `S-22 -> S-07` | RUNTIME_DEPENDENCY |
-| `S-22 -> S-10` | RUNTIME_DEPENDENCY |
-| `S-22 -> S-18` | RUNTIME_DEPENDENCY |
-| `S-23 -> S-22` | RUNTIME_DEPENDENCY |
+| `A -> B` (B depends on A) | Kind | Rule |
+|---|---|---|
+| `S-01 -> S-02` | TYPE_DEPENDENCY | S-types |
+| `S-01 -> S-03` | TYPE_DEPENDENCY | S-types |
+| `S-01 -> S-04` | TYPE_DEPENDENCY | S-types |
+| `S-03 -> S-04` | SECURITY_DEPENDENCY | S-authority |
+| `S-04 -> S-05` | SEMANTIC_DEPENDENCY | S-presentation-order |
+| `S-05 -> S-06` | SEMANTIC_DEPENDENCY | S-presentation-order |
+| `S-06 -> S-07` | SEMANTIC_DEPENDENCY | S-presentation-order |
+| `S-07 -> S-08` | TYPE_DEPENDENCY | S-types |
+| `S-07 -> S-20` | VERIFICATION_DEPENDENCY | S-verification |
+| `S-08 -> S-09` | RUNTIME_DEPENDENCY | S-machine |
+| `S-08 -> S-11` | RUNTIME_DEPENDENCY | S-machine |
+| `S-08 -> S-12` | SECURITY_DEPENDENCY | S-authority |
+| `S-08 -> S-15` | RUNTIME_DEPENDENCY | S-machine |
+| `S-09 -> S-10` | SECURITY_DEPENDENCY | S-authority |
+| `S-10 -> S-12` | SECURITY_DEPENDENCY | S-authority |
+| `S-10 -> S-16` | SECURITY_DEPENDENCY | S-authority |
+| `S-11 -> S-12` | SECURITY_DEPENDENCY | S-authority |
+| `S-12 -> S-13` | PERSISTENCE_DEPENDENCY | S-15B-durability |
+| `S-13 -> S-14` | SEMANTIC_DEPENDENCY | S-presentation-order |
+| `S-13 -> S-20` | VERIFICATION_DEPENDENCY | S-verification |
+| `S-15 -> S-16` | SECURITY_DEPENDENCY | S-authority |
+| `S-16 -> S-17` | SEMANTIC_DEPENDENCY | S-presentation-order |
+| `S-17 -> S-13` | SERIALIZATION_DEPENDENCY | S-15A-canonical |
+| `S-17 -> S-18` | SERIALIZATION_DEPENDENCY | S-15A-canonical |
+| `S-18 -> S-19` | PERSISTENCE_DEPENDENCY | S-15B-durability |
+| `S-19 -> S-20` | PERSISTENCE_DEPENDENCY | S-15B-durability |
+| `S-20 -> S-21` | VERIFICATION_DEPENDENCY | S-verification |
+| `S-20 -> S-24` | VERIFICATION_DEPENDENCY | S-verification |
+| `S-21 -> S-23` | VERIFICATION_DEPENDENCY | S-verification |
+| `S-21 -> S-24` | VERIFICATION_DEPENDENCY | S-verification |
+| `S-22 -> S-07` | RUNTIME_DEPENDENCY | S-repository |
+| `S-22 -> S-10` | RUNTIME_DEPENDENCY | S-repository |
+| `S-22 -> S-18` | RUNTIME_DEPENDENCY | S-repository |
+| `S-23 -> S-22` | RUNTIME_DEPENDENCY | S-repository |
+
+Kinds come from the first matching rule of `SECTION_KIND_RULES` (8 rules). The last rule is a catch-all, so unlike the module layer a section edge cannot fail classification: **5 of 34 edges** are `SEMANTIC_DEPENDENCY` by default and mean 'the source presents the consumer after the provider', not a semantic prerequisite — `S-04 -> S-05`, `S-05 -> S-06`, `S-06 -> S-07`, `S-13 -> S-14`, `S-16 -> S-17`. They are the weakest edges in this layer and the first to re-examine if the section cycle of `dep/03` §4 is ever broken.
 
 - **roots**: `S-01`
 - **leaves**: `S-02`, `S-14`, `S-24`

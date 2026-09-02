@@ -397,6 +397,15 @@ KIND_RULES = [
      "RUNTIME_DEPENDENCY",
      "proposals are compiled before entering the machine (R-PLANNER-02, "
      "R-COMPILE-02, R-ARCH-01 stage order)"),
+    ("R19b-planner-consumes-machine",
+     lambda p, c: p in RUNTIME_PROVIDER and c == "MOD-13",
+     "RUNTIME_DEPENDENCY",
+     "the consumer here is the PLANNER, not the machine, so this is not an "
+     "in-machine call: `spec/07` §6 lists `ror-agent -> ror-core, ror-compiler, "
+     "ror-runtime`, i.e. the agent crate names the machine's runtime "
+     "types/results. REQ-ARCH-001's stage order puts the planner upstream of the "
+     "machine boundary; the reverse direction (machine -> planner) is R18 and is "
+     "what SC-3 tests"),
     ("R19-machine-call",
      lambda p, c: p in RUNTIME_PROVIDER,
      "RUNTIME_DEPENDENCY",
@@ -532,20 +541,30 @@ FINDINGS = {
     ),
     "V-04": dict(
         title="The source's §13 'Dependency Graph' contradicts the frozen crate "
-              "edge list on three edges",
+              "edge list on one edge and adds three no crate list carries",
         severity="MAJOR",
         constraint="invalid dependency direction (R-ARCH-04, R-REPO-02)",
         body=(
             "Read in this document set's convention (arrow points to the "
-            "dependent), L39762-39790 §13 asserts `ror-persistence` depends on "
-            "`ror-runtime`, `ror-host` depends on `ror-runtime`, and `ror-agent` "
-            "depends on `ror-persistence`. `spec/07` §6 states "
-            "`ror-persistence -> ror-core` only and "
-            "`ror-agent -> ror-core, ror-compiler, ror-runtime`. The persistence "
-            "direction is a genuine contradiction, not a convention artefact: "
-            "request step 14 calls `ror-persistence` append/sync from "
-            "`ror-runtime` (`spec/07` §3, R-DUR-02), so the machine depends on "
-            "the durable layer, and the durable layer must survive the machine. "
+            "dependent), L39762-39790 §13 draws 8 crate edges. Four agree with "
+            "`spec/07` §6 (`ror-core -> ror-compiler`, `ror-core -> ror-kernel`, "
+            "`ror-kernel -> ror-runtime`, `ror-runtime -> ror-host`). The other "
+            "four do not, and they are not all the same kind of error "
+            "(`dep/_graph.py` ID-3 lists them): "
+            "(a) `ror-runtime -> ror-persistence` — i.e. the durable layer "
+            "depending on the machine — is a **genuine contradiction**, not a "
+            "convention artefact: request step 14 calls `ror-persistence` "
+            "append/sync *from* `ror-runtime` (`spec/07` §3, R-DUR-02), and the "
+            "durable layer has to survive the machine it outlives. "
+            "(b) `ror-compiler -> ror-runtime` is V-01's undecided "
+            "`ExecutablePlan` edge, absent from §6 (and the reverse direction is "
+            "the one §14 forbids). "
+            "(c) `ror-persistence -> ror-agent` is the `PlannerAccepted` "
+            "recording edge — absent from §6, tracked as HD-3. "
+            "(d) `ror-core -> ror-reference` conflicts with "
+            "`spec/10-index.json`'s 'frozen semantics only (no production core "
+            "deps)' and with R-REF-02 as recorded, though §14 does not forbid "
+            "`ror-reference -> ror-core`. "
             "The §13 picture is a pipeline/data-flow diagram mislabelled "
             "'Dependency Graph'."),
         decision="Mark §13 as non-normative (pipeline order) or redraw it in the "
@@ -595,11 +614,14 @@ FINDINGS = {
             "sut edges). The 17 module files' `DEPENDENCIES` prose declares more "
             "module edges than that table contains, and the prose and the table "
             "disagree in both directions. The prose-only edges include real "
-            "cross-crate couplings — `MOD-11 -> MOD-10` (15B payloads are 15A "
-            "bytes), `MOD-12 -> MOD-10` (15A decode at recovery step 3), "
-            "`MOD-02 -> MOD-03` (constraint semantics), `MOD-05 -> MOD-02` "
-            "(`ExecutablePlan` input type), `MOD-13 -> MOD-11` and "
-            "`MOD-13 -> MOD-09` — none of which any checker verifies."),
+            "cross-crate couplings — `MOD-10 -> MOD-11` (15B payloads are 15A "
+            "bytes), `MOD-10 -> MOD-12` (15A decode at recovery step 3), "
+            "`MOD-03 -> MOD-02` (constraint semantics), `MOD-02 -> MOD-05` "
+            "(`ExecutablePlan` input type), `MOD-11 -> MOD-13` and "
+            "`MOD-13 -> MOD-09` — none of which any checker verifies. These are "
+            "written in this document set's convention (`A -> B` = B depends on "
+            "A); the module files' prose reads the other way, which is exactly "
+            "the V-06 hazard."),
         decision="Fold the prose edges into the checked table (typed), or have "
                  "`mod/_build.py` parse the DEPENDENCIES prose and assert "
                  "agreement with `dep/`.",

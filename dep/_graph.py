@@ -381,7 +381,7 @@ def build_section_graph(index):
         if kind is None:
             err(f"section edge {p} -> {c} matches no kind rule")
             continue
-        edges.append({"provider": p, "consumer": c, "kind": kind,
+        edges.append({"provider": p, "consumer": c, "kind": kind, "rule": rule,
                       "visibility": "spec/04 §A", "basis": basis, "evidence": basis})
     return Graph("section", nodes, edges)
 
@@ -1215,11 +1215,22 @@ def gen_graph(ctx):
       "from `spec/_build_index.py` `section_edges`, which restates `spec/04` §A "
       "and its DOT block. Kinds are assigned by `dep/_edges.py` "
       "`SECTION_KIND_RULES`.\n")
-    A("| `A -> B` (B depends on A) | Kind |")
-    A("|---|---|")
+    A("| `A -> B` (B depends on A) | Kind | Rule |")
+    A("|---|---|---|")
     for e in sorted(sg.edges, key=lambda e: (e["provider"], e["consumer"])):
-        A(f"| `{e['provider']} -> {e['consumer']}` | {e['kind']} |")
+        A(f"| `{e['provider']} -> {e['consumer']}` | {e['kind']} | {e['rule']} |")
     A("")
+    catch = [e for e in sg.edges if e["rule"] == "S-presentation-order"]
+    A(f"Kinds come from the first matching rule of `SECTION_KIND_RULES` "
+      f"({len(E.SECTION_KIND_RULES)} rules). The last rule is a catch-all, so "
+      f"unlike the module layer a section edge cannot fail classification: "
+      f"**{len(catch)} of {len(sg.edges)} edges** are `SEMANTIC_DEPENDENCY` by "
+      "default and mean 'the source presents the consumer after the provider', "
+      "not a semantic prerequisite — "
+      + ", ".join(f"`{e['provider']} -> {e['consumer']}`" for e in
+                  sorted(catch, key=lambda e: (e["provider"], e["consumer"])))
+      + ". They are the weakest edges in this layer and the first to re-examine "
+        "if the section cycle of `dep/03` §4 is ever broken.\n")
     A(f"- **roots**: {', '.join('`%s`' % n for n in sg.roots) or '_none_'}")
     A(f"- **leaves**: {', '.join('`%s`' % n for n in sg.leaves) or '_none_'}")
     ntr = [c for c in sg.sccs() if len(c) > 1]
@@ -1752,11 +1763,27 @@ def gen_violations(ctx):
       "No `SECURITY_DEPENDENCY` currently has an inferred module as provider, so "
       "SC-1's PASS does not depend on the gap — see V-11.\n")
     A("---\n\n## 2. Findings\n")
+    prose_only = sorted(set(ctx["prose_pairs"]) - set(ctx["mdeps"]))
+    table_only = sorted(set(ctx["mdeps"]) - set(ctx["prose_pairs"]))
     for vid, f in sorted(E.FINDINGS.items()):
         A(f"### {vid} — {f['title']}\n")
         A(f"- **severity:** {f['severity']}")
         A(f"- **constraint:** {f['constraint']}")
         A(f"- {f['body']}")
+        if vid == "V-07":
+            A(f"- **measured:** the module files' DEPENDENCIES prose declares "
+              f"{len(ctx['prose_pairs'])} module pairs, `MODULE_DEPS` declares "
+              f"{len(ctx['mdeps'])}, and they disagree both ways — "
+              f"**{len(prose_only)} prose-only** "
+              f"({', '.join(f'`{a} -> {b}`' for a, b in prose_only[:6])}, …) and "
+              f"**{len(table_only)} table-only** "
+              f"({', '.join(f'`{a} -> {b}`' for a, b in table_only[:6])}"
+              f"{', …' if len(table_only) > 6 else ''}). The `dep/` module layer "
+              "takes the union, so both sets appear there and are typed. "
+              "`mod/_build.py` checks only `MODULE_DEPS`, so it verifies none of "
+              f"the {len(prose_only)} prose-only pairs; conversely the "
+              f"{len(table_only)} table-only pairs are checked but declared in no "
+              "module file, so a reader of `mod/` will not find them.")
         A(f"- **decision required:** {f['decision']}")
         A("")
 
@@ -2046,7 +2073,8 @@ def main():
     fwd_sec = forward_refs_section(section_graph)
     pair_kind = {(e["provider"], e["consumer"]): e["kind"] for e in mod_graph.edges}
 
-    ctx = dict(crate=crate_graph, module=mod_graph, req=req_graph, section=section_graph,
+    ctx = dict(prose_pairs=prose_pairs, mdeps=mdeps,
+               crate=crate_graph, module=mod_graph, req=req_graph, section=section_graph,
                impl=impl_graph, crate_edges=crate_edge_pairs(),
                owner=owner, index=index, crate_of=crate_of, hidden=hidden,
                sec_checks=sec_checks, ref_checks=ref_checks, direction=direction,

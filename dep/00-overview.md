@@ -45,7 +45,7 @@ An L2 edge is *visible* if it appears in the crate table or in a module file's p
 
 ## 4. Kind classification
 
-Every L2 pair is classified by the first matching rule of `dep/_edges.py` `KIND_RULES` (22 rules) or by an explicit `KIND_OVERRIDES` (4 entries); `dep/_graph.py` check 4 fails the run if a pair matches none, so no edge can acquire a kind by default. L3 kinds are inherited from the owning modules when the pair crosses a module boundary, and from the provider record's area when it does not.
+Every L2 pair is classified by the first matching rule of `dep/_edges.py` `KIND_RULES` (23 rules) or by an explicit `KIND_OVERRIDES` (4 entries); `dep/_graph.py` check 4 fails the run if a pair matches none, so no edge can acquire a kind by default. L3 kinds are inherited from the owning modules when the pair crosses a module boundary, and from the provider record's area when it does not.
 
 | Rule | Predicate (provider `p`, consumer `c`) | Kind |
 |---|---|---|
@@ -70,6 +70,7 @@ Every L2 pair is classified by the first matching rule of `dep/_edges.py` `KIND_
 | `R16-budget-algebra` | ` p == "MOD-04" or c == "MOD-04"` | `TYPE_DEPENDENCY` |
 | `R17-plan-input-type` | ` p == "MOD-02" and c == "MOD-05"` | `TYPE_DEPENDENCY` |
 | `R18-compiler-invocation` | ` p == "MOD-02"` | `RUNTIME_DEPENDENCY` |
+| `R19b-planner-consumes-machine` | ` p in RUNTIME_PROVIDER and c == "MOD-13"` | `RUNTIME_DEPENDENCY` |
 | `R19-machine-call` | ` p in RUNTIME_PROVIDER` | `RUNTIME_DEPENDENCY` |
 
 | Override | Kind | Reason |
