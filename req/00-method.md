@@ -166,10 +166,11 @@ Citations whose range was checked and found to contain the requirement's signatu
 
 ### 5.4 Phase 15C line map (turn `[48]`, L35272–37168)
 
-Phase 15C — the frozen specification of the independent reference model and the differential harness — is a single turn of 45 numbered sections. The turn-`[54]` master prompt restates these obligations compactly in §15–§22, which is where parts 6 and 7 cited them; only three of the 45 sections had any cited line before this pass, which extracted the primary text as `req/01-registry-part8-reference-15C.md` (44 records: REQ-REF-018…036, REQ-TEST-032…056).
+Phase 15C — the frozen specification of the independent reference model and the differential harness — is a single turn of **46** numbered sections, 15C.1…15C.46 (corrected from 45; see the note under the table, X-60). The turn-`[54]` master prompt restates these obligations compactly in §15–§22, which is where parts 6 and 7 cited them; only three of the 45 sections had any cited line before this pass, which extracted the primary text as `req/01-registry-part8-reference-15C.md` (44 records: REQ-REF-018…036, REQ-TEST-032…056).
 
 | 15C | Lines | Records citing it | Cited lines |
 |---|---|---|---|
+| 15C.1 Purpose | 35281–35325 | REQ-REF-001, REQ-REF-002, REQ-REF-006 | 30 |
 | 15C.2 Non-Goals | 35326–35346 | REQ-SCOPE-011, REQ-REF-004, REQ-REF-005, REQ-REF-007, REQ-REF-008, REQ-REF-009, REQ-REF-018 | 21 |
 | 15C.3 Independence Boundary | 35347–35439 | REQ-SCOPE-011, REQ-REF-004, REQ-REF-005 | 29 |
 | 15C.4 Reference Value Model | 35440–35483 | REQ-REF-019 | 44 |
@@ -216,7 +217,7 @@ Phase 15C — the frozen specification of the independent reference model and th
 | 15C.45 Final Verification Theorem | 37090–37150 | REQ-TEST-055 | 61 |
 | 15C.46 Phase Boundary | 37151–37168 | REQ-TEST-056 | 18 |
 
-The turn is numbered 15C.2…15C.46 — there is no `# 15C.1` heading; L35272–35325 is an unnumbered preamble, of which L35281–35310 is cited by REQ-REF-001, REQ-REF-002 and REQ-REF-006. All 45 now carry at least one cited line. Measured against the 497-record registry, only three did: 15C.2 (21 of 21 lines, by REQ-SCOPE-011 and REQ-REF-004/005/007/008/009, whose range L35330–35375 straddles the 15C.2/15C.3 boundary), 15C.3 (29 of 93) and 15C.27 (1 of 66) — the other 42 had none. The "Cited lines" column counts distinct lines of the section inside some record's cited range, so overlapping citations are counted once per section.
+**Correction (X-60).** This note previously read: "The turn is numbered 15C.2…15C.46 — there is no `# 15C.1` heading; L35272–35325 is an unnumbered preamble, of which L35281–35310 is cited by REQ-REF-001, REQ-REF-002 and REQ-REF-006." The claim is false. Phase 15C contains **46** numbered sections: `## 15C.1 Purpose` at L35281 — an H2 — and `# 15C.2` … `# 15C.46` at L35326…L37151, all H1. The literal string `# 15C.1` at heading level 1 does not occur, which is presumably what the original check tested; the *section* 15C.1 exists, and L35272–35325 is therefore not an unnumbered preamble but 15C.1 itself. The 15C.1 row has been added to the table above with the three records that already cite L35281–35310, and the count in the sentence before the table is corrected from 45 to 46. The inconsistent heading level (15C.1 at H2, 15C.2–15C.46 at H1) is a source-side defect, not a transcription choice, and it is the reason a heading-level-driven extraction of 15C silently misses its first section; it is recorded as X-60 rather than normalized here, because changing a heading level in the frozen source is prohibited. All 46 now carry at least one cited line. Measured against the 497-record registry, only three did: 15C.2 (21 of 21 lines, by REQ-SCOPE-011 and REQ-REF-004/005/007/008/009, whose range L35330–35375 straddles the 15C.2/15C.3 boundary), 15C.3 (29 of 93) and 15C.27 (1 of 66) — the other 42 had none. The "Cited lines" column counts distinct lines of the section inside some record's cited range, so overlapping citations are counted once per section.
 
 
 

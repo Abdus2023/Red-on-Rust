@@ -3911,17 +3911,17 @@
     },
     {
       "id": "C-08",
-      "title": "Fault naming inconsistency for capability denial",
-      "severity": "MINOR",
+      "title": "Fault naming inconsistency for capability denial (nine names verified; re-graded MINOR->MAJOR by term/ X-38; original citations wrong, see X-59)",
+      "severity": "MAJOR",
       "status": "open",
       "resolved_into": "U-08",
       "provenance": {
         "file": "Red-on-Rust.md",
         "line_ranges": [
-          "1995",
-          "7363",
-          "7435",
-          "23784"
+          "1042",
+          "937",
+          "7374",
+          "23806-23816"
         ]
       }
     },

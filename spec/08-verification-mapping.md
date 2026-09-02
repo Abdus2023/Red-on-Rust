@@ -60,7 +60,7 @@ The master prompt §21 COVERAGE (L38544–38577) freezes this tag list; mileston
 |---|---|---|
 | 14-gate short-circuit matrix (per gate: subsequent gates untouched, ID not incremented, budget unchanged, log unchanged, host never called) | R-EFFECT-03, R-EFFECT-04 | NONE |
 | Causal replay integrity (tampered digest/ID ⇒ ReplayCorruption, no continuation resume, no budget release) | R-EFFECT-06 | NONE |
-| Marshalling authority isolation (embedded CapRef in List ⇒ MarshalFault; recipient context unchanged) | R-MARSHAL-01 | NONE |
+| Marshalling authority isolation (embedded CapRef in List ⇒ MarshalFault; recipient context unchanged) | R-MARSHAL-01 | NONE — **blocked (X-65, C-55):** `MarshalFault` has two disjoint declarations (L10846 turn [18] vs L25983 turn [32], zero shared variants), so the fault value this test must assert is not yet determined|
 | Global determinism / live-vs-replay final-state digest equality | R-CORE-08, R-ACTOR-07, R-HOST-04 | NONE |
 | 15C differential: `Observe(Production(X)) = Observe(Reference(X))` | R-REF-01 | NONE |
 | 15C differential recovery: `Canonical(Recover_P(D)) = Canonical(Recover_R(D))` | R-REF-01, R-RECOV-01/03 | NONE |

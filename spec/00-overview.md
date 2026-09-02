@@ -13,9 +13,9 @@ This document set splits the source into stable, independently addressable secti
 1. **Acquisition.** The complete source was read in full coverage of its normative content (turns [1]–[60]).
 2. **Version resolution.** Where the transcript revises itself, the **latest explicitly frozen or corrected text governs**. Superseded drafts are not deleted from the record; they are flagged in `06-contradictions-ambiguities.md` and marked `superseded` there. Nothing was silently dropped.
 3. **Splitting.** The specification was divided into 24 sections (`S-01`…`S-24`) grouped into 8 parts. No mathematical invariant, theorem, API contract, or type definition was split across unrelated sections.
-4. **Cleaning.** Terminology was normalized (see `05-terminology.md`), modal language was made explicit (MUST / MUST NOT / SHOULD / informative), repetition was collapsed, and examples were isolated from normative text (informative examples are explicitly marked **Non-normative**).
+4. **Cleaning.** Terminology was normalized (see `05-terminology.md`, and — for the full normalization of record, with per-term `CANONICAL_TERM`/`FORBIDDEN_VARIANTS`/`DEFINITION`/`TYPE`/`OWNER`/`FIRST_DEFINITION`/`DEPENDENTS` and the complete collision register — `../term/00-overview.md`), modal language was made explicit (MUST / MUST NOT / SHOULD / informative), repetition was collapsed, and examples were isolated from normative text (informative examples are explicitly marked **Non-normative**).
 5. **Obligation extraction.** Every normative requirement, invariant, theorem, API contract, serialization rule, persistence rule, and verification obligation received a stable ID (`R-…`). Provenance (turn number + line range in `Red-on-Rust.md`) is recorded per requirement in `03-obligation-matrix.md`.
-6. **Consistency check.** Cross-references were checked; duplicates, contradictions, undefined terms, circular dependencies, and missing pre/postconditions were recorded in `06-contradictions-ambiguities.md` (IDs `C-…`). Items that require an explicit architectural decision were extracted to `09-unresolved-decisions.md` (IDs `U-…`).
+6. **Consistency check.** Cross-references were checked; duplicates, contradictions, undefined terms, circular dependencies, and missing pre/postconditions were recorded in `06-contradictions-ambiguities.md` (IDs `C-…`). Items that require an explicit architectural decision were extracted to `09-unresolved-decisions.md` (IDs `U-…`). **Terminology collisions** — one name with two denotations, two names for one thing with neither retracted, a name used as a type but never declared, and a citation that does not point at the text it claims — are recorded separately in `../term/02-collisions.md` (IDs `X-…`), because the one resolution that is prohibited is renaming a frozen API, type, mathematical symbol or protocol field to make the collision disappear.
 7. **Status discipline.** Every claim is labeled on the ladder below. **No claim was promoted beyond the evidence present in this repository.**
 
 ## 2. Status ladder (evidence discipline)
@@ -44,6 +44,11 @@ Promotion is strictly evidence-gated: `SPECIFIED → IMPLEMENTED → TESTED → 
 | `TAG-NAME` | Source's own verification-obligation tags (e.g., `CEK-CALL-ARITY-PRECHECK`) | `08-verification-mapping.md` |
 | `ROR-NNN` | Source's first-sprint task IDs (ROR-001…) | `07-implementation-mapping.md` |
 | `M0NN` | Baseline mutation-registry IDs (M001…M018) | `08-verification-mapping.md` |
+| `T-NN` | Canonical terminology entry (T-01…T-74) | `../term/01-dictionary.md` |
+| `N-NN` | Non-conflation law: two terms that must never be used for each other (N-01…N-31) | `../term/03-laws.md` |
+| `X-NN` | Terminology collision, cited to a frozen-source line (X-01…X-68) | `../term/02-collisions.md` |
+
+`T-`/`N-`/`X-` are **additive**: they were introduced by the terminology normalization pass and renumber nothing above. An `X-NN` entry is the terminology-layer counterpart of a `C-NN` entry — where an `X-` finding extends or corrects an existing `C-`/`U-`/`AMB-` record it says so in its *Previously registered as* field, and the earlier record is left in place. `term/_check.py` re-greps every `X-` citation against `Red-on-Rust.md` and fails on drift.
 
 ## 4. The two governing invariants (carried into every section)
 

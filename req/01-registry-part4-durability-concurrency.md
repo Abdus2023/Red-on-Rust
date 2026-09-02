@@ -313,7 +313,7 @@ Areas: `DUR` (14), `HOST` (14), `ACTOR` (35), `MARSHAL` (10) — 73 atomic units
 - PRECONDITIONS: replay validation fails or the trace ends early
 - POSTCONDITIONS: an explicit fault is produced; replay does not continue with fabricated results
 - INVARIANTS: —
-- DEPENDENCIES: REQ-HOST-007; AMB-08 (`ReplayTraceExhausted` is not a variant of the frozen `Fault` enum)
+- DEPENDENCIES: REQ-HOST-007; AMB-08 (`ReplayTraceExhausted` is not a variant of the frozen `Fault` enum) — **corrected in place (X-67, C-57, BLOCKING):** the note to the left is kept as superseded and attributes the gap to the wrong type. `ReplayTraceExhausted` is a `HostFault` path, and `pub enum HostFault` is declared exactly once (L10820, turn [18]) with two variants, `IoError(String)` and `PolicyViolation(String)`. Eight undeclared `HostFault::` paths are used — `UnboundCapability`, `ConcreteScopeViolation`, `Io`, `ReplayTraceExhausted` (6×), `ReplayCorruption` (6×), `TraceExhausted`, `ReplayIdMismatch`, `ReplayDigestMismatch` — and neither declared variant is ever used. Six of the uses, including this requirement's own evidence at L35225–35227, are on the frozen 15C.42 `ReplayHost`. See AMB-33, `term/` T-74.
 - SECURITY-IMPACT: critical
 - VERIFICATION-METHOD: replay fault tests
 - EVIDENCE-STATUS: SPECIFIED

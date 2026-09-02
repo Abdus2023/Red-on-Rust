@@ -48,8 +48,25 @@ ValidatedPlan → PlanIR → capability analysis → resource analysis → Execu
 
 ## NON-NORMATIVE-CONTENT
 
-- Pipeline stage names (`NormalizedAST`, `ValidatedPlan`, `PlanIR`) are stage labels,
-  not artifacts in their own right (`spec/05` terminology note on `ExecutablePlan`).
+- **Correction (X-40):** this bullet previously asserted that pipeline stage names are stage labels,
+  "not artifacts in their own right", citing the `spec/05` terminology note on `ExecutablePlan`. Two of
+  the three *are* declared artifacts with their own fields, private to this crate:
+  `ValidatedPlan { ir: PlanIR, effects: EffectSet }` (L865) and
+  `CapabilityCheckedPlan { ir: PlanIR, required_caps: CapSet }` (L866). They are canonical terms in
+  their own right (`term/` T-04, T-05), not aliases of `ExecutablePlan` (T-06). `NormalizedAST` (T-07)
+  and `PlanIR` (T-08) are *not* artifacts — but for the opposite reason: the source never declares them
+  at all (X-29, X-30). `spec/05` row 13 is corrected on the same finding.
+- **The crate-contract pipeline above is one of three orderings (X-02, X-41).** It reproduces the
+  turn-[58] diagram (L39265–39280) faithfully, and `spec/01` L479 reproduces the same one. The frozen
+  struct declarations order the stages differently: `NormalizedAST` is the *content* of `ParsedBlock`
+  (L864), not a stage before `ValidatedPlan`, and `PlanIR` is the *content* of `ValidatedPlan` (L865),
+  not a stage after it. Two declared stages — `ParsedBlock` and `CapabilityCheckedPlan` — do not appear
+  in the rendering at all. Nothing here is renamed or reordered; the collision is in the source and is
+  filed rather than resolved. An implementer must not treat the rendering as the stage list.
+- **`ValidatedPlan` is also a predicate (X-01, BLOCKING).** The central theorem is
+  `ExternalEffect(E) ⇒ ValidatedPlan(P) ∧ …` (`spec/01` L25, R-CORE-02), where `ValidatedPlan(·)` is a
+  proposition, while `ValidatedPlan` in this crate is a struct. The two are not interchangeable and the
+  source never relates them.
 - Superseded judgment forms J1–J4 (v1, L1953–1981) kept for traceability; the
   combined judgment supersedes them (C-35).
 - The compilation theorem of v1 (L1930–1960) is a superseded statement form; its

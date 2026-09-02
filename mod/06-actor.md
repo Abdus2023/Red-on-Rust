@@ -102,6 +102,12 @@ Crate contract (mirrored by pointer): actors + marshalling live in `ror-runtime`
   mailbox contents (`MarshalledValue`), deterministic child actor states.
 - `MarshalFault::CapabilityRequiresDelegation` on any capability inside ordinary
   message data (including nested).
+  **Supersession never stated (X-65, C-55):** the variant above is from the turn-[32] declaration
+  (L25983: `CapabilityRequiresDelegation`, `SerializationError`). A second `pub enum MarshalFault`
+  exists at L10846 (turn [18]: `CapabilityNotTransferable`, `InvalidFormat`) with zero shared
+  variants and no retraction, and the turn-[33] `Fault` carries `MarshalFault(...)` as an elided
+  payload (L26871). Both sets are recorded verbatim in `term/` T-73; nothing is renamed here and the
+  choice of governing set is folded into U-14 / `req/03` AMB-35.
 - Delegated capability registrations in the recipient's local capability context.
 
 ## DEPENDENCIES

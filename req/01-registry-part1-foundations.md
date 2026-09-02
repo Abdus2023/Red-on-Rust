@@ -298,7 +298,7 @@ Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records a
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: `OrdinaryMarshal(Value::Capability) ⇒ Rejected`; raw capability references MUST NOT cross actor boundaries through ordinary messages.
 - PRECONDITIONS: `marshal(v)` encounters a capability anywhere in `v`
-- POSTCONDITIONS: `Err(MarshalFault::CapabilityRequiresDelegation)`; recipient context unchanged
+- POSTCONDITIONS: `Err(MarshalFault::CapabilityRequiresDelegation)`; recipient context unchanged — **note (X-65, C-55):** this cites the turn-[32] declaration (L25983: `CapabilityRequiresDelegation`, `SerializationError`). A second, disjoint `pub enum MarshalFault` exists at L10846 (turn [18]: `CapabilityNotTransferable`, `InvalidFormat`) with zero shared variants and no stated supersession, and the turn-[33] `Fault` carries `MarshalFault(...)` as an elided payload (L26871). Nothing is renamed here; the split is recorded and folded into U-14.
 - INVARIANTS: `CapRef ∉ marshal(v)`
 - DEPENDENCIES: REQ-MARSHAL-001, REQ-MARSHAL-005
 - SECURITY-IMPACT: critical

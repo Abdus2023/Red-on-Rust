@@ -178,12 +178,12 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-CALC-013
 - REQ-ID: REQ-CALC-013
 - CATEGORY: calculus
-- SOURCE: Red-on-Rust.md L23806–23819([30]); L27236([33]); spec/01 S-07 R-CALC-06
+- SOURCE: Red-on-Rust.md L23806–23819([30]); L27236([33]); L20408–20413([28] `pub enum CapabilityError` — declared, contra the superseded INVARIANTS wording); L20451([28] `CapabilityError::InvalidConstraint`); L20835([28] `CapabilityError::Invalid`, undeclared); spec/01 S-07 R-CALC-06
 - NORMATIVE-LEVEL: IS
 - STATEMENT: The frozen fault taxonomy is `Fault::Capability(CapabilityError) | BudgetExhausted | DeadlineExceeded | HostPolicyDenied(HostPolicyError) | EffectCanonicalization(EffectError) | Host(HostFault) | ReplayCorruption | InvalidReceipt`, plus `StalePlan` at the planner boundary.
 - PRECONDITIONS: —
 - POSTCONDITIONS: —
-- INVARIANTS: — (closed set; inner variants not enumerated in the source — see AMB-08)
+- INVARIANTS: — (closed set; inner variants not enumerated in the source — see AMB-08) **Corrected in place (X-59, X-66, C-56):** the parenthetical to the left is kept as superseded and is false on both halves. The set is *not* closed — the frozen declaration at L23806 carries an explicit `// ... (previous faults)` elision at L23807 — and two of the four inner enums *are* declared: `CapabilityError` at L20408 (`Revoked`, `Expired`, `InvalidConstraint`, elided) and `HostFault` at L10820. Only `HostPolicyError` and `EffectError` have no declaration. `CapabilityError` additionally contradicts itself: L20451 uses the declared `InvalidConstraint` and L20835 the undeclared `Invalid` for the same `derive` fallback in the same turn.
 - DEPENDENCIES: U-08, U-14
 - SECURITY-IMPACT: high (fault names are compared by the differential observer)
 - VERIFICATION-METHOD: fault-coverage metric; differential fault comparison
@@ -194,9 +194,9 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 - CATEGORY: calculus
 - SOURCE: Red-on-Rust.md L27236([33]); L28373([36]); spec/01 S-07 R-CALC-06
 - NORMATIVE-LEVEL: MUST
-- STATEMENT: `StalePlan` is a member of the fault taxonomy at the planner boundary.
+- STATEMENT: `StalePlan` is a member of the fault taxonomy at the planner boundary. **Corrected in place (X-64, C-54):** the statement to the left is kept as superseded. `StalePlan` is in none of the seven `pub enum Fault` declarations (L10882, L17788, L18125, L22415, L23319, L23806, L26865); it occurs only as the sole content of a one-line ```text block at L27236 (turn [33]) and in prose at L28373 (turn [36], “Staleness Rejection”). The verified statement is: a stale proposal is *rejected*, and the source names no fault variant for that outcome. Whether `StalePlan` should join the taxonomy is U-08's decision.
 - PRECONDITIONS: stale proposal rejected
-- POSTCONDITIONS: `Fault::StalePlan` produced
+- POSTCONDITIONS: `Fault::StalePlan` produced — **withdrawn (X-64, C-54):** the string `Fault::StalePlan` occurs nowhere in L1–42312 and no `Fault` declaration contains a `StalePlan` variant. The postcondition the source supports is: the proposal is rejected and machine state is unchanged (L27236, L28373). The superseded wording is kept here rather than deleted (R-SCOPE-03).
 - INVARIANTS: —
 - DEPENDENCIES: REQ-PLANNER-014, REQ-PLANNER-015
 - SECURITY-IMPACT: medium

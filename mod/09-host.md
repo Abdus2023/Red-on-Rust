@@ -37,6 +37,12 @@ Normative text home: `spec/01` S-14; atomic renderings
   entry and validates both `EffectId` and `EffectDigest` sequentially; mismatch or
   exhausted trace ⇒ `ReplayCorruption` / `ReplayTraceExhausted`; an unordered map is
   forbidden as the normative replay mechanism (HashMap form superseded — C-22).
+  **Fault-vocabulary defect (X-67, C-57, BLOCKING):** `ReplayCorruption` and `ReplayTraceExhausted`
+  are `HostFault` paths, and `pub enum HostFault` is declared exactly once (L10820, turn [18]) with
+  two variants — `IoError(String)`, `PolicyViolation(String)` — neither of which is ever used. Eight
+  undeclared paths are used in total, six of them here on the frozen replay path (L35225–35227,
+  turn [47]). The host error type therefore cannot be written without inventing variants, which
+  R-SCOPE-03 prohibits; nothing is renamed in this file and the decision is U-14 / `req/03` AMB-33.
 - **Replay correspondence** (R-HOST-04): if `LiveRun(Σ₀)` produces trace `T` of
   issued/completed pairs, `ReplayRun(Σ₀, T)` produces the same final configuration,
   provided per-step equality of recorded vs replayed effects and receipts (IDs and

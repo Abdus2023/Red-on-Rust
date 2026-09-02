@@ -51,7 +51,7 @@ Status: all **OPEN**. Owner: specification authority (the party who can issue a 
 
 ### U-08 — Fault taxonomy unification
 - **Where:** R-CALC-06 (C-08).
-- **State of source:** the same denial outcome is named `CapabilityViolation`, `CapabilityRevoked`, `AuthorizationFailed`, and `Capability(CapabilityError)` in different frozen-era texts; `ScopeViolation` (v1) has no successor; the inner `CapabilityError` / `HostPolicyError` / `EffectError` / `HostFault` variants are not enumerated.
+- **State of source:** the same denial outcome is named `CapabilityViolation`, `CapabilityRevoked`, `AuthorizationFailed`, and `Capability(CapabilityError)` in different frozen-era texts; `ScopeViolation` (v1) has no successor; the inner `CapabilityError` / `HostPolicyError` / `EffectError` / `HostFault` variants are not enumerated. **Corrected in place (X-38, X-59, X-66, C-54…C-58):** the sentence above is kept verbatim as the superseded wording and is wrong on three counts. (1) The denial outcome carries **nine** verified names, not four — add `CapViolation` and `Revoked` (v1 fault grammar L1949), `Fault::CapabilityError` (L20389/L20790, asserted by a property test at L20538) and `CapabilityDenied` (L26870, turn [33], declared *after* the frozen L23806); the rename `CapabilityError`→`Capability` between turns [28] and [29] was never retracted. (2) Two of the four inner enums **are** declared: `pub enum CapabilityError` at L20408 (`Revoked`, `Expired`, `InvalidConstraint`, then `// ...`) and `pub enum HostFault` at L10820 (`IoError(String)`, `PolicyViolation(String)`); only `HostPolicyError` and `EffectError` have no declaration anywhere. (3) The frozen `Fault` set is **not** closed — L23807 is an explicit `// ... (previous faults)` elision — and `StalePlan`, asserted as a member by `spec/01` L138, REQ-CALC-014 and AMB-08, is in none of the seven `pub enum Fault` declarations (C-54 / X-64). Two further defects surfaced by the same audit and are folded into this decision: `CapabilityError::Invalid` (L20835) is used where the declared sibling is `InvalidConstraint` (L20451), for the same `derive` fallback in the same turn (C-56 / X-66); and `HostFault` is used with eight undeclared variant paths, six on the frozen replay path (C-57 / X-67, **BLOCKING**). `MarshalFault` has two disjoint declarations (C-55 / X-65).
 - **Decision needed:** the exact `Fault`/error-variant set (names + when each is produced), so that differential observation (which compares faults, R-REF-05) is well-defined.
 
 ### U-09 — `Value` domain collision + orphaned `AdmissibleConstraint`
@@ -66,12 +66,14 @@ Status: all **OPEN**. Owner: specification authority (the party who can issue a 
 
 ### U-14 — Error-variant enumeration (subset of U-08)
 - **Where:** R-CALC-06.
-- **Decision needed:** fold into U-08's outcome (listed separately for traceability).
+- **Decision needed:** fold into U-08's outcome (listed separately for traceability). **Escalated by the terminology-normalization pass (X-65, X-66, X-67, C-55…C-57):** this is no longer a cosmetic enumeration task. `HostFault` is declared once (L10820, two variants) while eight undeclared variant paths are used, six of them on the frozen 15C.42 `ReplayHost` that R-HOST-03/04/05 and REQ-HOST-007/008 are written against, so the host error type cannot be written at all without inventing variants — **blocking** for Track A. `CapabilityError` is declared (L20408) but contradicted by its own use sites (`Invalid` L20835 vs `InvalidConstraint` L20451), and `MarshalFault` has two disjoint declarations (L10846 vs L25983). Only `HostPolicyError` and `EffectError` genuinely have no declaration.
 
 ### U-15 — `ReconciliationOutcome` variants
 - **Where:** R-RECOV-07.
-- **State of source:** `EffectReconciled { outcome: ReconciliationOutcome }` is a frozen record kind, but the variant set of `ReconciliationOutcome` is never enumerated (beyond the classification of interrupted effects as `Indeterminate`). What outcomes can a host reconciliation legitimately produce (`Executed(result)`, `NotExecuted`, `PartiallyExecuted`…), and which are allowed per effect class (U-06)?
-- **Decision needed:** the variant set + per-class admissibility.
+- **State of source (corrected — X-61):** this entry previously read: "`EffectReconciled { outcome: ReconciliationOutcome }` is a frozen record kind, but the variant set of `ReconciliationOutcome` is never enumerated (beyond the classification of interrupted effects as `Indeterminate`)." **That premise is false.** The variant set is enumerated at L26593–26597 as a closed three-variant set — `pub enum ReconciliationOutcome { Completed(EffectReceipt), NotExecuted, Indeterminate }` — and it matches exactly the three classifications the turn-[54] recovery text names (L38211 `Completed ⇒ Issued`, L38232 `Indeterminate`, L38243 `NotExecuted`). The variants this entry proposed (`Executed(result)`, `PartiallyExecuted`) do not exist in the frozen set, and implementing to them would widen a closed enum and break `WalRecord::EffectReconciled` (L35132) decoding against recorded traces. `req/03` AMB-15 withdrew the identical claim on the identical evidence and noted that this entry was wrong; `spec/09` had not absorbed the withdrawal. The earlier wording is quoted above rather than deleted so the supersession is not silent.
+- **What remains open (narrowed):** *per-class admissibility*, not the variant set. Which effect classes (U-06) may legitimately yield `Completed` vs `NotExecuted` vs `Indeterminate`, given the frozen constraint that "only a host protocol capable of answering authoritatively may produce `NotExecuted` or `Completed`" (L26601) — i.e. what a non-authoritative protocol must return instead, and whether that is `Indeterminate` by obligation or a recovery fault.
+- **Decision needed:** per-class admissibility of the three frozen variants. **Not** the variant set (closed, L26593–26597).
+- **Linked:** `req/03` AMB-15 (withdrawn), U-06, `term/` T-51 `ReconciliationOutcome`, X-61, N-24.
 
 ### U-16 — `EventSequence` vs `WalSequence`
 - **Where:** R-PERSIST-03, R-PERSIST-06.
@@ -95,9 +97,35 @@ Status: all **OPEN**. Owner: specification authority (the party who can issue a 
 
 ---
 
+## Blocking decisions added by the terminology-normalization pass
+
+Three BLOCKING terminology collisions require an explicit architectural decision and were not previously in this register. They are numbered on from U-22 and filed here rather than in the sections above so that the line numbers cited by existing records (notably U-15, corrected at X-61) do not move. Each carries its `term/02-collisions.md` `X-` id and its `spec/06` row; per process note 1, a resolution must be recorded as a numbered frozen addendum so the supersession is not silent.
+
+### U-23 — Is `ValidatedPlan` a type, a predicate, or both?
+- **Where:** R-CORE-02 (`spec/01` L25), the second of the two governing invariants; S-06; S-22.
+- **State of source:** `pub struct ValidatedPlan { ir: PlanIR, effects: EffectSet }` (L865, turn [3]) is a stage artifact private to `mod compiler`. The central theorem is boxed as `ExternalEffect(E) ⇒ ValidatedPlan(P) ∧ Authorized(E,κ,t) ∧ …` (L41337–41351, L27491–27509), where `ValidatedPlan(·)` is a **predicate over `P`**. No predicate of that name is defined anywhere, and no rule states when the struct satisfies it. `spec/01` L27 (R-CORE-03) uses a different arity again for `Authorized`.
+- **Decision needed:** either (a) define `ValidatedPlan(P)` as a predicate — over what domain, with what witness — and state its relationship to the struct, or (b) restate R-CORE-02 with a predicate name the source does not already use as a type. Option (b) changes a boxed invariant, so it is a frozen-addendum decision, not an editorial one. Neither the struct nor the theorem may be silently renamed.
+- **Linked:** C-46, `term/` X-01 (BLOCKING), X-04, X-05, T-04, N-01, N-06.
+- **Blocking:** yes — for any mechanization or conformance test of the external-effect chain.
+
+### U-24 — Which canonical envelope is frozen?
+- **Where:** R-CANON-01…R-CANON-08 (S-17), R-PERSIST-05, milestone M1.
+- **State of source:** two incompatible specifications. The `CanonicalSerialize` doc comment gives `[format_version: u8] [type_tag: u32 LE] [length: u32 LE] [payload]` (L28298, turn [36]). The 15A grammar, the 15B frame and the turn-[54] master prompt give `version: u8 | type_tag: u8 | payload_length: u32 BE | payload` (L38147–38150, L33816, L29905, L35102). They differ in field *name*, tag *width* and *endianness*.
+- **Decision needed:** confirm that the big-endian `u8`-tag form governs and that the L28298 doc comment is superseded — then record it as a frozen addendum, because the contradiction sits inside an API contract comment rather than in narrative prose, and an implementer will read the comment first. Every digest in the system (`EffectDigest`, `StateDigest`, `ResultDigest`, WAL frame checksums, snapshot determinism) hashes these bytes.
+- **Linked:** C-47, `term/` X-50 (BLOCKING), X-51, T-62, T-63. Distinct from C-02, which concerns stale *primitive* tags in one section.
+- **Blocking:** yes — for milestone M1 and for any golden vector.
+
+### U-25 — Two tag namespaces share the `TAG_*` prefix; which constants may an implementation import?
+- **Where:** R-CANON-03, R-CANON-04, 15C.36 (canonical-serialization differential boundary), milestone M1.
+- **State of source:** envelope type tags `TAG_VALUE 0x00`, `TAG_BOOL 0x10`, `TAG_INTEGER 0x11`, `TAG_STRING 0x12`, `TAG_SYMBOL 0x20`, `TAG_CAPREF 0x30`, `TAG_VEC 0x40`, `TAG_BTREEMAP 0x41` (L29951–29958, turn [41]); `Value` variant discriminants `TAG_BOOL 0x01`, `TAG_INTEGER 0x02`, `TAG_STRING 0x03`, `TAG_SYMBOL 0x04`, `TAG_CAPABILITY 0x05`, `TAG_LIST 0x06`, `TAG_MAP 0x07` (L32364–32371 turn [43]; L33171–33173 and L33591–33594 turn [45]). Four names carry two values each. Turn [41] used the prefix `DISC_` for discriminants (L29961–29965) and gave `Capability` the byte `0x0A`, contradicting `0x05`; its table headed "(Frozen)" also omits `Symbol`, `List` and `Map` entirely. The frozen `Value::Symbol` decoder needs both namespaces in one function (L33194–33195).
+- **Decision needed:** the module paths under which each namespace is imported, and confirmation that the dense `0x00`–`0x07` discriminant set governs. No constant may be renamed: both sets are frozen identifiers, and renaming either changes a byte value that digests depend on.
+- **Linked:** C-48, C-49, `term/` X-54 (BLOCKING), X-55, X-56, T-31, T-62, T-63; extends C-02 and C-15.
+- **Blocking:** yes — for milestone M1.
+
 ## Process notes
 
 1. Each resolution must be recorded as a **numbered frozen addendum** appended to the canonical spec (this document set), with a new requirement ID range, so that supersession is never silent (R-SCOPE-03, 00 §1).
 2. U-01…U-06 are **blocking** for their components: U-01 (M5 budgeting of duration), U-02 (M7 persistence), U-03 (M6 spawn), U-04/U-05 (M2–M3 surface freeze confirmation), U-06 (M5 effect classes / M7 reconciliation).
 3. The rest may be resolved incrementally before the corresponding milestone's evidence gate (M9/M10/M11) is declared.
+5. U-23, U-24 and U-25 were added by the terminology-normalization pass (`term/`). All three are **blocking**: U-23 for any mechanization of the external-effect chain, U-24 and U-25 for milestone M1. They are filed in their own section so that the line numbers cited by existing records do not move; U-15 above was corrected in place on the same pass (X-61).
 4. A decision that *weakens* a security guarantee (e.g., allowing `NotExecuted` inference, unordered replay, saturating arithmetic) is out of scope for these items — those are prohibited outright (R-CLAIM-02).

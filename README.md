@@ -26,10 +26,10 @@ The frozen source (`Red-on-Rust.md`) has been canonicalized into the document se
 - `spec/03-obligation-matrix.md` — 148 stable requirement IDs (`R-…`) with status and provenance
 - `spec/04-dependency-graph.md` — section, object, and verification dependency graphs
 - `spec/05-terminology.md` — glossary and normalization rules
-- `spec/06-contradictions-ambiguities.md` — 44 consistency findings (`C-…`)
+- `spec/06-contradictions-ambiguities.md` — 57 consistency findings in 58 rows (`C-01`…`C-58`; C-46…C-58 added by the terminology pass, and C-08 re-graded MINOR → MAJOR by it)
 - `spec/07-implementation-mapping.md` — obligations → crate/module mapping; actual repository state
 - `spec/08-verification-mapping.md` — obligations → conformance tests and evidence status
-- `spec/09-unresolved-decisions.md` — 16 items (`U-…`) requiring explicit architectural decisions
+- `spec/09-unresolved-decisions.md` — 19 items (`U-…`) requiring explicit architectural decisions (U-23…U-25 added by the terminology pass; U-08 corrected and U-14 escalated to blocking by its fault-taxonomy audit)
 - `spec/10-index.json` — machine-readable cross-index
 
 A second organization, `mod/`, splits the same specification into **17 semantic
@@ -57,6 +57,30 @@ order — without applying any of them (`dep/05` §7). All seven files in `dep/`
 generated: `dep/00-overview.md` …
 `dep/05-violations.md` plus `dep/10-graph.json`; regenerate with
 `python3 dep/_graph.py --write` and check with `python3 dep/_graph.py`.
+
+A fourth organization, `term/`, is the **terminology normalization**: 74 canonical terms
+(`T-01`…`T-74`), each carrying `CANONICAL_TERM`, `FORBIDDEN_VARIANTS`, `DEFINITION`, `TYPE`,
+`OWNER`, `FIRST_DEFINITION` and `DEPENDENTS`; 31 non-conflation laws (`N-01`…`N-31`) enforcing
+the distinctions the specification depends on — `Block ≠ ExecutablePlan`, `PlanProposal ≠
+ExecutablePlan`, `CapRef ≠ Authority`, `EffectRequest ≠ EffectIssued`, `EffectIssued ≠
+EffectCompleted`, `Specification ≠ Implementation`, `Implementation ≠ Verification`,
+`Verification ≠ Proof`, `LLM output ≠ Authority`; and a **68-entry collision register**
+(`X-01`…`X-68`, of which 4 are BLOCKING) reporting every terminology collision found in the
+frozen source *and* in this repository's own documents. Its governing constraint is that a
+canonical term is a name an author must **use**, never a new identifier to **introduce**: no
+API, type, mathematical symbol or protocol field is renamed anywhere in `term/`. Where the
+source froze two names for one thing, both are quoted; where it froze one name for two things,
+both denotations are quoted; where a name is used but never declared, that is reported rather
+than filled in. `term/01-dictionary.md`, `term/02-collisions.md`, `term/03-laws.md` and
+`term/10-index.json` are generated from `term/_terms.py` (`python3 term/_dict.py --write`);
+`python3 term/_check.py` re-greps all 677 citations against `Red-on-Rust.md`, verifies every
+turn attribution from the source's own `## [n]` markers, checks all 263 term↔collision links in
+both directions, and fails on drift. Twelve collisions (X-39…X-41, X-51, X-59…X-64, X-66, X-68)
+are defects in `spec/`, `mod/`, `req/` or this README, wholly or in part; each is corrected in
+place with its `X-` id cited and the superseded wording quoted rather than deleted. One claim an
+earlier revision of this pass had written into `spec/06` C-08 was found to be false on re-reading
+the cited lines and is **withdrawn** there and in X-59 — quoted, not silently overwritten
+(R-SCOPE-03). See `term/00-overview.md` §6 for the full correction table.
 
 **Status discipline:** the repository currently contains no implementation, tests, or proofs; every obligation is therefore `SPECIFIED`, and no claim has been promoted beyond that level. Where the canonicalized text and `Red-on-Rust.md` differ, the source's latest frozen text governs.
 

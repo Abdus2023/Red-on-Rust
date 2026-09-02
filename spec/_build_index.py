@@ -200,7 +200,7 @@ findings = [
  ("C-05","Effect property values outside declared domain","MAJOR","open","U-06","3890-3905"),
  ("C-06","Budget vector dimension drift across versions","MAJOR","resolved-by-later-text","U-01 (residual)","1960;6730-6736;7119-7144;41537"),
  ("C-07","BudgetOK reserved-capacity direction error","MAJOR","resolved-by-later-text","U-none","7314-7330;7487-7520;8692-8696"),
- ("C-08","Fault naming inconsistency for capability denial","MINOR","open","U-08","1995;7363;7435;23784"),
+ ("C-08","Fault naming inconsistency for capability denial (nine names verified; re-graded MINOR->MAJOR by term/ X-38; original citations wrong, see X-59)","MAJOR","open","U-08","1042;937;7374;23806-23816"),
  ("C-09","README internal status contradiction (IN PROGRESS vs READY)","MINOR","info-superseded","U-none","README 22-28; 655-661"),
  ("C-10","Mutation registry presented three ways","MINOR","resolved-by-later-text","U-none","37239-37249;38472-38492;41916"),
  ("C-11","<2 minutes exhaustive-mode target","MINOR","resolved-by-later-text","U-none","37261;37381-37386;38633"),
