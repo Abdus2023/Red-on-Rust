@@ -6,7 +6,7 @@ Orderings list **dependencies before dependents** (a build order). Where a layer
 
 ## 1. Layer 1 — crate graph
 
-Acyclic, so a total order exists. Ties are broken by the frozen crate listing order (`Red-on-Rust.md` L39140-39195). Note that `ror-persistence` precedes `ror-runtime`: the durable layer does not depend on the machine — the machine calls it (`spec/07` §3, R-DUR-02). `Red-on-Rust.md` §13 contradicts that direction (V-04), and the crate list does not carry the edge at all even though `mod/_ownership.MODULE_DEPS` labels it `crate` (V-10). Adding it would not move `ror-runtime` — persistence already precedes it here (`dep/01` §1.2).
+Acyclic, so a total order exists. Ties — crate pairs with no edge in either direction in `spec/07` §6 — are broken **alphabetically by crate name**, which is what `Graph.toposort()` does (`sorted()`); the relative order of a tied pair is an artefact of that and carries no architectural meaning. `ror-persistence` and `ror-runtime` are such a tie: neither depends on the other, because the durable layer does not depend on the machine — the machine calls it (`spec/07` §3, R-DUR-02) — and alphabetically persistence sorts first. So adding the `ror-runtime -> ror-persistence` edge that `mod/_ownership.MODULE_DEPS` labels `crate` but `spec/07` §6 does not carry (V-10), which `Red-on-Rust.md` §13 draws the other way (V-04), would not move `ror-runtime` — persistence already precedes it here (`dep/01` §1.2).
 
 ```
  1. ror-core

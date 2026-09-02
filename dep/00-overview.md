@@ -94,12 +94,14 @@ Every L2 pair is classified by the first matching rule of `dep/_edges.py` `KIND_
 | `05-violations.md` | hidden dependencies, invalid directions, independence violations (output 5) | generated |
 | `10-graph.json` | machine-readable graph + analysis. The crate, module and section layers carry full node and edge lists; the requirement layer carries `node_count`, its 927 edges, roots, leaves, non-trivial SCCs and the 50 largest forward references, but not the 545 node names | generated |
 | `_edges.py` | typed edge tables, classification rules, findings | hand-written |
-| `_graph.py` | generator + checker (the 12 checks in its docstring) | hand-written |
+| `_graph.py` | generator + checker (the 13 checks in its docstring) | hand-written |
 
 ```
 python3 dep/_graph.py            # check; non-zero exit on any error
 python3 dep/_graph.py --write    # regenerate 01..05 + 10-graph.json
 ```
+
+The checker needs nothing beyond the standard library except for check 12, which parses the two ```dot blocks in `dep/01` with `pydot` and compares them against the graphs they were generated from. Without `pydot` the run still passes; it reports `DOT validation : SKIPPED` so the gap is visible rather than silent. Install it with `pip install pydot` to close it. Rendering the blocks to an image additionally needs the `graphviz` binaries (`dot`), which the checker never invokes.
 
 **Status discipline.** Unchanged from `spec/00` §2: every requirement is `SPECIFIED`. A dependency edge is a statement about the specification, not evidence that anything is implemented; this repository still contains no Cargo workspace, so no layer of this graph has been exercised by a build.
 

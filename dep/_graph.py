@@ -64,6 +64,11 @@ Checks (always)
       column cannot drift from the classified edges. Each constraint is a
       predicate in `dep/_edges.py` `KIND_PROVIDER_CHECK`; SEMANTIC_DEPENDENCY is
       the only kind allowed to declare itself not machine-checkable.
+ 12.  the two ```dot blocks in `dep/01` (§1.3 crates, §2.9 modules) parse under
+      `pydot`, and their parsed node sets and edge multisets equal the graphs
+      they were generated from (crate edge labels included). Optional: with no
+      `pydot` importable the run reports the check as SKIPPED rather than
+      passing it, and the blocks have then had only the regex validation.
 """
 
 from __future__ import annotations
@@ -1002,6 +1007,13 @@ def gen_overview(ctx):
     A("python3 dep/_graph.py --write    # regenerate 01..05 + 10-graph.json")
     A("```")
     A("")
+    A("The checker needs nothing beyond the standard library except for check 12, "
+      "which parses the two ```dot blocks in `dep/01` with `pydot` and compares "
+      "them against the graphs they were generated from. Without `pydot` the run "
+      "still passes; it reports `DOT validation : SKIPPED` so the gap is visible "
+      "rather than silent. Install it with `pip install pydot` to close it. "
+      "Rendering the blocks to an image additionally needs the `graphviz` "
+      "binaries (`dot`), which the checker never invokes.\n")
     A("**Status discipline.** Unchanged from `spec/00` §2: every requirement is "
       "`SPECIFIED`. A dependency edge is a statement about the specification, not "
       "evidence that anything is implemented; this repository still contains no "
@@ -1302,14 +1314,17 @@ def gen_topo(ctx):
     g = ctx["crate"]
     order, _stuck = g.toposort()
     A("## 1. Layer 1 — crate graph\n")
-    A("Acyclic, so a total order exists. Ties are broken by the frozen crate "
-      "listing order (`Red-on-Rust.md` L39140-39195). Note that `ror-persistence` "
-      "precedes `ror-runtime`: the durable layer does not depend on the machine — "
-      "the machine calls it (`spec/07` §3, R-DUR-02). `Red-on-Rust.md` §13 "
-      "contradicts that direction (V-04), and the crate list does not carry the "
-      "edge at all even though `mod/_ownership.MODULE_DEPS` labels it `crate` "
-      "(V-10). Adding it would not move `ror-runtime` — persistence already "
-      "precedes it here (`dep/01` §1.2).\n")
+    A("Acyclic, so a total order exists. Ties — crate pairs with no edge in either "
+      "direction in `spec/07` §6 — are broken **alphabetically by crate name**, "
+      "which is what `Graph.toposort()` does (`sorted()`); the relative order of "
+      "a tied pair is an artefact of that and carries no architectural meaning. "
+      "`ror-persistence` and `ror-runtime` are such a tie: neither depends on the "
+      "other, because the durable layer does not depend on the machine — the "
+      "machine calls it (`spec/07` §3, R-DUR-02) — and alphabetically persistence "
+      "sorts first. So adding the `ror-runtime -> ror-persistence` edge that "
+      "`mod/_ownership.MODULE_DEPS` labels `crate` but `spec/07` §6 does not carry "
+      "(V-10), which `Red-on-Rust.md` §13 draws the other way (V-04), would not "
+      "move `ror-runtime` — persistence already precedes it here (`dep/01` §1.2).\n")
     A("```")
     for i, n in enumerate(order, 1):
         A(f"{i:2d}. {n}")
@@ -2051,6 +2066,75 @@ CITE_ALLOWLIST = {
 }
 
 
+DOT_RESERVED = {"node", "edge", "graph", "subgraph", "digraph", "strict"}
+
+
+def dot_validation(ctx, docs):
+    """Parse the two generated ```dot blocks and compare them with their graphs.
+
+    Returns `(errors, status)`. `status` is the one-line summary, or None when
+    `pydot` is not importable — the blocks then have only had the regex
+    validation, and the summary says so rather than passing silently.
+
+    `pydot` reports the `node […]` / `edge […]` default-attribute statements as
+    pseudo-nodes, so those reserved names are dropped before the node sets are
+    compared. Edge labels in the crate block abbreviate the kind
+    (`TYPE` for `TYPE_DEPENDENCY`); the module block carries no labels, so only
+    the endpoint pairs are compared there.
+    """
+    try:
+        import pydot
+    except ImportError:
+        return [], None
+    blocks = re.findall(r"```dot\n(.*?)```", docs[DEP / "01-graph.md"], re.S)
+    if len(blocks) != 2:
+        return [f"01-graph.md has {len(blocks)} ```dot blocks, expected 2"], None
+    errs, notes = [], []
+    for block, (name, g, labelled) in zip(blocks, (("ror_crates", ctx["crate"], True),
+                                                  ("ror_modules", ctx["module"], False))):
+        parsed = pydot.graph_from_dot_data(block)
+        if not parsed:
+            errs.append(f"pydot could not parse the {name} ```dot block")
+            continue
+        p = parsed[0]
+        if p.get_name() != name:
+            errs.append(f"```dot block is named `{p.get_name()}`, expected `{name}`")
+        nodes = {n.get_name().strip('"') for n in p.get_nodes()} - DOT_RESERVED
+        if nodes != set(g.nodes):
+            errs.append(f"{name}: parsed nodes {sorted(nodes)} != graph nodes "
+                        f"{sorted(g.nodes)}")
+        got = collections.Counter((e.get_source().strip('"'), e.get_destination().strip('"'))
+                                  for e in p.get_edges())
+        want = collections.Counter((e["provider"], e["consumer"]) for e in g.edges)
+        for pair in sorted(set(want) - set(got)):
+            errs.append(f"{name}: `{pair[0]} -> {pair[1]}` is a graph edge but is "
+                        "missing from the ```dot block")
+        for pair in sorted(set(got) - set(want)):
+            errs.append(f"{name}: the ```dot block draws `{pair[0]} -> {pair[1]}`, "
+                        "which is not a graph edge")
+        if got and want and set(got) == set(want) and got != want:
+            errs.append(f"{name}: the ```dot block draws a different number of "
+                        f"edges than the graph has ({sum(got.values())} vs "
+                        f"{sum(want.values())})")
+        if labelled:
+            gotlab = collections.Counter(
+                (e.get_source().strip('"'), e.get_destination().strip('"'),
+                 (e.get_label() or "").strip('"')) for e in p.get_edges())
+            wantlab = collections.Counter(
+                (e["provider"], e["consumer"], e["kind"].replace("_DEPENDENCY", ""))
+                for e in g.edges)
+            if gotlab != wantlab:
+                for k in sorted(set(wantlab) - set(gotlab)):
+                    errs.append(f"{name}: edge `{k[0]} -> {k[1]}` should be labelled "
+                                f"`{k[2]}` in the ```dot block")
+                for k in sorted(set(gotlab) - set(wantlab)):
+                    errs.append(f"{name}: the ```dot block labels `{k[0]} -> {k[1]}` "
+                                f"`{k[2]}`, but the graph says otherwise")
+        notes.append(f"{name} {sum(got.values())} edges")
+    return errs, ("pydot " + getattr(pydot, "__version__", "?") + " parsed "
+                  + "; ".join(notes))
+
+
 def citation_inversions(ctx, docs):
     """Scan the generated prose for edge citations that point the wrong way.
 
@@ -2220,6 +2304,9 @@ def main():
     for fname, layer, a, b in citation_inversions(ctx, docs):
         err(f"{fname}: `{a} -> {b}` is not a {layer} edge but `{b} -> {a}` is — "
             "probable arrow-convention inversion (V-06)")
+    dot_errs, dot_status = dot_validation(ctx, docs)
+    for m in dot_errs:
+        err(m)
 
     for path, content in docs.items():
         if write:
@@ -2255,6 +2342,9 @@ def main():
     print(f"independence checks     : "
           f"{len(sec_checks) + len(ref_checks) - len(failed)} pass, {len(failed)} fail"
           + (f" -> {[c for c, _t, o, _b in sec_checks + ref_checks if o]}" if failed else ""))
+    print("DOT validation          : "
+          + (dot_status or "SKIPPED — pydot not installed, the ```dot blocks had "
+                           "only the regex validation"))
     if ERRORS:
         for e in ERRORS[:40]:
             print("  ERROR", e)
