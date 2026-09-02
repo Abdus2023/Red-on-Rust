@@ -4,7 +4,7 @@
 
 # 01 — Canonical Terminology Dictionary
 
-74 canonical terms. Each entry states the seven fields the normalization request requires — **CANONICAL_TERM**, **FORBIDDEN_VARIANTS**, **DEFINITION**, **TYPE**, **OWNER**, **FIRST_DEFINITION**, **DEPENDENTS** — plus the frozen shape, any superseded declarations, the obligations that use the term, and the collisions it participates in.
+78 canonical terms. Each entry states the seven fields the normalization request requires — **CANONICAL_TERM**, **FORBIDDEN_VARIANTS**, **DEFINITION**, **TYPE**, **OWNER**, **FIRST_DEFINITION**, **DEPENDENTS** — plus the frozen shape, any superseded declarations, the obligations that use the term, and the collisions it participates in.
 
 **Hard constraint honoured throughout:** no API, type, mathematical symbol or protocol field is renamed anywhere in this dictionary. Where the frozen source uses two names for one thing, or one name for two things, both are recorded verbatim and the conflict is filed in `02-collisions.md`; the canonical term is the one an author must *use*, never a new identifier to *introduce*. Names the source froze are listed under **PROTECTED (do not rename)**.
 
@@ -12,42 +12,42 @@
 | ID | CANONICAL_TERM | TYPE | DOMAIN | OWNER | FIRST_DEFINITION | Collisions |
 |---|---|---|---|---|---|---|
 | [T-01](#t-01-block) | `Block` ★ | RUST-STRUCT | PLAN-PIPELINE | MOD-02 | `L855` | 5 |
-| [T-02](#t-02-planproposal) | `PlanProposal` ★ | RUST-STRUCT | PLAN-PIPELINE | MOD-13 | `L27175` | 5 |
+| [T-02](#t-02-planproposal) | `PlanProposal` ★ | RUST-STRUCT | PLAN-PIPELINE | MOD-13 | `L27175` | 6 |
 | [T-03](#t-03-parsedblock) | `ParsedBlock` ★ | RUST-STRUCT | PLAN-PIPELINE | MOD-02 | `L864` | 5 |
 | [T-04](#t-04-validatedplan) | `ValidatedPlan` ★ | RUST-STRUCT | PLAN-PIPELINE | MOD-02 | `L865` | 7 |
 | [T-05](#t-05-capabilitycheckedplan) | `CapabilityCheckedPlan` ★ | RUST-STRUCT | PLAN-PIPELINE | MOD-02 | `L866` | 3 |
 | [T-06](#t-06-executableplan) | `ExecutablePlan` ★ | RUST-STRUCT | PLAN-PIPELINE | MOD-02 | `L869` | 8 |
 | [T-07](#t-07-normalizedast) | `NormalizedAST` | UNDECLARED-TYPE | PLAN-PIPELINE | MOD-02 | `L864` | 4 |
-| [T-08](#t-08-planir) | `PlanIR` | UNDECLARED-TYPE | PLAN-PIPELINE | MOD-02 | `L865` | 8 |
+| [T-08](#t-08-planir) | `PlanIR` | UNDECLARED-TYPE | PLAN-PIPELINE | MOD-02 | `L865` | 9 |
 | [T-09](#t-09-capref) | `CapRef` ★ | RUST-STRUCT | AUTHORITY | MOD-03 | `L915` | 8 |
-| [T-10](#t-10-authority) | `Authority` ★ | MATH-SYMBOL | AUTHORITY | MOD-03 | `L488` | 12 |
+| [T-10](#t-10-authority) | `Authority` ★ | MATH-SYMBOL | AUTHORITY | MOD-03 | `L488` | 13 |
 | [T-11](#t-11-authoritynode) | `AuthorityNode` | RUST-STRUCT | AUTHORITY | MOD-03 | `L39373` | 1 |
-| [T-12](#t-12-constraint) | `Constraint` | RUST-STRUCT | AUTHORITY | MOD-03 | `L6536` | 3 |
-| [T-13](#t-13-capabilitykernel) | `CapabilityKernel` | COMPONENT | AUTHORITY | MOD-03 | `L6680` | 5 |
+| [T-12](#t-12-constraint) | `Constraint` | RUST-STRUCT | AUTHORITY | MOD-03 | `L6536` | 4 |
+| [T-13](#t-13-capabilitykernel) | `CapabilityKernel` | COMPONENT | AUTHORITY | MOD-03 | `L6680` | 6 |
 | [T-14](#t-14-capabilitycontext) | `CapabilityContext` | RUST-STRUCT | AUTHORITY | MOD-06 | `L25548` | 2 |
-| [T-15](#t-15-delegatedcapability) | `DelegatedCapability` | RUST-VARIANT | AUTHORITY | MOD-06 | `L25989` | 1 |
+| [T-15](#t-15-delegatedcapability) | `DelegatedCapability` | RUST-VARIANT | AUTHORITY | MOD-06 | `L25989` | 2 |
 | [T-16](#t-16-effect) | `Effect` ★ | RUST-STRUCT | EFFECT | MOD-08 | `L1166` | 9 |
-| [T-17](#t-17-effectrequest) | `EffectRequest` ★ | RUST-STRUCT | EFFECT | MOD-08 | `L1447` | 4 |
+| [T-17](#t-17-effectrequest) | `EffectRequest` ★ | RUST-STRUCT | EFFECT | MOD-08 | `L1447` | 6 |
 | [T-18](#t-18-effectissued) | `EffectIssued` ★ | STATE-VS-RECORD | EFFECT | MOD-11 | `L1377` | 4 |
 | [T-19](#t-19-effectreceipt) | `EffectReceipt` ★ | RUST-STRUCT | EFFECT | MOD-08 | `L1454` | 3 |
 | [T-20](#t-20-effectid) | `EffectId` ★ | RUST-NEWTYPE | EFFECT | MOD-08 | `L9128` | 5 |
 | [T-21](#t-21-effectdigest) | `EffectDigest` | RUST-NEWTYPE | EFFECT | MOD-08 | `L9343` | 4 |
 | [T-22](#t-22-effectcost) | `EffectCost` | RUST-STRUCT | EFFECT | MOD-08 | `L21390` | 2 |
 | [T-23](#t-23-effectjournal) | `EffectJournal` ★ | CONCEPT | PERSISTENCE | MOD-11 | `L26134` | 3 |
-| [T-24](#t-24-budget) | `Budget` ★ | RUST-STRUCT | RESOURCE | MOD-04 | `L1788` | 5 |
+| [T-24](#t-24-budget) | `Budget` ★ | RUST-STRUCT | RESOURCE | MOD-04 | `L1788` | 6 |
 | [T-25](#t-25-consumable) | `Consumable` ★ | RUST-STRUCT | RESOURCE | MOD-04 | `L7130` | 6 |
-| [T-26](#t-26-reserved) | `Reserved` ★ | RUST-STRUCT | RESOURCE | MOD-04 | `L7131` | 9 |
-| [T-27](#t-27-deadline) | `Deadline` | RUST-NEWTYPE | RESOURCE | MOD-04 | `L6748` | 2 |
+| [T-26](#t-26-reserved) | `Reserved` ★ | RUST-STRUCT | RESOURCE | MOD-04 | `L7131` | 10 |
+| [T-27](#t-27-deadline) | `Deadline` | RUST-NEWTYPE | RESOURCE | MOD-04 | `L6748` | 3 |
 | [T-28](#t-28-logicaltime) | `LogicalTime` ★ | RUST-NEWTYPE | RESOURCE | MOD-04 | `L6437` | 1 |
 | [T-29](#t-29-costmodel) | `CostModel` | RUST-TRAIT | RESOURCE | MOD-04 | `L10168` | 2 |
-| [T-30](#t-30-expr) | `Expr` | RUST-ENUM | MACHINE | MOD-01 | `L12145` | 4 |
-| [T-31](#t-31-value) | `Value` | RUST-ENUM | MACHINE | MOD-01 | `L12283` | 6 |
-| [T-32](#t-32-evalstate) | `EvalState` | RUST-STRUCT | MACHINE | MOD-05 | `L12655` | 4 |
+| [T-30](#t-30-expr) | `Expr` | RUST-ENUM | MACHINE | MOD-01 | `L12145` | 5 |
+| [T-31](#t-31-value) | `Value` | RUST-ENUM | MACHINE | MOD-01 | `L12283` | 9 |
+| [T-32](#t-32-evalstate) | `EvalState` | RUST-STRUCT | MACHINE | MOD-05 | `L12655` | 5 |
 | [T-33](#t-33-frame) | `Frame` | RUST-ENUM | MACHINE | MOD-05 | `L12453` | 2 |
 | [T-34](#t-34-actorid) | `ActorId` ★ | RUST-NEWTYPE | CONCURRENCY | MOD-06 | `L9127` | 1 |
-| [T-35](#t-35-actorstatus) | `ActorStatus` ★ | RUST-ENUM | CONCURRENCY | MOD-06 | `L9411` | 6 |
-| [T-36](#t-36-runstate) | `RunState` | RUST-ENUM | SCHEDULING | MOD-07 | `L24299` | 3 |
-| [T-37](#t-37-actorstate) | `ActorState` | RUST-STRUCT | CONCURRENCY | MOD-06 | `L8111` | 3 |
+| [T-35](#t-35-actorstatus) | `ActorStatus` ★ | RUST-ENUM | CONCURRENCY | MOD-06 | `L9411` | 9 |
+| [T-36](#t-36-runstate) | `RunState` | RUST-ENUM | SCHEDULING | MOD-07 | `L24299` | 5 |
+| [T-37](#t-37-actorstate) | `ActorState` | RUST-STRUCT | CONCURRENCY | MOD-06 | `L8111` | 4 |
 | [T-38](#t-38-globalstate) | `GlobalState` | RUST-STRUCT | MACHINE | MOD-05 | `L24156` | 2 |
 | [T-39](#t-39-mailbox) | `Mailbox` | CONCEPT | CONCURRENCY | MOD-06 | `L8666` | 1 |
 | [T-40](#t-40-runnablequeue) | `RunnableQueue` | CONCEPT | SCHEDULING | MOD-07 | `L25538` | 0 |
@@ -55,9 +55,9 @@
 | [T-42](#t-42-replayhost) | `ReplayHost` ★ | RUST-STRUCT | HOST | MOD-09 | `L1234` | 2 |
 | [T-43](#t-43-livehost) | `LiveHost` | RUST-STRUCT | HOST | MOD-09 | `L1191` | 0 |
 | [T-44](#t-44-hostexecutor) | `HostExecutor` | RUST-TRAIT | HOST | MOD-09 | `L1187` | 1 |
-| [T-45](#t-45-wal) | `WAL` ★ | CONCEPT | PERSISTENCE | MOD-11 | `L27716` | 9 |
+| [T-45](#t-45-wal) | `WAL` ★ | CONCEPT | PERSISTENCE | MOD-11 | `L27716` | 10 |
 | [T-46](#t-46-walframe) | `WalFrame` | RUST-STRUCT | PERSISTENCE | MOD-11 | `L34237` | 3 |
-| [T-47](#t-47-walrecord) | `WalRecord` | RUST-ENUM | PERSISTENCE | MOD-11 | `L27724` | 7 |
+| [T-47](#t-47-walrecord) | `WalRecord` | RUST-ENUM | PERSISTENCE | MOD-11 | `L27724` | 9 |
 | [T-48](#t-48-snapshot) | `Snapshot` ★ | CONCEPT | PERSISTENCE | MOD-11 | `L26132` | 4 |
 | [T-49](#t-49-eventlog) | `EventLog` | RUST-STRUCT | PERSISTENCE | MOD-11 | `L1086` | 3 |
 | [T-50](#t-50-indeterminate) | `Indeterminate` | STATE | RECOVERY | MOD-12 | `L26576` | 0 |
@@ -66,25 +66,29 @@
 | [T-53](#t-53-supervisor) | `Supervisor` | COMPONENT | RECOVERY | MOD-12 | `L3136` | 0 |
 | [T-54](#t-54-observation-planner-facing) | `Observation (planner-facing)` ★ | RUST-STRUCT | AGENT | MOD-13 | `L27156` | 2 |
 | [T-55](#t-55-planneraccepted) | `PlannerAccepted` | RUST-STRUCT | AGENT | MOD-13 | `L27411` | 1 |
-| [T-56](#t-56-llmoutput) | `LLMOutput` | MATH-SYMBOL | AGENT | MOD-13 | `L27253` | 0 |
+| [T-56](#t-56-llmoutput) | `LLMOutput` | MATH-SYMBOL | AGENT | MOD-13 | `L27253` | 1 |
 | [T-57](#t-57-observation-differential) | `Observation (differential)` ★ | RUST-STRUCT | VERIFICATION | MOD-15 | `L36170` | 2 |
 | [T-58](#t-58-referencemodel) | `ReferenceModel` | COMPONENT | VERIFICATION | MOD-14 | `L11436` | 3 |
 | [T-59](#t-59-firstdivergence) | `FirstDivergence` | CONCEPT | VERIFICATION | MOD-15 | `L36655` | 0 |
 | [T-60](#t-60-mutation) | `Mutation` | CONCEPT | VERIFICATION | MOD-16 | `L37187` | 1 |
 | [T-61](#t-61-mutationkillrate) | `MutationKillRate` | MATH-PREDICATE | VERIFICATION | MOD-16 | `L38506` | 0 |
-| [T-62](#t-62-canonicalenvelope) | `CanonicalEnvelope` | PROTOCOL-FORMAT | PERSISTENCE | MOD-10 | `L28298` | 7 |
-| [T-63](#t-63-canonicalpayload) | `CanonicalPayload` | RUST-TRAIT | PERSISTENCE | MOD-10 | `L27685` | 5 |
+| [T-62](#t-62-canonicalenvelope) | `CanonicalEnvelope` | PROTOCOL-FORMAT | PERSISTENCE | MOD-10 | `L28298` | 8 |
+| [T-63](#t-63-canonicalpayload) | `CanonicalPayload` | RUST-TRAIT | PERSISTENCE | MOD-10 | `L27685` | 6 |
 | [T-64](#t-64-specification) | `Specification` | CONCEPT | CLAIM | MOD-17 | `L38936` | 4 |
 | [T-65](#t-65-implementation) | `Implementation` | CONCEPT | CLAIM | MOD-17 | `L38939` | 4 |
 | [T-66](#t-66-verification) | `Verification` | CONCEPT | CLAIM | MOD-17 | `L38938` | 1 |
 | [T-67](#t-67-proof) | `Proof` | CONCEPT | CLAIM | MOD-17 | `L28263` | 1 |
 | [T-68](#t-68-evidencestatus) | `EvidenceStatus` | CLAIM-STATUS | CLAIM | MOD-17 | `spec/00-overview.md:L25` | 3 |
 | [T-69](#t-69-frozen) | `Frozen` | CONCEPT | CLAIM | MOD-17 | `L38935` | 2 |
-| [T-70](#t-70-fault) | `Fault` | RUST-ENUM | MACHINE | MOD-01 | `L1009` | 9 |
+| [T-70](#t-70-fault) | `Fault` | RUST-ENUM | MACHINE | MOD-01 | `L1009` | 12 |
 | [T-71](#t-71-globalfault) | `GlobalFault` | RUST-ENUM | MACHINE | MOD-05 | `L25576` | 1 |
 | [T-72](#t-72-capabilityerror) | `CapabilityError` | RUST-ENUM | AUTHORITY | MOD-03 | `L9736` | 4 |
-| [T-73](#t-73-marshalfault) | `MarshalFault` | RUST-ENUM | CONCURRENCY | MOD-06 | `L10846` | 1 |
+| [T-73](#t-73-marshalfault) | `MarshalFault` | RUST-ENUM | CONCURRENCY | MOD-06 | `L10846` | 2 |
 | [T-74](#t-74-hostfault) | `HostFault` | RUST-ENUM | HOST | MOD-09 | `L10820` | 4 |
+| [T-75](#t-75-machineevent) | `MachineEvent` | RUST-ENUM | MACHINE | MOD-05 | `L14697` | 1 |
+| [T-76](#t-76-canonicalerror) | `CanonicalError` | RUST-ENUM | PERSISTENCE | MOD-10 | `L29188` | 2 |
+| [T-77](#t-77-stepresult) | `StepResult` | RUST-ENUM | MACHINE | MOD-05 | `L1006` | 2 |
+| [T-78](#t-78-controlframe) | `ControlFrame` | RUST-ENUM | MACHINE | MOD-05 | `L985` | 1 |
 
 ★ = one of the 26 terms the normalization request explicitly requires.
 
@@ -142,7 +146,7 @@ Owning module: **MOD-02**.
 - **FROZEN SHAPE:** `pub struct PlanProposal { ... }   // L27175, turn [33]`
 - **OBLIGATIONS:** `R-PLANNER-01`, `R-PLANNER-03`, `R-PLANNER-04`, `R-CORE-01`
 - **SECTIONS:** `S-05`
-- **COLLISIONS:** [X-04](02-collisions.md#x-04), [X-06](02-collisions.md#x-06), [X-34](02-collisions.md#x-34), [X-62](02-collisions.md#x-62), [X-64](02-collisions.md#x-64)
+- **COLLISIONS:** [X-04](02-collisions.md#x-04), [X-06](02-collisions.md#x-06), [X-34](02-collisions.md#x-34), [X-62](02-collisions.md#x-62), [X-64](02-collisions.md#x-64), [X-69](02-collisions.md#x-69)
 - **LAWS:** [N-02](03-laws.md#n-02)
 - **NOTE:** Distinct from `PlannerAccepted` (T-55), which is the *recorded* accepted proposal used for replay, and from `Plan` (obsolete, turn [2]).
 
@@ -291,7 +295,7 @@ Owning module: **MOD-02**.
     - `trust_level` — superseded field of `PlanIR::Spawn`; the frozen `Expr::Spawn` has no isolation field (U-05)
 - **OBLIGATIONS:** `R-COMPILE-02`, `R-COMPILE-03`
 - **SECTIONS:** `S-06`
-- **COLLISIONS:** [X-02](02-collisions.md#x-02), [X-03](02-collisions.md#x-03), [X-16](02-collisions.md#x-16), [X-30](02-collisions.md#x-30), [X-34](02-collisions.md#x-34), [X-40](02-collisions.md#x-40), [X-41](02-collisions.md#x-41), [X-62](02-collisions.md#x-62)
+- **COLLISIONS:** [X-02](02-collisions.md#x-02), [X-03](02-collisions.md#x-03), [X-16](02-collisions.md#x-16), [X-30](02-collisions.md#x-30), [X-34](02-collisions.md#x-34), [X-40](02-collisions.md#x-40), [X-41](02-collisions.md#x-41), [X-62](02-collisions.md#x-62), [X-75](02-collisions.md#x-75)
 - **NOTE:** Two pipeline renderings place `PlanIR` AFTER `ValidatedPlan` as a distinct stage (L13603, L39275), while the frozen structs make it the *content* of `ValidatedPlan` (L865) — X-02. Its variant set uses `Invoke` and `trust_level`, both superseded (C-17, U-05) — X-30.
 
 ---
@@ -364,7 +368,7 @@ Owning module: **MOD-03**.
 A = { (o, A_o) | o ∈ O_granted }   // L6378, turn [11]`
 - **OBLIGATIONS:** `R-CAP-01`, `R-CAP-02`, `R-CAP-03`, `R-CORE-04`, `R-KERN-03`
 - **SECTIONS:** `S-09`, `S-10`
-- **COLLISIONS:** [X-05](02-collisions.md#x-05), [X-08](02-collisions.md#x-08), [X-09](02-collisions.md#x-09), [X-10](02-collisions.md#x-10), [X-11](02-collisions.md#x-11), [X-13](02-collisions.md#x-13), [X-17](02-collisions.md#x-17), [X-25](02-collisions.md#x-25), [X-36](02-collisions.md#x-36), [X-37](02-collisions.md#x-37), [X-38](02-collisions.md#x-38), [X-59](02-collisions.md#x-59)
+- **COLLISIONS:** [X-05](02-collisions.md#x-05), [X-08](02-collisions.md#x-08), [X-09](02-collisions.md#x-09), [X-10](02-collisions.md#x-10), [X-11](02-collisions.md#x-11), [X-13](02-collisions.md#x-13), [X-17](02-collisions.md#x-17), [X-25](02-collisions.md#x-25), [X-36](02-collisions.md#x-36), [X-37](02-collisions.md#x-37), [X-38](02-collisions.md#x-38), [X-59](02-collisions.md#x-59), [X-70](02-collisions.md#x-70)
 - **LAWS:** [N-03](03-laws.md#n-03), [N-09](03-laws.md#n-09), [N-25](03-laws.md#n-25), [N-28](03-laws.md#n-28)
 - **NOTE:** The Rust sketch in the SAME turn parameterizes it as `Authority<S,Q,R,L>` with `lifetime: L` (L6497, L6501) while the frozen math writes `T` for that component (X-17). Both symbols are recorded; neither is renamed, because renaming a mathematical symbol would silently alter the frozen algebra. `Authority` is a concept/math object plus a generic Rust type; the kernel-private node is `AuthorityNode` (T-11).
 
@@ -408,7 +412,7 @@ A = { (o, A_o) | o ∈ O_granted }   // L6378, turn [11]`
     - `AdmissibleConstraint` — frozen trait name (status ambiguous, U-09/AMB-12)
 - **OBLIGATIONS:** `R-CAP-04`, `R-CAP-02`, `R-CORE-04`
 - **SECTIONS:** `S-09`
-- **COLLISIONS:** [X-08](02-collisions.md#x-08), [X-16](02-collisions.md#x-16), [X-17](02-collisions.md#x-17)
+- **COLLISIONS:** [X-08](02-collisions.md#x-08), [X-16](02-collisions.md#x-16), [X-17](02-collisions.md#x-17), [X-70](02-collisions.md#x-70)
 - **LAWS:** [N-28](03-laws.md#n-28), [N-29](03-laws.md#n-29)
 - **NOTE:** No canonical byte encoding exists for `Constraint` in the frozen 15A tag set, although `Expr::Attenuate` embeds one as an immediate (C-16, U-02).
 
@@ -430,7 +434,7 @@ A = { (o, A_o) | o ∈ O_granted }   // L6378, turn [11]`
     - `kernel.derive` — frozen operation name in the E-Attenuate rule (L8717)
 - **OBLIGATIONS:** `R-KERN-01`, `R-KERN-02`, `R-KERN-03`, `R-TRUST-03`
 - **SECTIONS:** `S-10`
-- **COLLISIONS:** [X-05](02-collisions.md#x-05), [X-36](02-collisions.md#x-36), [X-37](02-collisions.md#x-37), [X-55](02-collisions.md#x-55), [X-66](02-collisions.md#x-66)
+- **COLLISIONS:** [X-05](02-collisions.md#x-05), [X-36](02-collisions.md#x-36), [X-37](02-collisions.md#x-37), [X-55](02-collisions.md#x-55), [X-66](02-collisions.md#x-66), [X-70](02-collisions.md#x-70)
 - **NOTE:** `kernel` is context-dependent in the source (capability kernel vs the CEK machine's core); the qualified name is canonical in prose. AMB-26 records the interchange.
 
 ### T-14 — `CapabilityContext`
@@ -476,7 +480,7 @@ A = { (o, A_o) | o ∈ O_granted }   // L6378, turn [11]`
     - `derive` — frozen algebra operation — NOT a synonym for either
 - **OBLIGATIONS:** `R-MARSHAL-01`, `R-MARSHAL-02`, `R-CORE-07`, `R-CAP-04`
 - **SECTIONS:** `S-16`
-- **COLLISIONS:** [X-29](02-collisions.md#x-29)
+- **COLLISIONS:** [X-29](02-collisions.md#x-29), [X-70](02-collisions.md#x-70)
 - **LAWS:** [N-29](03-laws.md#n-29)
 - **NOTE:** spec/05 §1 separates `derive` (algebra op) / `attenuate` (machine operation) / `delegate` (cross-actor transfer); that separation is retained and made a law (N-12) because the source uses the three loosely.
 
@@ -578,7 +582,7 @@ Owning module: **MOD-08**.
     - `pub struct EffectRequest { id, effect, cap: CapRef }   // L9314, L10322, L10806`
 - **OBLIGATIONS:** `R-EFFECT-01`, `R-EFFECT-03`, `R-DUR-01`
 - **SECTIONS:** `S-12`, `S-13`
-- **COLLISIONS:** [X-04](02-collisions.md#x-04), [X-27](02-collisions.md#x-27), [X-35](02-collisions.md#x-35), [X-57](02-collisions.md#x-57)
+- **COLLISIONS:** [X-04](02-collisions.md#x-04), [X-27](02-collisions.md#x-27), [X-35](02-collisions.md#x-35), [X-57](02-collisions.md#x-57), [X-73](02-collisions.md#x-73), [X-74](02-collisions.md#x-74)
 - **LAWS:** [N-04](03-laws.md#n-04), [N-13](03-laws.md#n-13)
 - **NOTE:** N-04 (`EffectRequest ≠ EffectIssued`) is a durability law, not a naming preference.
 
@@ -767,7 +771,7 @@ Owning module: **MOD-04**.
     - `5-dimension cost algebra ⟨F, M, C, I, W⟩   // L6730 (v0.1)`
 - **OBLIGATIONS:** `R-BUDGET-01`, `R-BUDGET-02`, `R-BUDGET-05`, `R-CORE-05`
 - **SECTIONS:** `S-11`
-- **COLLISIONS:** [X-08](02-collisions.md#x-08), [X-09](02-collisions.md#x-09), [X-15](02-collisions.md#x-15), [X-19](02-collisions.md#x-19), [X-44](02-collisions.md#x-44)
+- **COLLISIONS:** [X-08](02-collisions.md#x-08), [X-09](02-collisions.md#x-09), [X-15](02-collisions.md#x-15), [X-19](02-collisions.md#x-19), [X-44](02-collisions.md#x-44), [X-69](02-collisions.md#x-69)
 - **LAWS:** [N-16](03-laws.md#n-16)
 - **NOTE:** Dimension drift across v1 → v0.1 → v0.2/v0.3 is recorded as C-06 (resolved-by-later-text); the frozen form is `⟨C,R,W⟩`. The operational meaning of the `duration` dimension is still undecided (U-01).
 
@@ -837,7 +841,7 @@ Owning module: **MOD-04**.
     - `(C ≥ ΔC) ∧ (R + ΔR ≥ 0)   // L7314 — wrong reservation direction (C-07)`
 - **OBLIGATIONS:** `R-BUDGET-01`, `R-BUDGET-03`, `R-BUDGET-04`, `R-CORE-05`
 - **SECTIONS:** `S-11`
-- **COLLISIONS:** [X-07](02-collisions.md#x-07), [X-09](02-collisions.md#x-09), [X-10](02-collisions.md#x-10), [X-16](02-collisions.md#x-16), [X-19](02-collisions.md#x-19), [X-21](02-collisions.md#x-21), [X-22](02-collisions.md#x-22), [X-44](02-collisions.md#x-44), [X-49](02-collisions.md#x-49)
+- **COLLISIONS:** [X-07](02-collisions.md#x-07), [X-09](02-collisions.md#x-09), [X-10](02-collisions.md#x-10), [X-16](02-collisions.md#x-16), [X-19](02-collisions.md#x-19), [X-21](02-collisions.md#x-21), [X-22](02-collisions.md#x-22), [X-44](02-collisions.md#x-44), [X-49](02-collisions.md#x-49), [X-74](02-collisions.md#x-74)
 - **LAWS:** [N-17](03-laws.md#n-17)
 - **NOTE:** The direction error of the pre-[15] `BudgetOK` is C-07; `ReserveOK`/`ReleaseOK` are the frozen forms.
 
@@ -862,7 +866,7 @@ Owning module: **MOD-04**.
     - `DeadlineExceeded` — frozen `Fault` variant
 - **OBLIGATIONS:** `R-BUDGET-01`, `R-BUDGET-06`, `R-CAP-09`
 - **SECTIONS:** `S-11`
-- **COLLISIONS:** [X-12](02-collisions.md#x-12), [X-42](02-collisions.md#x-42)
+- **COLLISIONS:** [X-12](02-collisions.md#x-12), [X-42](02-collisions.md#x-42), [X-69](02-collisions.md#x-69)
 - **LAWS:** [N-18](03-laws.md#n-18)
 - **NOTE:** `W` (deadline) vs `D` (duration consumable) vs `T` (capability lifetime) are three distinct bounds.
 
@@ -949,7 +953,7 @@ Owning module: **MOD-05**.
 - **FROZEN SHAPE:** `pub enum Expr { Value(Value), Var(Symbol), Let{..}, Seq{..}, If{..}, Call{..}, Lambda{..}, Attenuate{..}, Request{..}, Spawn{..}, Send{..}, Receive }`
 - **OBLIGATIONS:** `R-CALC-02`, `R-CALC-03`, `R-COMPILE-01`
 - **SECTIONS:** `S-07`
-- **COLLISIONS:** [X-03](02-collisions.md#x-03), [X-30](02-collisions.md#x-30), [X-35](02-collisions.md#x-35), [X-39](02-collisions.md#x-39)
+- **COLLISIONS:** [X-03](02-collisions.md#x-03), [X-30](02-collisions.md#x-30), [X-35](02-collisions.md#x-35), [X-39](02-collisions.md#x-39), [X-70](02-collisions.md#x-70)
 - **NOTE:** `Expr::Request` has two frozen field sets: `{cap, args}` (L10420, turn [18]) and `{capability, operation, target, params}` (L12183, turn [21]) — X-35.
 
 ### T-31 — `Value`
@@ -970,9 +974,11 @@ Owning module: **MOD-05**.
     - `Value::Function` — frozen machine-domain variant
     - `Value::Map` — frozen canonical-domain variant (absent from the machine domain)
     - `FunctionValue` — frozen type `{params, body, env}`; `env: EnvironmentSnapshot` (X-33)
+    - `Value::Null` — source-used spelling L1027 (turn [3]) — every declared `Value` set has `Unit`, not `Null` (X-75)
+    - `Value::DelegatedCapability` — source-used path L25995/L26000 (turn [32]) — in no `Value` declaration; the declared capability variant is `Capability(Box<CapabilityToken>)` (X-70, X-75)
 - **OBLIGATIONS:** `R-CALC-01`, `R-CANON-04`, `R-MARSHAL-03`
 - **SECTIONS:** `S-07`, `S-17`
-- **COLLISIONS:** [X-28](02-collisions.md#x-28), [X-33](02-collisions.md#x-33), [X-45](02-collisions.md#x-45), [X-54](02-collisions.md#x-54), [X-55](02-collisions.md#x-55), [X-56](02-collisions.md#x-56)
+- **COLLISIONS:** [X-28](02-collisions.md#x-28), [X-33](02-collisions.md#x-33), [X-45](02-collisions.md#x-45), [X-54](02-collisions.md#x-54), [X-55](02-collisions.md#x-55), [X-56](02-collisions.md#x-56), [X-70](02-collisions.md#x-70), [X-72](02-collisions.md#x-72), [X-75](02-collisions.md#x-75)
 - **NOTE:** Registered upstream as C-03, C-45, U-09, AMB-21. Restated here so the dictionary is complete.
 
 ### T-32 — `EvalState`
@@ -996,7 +1002,7 @@ Owning module: **MOD-05**.
     - `CEK` — frozen name of the machine (Control/Environment/Continuation)
 - **OBLIGATIONS:** `R-CEK-01`, `R-CEK-02`, `R-ACTOR-02`
 - **SECTIONS:** `S-08`
-- **COLLISIONS:** [X-18](02-collisions.md#x-18), [X-21](02-collisions.md#x-21), [X-22](02-collisions.md#x-22), [X-57](02-collisions.md#x-57)
+- **COLLISIONS:** [X-18](02-collisions.md#x-18), [X-21](02-collisions.md#x-21), [X-22](02-collisions.md#x-22), [X-57](02-collisions.md#x-57), [X-74](02-collisions.md#x-74)
 - **NOTE:** No canonical byte encoding is frozen for `EvalState` (C-15, U-02).
 
 ### T-33 — `Frame`
@@ -1087,7 +1093,14 @@ Owning module: **MOD-05**.
     - `ReplayCorruption` — frozen variant L23814 — also a `HostFault` path (X-67)
     - `InvalidReceipt` — frozen variant L23815
     - `IsolationBreach` — v1 grammar L1949 and receipt-mismatch conclusion L2024/L7223/L8766
-    - `StalePlan` — claimed as a `Fault` variant by spec/01 L138, REQ-CALC-014 and AMB-08; occurs only as a bare token L27236 and in prose L28373 (X-64)
+    - `StalePlan` — source-used fault name: `Fault::StalePlan` at L28373 (turn [36]) and a bare token at L27236 (turn [33]) — declared by none of the seven `Fault` enums (X-64, X-69)
+    - `AuthoritySuspended` — source-used `Fault::` path L941 (turn [3]) — in no declaration (X-69)
+    - `FuelExhausted` — source-used `Fault::` path L1018 (turn [3]) — the declared name is `BudgetExhausted` (X-69)
+    - `AncestorRevoked` — source-used `Fault::` path L6705 (turn [11]) — near-synonym of `Revoked` in the same list (X-69)
+    - `Unauthorized` — source-used `Fault::` path L6706 (turn [11]) — a third name for the same denial (X-69)
+    - `ReservedCapacityExceeded` — source-used `Fault::` path L10466-10467 (turn [18]) — in no declaration (X-69)
+    - `NoSuchActor` — source-used `Fault::` path L25714 (turn [32]) — in no declaration (X-69)
+    - `UnknownActor` — source-used `Fault::` path L26017 (turn [32]) — a second name for `NoSuchActor`, 303 lines later (X-69)
 - **FROZEN SHAPE:** `pub enum Fault {
     // ... (previous faults)
     Capability(CapabilityError),
@@ -1105,7 +1118,7 @@ Owning module: **MOD-05**.
     - `pub enum Fault { …, CapabilityDenied, MarshalFault(...), HostFault(...), … }   // L26865 (turn [33]) — actor-local set`
 - **OBLIGATIONS:** `R-CALC-06`, `R-ACTOR-02`, `R-ACTOR-04`
 - **SECTIONS:** `S-07`, `S-15`
-- **COLLISIONS:** [X-23](02-collisions.md#x-23), [X-38](02-collisions.md#x-38), [X-58](02-collisions.md#x-58), [X-59](02-collisions.md#x-59), [X-64](02-collisions.md#x-64), [X-65](02-collisions.md#x-65), [X-66](02-collisions.md#x-66), [X-67](02-collisions.md#x-67), [X-68](02-collisions.md#x-68)
+- **COLLISIONS:** [X-23](02-collisions.md#x-23), [X-38](02-collisions.md#x-38), [X-58](02-collisions.md#x-58), [X-59](02-collisions.md#x-59), [X-64](02-collisions.md#x-64), [X-65](02-collisions.md#x-65), [X-66](02-collisions.md#x-66), [X-67](02-collisions.md#x-67), [X-68](02-collisions.md#x-68), [X-69](02-collisions.md#x-69), [X-71](02-collisions.md#x-71), [X-73](02-collisions.md#x-73)
 - **NOTE:** Nine distinct names are used for capability denial across eras (`CapViolation`, `CapabilityViolation`, `Revoked`, `CapabilityRevoked`, `ScopeViolation`, `AuthorizationFailed`, `Fault::CapabilityError`, `Fault::Capability(CapabilityError)`, `CapabilityDenied`) — X-38. The set is never closed by the source; U-08/U-14 remain open on their merits.
 
 ### T-71 — `GlobalFault`
@@ -1113,7 +1126,7 @@ Owning module: **MOD-05**.
 - **CANONICAL_TERM:** `GlobalFault`
 - **TYPE:** RUST-ENUM — a Rust `enum` declaration (closed variant set)
 - **OWNER:** MOD-05 (`ror-runtime`)
-- **DEFINITION:** The fault taxonomy of the GLOBAL machine step, parallel to `Fault`: `global_step(…) -> Result<GlobalStep, GlobalFault>`. Its five variants are all durable-state faults (`SnapshotCorruption`, `EventLogCorruption`, `EventSequenceGap`, `InvalidRecoveredState`, `EffectReconciliationFailure`), none of which appears in any `Fault` declaration. It is named by no obligation, module or requirement record: R-CALC-06 describes “the frozen `Fault` taxonomy” without it (spec/01 L138, spec/03 L52, mod/01 L155, mod/18 L68), and the only canonicalization-layer mention it has is the one this pass added when it linked the term from `req/03` AMB-08.
+- **DEFINITION:** The fault taxonomy of the GLOBAL machine step, parallel to `Fault`: `global_step(…) -> Result<GlobalStep, GlobalFault>`. Its eight variants cover durable state (`SnapshotCorruption`, `EventLogCorruption`, `EventSequenceGap`, `InvalidRecoveredState`, `EffectReconciliationFailure`, `PersistenceFailure`) and the actor table and scheduler (`ActorTableCorruption`, `SchedulerInvariantViolation`). None of the eight appears in any `Fault` declaration. It is named by no obligation, module or requirement record: R-CALC-06 describes “the frozen `Fault` taxonomy” without it (spec/01 L138, spec/03 L52, mod/01 L155, mod/18 L68), and the only canonicalization-layer mention it has is the one this pass added when it linked the term from `req/03` AMB-08.
 - **FIRST_DEFINITION:** `L25576`, turn [32] — `) -> Result<GlobalStep, GlobalFault> {`
 - **FROZEN_AT:** `L26885`, turn [33] — `pub enum GlobalFault {`
 - **DEPENDENTS:** T-38 `GlobalState`, T-48 `Snapshot`, T-45 `WAL`, T-52 `RecoveryFault`
@@ -1127,11 +1140,123 @@ Owning module: **MOD-05**.
     - `EventSequenceGap` — frozen variant L26888
     - `InvalidRecoveredState` — frozen variant L26889
     - `EffectReconciliationFailure` — frozen variant L26890
-- **FROZEN SHAPE:** `pub enum GlobalFault { SnapshotCorruption, EventLogCorruption, EventSequenceGap, InvalidRecoveredState, EffectReconciliationFailure }`
+    - `PersistenceFailure` — frozen variant L26891
+    - `ActorTableCorruption` — frozen variant L26892
+    - `SchedulerInvariantViolation` — frozen variant L26893
+- **FROZEN SHAPE:** `pub enum GlobalFault { SnapshotCorruption, EventLogCorruption, EventSequenceGap, InvalidRecoveredState, EffectReconciliationFailure, PersistenceFailure, ActorTableCorruption, SchedulerInvariantViolation }   // L26885-26894, all eight`
 - **OBLIGATIONS:** `R-CALC-06`
 - **SECTIONS:** `S-07`
 - **COLLISIONS:** [X-58](02-collisions.md#x-58)
-- **NOTE:** Absent from the canonicalization layer: R-CALC-06 (spec/01 L138), mod/01 L155, mod/18 L68 and spec/03 L52 all describe “the frozen `Fault` taxonomy” without mentioning that a second, disjoint taxonomy governs the global step.
+- **NOTE:** R-CALC-06 (spec/01 L138, spec/03 L52, mod/01 L155, mod/18 L68) describes “the frozen `Fault` taxonomy” without mentioning that a second, disjoint eight-variant taxonomy governs the global machine step.
+
+### T-75 — `MachineEvent`
+
+- **CANONICAL_TERM:** `MachineEvent`
+- **TYPE:** RUST-ENUM — a Rust `enum` declaration (closed variant set)
+- **OWNER:** MOD-05 (`ror-runtime`)
+- **DEFINITION:** The machine's transition-event stream: what a step emits for the trace, and the vocabulary the differential observer and the WAL are built on. Declared eight times with materially different variant sets, three of them behind a `// ...` elision, and used with eight further variant paths that appear in no declaration.
+- **FIRST_DEFINITION:** `L14697`, turn [23] — `pub enum MachineEvent {`
+- **FROZEN_AT:** `L22002`, turn [29] — `pub enum MachineEvent {`
+- **DEPENDENTS:** T-47 `WalRecord`, T-45 `WAL`, T-70 `Fault`, T-35 `ActorStatus`, T-38 `GlobalState`
+- **FORBIDDEN_VARIANTS:**
+    - `event` — unqualified
+    - `GlobalEvent` — a different, also undeclared name
+    - `MachineEvents`
+- **PROTECTED (do not rename):**
+    - `MachineEvent` — frozen Rust enum name — EIGHT declarations (L14697, L15958, L17588, L18104, L18631, L20318, L20724, L22002)
+    - `EnterSeq` — declared variant (L14697 onward)
+    - `EnterIf` — declared variant
+    - `EnterCall` — declared variant (from L15958)
+    - `EnterLambda` — declared variant from L15963 (turn [24]) onward
+    - `ApplyFunction` — declared variant (from L17588)
+    - `PushFrame` — declared variant
+    - `PopFrame` — declared variant
+    - `Block` — declared variant (L14697) — a `MachineEvent`, not the untrusted `Block` of T-01
+    - `EnterAttenuate` — declared variant (L20318, L20724)
+    - `DeriveCapability` — declared variant (L20318, L20724); constructed at L20386
+    - `Fault` — declared variant; constructed at L20391/L20792 carrying a `Fault`
+    - `EffectIssued` — declared variant (L22005) with `{ id, digest }`
+    - `EffectCompleted` — declared variant (L22010) with `{ id, digest }`
+    - `// ...` — verbatim elision marker at L22003 — the frozen block does not restate earlier variants
+    - `EnterRequest` — USED L21483, L23380 — never declared (X-71)
+    - `BeginRequestTarget` — USED L21536, L23398 — never declared (X-71)
+    - `BeginRequestArgument` — USED L21645, L23426 — never declared (X-71)
+    - `Blocked` — USED L25740, L26038 — never declared; the declared name is `Block` (X-71)
+    - `Spawned` — USED L25668 — never declared (X-71)
+    - `ActorSpawned` — USED L25966 with `{ parent, child }` — never declared; a SECOND name for `Spawned` (X-71)
+    - `Sent` — USED L25728 — never declared (X-71)
+    - `MessageSent` — USED L26027 with `{ from, to }` — never declared; a SECOND name for `Sent` (X-71)
+    - `EnterLet` — declared variant L14698 (turn [23]) and in every later declaration, carrying a `Symbol`
+    - `EvaluateValue` — declared variant L14701, carrying a `Value` — ALSO constructed in prose at L17575
+    - `Lookup` — declared variant L14702, carrying a `Symbol`
+    - `Halt` — declared variant L14705, carrying a `Value` — the same name as `StepResult::Halt` in a different enum (X-73)
+    - `BeginArgument` — declared variant from L17596 (turn [25]), carrying a `usize`
+    - `EndArgument` — declared variant from L17597 (turn [25]), carrying a `usize`
+    - `// ... (Previous events)` — verbatim elision marker at L20319 (turn [28]) — one of three elided declarations
+    - `// ... (previous variants)` — verbatim elision marker at L20725 (turn [28]) — note the different capitalisation and noun
+- **FROZEN SHAPE:** `pub enum MachineEvent { /* ... */ EffectIssued { id: EffectId, digest: EffectDigest }, EffectCompleted { id: EffectId, digest: EffectDigest } }   // L22002-22014, elided head`
+- **OBLIGATIONS:** `R-CORE-08`, `R-ACTOR-07`
+- **SECTIONS:** `S-07`, `S-15`
+- **COLLISIONS:** [X-71](02-collisions.md#x-71)
+- **NOTE:** Absent from the dictionary until the declaration sweep: the event vocabulary that the trace, the WAL and the differential comparison are all built on had no term of record, and no register entry counted its declarations.
+
+### T-77 — `StepResult`
+
+- **CANONICAL_TERM:** `StepResult`
+- **TYPE:** RUST-ENUM — a Rust `enum` declaration (closed variant set)
+- **OWNER:** MOD-05 (`ror-runtime`)
+- **DEFINITION:** TWO DISJOINT ENUMS SHARE THIS NAME. (1) The CEK machine's single-step outcome (L1006, turn [3]): `Continue | Halt(Value) | Fault(Fault) | YieldToHost(Effect)` — one actor, one reduction, no identity carried. (2) The actor scheduler's step outcome (L9586, turn [17], restated L10397 and L10947): `Progressed | Blocked(ActorId) | Pending(ActorId, EffectRequest) | Halted(ActorId, Value) | Faulted(ActorId, Fault) | NoRunnableActors` — every variant carries an `ActorId`. They are not two versions of one type: they belong to different layers and have no variant in common.
+- **FIRST_DEFINITION:** `L1006`, turn [3] — `pub enum StepResult {`
+- **FROZEN_AT:** `L9586`, turn [17] — `pub enum StepResult {`
+- **DEPENDENTS:** T-70 `Fault`, T-35 `ActorStatus`, T-36 `RunState`, T-34 `ActorId`, T-32 `EvalState`
+- **FORBIDDEN_VARIANTS:**
+    - `step result` — unqualified — two disjoint enums exist
+    - `StepOutcome`
+    - ``using the scheduler's `Faulted`` — ActorId, Fault)` where the machine's `Fault(Fault)` is meant (X-23, X-73
+- **PROTECTED (do not rename):**
+    - `StepResult` — frozen Rust enum name — FOUR declarations (L1006, L9586, L10397, L10947) in two disjoint families
+    - `Continue` — machine variant L1007
+    - `Halt` — machine variant L1008, carrying a `Value`
+    - `Fault` — machine variant L1009, carrying a `Fault`
+    - `YieldToHost` — machine variant L1010, carrying an `Effect`
+    - `Progressed` — scheduler variant L9587
+    - `Blocked` — scheduler variant L9588, carrying an `ActorId` — ALSO an `ActorStatus` and a `RunState` variant (X-21)
+    - `Pending` — scheduler variant L9589, carrying `(ActorId, EffectRequest)`
+    - `Halted` — scheduler variant L9590, carrying `(ActorId, Value)`
+    - `Faulted` — scheduler variant L9591, carrying `(ActorId, Fault)` — ALSO a `RunState` variant (X-23)
+    - `NoRunnableActors` — scheduler variant L9592
+- **FROZEN SHAPE:** `pub enum StepResult { Continue, Halt(Value), Fault(Fault), YieldToHost(Effect) }   // L1006, machine
+pub enum StepResult { Progressed, Blocked(ActorId), Pending(ActorId, EffectRequest), Halted(ActorId, Value), Faulted(ActorId, Fault), NoRunnableActors }   // L9586, scheduler`
+- **OBLIGATIONS:** `R-CEK-01`, `R-ACTOR-04`
+- **SECTIONS:** `S-07`, `S-15`
+- **COLLISIONS:** [X-73](02-collisions.md#x-73), [X-74](02-collisions.md#x-74)
+- **NOTE:** The machine/scheduler split is the same shape as the `Observation` split (X-06), which the request's own term list forced into two canonical terms; here the source gives no second name, so both are recorded under one entry with the homonymy filed as X-73 rather than resolved by renaming.
+
+### T-78 — `ControlFrame`
+
+- **CANONICAL_TERM:** `ControlFrame`
+- **TYPE:** RUST-ENUM — a Rust `enum` declaration (closed variant set)
+- **OWNER:** MOD-05 (`ror-runtime`)
+- **DEFINITION:** The CEK machine's control stack frame: what `self.control` holds between reductions. Declared once, behind an elision, with three visible variants — and used with two variant paths that appear in no declaration. Its declared variants reference `PlanIR`, `FuncRef` and `EffectSignature`, none of which is declared anywhere either.
+- **FIRST_DEFINITION:** `L985`, turn [3] — `pub enum ControlFrame {`
+- **DEPENDENTS:** T-32 `EvalState`, T-30 `Expr`, T-31 `Value`, T-77 `StepResult`
+- **FORBIDDEN_VARIANTS:**
+    - `control frame` — unqualified
+    - `ControlStack`
+    - `Frame` — that is T-33, a distinct declared enum
+- **PROTECTED (do not rename):**
+    - `ControlFrame` — frozen Rust enum name — the ONLY declaration (L985, turn [3])
+    - `EvaluateSequence` — declared variant L986, carrying `{ remaining: Vec<PlanIR> }`
+    - `AwaitInvoke` — declared variant L987, carrying `{ func: FuncRef, args: Vec<Value> }`
+    - `AwaitHostFFI` — declared variant L988, carrying `{ effect: EffectSignature }`
+    - `// ...` — verbatim elision marker at L989
+    - `ReduceIR` — USED L1031 and matched at L1035 — never declared (X-75)
+    - `ResumeWithResult` — USED L1282 — never declared (X-75)
+- **FROZEN SHAPE:** `pub enum ControlFrame { EvaluateSequence { remaining: Vec<PlanIR> }, AwaitInvoke { func: FuncRef, args: Vec<Value> }, AwaitHostFFI { effect: EffectSignature }, /* ... */ }   // L985-990`
+- **OBLIGATIONS:** `R-CEK-01`
+- **SECTIONS:** `S-07`
+- **COLLISIONS:** [X-75](02-collisions.md#x-75)
+- **NOTE:** Distinct from `Frame` (T-33), which is declared eleven times and is the evaluation frame of the frozen turn-[30] machine; the two names are not interchangeable and the source uses both.
 
 ---
 
@@ -1197,9 +1322,9 @@ Owning module: **MOD-06**.
     - `pub enum ActorStatus { Running, Pending(PendingEffect), Blocked(Continuation), Halted(Value), Fault(Fault) }   // L9411 (turn [17])`
 - **OBLIGATIONS:** `R-ACTOR-02`, `R-ACTOR-04`, `R-CALC-06`
 - **SECTIONS:** `S-15`, `S-07`
-- **COLLISIONS:** [X-21](02-collisions.md#x-21), [X-22](02-collisions.md#x-22), [X-23](02-collisions.md#x-23), [X-38](02-collisions.md#x-38), [X-58](02-collisions.md#x-58), [X-65](02-collisions.md#x-65)
+- **COLLISIONS:** [X-21](02-collisions.md#x-21), [X-22](02-collisions.md#x-22), [X-23](02-collisions.md#x-23), [X-38](02-collisions.md#x-38), [X-58](02-collisions.md#x-58), [X-65](02-collisions.md#x-65), [X-71](02-collisions.md#x-71), [X-73](02-collisions.md#x-73), [X-74](02-collisions.md#x-74)
 - **LAWS:** [N-15](03-laws.md#n-15)
-- **NOTE:** Two incompatible declarations (X-21). The turn-[17] form puts the continuation inside `Blocked(Continuation)`; the frozen turn-[30] form keeps it in `actor.eval.continuation` and moves `reservation` into `Pending`. C-18/AMB-05 cover `ActorStatus` vs `RunState`, not this split.
+- **NOTE:** SEVEN declarations in THREE shapes (X-74), not the two X-21 records. Shape (i) L9411/L10346 (turns [17]/[18]): `Pending(PendingEffect), Blocked(Continuation)` — the continuation inside `Blocked`. Shape (ii) L21234 (turn [29]): `Pending { effect: EffectRequest, continuation: Continuation, reservation: ReservedCapacity }, Blocked(Continuation)` — the continuation in BOTH variants. Shape (iii) L23306/L23793 (turn [30]): `Pending { effect: EffectRequest, reservation: ReservedCapacity }, Blocked` — the continuation in NEITHER, which is the form the frozen turn-[30] machine assumes when it keeps the continuation in `actor.eval.continuation` (T-37, T-32). X-21 covers the `Running`/`Active` naming split, X-74 the shape split and the seven-declaration count; C-18/AMB-05 cover `ActorStatus` vs `RunState`, not either split.
 
 ### T-37 — `ActorState`
 
@@ -1228,7 +1353,7 @@ Owning module: **MOD-06**.
 - **FROZEN SHAPE:** `A_a = ⟨e, ρ, κ, ℋ, C, R, W, mailbox, status⟩   // L8666, turn [16]`
 - **OBLIGATIONS:** `R-ACTOR-01`, `R-ACTOR-02`, `R-ACTOR-03`, `R-PERSIST-04`
 - **SECTIONS:** `S-15`
-- **COLLISIONS:** [X-11](02-collisions.md#x-11), [X-14](02-collisions.md#x-14), [X-18](02-collisions.md#x-18)
+- **COLLISIONS:** [X-11](02-collisions.md#x-11), [X-14](02-collisions.md#x-14), [X-18](02-collisions.md#x-18), [X-74](02-collisions.md#x-74)
 - **NOTE:** In `A_a`'s own definition the symbols `C` and `R` are the BUDGET components, while `A` elsewhere is AUTHORITY (X-11, X-08, X-09). The dictionary requires qualified prose: 'the actor state A_a' vs 'the authority A'.
 
 ### T-39 — `Mailbox`
@@ -1273,12 +1398,13 @@ Owning module: **MOD-06**.
     - `InvalidFormat` — variant of the turn-[18] declaration (L10848)
     - `CapabilityRequiresDelegation` — variant of the turn-[32] declaration (L25984) — the one mod/06 L62/L103 and REQ-MARSHAL cite
     - `SerializationError` — variant of the turn-[32] declaration (L25985)
+    - `CorruptedPayload` — source-used `MarshalFault::` path L25694 (turn [32]) — in neither declaration (X-65, X-75)
 - **FROZEN SHAPE:** `pub enum MarshalFault { CapabilityRequiresDelegation, SerializationError }   // L25983 (turn [32])`
 - **SUPERSEDES (recorded, not deleted):**
     - `pub enum MarshalFault { CapabilityNotTransferable, InvalidFormat }   // L10846 (turn [18])`
 - **OBLIGATIONS:** `R-MARSHAL-01`, `R-MARSHAL-02`
 - **SECTIONS:** `S-16`
-- **COLLISIONS:** [X-65](02-collisions.md#x-65)
+- **COLLISIONS:** [X-65](02-collisions.md#x-65), [X-75](02-collisions.md#x-75)
 - **NOTE:** Zero variants are shared between the two declarations (X-65).
 
 ---
@@ -1304,9 +1430,10 @@ Owning module: **MOD-07**.
     - `run_state` — frozen `ActorState` field name
     - `Runnable` — frozen variant — exists ONLY here, not in `ActorStatus`
     - `Faulted` — frozen variant — note the spelling differs from `ActorStatus::Fault` (X-23); neither is renamed
+    - `NotRunnable` — declared variant L24300 (turn [31]) — silently absent from the L25526 (turn [32]) re-declaration, no supersession note (X-75)
 - **OBLIGATIONS:** `R-ACTOR-02`, `R-ACTOR-04`, `R-ACTOR-07`
 - **SECTIONS:** `S-15`
-- **COLLISIONS:** [X-21](02-collisions.md#x-21), [X-23](02-collisions.md#x-23), [X-58](02-collisions.md#x-58)
+- **COLLISIONS:** [X-21](02-collisions.md#x-21), [X-23](02-collisions.md#x-23), [X-58](02-collisions.md#x-58), [X-73](02-collisions.md#x-73), [X-75](02-collisions.md#x-75)
 - **LAWS:** [N-15](03-laws.md#n-15)
 - **NOTE:** Both enums are kept by the frozen text (C-18, INFO). The dictionary separates their ownership: ACTOR vs SCHEDULER.
 
@@ -1542,7 +1669,7 @@ Owning module: **MOD-11**.
     - `WAL-SEQUENCE-CONTINUITY` — frozen verification-obligation tag
 - **OBLIGATIONS:** `R-PERSIST-01`, `R-PERSIST-02`, `R-PERSIST-03`, `R-DUR-01`, `R-CORE-06`
 - **SECTIONS:** `S-18`, `S-13`
-- **COLLISIONS:** [X-13](02-collisions.md#x-13), [X-14](02-collisions.md#x-14), [X-17](02-collisions.md#x-17), [X-31](02-collisions.md#x-31), [X-32](02-collisions.md#x-32), [X-47](02-collisions.md#x-47), [X-54](02-collisions.md#x-54), [X-57](02-collisions.md#x-57), [X-61](02-collisions.md#x-61)
+- **COLLISIONS:** [X-13](02-collisions.md#x-13), [X-14](02-collisions.md#x-14), [X-17](02-collisions.md#x-17), [X-31](02-collisions.md#x-31), [X-32](02-collisions.md#x-32), [X-47](02-collisions.md#x-47), [X-54](02-collisions.md#x-54), [X-57](02-collisions.md#x-57), [X-61](02-collisions.md#x-61), [X-71](02-collisions.md#x-71)
 - **LAWS:** [N-19](03-laws.md#n-19), [N-20](03-laws.md#n-20), [N-21](03-laws.md#n-21)
 - **NOTE:** Five names denote this one durable structure (`WAL`, `Write-Ahead Log`, `L`, `DurableLog`, 'append-only durable event log'), and a sixth (`EventLog`) denotes a DIFFERENT in-memory one. U-16/AMB-14 concern the `EventSequence`/`WalSequence` relationship; X-31 records the naming spread.
 
@@ -1605,7 +1732,7 @@ Owning module: **MOD-11**.
     - `pub enum EffectJournalEntry { Prepared{..}, Issued{..}, Completed{..}, Reconciled{..} }   // L26222 (turn [33]) — unified into WalRecord by 15B (C-25)`
 - **OBLIGATIONS:** `R-PERSIST-03`, `R-DUR-02`, `R-DUR-03`, `R-DUR-04`
 - **SECTIONS:** `S-18`, `S-13`
-- **COLLISIONS:** [X-07](02-collisions.md#x-07), [X-24](02-collisions.md#x-24), [X-31](02-collisions.md#x-31), [X-32](02-collisions.md#x-32), [X-33](02-collisions.md#x-33), [X-47](02-collisions.md#x-47), [X-61](02-collisions.md#x-61)
+- **COLLISIONS:** [X-07](02-collisions.md#x-07), [X-24](02-collisions.md#x-24), [X-31](02-collisions.md#x-31), [X-32](02-collisions.md#x-32), [X-33](02-collisions.md#x-33), [X-47](02-collisions.md#x-47), [X-61](02-collisions.md#x-61), [X-71](02-collisions.md#x-71), [X-72](02-collisions.md#x-72)
 - **NOTE:** Variant names are `Effect`-prefixed here but unprefixed in the superseded `EffectJournalEntry`. Both spellings are frozen in their own era; neither is renamed (X-07).
 
 ### T-48 — `Snapshot`
@@ -1703,7 +1830,7 @@ Owning module: **MOD-11**.
     - `[format_version: u8] [type_tag: u32 LE] [length: u32 LE] [payload]   // L28298 (turn [36])`
 - **OBLIGATIONS:** `R-CANON-01`, `R-CANON-02`, `R-CANON-03`, `R-CANON-04`, `R-CANON-06`
 - **SECTIONS:** `S-17`
-- **COLLISIONS:** [X-24](02-collisions.md#x-24), [X-45](02-collisions.md#x-45), [X-50](02-collisions.md#x-50), [X-51](02-collisions.md#x-51), [X-54](02-collisions.md#x-54), [X-55](02-collisions.md#x-55), [X-56](02-collisions.md#x-56)
+- **COLLISIONS:** [X-24](02-collisions.md#x-24), [X-45](02-collisions.md#x-45), [X-50](02-collisions.md#x-50), [X-51](02-collisions.md#x-51), [X-54](02-collisions.md#x-54), [X-55](02-collisions.md#x-55), [X-56](02-collisions.md#x-56), [X-72](02-collisions.md#x-72)
 - **NOTE:** The superseded form differs in field NAME, tag WIDTH and ENDIANNESS. An encoder built from the `CanonicalSerialize` doc comment at L28298 would be wire-incompatible with the frozen format, breaking every digest (`EffectDigest`, `StateDigest`) and the WAL checksum. X-50; the frozen form governs, and the superseded text is retained verbatim.
 
 ### T-63 — `CanonicalPayload`
@@ -1730,8 +1857,46 @@ Owning module: **MOD-11**.
     - `encode_envelope` — frozen free function
 - **OBLIGATIONS:** `R-CANON-02`, `R-CANON-05`, `R-CANON-07`, `R-CANON-08`
 - **SECTIONS:** `S-17`
-- **COLLISIONS:** [X-50](02-collisions.md#x-50), [X-51](02-collisions.md#x-51), [X-54](02-collisions.md#x-54), [X-55](02-collisions.md#x-55), [X-56](02-collisions.md#x-56)
+- **COLLISIONS:** [X-50](02-collisions.md#x-50), [X-51](02-collisions.md#x-51), [X-54](02-collisions.md#x-54), [X-55](02-collisions.md#x-55), [X-56](02-collisions.md#x-56), [X-72](02-collisions.md#x-72)
 - **NOTE:** spec/05 §4 lists the traits as `CanonicalPayload / CanonicalEncode / CanonicalDecode` and omits `CanonicalSerialize`, which is the name the source's persistence-era trait actually bears. X-51.
+
+### T-76 — `CanonicalError`
+
+- **CANONICAL_TERM:** `CanonicalError`
+- **TYPE:** RUST-ENUM — a Rust `enum` declaration (closed variant set)
+- **OWNER:** MOD-10 (`ror-core (+ vectors/canonical)`)
+- **DEFINITION:** The error type of canonical encoding and decoding — the `Err` arm of every `canonical_serialize` / `canonical_deserialize`, and therefore the type that reports every violation of the frozen envelope and payload rules. Declared seven times in four materially different shapes: unit variants, a differently-spelled set, payload-bearing struct variants for the same names, and an elided block adding one new variant.
+- **FIRST_DEFINITION:** `L29188`, turn [38] — `pub enum CanonicalError {`
+- **FROZEN_AT:** `L30661`, turn [41] — `pub enum CanonicalError {`
+- **DEPENDENTS:** T-62 `CanonicalEnvelope`, T-63 `CanonicalPayload`, T-47 `WalRecord`, T-45 `WAL`, T-31 `Value`
+- **FORBIDDEN_VARIANTS:**
+    - `CanonicalizationError`
+    - `EncodeError`
+    - `DecodeError`
+    - `canonical error` — unqualified
+- **PROTECTED (do not rename):**
+    - `CanonicalError` — frozen Rust enum name — SEVEN declarations (L29188, L29968, L30661, L32083, L32959, L33299, L34994)
+    - `InvalidVersion` — declared as a UNIT variant (L29189, L29970) and as a STRUCT variant `{ expected: u8, found: u8 }` (L30662) — same name, two arities (X-72)
+    - `InvalidTypeTag` — unit (L29190, L29971) and struct `{ expected: u8, found: u8 }` (L30663) (X-72)
+    - `LengthMismatch` — unit (L29191) and struct `{ expected: u32, found: usize }` (L30664); ABSENT from the L29968 set (X-72)
+    - `LengthOverflow` — declared from L29968 onward; ABSENT from the first declaration L29188 (X-72)
+    - `InvalidUtf8` — unit (L29192, L30666)
+    - `Utf8Error` — a SECOND name for the same condition, only in the L29968 set (X-72)
+    - `UnexpectedEof` — unit (L29193, L30667); ABSENT from the L29968 set, which has `PayloadTooShort` instead (X-72)
+    - `PayloadTooShort` — only in the L29968 set (X-72)
+    - `InvalidDiscriminant` — unit (L29972) and struct `{ found: u8 }` (L30669) (X-72)
+    - `TrailingBytes` — unit (L29975) and struct `{ count: usize }` (L30668) (X-72)
+    - `InvalidBoolValue` — struct `{ found: u8 }` (L30670), only in the L30661 set
+    - `DuplicateMapKey` — added at L34996 behind a `// ... previous variants` elision — 'NEW: Enforces strict injectivity'
+    - `// ... previous variants` — verbatim elision marker at L34995
+- **FROZEN SHAPE:** `pub enum CanonicalError { InvalidVersion { expected: u8, found: u8 }, InvalidTypeTag { expected: u8, found: u8 }, LengthMismatch { expected: u32, found: usize }, LengthOverflow, InvalidUtf8, UnexpectedEof, TrailingBytes { count: usize }, InvalidDiscriminant { found: u8 }, InvalidBoolValue { found: u8 } }   // L30661-30671`
+- **SUPERSEDES (recorded, not deleted):**
+    - `pub enum CanonicalError { InvalidVersion, InvalidTypeTag, LengthMismatch, InvalidUtf8, UnexpectedEof }   // L29188 (turn [38])`
+    - `pub enum CanonicalError { LengthOverflow, InvalidVersion, InvalidTypeTag, InvalidDiscriminant, PayloadTooShort, TrailingBytes, Utf8Error }   // L29968`
+- **OBLIGATIONS:** `R-CANON-01`, `R-CANON-02`
+- **SECTIONS:** `S-17`
+- **COLLISIONS:** [X-72](02-collisions.md#x-72), [X-75](02-collisions.md#x-75)
+- **NOTE:** Sits directly on the canonical-encoding path where X-50 (the envelope wire format) is already BLOCKING: which `CanonicalError` governs determines what a decoder may report, and the four shapes do not agree on names, spellings or arities.
 
 ---
 
@@ -1917,7 +2082,7 @@ Owning module: **MOD-13**.
     - `R-CORE-01` — the obligation that states this
 - **OBLIGATIONS:** `R-CORE-01`, `R-PLANNER-01`, `R-PLANNER-02`, `R-TRUST-01`, `R-TRUST-02`
 - **SECTIONS:** `S-02`, `S-05`, `S-03`
-- **COLLISIONS:** —
+- **COLLISIONS:** [X-69](02-collisions.md#x-69)
 - **LAWS:** [N-09](03-laws.md#n-09)
 - **NOTE:** N-09 (`LLM output ≠ Authority`) is the thesis-level law; R-PLANNER-02 enumerates its eight prohibitions.
 

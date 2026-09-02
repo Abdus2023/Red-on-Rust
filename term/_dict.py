@@ -3,9 +3,9 @@
 
 Generated files (do not edit by hand — edit `term/_terms.py` and re-run):
 
-    term/01-dictionary.md    the 74 canonical terms, with the seven fields the
+    term/01-dictionary.md    the 78 canonical terms, with the seven fields the
                              normalization request requires of every term
-    term/02-collisions.md    the collision register (63 findings), every one cited
+    term/02-collisions.md    the collision register (75 findings), every one cited
                              to a frozen-source line and re-grepped by _check.py
     term/03-laws.md          the non-conflation laws the distinctions imply
     term/10-index.json       machine-readable index of all three

@@ -94,6 +94,8 @@ COLLISION_KINDS = {
     "SCOPE-DRIFT": "a name's scope changed between frozen eras without retraction",
     "PROVENANCE-DEFECT": "a citation in the canonicalization layer does not point at the text it claims",
     "PHANTOM-IDENTIFIER": "a register names an identifier that occurs nowhere in the frozen source",
+    "DIVERGENT-SHAPE": "the same type name is declared repeatedly with materially different variant or field shapes",
+    "UNDECLARED-VARIANT": "an `Enum::Variant` path is used in the frozen source but appears in no declaration of that enum",
 }
 
 
@@ -321,7 +323,7 @@ TERMS: list[Term] = [
         dependents=["T-01", "T-55", "T-56"],
         obligations=["R-PLANNER-01", "R-PLANNER-03", "R-PLANNER-04", "R-CORE-01"],
         sections=["S-05"],
-        collisions=['X-04', 'X-06', 'X-34', 'X-62', 'X-64'],
+        collisions=["X-04", "X-06", "X-34", "X-62", "X-64", "X-69"],
         shape="pub struct PlanProposal { ... }   // L27175, turn [33]",
         note=(
             "Distinct from `PlannerAccepted` (T-55), which is the *recorded* accepted "
@@ -551,7 +553,7 @@ TERMS: list[Term] = [
         dependents=["T-04", "T-05", "T-06", "T-30"],
         obligations=["R-COMPILE-02", "R-COMPILE-03"],
         sections=["S-06"],
-        collisions=["X-02", "X-03", "X-16", "X-30", "X-34", "X-40", "X-41", "X-62"],
+        collisions=["X-02", "X-03", "X-16", "X-30", "X-34", "X-40", "X-41", "X-62", "X-75"],
         note=(
             "Two pipeline renderings place `PlanIR` AFTER `ValidatedPlan` as a distinct "
             "stage (L13603, L39275), while the frozen structs make it the *content* of "
@@ -652,7 +654,7 @@ TERMS += [
         dependents=["T-09", "T-11", "T-12", "T-13"],
         obligations=["R-CAP-01", "R-CAP-02", "R-CAP-03", "R-CORE-04", "R-KERN-03"],
         sections=["S-09", "S-10"],
-        collisions=['X-05', 'X-08', 'X-09', 'X-10', 'X-11', 'X-13', 'X-17', 'X-25', 'X-36', 'X-37', 'X-38', 'X-59'],
+        collisions=["X-05", "X-08", "X-09", "X-10", "X-11", "X-13", "X-17", "X-25", "X-36", "X-37", "X-38", "X-59", "X-70"],
         shape=(
             "A_o = ⟨S, Q, R, T⟩   // L6375, turn [11]\n"
             "A = { (o, A_o) | o ∈ O_granted }   // L6378, turn [11]"
@@ -721,7 +723,7 @@ TERMS += [
         dependents=["T-10", "T-09", "T-15"],
         obligations=["R-CAP-04", "R-CAP-02", "R-CORE-04"],
         sections=["S-09"],
-        collisions=["X-08", "X-16", "X-17"],
+        collisions=["X-08", "X-16", "X-17", "X-70"],
         note=(
             "No canonical byte encoding exists for `Constraint` in the frozen 15A tag "
             "set, although `Expr::Attenuate` embeds one as an immediate (C-16, U-02)."
@@ -751,7 +753,7 @@ TERMS += [
         dependents=["T-09", "T-10", "T-11", "T-12"],
         obligations=["R-KERN-01", "R-KERN-02", "R-KERN-03", "R-TRUST-03"],
         sections=["S-10"],
-        collisions=['X-05', 'X-36', 'X-37', 'X-55', 'X-66'],
+        collisions=["X-05", "X-36", "X-37", "X-55", "X-66", "X-70"],
         note=(
             "`kernel` is context-dependent in the source (capability kernel vs the CEK "
             "machine's core); the qualified name is canonical in prose. AMB-26 records "
@@ -820,7 +822,7 @@ TERMS += [
         dependents=["T-09", "T-12", "T-39"],
         obligations=["R-MARSHAL-01", "R-MARSHAL-02", "R-CORE-07", "R-CAP-04"],
         sections=["S-16"],
-        collisions=["X-29"],
+        collisions=["X-29", "X-70"],
         note=(
             "spec/05 §1 separates `derive` (algebra op) / `attenuate` (machine "
             "operation) / `delegate` (cross-actor transfer); that separation is retained "
@@ -921,7 +923,7 @@ TERMS += [
         dependents=["T-16", "T-20", "T-18", "T-42"],
         obligations=["R-EFFECT-01", "R-EFFECT-03", "R-DUR-01"],
         sections=["S-12", "S-13"],
-        collisions=["X-04", "X-27", "X-35", "X-57"],
+        collisions=["X-04", "X-27", "X-35", "X-57", "X-73", "X-74"],
         shape="pub struct EffectRequest { pub id: EffectId, pub effect: Effect }   // L23758",
         supersedes=[
             "pub struct EffectRequest { id: EffectId, cap: CapRef }   // L1447 (no effect field)",
@@ -1240,7 +1242,7 @@ TERMS += [
         dependents=["T-25", "T-26", "T-27", "T-28", "T-29"],
         obligations=["R-BUDGET-01", "R-BUDGET-02", "R-BUDGET-05", "R-CORE-05"],
         sections=["S-11"],
-        collisions=["X-08", "X-09", "X-15", "X-19", "X-44"],
+        collisions=["X-08", "X-09", "X-15", "X-19", "X-44", "X-69"],
         shape="pub struct Budget { pub consumable: Consumable, pub reserved: Reserved, pub deadline: Deadline }",
         supersedes=[
             "6-dimension budget ⟨fuel, mem, msgs, calls, io, time⟩   // L1960 (v1)",
@@ -1341,7 +1343,7 @@ TERMS += [
         dependents=["T-24", "T-22"],
         obligations=["R-BUDGET-01", "R-BUDGET-03", "R-BUDGET-04", "R-CORE-05"],
         sections=["S-11"],
-        collisions=["X-07", "X-09", "X-10", "X-16", "X-19", "X-21", "X-22", "X-44", "X-49"],
+        collisions=["X-07", "X-09", "X-10", "X-16", "X-19", "X-21", "X-22", "X-44", "X-49", "X-74"],
         shape="pub struct Reserved { pub memory: u64, pub slots: u64 }",
         supersedes=["(C ≥ ΔC) ∧ (R + ΔR ≥ 0)   // L7314 — wrong reservation direction (C-07)"],
         note="The direction error of the pre-[15] `BudgetOK` is C-07; `ReserveOK`/`ReleaseOK` are the frozen forms.",
@@ -1376,7 +1378,7 @@ TERMS += [
         dependents=["T-24", "T-28"],
         obligations=["R-BUDGET-01", "R-BUDGET-06", "R-CAP-09"],
         sections=["S-11"],
-        collisions=["X-12", "X-42"],
+        collisions=["X-12", "X-42", "X-69"],
         note="`W` (deadline) vs `D` (duration consumable) vs `T` (capability lifetime) are three distinct bounds.",
     ),
     Term(
@@ -1490,7 +1492,7 @@ TERMS += [
         dependents=["T-06", "T-31", "T-32", "T-33"],
         obligations=["R-CALC-02", "R-CALC-03", "R-COMPILE-01"],
         sections=["S-07"],
-        collisions=["X-03", "X-30", "X-35", "X-39"],
+        collisions=["X-03", "X-30", "X-35", "X-39", "X-70"],
         shape="pub enum Expr { Value(Value), Var(Symbol), Let{..}, Seq{..}, If{..}, Call{..}, Lambda{..}, Attenuate{..}, Request{..}, Spawn{..}, Send{..}, Receive }",
         note=(
             "`Expr::Request` has two frozen field sets: `{cap, args}` (L10420, turn [18]) "
@@ -1526,11 +1528,13 @@ TERMS += [
             ("Value::Function", "frozen machine-domain variant"),
             ("Value::Map", "frozen canonical-domain variant (absent from the machine domain)"),
             ("FunctionValue", "frozen type `{params, body, env}`; `env: EnvironmentSnapshot` (X-33)"),
+            ("Value::Null", "source-used spelling L1027 (turn [3]) — every declared `Value` set has `Unit`, not `Null` (X-75)"),
+            ("Value::DelegatedCapability", "source-used path L25995/L26000 (turn [32]) — in no `Value` declaration; the declared capability variant is `Capability(Box<CapabilityToken>)` (X-70, X-75)"),
         ],
         dependents=["T-01", "T-30", "T-39", "T-46"],
         obligations=["R-CALC-01", "R-CANON-04", "R-MARSHAL-03"],
         sections=["S-07", "S-17"],
-        collisions=["X-28", "X-33", "X-45", "X-54", "X-55", "X-56"],
+        collisions=["X-28", "X-33", "X-45", "X-54", "X-55", "X-56", "X-70", "X-72", "X-75"],
         note="Registered upstream as C-03, C-45, U-09, AMB-21. Restated here so the dictionary is complete.",
     ),
     Term(
@@ -1560,7 +1564,7 @@ TERMS += [
         dependents=["T-30", "T-33", "T-37"],
         obligations=["R-CEK-01", "R-CEK-02", "R-ACTOR-02"],
         sections=["S-08"],
-        collisions=["X-18", "X-21", "X-22", "X-57"],
+        collisions=["X-18", "X-21", "X-22", "X-57", "X-74"],
         note="No canonical byte encoding is frozen for `EvalState` (C-15, U-02).",
     ),
     Term(
@@ -1663,17 +1667,23 @@ TERMS += [
         dependents=["T-36", "T-37", "T-18", "T-26"],
         obligations=["R-ACTOR-02", "R-ACTOR-04", "R-CALC-06"],
         sections=["S-15", "S-07"],
-        collisions=['X-21', 'X-22', 'X-23', 'X-38', 'X-58', 'X-65'],
+        collisions=["X-21", "X-22", "X-23", "X-38", "X-58", "X-65", "X-71", "X-73", "X-74"],
         shape="pub enum ActorStatus { Running, Pending { effect_id, effect, reservation }, Blocked, Halted(Value), Fault(Fault) }",
         supersedes=[
             "pub enum ActorStatus { Running, Pending(PendingEffect), Blocked(Continuation), "
             "Halted(Value), Fault(Fault) }   // L9411 (turn [17])",
         ],
         note=(
-            "Two incompatible declarations (X-21). The turn-[17] form puts the "
-            "continuation inside `Blocked(Continuation)`; the frozen turn-[30] form "
-            "keeps it in `actor.eval.continuation` and moves `reservation` into "
-            "`Pending`. C-18/AMB-05 cover `ActorStatus` vs `RunState`, not this split."
+        "SEVEN declarations in THREE shapes (X-74), not the two X-21 records. Shape (i) "
+        "L9411/L10346 (turns [17]/[18]): `Pending(PendingEffect), Blocked(Continuation)` — the "
+        "continuation inside `Blocked`. Shape (ii) L21234 (turn [29]): `Pending { effect: "
+        "EffectRequest, continuation: Continuation, reservation: ReservedCapacity }, "
+        "Blocked(Continuation)` — the continuation in BOTH variants. Shape (iii) L23306/L23793 "
+        "(turn [30]): `Pending { effect: EffectRequest, reservation: ReservedCapacity }, Blocked` "
+        "— the continuation in NEITHER, which is the form the frozen turn-[30] machine assumes "
+        "when it keeps the continuation in `actor.eval.continuation` (T-37, T-32). X-21 covers "
+        "the `Running`/`Active` naming split, X-74 the shape split and the seven-declaration "
+        "count; C-18/AMB-05 cover `ActorStatus` vs `RunState`, not either split."
         ),
     ),
     Term(
@@ -1699,11 +1709,12 @@ TERMS += [
             ("Runnable", "frozen variant — exists ONLY here, not in `ActorStatus`"),
             ("Faulted", "frozen variant — note the spelling differs from "
                         "`ActorStatus::Fault` (X-23); neither is renamed"),
+            ("NotRunnable", "declared variant L24300 (turn [31]) — silently absent from the L25526 (turn [32]) re-declaration, no supersession note (X-75)"),
         ],
         dependents=["T-35", "T-37", "T-40"],
         obligations=["R-ACTOR-02", "R-ACTOR-04", "R-ACTOR-07"],
         sections=["S-15"],
-        collisions=['X-21', 'X-23', 'X-58'],
+        collisions=["X-21", "X-23", "X-58", "X-73", "X-75"],
         note="Both enums are kept by the frozen text (C-18, INFO). The dictionary separates their ownership: ACTOR vs SCHEDULER.",
     ),
     Term(
@@ -1738,7 +1749,7 @@ TERMS += [
         dependents=["T-34", "T-35", "T-36", "T-32", "T-14", "T-24", "T-39"],
         obligations=["R-ACTOR-01", "R-ACTOR-02", "R-ACTOR-03", "R-PERSIST-04"],
         sections=["S-15"],
-        collisions=["X-11", "X-14", "X-18"],
+        collisions=["X-11", "X-14", "X-18", "X-74"],
         shape="A_a = ⟨e, ρ, κ, ℋ, C, R, W, mailbox, status⟩   // L8666, turn [16]",
         note=(
             "In `A_a`'s own definition the symbols `C` and `R` are the BUDGET components, "
@@ -1937,7 +1948,7 @@ TERMS += [
         dependents=["T-19", "T-17", "T-21", "T-44"],
         obligations=["R-HOST-03", "R-HOST-04", "R-EFFECT-06"],
         sections=["S-14"],
-        collisions=['X-43', 'X-67'],
+        collisions=["X-43", "X-67"],
         shape="pub struct ReplayHost { trace: Vec<EffectReceipt>, cursor: usize }",
         supersedes=[
             "pub struct ReplayHost { recorded_receipts: HashMap<EffectId, EffectReceipt>, "
@@ -2041,7 +2052,7 @@ TERMS += [
         dependents=["T-46", "T-47", "T-49", "T-23", "T-48"],
         obligations=["R-PERSIST-01", "R-PERSIST-02", "R-PERSIST-03", "R-DUR-01", "R-CORE-06"],
         sections=["S-18", "S-13"],
-        collisions=["X-13", "X-14", "X-17", "X-31", "X-32", "X-47", "X-54", "X-57", "X-61"],
+        collisions=["X-13", "X-14", "X-17", "X-31", "X-32", "X-47", "X-54", "X-57", "X-61", "X-71"],
         note=(
             "Five names denote this one durable structure (`WAL`, `Write-Ahead Log`, "
             "`L`, `DurableLog`, 'append-only durable event log'), and a sixth "
@@ -2120,7 +2131,7 @@ TERMS += [
         dependents=["T-45", "T-46", "T-18", "T-23", "T-48", "T-51"],
         obligations=["R-PERSIST-03", "R-DUR-02", "R-DUR-03", "R-DUR-04"],
         sections=["S-18", "S-13"],
-        collisions=["X-07", "X-24", "X-31", "X-32", "X-33", "X-47", "X-61"],
+        collisions=["X-07", "X-24", "X-31", "X-32", "X-33", "X-47", "X-61", "X-71", "X-72"],
         shape="pub enum WalRecord { Event(EventEnvelope), EffectPrepared{..}, EffectIssued{..}, EffectCompleted{..}, EffectReconciled{..}, SnapshotCommit{..} }",
         supersedes=[
             "pub enum EffectJournalEntry { Prepared{..}, Issued{..}, Completed{..}, "
@@ -2462,7 +2473,7 @@ TERMS += [
         dependents=["T-02", "T-01", "T-54"],
         obligations=["R-CORE-01", "R-PLANNER-01", "R-PLANNER-02", "R-TRUST-01", "R-TRUST-02"],
         sections=["S-02", "S-05", "S-03"],
-        collisions=[],
+        collisions=["X-69"],
         note="N-09 (`LLM output ≠ Authority`) is the thesis-level law; R-PLANNER-02 enumerates its eight prohibitions.",
     ),
 ]
@@ -2698,7 +2709,7 @@ TERMS += [
         dependents=["T-31", "T-46", "T-63", "T-21"],
         obligations=["R-CANON-01", "R-CANON-02", "R-CANON-03", "R-CANON-04", "R-CANON-06"],
         sections=["S-17"],
-        collisions=["X-24", "X-45", "X-50", "X-51", "X-54", "X-55", "X-56"],
+        collisions=["X-24", "X-45", "X-50", "X-51", "X-54", "X-55", "X-56", "X-72"],
         shape="version: u8 | type_tag: u8 | payload_length: u32 BE | payload   // L38147-38150",
         supersedes=[
             "[format_version: u8] [type_tag: u32 LE] [length: u32 LE] [payload]   // L28298 (turn [36])",
@@ -2745,7 +2756,7 @@ TERMS += [
         dependents=["T-62", "T-31", "T-48"],
         obligations=["R-CANON-02", "R-CANON-05", "R-CANON-07", "R-CANON-08"],
         sections=["S-17"],
-        collisions=["X-50", "X-51", "X-54", "X-55", "X-56"],
+        collisions=["X-50", "X-51", "X-54", "X-55", "X-56", "X-72"],
         note=(
             "spec/05 §4 lists the traits as `CanonicalPayload / CanonicalEncode / "
             "CanonicalDecode` and omits `CanonicalSerialize`, which is the name the "
@@ -3023,12 +3034,19 @@ TERMS += [
             ("ReplayCorruption", "frozen variant L23814 — also a `HostFault` path (X-67)"),
             ("InvalidReceipt", "frozen variant L23815"),
             ("IsolationBreach", "v1 grammar L1949 and receipt-mismatch conclusion L2024/L7223/L8766"),
-            ("StalePlan", "claimed as a `Fault` variant by spec/01 L138, REQ-CALC-014 and AMB-08; occurs only as a bare token L27236 and in prose L28373 (X-64)"),
+            ("StalePlan", "source-used fault name: `Fault::StalePlan` at L28373 (turn [36]) and a bare token at L27236 (turn [33]) — declared by none of the seven `Fault` enums (X-64, X-69)"),
+            ("AuthoritySuspended", "source-used `Fault::` path L941 (turn [3]) — in no declaration (X-69)"),
+            ("FuelExhausted", "source-used `Fault::` path L1018 (turn [3]) — the declared name is `BudgetExhausted` (X-69)"),
+            ("AncestorRevoked", "source-used `Fault::` path L6705 (turn [11]) — near-synonym of `Revoked` in the same list (X-69)"),
+            ("Unauthorized", "source-used `Fault::` path L6706 (turn [11]) — a third name for the same denial (X-69)"),
+            ("ReservedCapacityExceeded", "source-used `Fault::` path L10466-10467 (turn [18]) — in no declaration (X-69)"),
+            ("NoSuchActor", "source-used `Fault::` path L25714 (turn [32]) — in no declaration (X-69)"),
+            ("UnknownActor", "source-used `Fault::` path L26017 (turn [32]) — a second name for `NoSuchActor`, 303 lines later (X-69)"),
         ],
         dependents=["T-35", "T-36", "T-71", "T-72", "T-73", "T-74"],
         obligations=["R-CALC-06", "R-ACTOR-02", "R-ACTOR-04"],
         sections=["S-07", "S-15"],
-        collisions=['X-23', 'X-38', 'X-58', 'X-59', 'X-64', 'X-65', 'X-66', 'X-67', 'X-68'],
+        collisions=["X-23", "X-38", "X-58", "X-59", "X-64", "X-65", "X-66", "X-67", "X-68", "X-69", "X-71", "X-73"],
         shape=(
             "pub enum Fault {\n"
             "    // ... (previous faults)\n"
@@ -3062,10 +3080,11 @@ TERMS += [
         type="RUST-ENUM",
         definition=(
             "The fault taxonomy of the GLOBAL machine step, parallel to `Fault`: "
-            "`global_step(…) -> Result<GlobalStep, GlobalFault>`. Its five variants are all "
-            "durable-state faults (`SnapshotCorruption`, `EventLogCorruption`, "
-            "`EventSequenceGap`, `InvalidRecoveredState`, `EffectReconciliationFailure`), "
-            "none of which appears in any `Fault` declaration. It is named by no obligation, "
+            "`global_step(…) -> Result<GlobalStep, GlobalFault>`. Its eight variants cover "
+            "durable state (`SnapshotCorruption`, `EventLogCorruption`, `EventSequenceGap`, "
+            "`InvalidRecoveredState`, `EffectReconciliationFailure`, `PersistenceFailure`) and "
+            "the actor table and scheduler (`ActorTableCorruption`, `SchedulerInvariantViolation`). None "
+            "of the eight appears in any `Fault` declaration. It is named by no obligation, "
             "module or requirement record: R-CALC-06 describes \u201cthe frozen `Fault` "
             "taxonomy\u201d without it (spec/01 L138, spec/03 L52, mod/01 L155, mod/18 L68), "
             "and the only canonicalization-layer mention it has is the one this pass added "
@@ -3083,16 +3102,20 @@ TERMS += [
             ("EventSequenceGap", "frozen variant L26888"),
             ("InvalidRecoveredState", "frozen variant L26889"),
             ("EffectReconciliationFailure", "frozen variant L26890"),
+            ("PersistenceFailure", "frozen variant L26891"),
+            ("ActorTableCorruption", "frozen variant L26892"),
+            ("SchedulerInvariantViolation", "frozen variant L26893"),
         ],
         dependents=["T-38", "T-48", "T-45", "T-52"],
         obligations=["R-CALC-06"],
         sections=["S-07"],
         collisions=["X-58"],
-        shape=("pub enum GlobalFault { SnapshotCorruption, EventLogCorruption, "
-              "EventSequenceGap, InvalidRecoveredState, EffectReconciliationFailure }"),
-        note=("Absent from the canonicalization layer: R-CALC-06 (spec/01 L138), mod/01 L155, "
-              "mod/18 L68 and spec/03 L52 all describe \u201cthe frozen `Fault` taxonomy\u201d "
-              "without mentioning that a second, disjoint taxonomy governs the global step."),
+        shape=("pub enum GlobalFault { SnapshotCorruption, EventLogCorruption, EventSequenceGap, "
+              "InvalidRecoveredState, EffectReconciliationFailure, PersistenceFailure, "
+              "ActorTableCorruption, SchedulerInvariantViolation }   // L26885-26894, all eight"),
+        note=("R-CALC-06 (spec/01 L138, spec/03 L52, mod/01 L155, mod/18 L68) describes "
+              "\u201cthe frozen `Fault` taxonomy\u201d without mentioning that a second, disjoint "
+              "eight-variant taxonomy governs the global machine step."),
     ),
     Term(
         tid="T-72",
@@ -3148,11 +3171,12 @@ TERMS += [
             ("InvalidFormat", "variant of the turn-[18] declaration (L10848)"),
             ("CapabilityRequiresDelegation", "variant of the turn-[32] declaration (L25984) — the one mod/06 L62/L103 and REQ-MARSHAL cite"),
             ("SerializationError", "variant of the turn-[32] declaration (L25985)"),
+            ("CorruptedPayload", "source-used `MarshalFault::` path L25694 (turn [32]) — in neither declaration (X-65, X-75)"),
         ],
         dependents=["T-35", "T-70"],
         obligations=["R-MARSHAL-01", "R-MARSHAL-02"],
         sections=["S-16"],
-        collisions=["X-65"],
+        collisions=["X-65", "X-75"],
         shape="pub enum MarshalFault { CapabilityRequiresDelegation, SerializationError }   // L25983 (turn [32])",
         supersedes=["pub enum MarshalFault { CapabilityNotTransferable, InvalidFormat }   // L10846 (turn [18])"],
         note="Zero variants are shared between the two declarations (X-65).",
@@ -3201,6 +3225,210 @@ TERMS += [
             "Not one of the eight used variant paths is declared. `ReplayCorruption` is "
             "simultaneously a `HostFault` path and a `Fault` variant (L23814), so the same "
             "name denotes faults at two different levels of the taxonomy."
+        ),
+    ),
+    # ------------------------------------------- H. sweep-found type families
+    Term(
+        tid="T-75",
+        canonical="MachineEvent",
+        domain="MACHINE",
+        type="RUST-ENUM",
+        definition=(
+            "The machine's transition-event stream: what a step emits for the trace, and the "
+            "vocabulary the differential observer and the WAL are built on. Declared eight "
+            "times with materially different variant sets, three of them behind a `// ...` "
+            "elision, and used with eight further variant paths that appear in no declaration."
+        ),
+        owner="MOD-05",
+        owner_crate="ror-runtime",
+        first_definition=A(14697, 23, "pub enum MachineEvent {"),
+        frozen_at=A(22002, 29, "pub enum MachineEvent {"),
+        forbidden=["event (unqualified)", "GlobalEvent (a different, also undeclared name)", "MachineEvents"],
+        protected=[
+            ("MachineEvent", "frozen Rust enum name — EIGHT declarations (L14697, L15958, L17588, L18104, L18631, L20318, L20724, L22002)"),
+            ("EnterSeq", "declared variant (L14697 onward)"),
+            ("EnterIf", "declared variant"),
+            ("EnterCall", "declared variant (from L15958)"),
+            ("EnterLambda", "declared variant from L15963 (turn [24]) onward"),
+            ("ApplyFunction", "declared variant (from L17588)"),
+            ("PushFrame", "declared variant"),
+            ("PopFrame", "declared variant"),
+            ("Block", "declared variant (L14697) — a `MachineEvent`, not the untrusted `Block` of T-01"),
+            ("EnterAttenuate", "declared variant (L20318, L20724)"),
+            ("DeriveCapability", "declared variant (L20318, L20724); constructed at L20386"),
+            ("Fault", "declared variant; constructed at L20391/L20792 carrying a `Fault`"),
+            ("EffectIssued", "declared variant (L22005) with `{ id, digest }`"),
+            ("EffectCompleted", "declared variant (L22010) with `{ id, digest }`"),
+            ("// ...", "verbatim elision marker at L22003 — the frozen block does not restate earlier variants"),
+            ("EnterRequest", "USED L21483, L23380 — never declared (X-71)"),
+            ("BeginRequestTarget", "USED L21536, L23398 — never declared (X-71)"),
+            ("BeginRequestArgument", "USED L21645, L23426 — never declared (X-71)"),
+            ("Blocked", "USED L25740, L26038 — never declared; the declared name is `Block` (X-71)"),
+            ("Spawned", "USED L25668 — never declared (X-71)"),
+            ("ActorSpawned", "USED L25966 with `{ parent, child }` — never declared; a SECOND name for `Spawned` (X-71)"),
+            ("Sent", "USED L25728 — never declared (X-71)"),
+            ("MessageSent", "USED L26027 with `{ from, to }` — never declared; a SECOND name for `Sent` (X-71)"),
+            ("EnterLet", "declared variant L14698 (turn [23]) and in every later declaration, carrying a `Symbol`"),
+            ("EvaluateValue", "declared variant L14701, carrying a `Value` — ALSO constructed in prose at L17575"),
+            ("Lookup", "declared variant L14702, carrying a `Symbol`"),
+            ("Halt", "declared variant L14705, carrying a `Value` — the same name as `StepResult::Halt` in a different enum (X-73)"),
+            ("BeginArgument", "declared variant from L17596 (turn [25]), carrying a `usize`"),
+            ("EndArgument", "declared variant from L17597 (turn [25]), carrying a `usize`"),
+            ("// ... (Previous events)", "verbatim elision marker at L20319 (turn [28]) — one of three elided declarations"),
+            ("// ... (previous variants)", "verbatim elision marker at L20725 (turn [28]) — note the different capitalisation and noun"),
+        ],
+        dependents=["T-47", "T-45", "T-70", "T-35", "T-38"],
+        obligations=["R-CORE-08", "R-ACTOR-07"],
+        sections=["S-07", "S-15"],
+        collisions=["X-71"],
+        shape=("pub enum MachineEvent { /* ... */ EffectIssued { id: EffectId, digest: EffectDigest }, "
+               "EffectCompleted { id: EffectId, digest: EffectDigest } }   // L22002-22014, elided head"),
+        note=(
+            "Absent from the dictionary until the declaration sweep: the event vocabulary that "
+            "the trace, the WAL and the differential comparison are all built on had no term of "
+            "record, and no register entry counted its declarations."
+        ),
+    ),
+    Term(
+        tid="T-76",
+        canonical="CanonicalError",
+        domain="PERSISTENCE",
+        type="RUST-ENUM",
+        definition=(
+            "The error type of canonical encoding and decoding — the `Err` arm of every "
+            "`canonical_serialize` / `canonical_deserialize`, and therefore the type that "
+            "reports every violation of the frozen envelope and payload rules. Declared seven "
+            "times in four materially different shapes: unit variants, a differently-spelled "
+            "set, payload-bearing struct variants for the same names, and an elided block "
+            "adding one new variant."
+        ),
+        owner="MOD-10",
+        owner_crate="ror-core (+ vectors/canonical)",
+        first_definition=A(29188, 38, "pub enum CanonicalError {"),
+        frozen_at=A(30661, 41, "pub enum CanonicalError {"),
+        forbidden=["CanonicalizationError", "EncodeError", "DecodeError", "canonical error (unqualified)"],
+        protected=[
+            ("CanonicalError", "frozen Rust enum name — SEVEN declarations (L29188, L29968, L30661, L32083, L32959, L33299, L34994)"),
+            ("InvalidVersion", "declared as a UNIT variant (L29189, L29970) and as a STRUCT variant `{ expected: u8, found: u8 }` (L30662) — same name, two arities (X-72)"),
+            ("InvalidTypeTag", "unit (L29190, L29971) and struct `{ expected: u8, found: u8 }` (L30663) (X-72)"),
+            ("LengthMismatch", "unit (L29191) and struct `{ expected: u32, found: usize }` (L30664); ABSENT from the L29968 set (X-72)"),
+            ("LengthOverflow", "declared from L29968 onward; ABSENT from the first declaration L29188 (X-72)"),
+            ("InvalidUtf8", "unit (L29192, L30666)"),
+            ("Utf8Error", "a SECOND name for the same condition, only in the L29968 set (X-72)"),
+            ("UnexpectedEof", "unit (L29193, L30667); ABSENT from the L29968 set, which has `PayloadTooShort` instead (X-72)"),
+            ("PayloadTooShort", "only in the L29968 set (X-72)"),
+            ("InvalidDiscriminant", "unit (L29972) and struct `{ found: u8 }` (L30669) (X-72)"),
+            ("TrailingBytes", "unit (L29975) and struct `{ count: usize }` (L30668) (X-72)"),
+            ("InvalidBoolValue", "struct `{ found: u8 }` (L30670), only in the L30661 set"),
+            ("DuplicateMapKey", "added at L34996 behind a `// ... previous variants` elision — 'NEW: Enforces strict injectivity'"),
+            ("// ... previous variants", "verbatim elision marker at L34995"),
+        ],
+        dependents=["T-62", "T-63", "T-47", "T-45", "T-31"],
+        obligations=["R-CANON-01", "R-CANON-02"],
+        sections=["S-17"],
+        collisions=["X-72", "X-75"],
+        shape=("pub enum CanonicalError { InvalidVersion { expected: u8, found: u8 }, "
+               "InvalidTypeTag { expected: u8, found: u8 }, LengthMismatch { expected: u32, found: usize }, "
+               "LengthOverflow, InvalidUtf8, UnexpectedEof, TrailingBytes { count: usize }, "
+               "InvalidDiscriminant { found: u8 }, InvalidBoolValue { found: u8 } }   // L30661-30671"),
+        supersedes=[
+            "pub enum CanonicalError { InvalidVersion, InvalidTypeTag, LengthMismatch, InvalidUtf8, UnexpectedEof }   // L29188 (turn [38])",
+            "pub enum CanonicalError { LengthOverflow, InvalidVersion, InvalidTypeTag, InvalidDiscriminant, PayloadTooShort, TrailingBytes, Utf8Error }   // L29968",
+        ],
+        note=(
+            "Sits directly on the canonical-encoding path where X-50 (the envelope wire format) "
+            "is already BLOCKING: which `CanonicalError` governs determines what a decoder may "
+            "report, and the four shapes do not agree on names, spellings or arities."
+        ),
+    ),
+    Term(
+        tid="T-77",
+        canonical="StepResult",
+        domain="MACHINE",
+        type="RUST-ENUM",
+        definition=(
+            "TWO DISJOINT ENUMS SHARE THIS NAME. (1) The CEK machine's single-step outcome "
+            "(L1006, turn [3]): `Continue | Halt(Value) | Fault(Fault) | YieldToHost(Effect)` "
+            "— one actor, one reduction, no identity carried. (2) The actor scheduler's step "
+            "outcome (L9586, turn [17], restated L10397 and L10947): "
+            "`Progressed | Blocked(ActorId) | Pending(ActorId, EffectRequest) | Halted(ActorId, Value) "
+            "| Faulted(ActorId, Fault) | NoRunnableActors` — every variant carries an `ActorId`. "
+            "They are not two versions of one type: they belong to different layers and have no "
+            "variant in common."
+        ),
+        owner="MOD-05",
+        owner_crate="ror-runtime",
+        first_definition=A(1006, 3, "pub enum StepResult {"),
+        frozen_at=A(9586, 17, "pub enum StepResult {"),
+        forbidden=[
+            "step result (unqualified — two disjoint enums exist)",
+            "StepOutcome",
+            "using the scheduler's `Faulted(ActorId, Fault)` where the machine's `Fault(Fault)` is meant (X-23, X-73)",
+        ],
+        protected=[
+            ("StepResult", "frozen Rust enum name — FOUR declarations (L1006, L9586, L10397, L10947) in two disjoint families"),
+            ("Continue", "machine variant L1007"),
+            ("Halt", "machine variant L1008, carrying a `Value`"),
+            ("Fault", "machine variant L1009, carrying a `Fault`"),
+            ("YieldToHost", "machine variant L1010, carrying an `Effect`"),
+            ("Progressed", "scheduler variant L9587"),
+            ("Blocked", "scheduler variant L9588, carrying an `ActorId` — ALSO an `ActorStatus` and a `RunState` variant (X-21)"),
+            ("Pending", "scheduler variant L9589, carrying `(ActorId, EffectRequest)`"),
+            ("Halted", "scheduler variant L9590, carrying `(ActorId, Value)`"),
+            ("Faulted", "scheduler variant L9591, carrying `(ActorId, Fault)` — ALSO a `RunState` variant (X-23)"),
+            ("NoRunnableActors", "scheduler variant L9592"),
+        ],
+        dependents=["T-70", "T-35", "T-36", "T-34", "T-32"],
+        obligations=["R-CEK-01", "R-ACTOR-04"],
+        sections=["S-07", "S-15"],
+        collisions=["X-73", "X-74"],
+        shape=("pub enum StepResult { Continue, Halt(Value), Fault(Fault), YieldToHost(Effect) }   // L1006, machine\n"
+               "pub enum StepResult { Progressed, Blocked(ActorId), Pending(ActorId, EffectRequest), "
+               "Halted(ActorId, Value), Faulted(ActorId, Fault), NoRunnableActors }   // L9586, scheduler"),
+        note=(
+            "The machine/scheduler split is the same shape as the `Observation` split (X-06), "
+            "which the request's own term list forced into two canonical terms; here the source "
+            "gives no second name, so both are recorded under one entry with the homonymy "
+            "filed as X-73 rather than resolved by renaming."
+        ),
+    ),
+    Term(
+        tid="T-78",
+        canonical="ControlFrame",
+        domain="MACHINE",
+        type="RUST-ENUM",
+        definition=(
+            "The CEK machine's control stack frame: what `self.control` holds between "
+            "reductions. Declared once, behind an elision, with three visible variants — and "
+            "used with two variant paths that appear in no declaration. Its declared variants "
+            "reference `PlanIR`, `FuncRef` and `EffectSignature`, none of which is declared "
+            "anywhere either."
+        ),
+        owner="MOD-05",
+        owner_crate="ror-runtime",
+        first_definition=A(985, 3, "pub enum ControlFrame {"),
+        frozen_at=None,
+        forbidden=["control frame (unqualified)", "ControlStack", "Frame (that is T-33, a distinct declared enum)"],
+        protected=[
+            ("ControlFrame", "frozen Rust enum name — the ONLY declaration (L985, turn [3])"),
+            ("EvaluateSequence", "declared variant L986, carrying `{ remaining: Vec<PlanIR> }`"),
+            ("AwaitInvoke", "declared variant L987, carrying `{ func: FuncRef, args: Vec<Value> }`"),
+            ("AwaitHostFFI", "declared variant L988, carrying `{ effect: EffectSignature }`"),
+            ("// ...", "verbatim elision marker at L989"),
+            ("ReduceIR", "USED L1031 and matched at L1035 — never declared (X-75)"),
+            ("ResumeWithResult", "USED L1282 — never declared (X-75)"),
+        ],
+        dependents=["T-32", "T-30", "T-31", "T-77"],
+        obligations=["R-CEK-01"],
+        sections=["S-07"],
+        collisions=["X-75"],
+        shape=("pub enum ControlFrame { EvaluateSequence { remaining: Vec<PlanIR> }, "
+               "AwaitInvoke { func: FuncRef, args: Vec<Value> }, AwaitHostFFI { effect: EffectSignature }, "
+               "/* ... */ }   // L985-990"),
+        note=(
+            "Distinct from `Frame` (T-33), which is declared eleven times and is the "
+            "evaluation frame of the frozen turn-[30] machine; the two names are not "
+            "interchangeable and the source uses both."
         ),
     ),
 ]
@@ -4387,7 +4615,11 @@ COLLISIONS += [
                                                            "other `Observed*` types: no declarations"),
        (25989, "Expr::Delegate {", "turn [32]: an AST NODE used in a match sketch and in the "
                                    "delegation proof table, but no `pub enum Expr` (L12145, "
-                                   "L14030, L14413, L20295, L20702) declares it")],
+                                   "L14030, L14413, L20295, L20702) declares it"),
+       (26058, "Authority can only cross boundaries via `Expr::Delegate`",
+        "turn [32]: Theorem 2's proof — site added by the X-70 sweep"),
+       (26078, "| **C: Delegation** | `Expr::Delegate` |",
+        "turn [32]: property-test matrix row C — site added by the X-70 sweep")],
       "`NormalizedAST`, `Form`, `GlobalEvent`, `CapabilitySummary`, `BudgetSummary` and "
       "the seven `Observed*` element types are all used in frozen declarations and none "
       "is declared anywhere in the source. `PlanIR` (X-30) is a seventh: it is used with "
@@ -5118,7 +5350,7 @@ COLLISIONS += [
       "The source states `IMPLEMENTATION: READY` twice (turn [54]) and `Implementation: "
       "IN PROGRESS` once (turn [58], later). The README states `Implementation: IN "
       "PROGRESS` in its first status block (L12) and `Implementation: READY` in its last "
-      "(L732). C-09/AMB-24 record the contradiction but cite README L22-28 and L656-661 "
+      "(L735). C-09/AMB-24 record the contradiction but cite README L22-28 and L656-661 "
       "and source L42092-42100, none of which contains a status block (X-61).",
       "Neither statement is repository evidence: this repository contains no "
       "implementation, so the correct status is 'no implementation present' and every "
@@ -5133,7 +5365,7 @@ COLLISIONS += [
       ["T-65", "T-64", "T-68"],
       ["C-09", "AMB-24"], "", True,
       [("README.md", 12, "Implementation:     IN PROGRESS", "the README's first status block"),
-       ("README.md", 732, "Implementation     READY", "the README's last status block")]),
+       ("README.md", 735, "Implementation     READY", "the README's last status block")]),
 ]
 
 
@@ -5520,10 +5752,10 @@ COLLISIONS += [
       "C-09's evidence is 'README L22–28 (\"Implementation: IN PROGRESS\") vs README "
       "L656–661 / L42092–42100 (\"Implementation: READY\")' and AMB-24 repeats "
       "'`README.md` L22–28 vs L656–661'. The README's two status blocks are at L12 "
-      "(`Implementation: IN PROGRESS`) and L732 (`Implementation READY`); L22-28 and "
+      "(`Implementation: IN PROGRESS`) and L735 (`Implementation READY`); L22-28 and "
       "L656-661 contain no status text. The third citation, L42092-42100, is beyond the "
       "end of the frozen source, whose last line is 42312 in a different file — the "
-      "README is 742 lines long, so no README line in the 42000s exists. It was 708 lines when this collision was first recorded and the block has since moved, because this pass added a `term/` paragraph to the README; the citation is therefore anchored to the `# Project Status` heading (L729) as well as to the line, so that it survives further growth. The real "
+      "README is 745 lines long, so no README line in the 42000s exists. It was 708 lines when this collision was first recorded; the block moved to L732 when this pass added a `term/` paragraph to the README, and to L735 when the declaration sweep extended that same paragraph. The citation is therefore anchored to the `# Project Status` heading (now L732) as well as to the line, so that it survives further growth. The real "
       "in-source contradiction is between L38939/L39053 (`READY`, turn [54]) and L41307 "
       "(`IN PROGRESS`, turn [58]).",
       "The contradiction C-09 reports is real, but three of its four citations are "
@@ -5534,7 +5766,7 @@ COLLISIONS += [
       "the citations, fails, and concludes the finding is spurious would be left with an "
       "unresolved status contradiction — the opposite of the intended effect.",
       "C-09 and AMB-24 are corrected in this pass to the verified citations (README L12 "
-      "and L732 under the `# Project Status` heading at L729; source L38939, L39053, L41307), and the resolution is stated: under "
+      "and L735 under the `# Project Status` heading at L732; source L38939, L39053, L41307), and the resolution is stated: under "
       "latest-frozen-text the turn-[58] `IN PROGRESS` governs the source, while the "
       "canonicalization layer's own position — no implementation present, every "
       "obligation `SPECIFIED` (spec/00 §2) — governs the repository and makes both source "
@@ -5547,59 +5779,77 @@ COLLISIONS += [
        ("req/03-ambiguous.md", 189, "`README.md` L22–28 vs L656–661",
         "the same defective citations, repeated"),
        ("README.md", 12, "Implementation:     IN PROGRESS", "the real first status block"),
-       ("README.md", 732, "Implementation     READY", "the real last status block")]),
+       ("README.md", 735, "Implementation     READY", "the real last status block")]),
     X(xid="X-64",
-      title="`StalePlan` is asserted to be a frozen `Fault` variant by spec/01, REQ-CALC-014 and AMB-08, but it is in none of the seven `Fault` declarations",
-      kind="PHANTOM-IDENTIFIER",
+      title="`Fault::StalePlan` is used by the frozen source at L28373 but is a variant of none of the seven `Fault` declarations",
+      kind="UNDECLARED-VARIANT",
       severity="MAJOR",
       sites=[
-        (27236, "StalePlan", "turn [33]: the ONLY code occurrence — a bare token in a one-line ```text block, not a `Fault` variant"),
-        (28373, "Staleness Rejection", "turn [36]: prose 'A `PlanProposal` with `observation_sequence < current_sequence`' — names no fault variant"),
-        (23806, "pub enum Fault {", "the frozen declaration R-CALC-06 cites: eight variants, no `StalePlan`"),
-        (26865, "pub enum Fault {", "the turn-[33] actor-local declaration, contemporary with L27236: no `StalePlan`"),
+        (28373, "is rejected with `Fault::StalePlan`", "turn [36]: the ONLY occurrence of the qualified path — the source names the variant itself"),
+        (27236, "StalePlan", "turn [33]: a bare token, the sole content of a one-line ```text block"),
+        (23806, "pub enum Fault {", "the frozen declaration R-CALC-06 cites: eight listed variants, no `StalePlan`"),
+        (23807, "// ... (previous faults)", "the elision that makes the frozen block non-exhaustive"),
+        (26865, "pub enum Fault {", "turn [33]: the actor-local declaration, contemporary with L27236, also without `StalePlan`"),
+        (10882, "pub enum Fault {", "turn [18]: no `StalePlan`"),
       ],
       statement=(
-        "`StalePlan` occurs exactly twice in L1-42312: as the sole content of a one-line "
-        "```text block at L27236 (turn [33]) and in prose at L28373 (turn [36], 'Staleness "
-        "Rejection'). It appears in none of the seven `pub enum Fault` declarations "
-        "(L10882, L17788, L18125, L22415, L23319, L23806, L26865), and the string "
-        "`Fault::StalePlan` occurs nowhere. Three canonicalization-layer records nevertheless "
-        "assert it as a member of the frozen taxonomy: **spec/01 L138** (normative R-CALC-06) "
-        "writes '… | InvalidReceipt` (plus `StalePlan` at the planner boundary)'; "
-        "**REQ-CALC-014** (req/01-part2 L197-199) states '`StalePlan` is a member of the fault "
-        "taxonomy at the planner boundary' with POSTCONDITIONS '`Fault::StalePlan` produced'; "
-        "and **AMB-08** (req/03) opens 'the frozen `Fault` enum (L23806) lists `Capability(…)`, "
-        "…, `InvalidReceipt`, `StalePlan`' and cites 'L23806-23824' as evidence — a range that "
-        "runs past the enum's closing brace at L23816 into the unrelated heading "
-        "'## 3. Request Continuation Frames' at L23821 and still contains no `StalePlan`. "
-        "R-CALC-06's second provenance anchor, L27236, is correct for the *staleness* fact but "
-        "cannot support the *variant-membership* claim."),
+        "`Fault::StalePlan` occurs verbatim once in L1-42312, at L28373 (turn [36]): “A "
+        "`PlanProposal` with `observation_sequence < current_sequence` is rejected with "
+        "`Fault::StalePlan`”. The bare token `StalePlan` occurs once more, at L27236 (turn [33]), "
+        "as the sole content of a one-line ```text block. No `pub enum Fault` declaration — "
+        "L10882, L17788, L18125, L22415, L23319, L23806, L26865 — contains the variant, and the "
+        "frozen L23806 block elides its own head with `// ... (previous faults)` at L23807, so it "
+        "cannot be read as exhaustive. This is therefore a used-but-undeclared variant path, one "
+        "of twelve (X-69), and NOT a phantom introduced by the canonicalization layer. Three "
+        "records name it and all three are source-supported: **spec/01 L138** (normative "
+        "R-CALC-06) writes “… | InvalidReceipt` (plus `StalePlan` at the planner boundary)”; "
+        "**REQ-CALC-014** (req/01-part2 L195-199) states “`StalePlan` is a member of the fault "
+        "taxonomy at the planner boundary” with POSTCONDITIONS “`Fault::StalePlan` produced” and "
+        "a SOURCE line that already cited L28373; **AMB-08** (req/03 L68) listed it among the "
+        "frozen variants. What is *not* supported is AMB-08's citation “L23806-23824”, which "
+        "runs past the enum's closing brace at L23816 into the unrelated heading “## 3. Request "
+        "Continuation Frames” at L23821 and contains no `StalePlan`; the denial names are at "
+        "L8758, one line outside the range AMB-08 cited."),
       why_it_matters=(
-        "This is the same failure mode as X-62 (`PlannerState`): a normative record names an "
-        "identifier the frozen source does not contain, so an implementer adds a variant that "
-        "no frozen declaration authorizes. Because `Fault` identity is compared by the "
-        "differential observer (R-REF-05), an invented variant is not inert — it changes what "
-        "two conforming implementations may report. It also silently widens R-CALC-06 from "
-        "eight variants to nine, and AMB-08 is marked 'Blocking: yes … the single most blocking "
-        "ambiguity in the set', so its statement is the one most likely to be implemented from."),
+        "Two separate things matter here, and the second is about this repository rather than the "
+        "source. (1) The source names a fault variant that none of its own declarations admits, "
+        "so an implementer following R-CALC-06 adds a variant no frozen declaration authorizes — "
+        "and because `Fault` identity is compared by the differential observer (R-REF-05), that "
+        "addition is observable, not inert. It also widens R-CALC-06 from eight variants to "
+        "nine, and AMB-08 is graded “Blocking: yes … the single most blocking ambiguity in the "
+        "set”, so its statement is the one most likely to be implemented from. (2) An earlier "
+        "revision of this pass filed this row as a PHANTOM-IDENTIFIER on the claim that "
+        "“`Fault::StalePlan` occurs nowhere in L1-42312”, and amended four documents on that "
+        "premise. The claim is false — the string occurs at L28373 — and REQ-CALC-014's own "
+        "SOURCE line had cited L28373 all along, so the withdrawal contradicted the record's own "
+        "provenance. A canonicalization layer that retracts correct normative text on a "
+        "misread grep is a worse defect than the one it was trying to fix, which is why the "
+        "retraction is itself recorded rather than quietly undone."),
       disposition=(
-        "REPORTED, not resolved, and nothing invented: the dictionary records `StalePlan` as a "
-        "protected *source token* (L27236, L28373) and explicitly NOT as a `Fault` variant. "
-        "spec/01 L138 keeps its normative wording and gains a non-normative annotation flagging "
-        "the phantom; REQ-CALC-014's POSTCONDITIONS is amended to the source's own wording "
-        "(a stale proposal is rejected; no `Fault` variant is named at L27236 or L28373); "
-        "AMB-08's statement is corrected to strike `StalePlan` from the frozen list and to cite "
-        "L8758 (not L8748-8757) for the v0.3 denial names. Whether `StalePlan` SHOULD join the "
-        "taxonomy is left to U-08, which already owns the variant set."),
+        "REPORTED, not resolved, and the earlier false correction REVERTED per R-SCOPE-03: the "
+        "four documents amended on the “occurs nowhere” premise are restored, each with the "
+        "withdrawn wording quoted in place so the retraction stays visible — spec/01 L138 (its "
+        "annotation now records that `StalePlan` is used-but-undeclared rather than phantom), "
+        "REQ-CALC-014's STATEMENT (L197) and POSTCONDITIONS (L199), and AMB-08's list (req/03 "
+        "L68). AMB-34 is rewritten from “asserted but undeclared phantom” to “used but "
+        "undeclared”, and C-54 likewise. The dictionary records `StalePlan` as a protected "
+        "*source token* at both L27236 and L28373 and explicitly NOT as a declared `Fault` "
+        "variant. Whether it SHOULD join the declared taxonomy is left to U-08, which owns the "
+        "variant set — and U-08 now has to rule on all twelve undeclared paths at once (X-69), "
+        "not on this one alone. Nothing is renamed and no variant is invented."),
       affects=["T-70", "T-02", "T-04"],
-      previously=["C-38", "U-13", "AMB-08", "X-62"],
-      decision_needed="Yes, but owned by U-08: does `StalePlan` join the `Fault` taxonomy, or is staleness rejection a non-fault outcome? The source supports only the latter.",
+      previously=["C-54", "C-38", "U-13", "AMB-08", "AMB-34", "X-62", "X-69"],
+      decision_needed="Yes, but owned by U-08 and now widened by X-69: does `StalePlan` join the declared `Fault` taxonomy (the source uses the qualified path at L28373, so the answer is no longer forced), or is staleness rejection remapped onto a declared variant?",
       new_finding=True,
       doc_sites=[
-        ("spec/01-canonical-specification.md", 138, "plus `StalePlan` at the planner boundary", "normative R-CALC-06 asserting an undeclared variant"),
-        ("req/01-registry-part2-semantics.md", 199, "`Fault::StalePlan` produced", "REQ-CALC-014 POSTCONDITIONS — the string occurs nowhere in the source"),
-        ("req/01-registry-part2-semantics.md", 197, "is a member of the fault taxonomy", "REQ-CALC-014 STATEMENT"),
-        ("req/03-ambiguous.md", 68, "previously listed a ninth frozen variant, `StalePlan`", "AMB-08's statement, corrected in place with the struck wording quoted"),
+        ("spec/01-canonical-specification.md", 138, "plus `StalePlan` at the planner boundary", "normative R-CALC-06 — source-supported and kept; its annotation now says used-but-undeclared, not phantom"),
+        ("req/01-registry-part2-semantics.md", 197, "Verified, correction reverted", "REQ-CALC-014 STATEMENT, restored after the phantom claim was shown false"),
+        ("req/01-registry-part2-semantics.md", 199, "Withdrawal reverted", "REQ-CALC-014 POSTCONDITIONS, restored — `Fault::StalePlan` occurs verbatim at L28373"),
+        ("req/01-registry-part2-semantics.md", 195, "L28373([36])", "REQ-CALC-014's SOURCE line, which cited the occurrence all along"),
+        ("req/03-ambiguous.md", 68, "that strike was itself wrong", "AMB-08's list, qualified in place rather than struck"),
+        ("req/03-ambiguous.md", 264, "occurs nowhere in L1–42312", "AMB-34, rewritten, with the withdrawn claim quoted"),
+        ("spec/06-contradictions-ambiguities.md", 68, "`Fault::StalePlan` occurs verbatim once, at L28373", "C-54, rewritten from a phantom finding to a used-but-undeclared one"),
+        ("spec/06-contradictions-ambiguities.md", 81, "rewritten** in this revision", "C-59..C-65 summary line, recording the retraction of the earlier claim"),
       ]),
     X(xid="X-65",
       title="`MarshalFault` is declared twice with completely disjoint variant sets, and is used as an elided `Fault` payload",
@@ -5651,7 +5901,7 @@ COLLISIONS += [
       ]),
     X(xid="X-66",
       title="`CapabilityError::Invalid` is used as the `derive` fallback but never declared; the declared sibling `InvalidConstraint` is used for the same fallback in the same turn",
-      kind="PHANTOM-IDENTIFIER",
+      kind="UNDECLARED-VARIANT",
       severity="MAJOR",
       sites=[
         (20408, "pub enum CapabilityError {", "turn [28]: the ONLY declaration of the inner error enum"),
@@ -5699,7 +5949,7 @@ COLLISIONS += [
       ]),
     X(xid="X-67",
       title="`HostFault` is declared once with two variants, and eight different undeclared variant paths are used — six of them on the frozen replay path",
-      kind="PHANTOM-IDENTIFIER",
+      kind="UNDECLARED-VARIANT",
       severity="BLOCKING",
       sites=[
         (10820, "pub enum HostFault {", "turn [18]: the ONLY declaration — two variants"),
@@ -5817,5 +6067,457 @@ COLLISIONS += [
       doc_sites=[
         ("req/03-ambiguous.md", 69, "previously also mapped `IsolationBreach`", "AMB-08's reading (a), corrected in place: `IsolationBreach` is the receipt-mismatch fault"),
         ("spec/01-canonical-specification.md", 138, "The frozen fault taxonomy is the Rust `Fault` enum", "R-CALC-06 states a flat variant list that matches neither reading of `HostFault`"),
+      ]),
+    X(xid="X-69",
+      title="Twelve `Fault::` variant paths are used in the frozen source and declared by no `Fault` enum",
+      kind="UNDECLARED-VARIANT",
+      severity="MAJOR",
+      sites=[
+        (28373, "is rejected with `Fault::StalePlan`", "turn [36]: the staleness rejection, naming a variant no declaration contains"),
+        (941, "Fault::AuthoritySuspended", "turn [3]: capability-denial family"),
+        (1018, "Fault::FuelExhausted", "turn [3]: budget family; the declared name is `BudgetExhausted`"),
+        (944, "Fault::ScopeViolation", "turn [3]"),
+        (3671, "Fault::ScopeViolation", "turn [7]"),
+        (5059, "Fault::ScopeViolation", "turn [9]"),
+        (6704, "Fault::Revoked", "turn [11]"),
+        (6705, "Fault::AncestorRevoked", "turn [11]: a near-synonym of `Revoked` in the same list"),
+        (6706, "Fault::Unauthorized", "turn [11]: a third name for the same denial"),
+        (937, "Fault::CapabilityRevoked(cref)", "turn [3]: payload-bearing form"),
+        (10446, "Fault::CapabilityRevoked", "turn [18]"),
+        (5055, "Fault::CapabilityRevoked", "turn [9]"),
+        (10447, "CapabilityRevoked", "turn [18]: seven uses in all"),
+        (10466, "Fault::ReservedCapacityExceeded", "turn [18]"),
+        (10467, "ReservedCapacityExceeded", "turn [18]"),
+        (20389, "Fault::CapabilityError(error)", "turn [28]: also X-38/X-66 — a type of the same name exists"),
+        (25714, "Fault::NoSuchActor", "turn [32]"),
+        (26017, "Fault::UnknownActor", "turn [32]: a second name for the same condition, 303 lines later"),
+        (23806, "pub enum Fault {", "the frozen declaration R-CALC-06 cites"),
+        (23807, "// ... (previous faults)", "the elision that makes the frozen block non-exhaustive"),
+        (26865, "pub enum Fault {", "turn [33]: actor-local declaration, also without any of the twelve"),
+      ],
+      statement=(
+        "Checking every `Fault::` path in L1-42312 against the seven `pub enum Fault` "
+        "declarations (L10882, L17788, L18125, L22415, L23319, L23806, L26865) yields TWELVE "
+        "distinct variant paths that the source uses and no declaration contains: "
+        "`CapabilityRevoked` (7 uses: L937, L3667, L3683, L5055, L5071, L10446, L10447), "
+        "`ScopeViolation` (3: L944, L3671, L5059), `CapabilityError` (3: L20389, L20538, "
+        "L20790), `ReservedCapacityExceeded` (2: L10466, L10467), `AuthoritySuspended` (L941), "
+        "`FuelExhausted` (L1018), `Revoked` (L6704), `AncestorRevoked` (L6705), `Unauthorized` "
+        "(L6706), `NoSuchActor` (L25714), `UnknownActor` (L26017) and `StalePlan` (L28373). "
+        "The frozen L23806 block elides its own head with `// ... (previous faults)` at L23807, "
+        "so it cannot be read as exhaustive; the other six declarations are not elided and do "
+        "not contain these names either."),
+      why_it_matters=(
+        "`Fault` is the machine's terminal failure value, and its identity is what the "
+        "differential observer compares (R-REF-05), what `FaultKind` is derived from "
+        "(R-CORE-09), and what L26877-L26880 orders as “the same order as enum declaration” — "
+        "an ordering that is undefined for a variant no declaration contains. An implementation "
+        "cannot construct a `Fault::CapabilityRevoked(cref)` that no declaration admits and a "
+        "test cannot assert on one. Worse, several of the twelve are near-synonyms differing "
+        "only in spelling (`CapabilityRevoked`/`Revoked`/`AncestorRevoked`/`Unauthorized`, "
+        "`NoSuchActor`/`UnknownActor`), so the count of distinct capability-denial faults comes "
+        "out as four, nine or twelve depending on which set a reader takes — which is exactly "
+        "why C-58 and AMB-08 disagree, and why AMB-08 is graded the single most blocking "
+        "ambiguity in the set. The capability-denial families are the set the frozen `Authority` "
+        "invariants and the `capcheck`/`scope` obligations turn on."),
+      disposition=(
+        "REPORTED, not resolved, and nothing renamed or invented. X-64 keeps the `StalePlan` "
+        "case individually because it crosses REQ-CALC-014's stated postcondition, and X-38 "
+        "keeps the `CapabilityError` case because a separate declared type of that name exists; "
+        "this entry is the population-level finding, held apart from both so every affected "
+        "record stays traceable. U-08 already owns the `Fault` variant set and has to close all "
+        "twelve at once: either the seven declarations are incomplete, in which case the twelve "
+        "are added and each near-synonym family resolved to one name, or the twelve uses are "
+        "prose errors to be remapped onto declared variants. The source records neither option. "
+        "All twelve names are listed in T-70's `protected` so no later pass normalizes one away "
+        "by accident."),
+      affects=["T-70", "T-02", "T-56", "T-24", "T-27"],
+      previously=["C-08", "C-58", "AMB-08", "U-08", "U-13"],
+      decision_needed="Yes — owned by U-08, but U-08 as written covers only the declared variant set; it has to be widened to rule on the twelve undeclared paths and on the near-synonym families.",
+      new_finding=True,
+      doc_sites=[
+        ("spec/06-contradictions-ambiguities.md", 73, "Twelve `Fault::` variant paths", "C-59, the row this entry backs"),
+        ("spec/06-contradictions-ambiguities.md", 68, "one of twelve (C-59)", "C-54, corrected to point at the population finding"),
+        ("req/03-ambiguous.md", 68, "one of twelve such `Fault::` paths", "AMB-08, qualified rather than struck"),
+      ]),
+    X(xid="X-70",
+      title="Theorem 2's proof and the property-test matrix both depend on `Expr::Delegate`, which no `enum Expr` declaration admits",
+      kind="UNDECLARED-VARIANT",
+      severity="MAJOR",
+      sites=[
+        (26056, "Theorem 2: No Authority Amplification", "turn [32]: the theorem whose proof depends on the undeclared node"),
+        (26057, "ExplicitlyDelegatedAuthority", "turn [32]: the boxed statement — authority may grow only by explicit delegation"),
+        (26058, "Authority can only cross boundaries via `Expr::Delegate`", "turn [32]: the proof's ONLY authority-crossing mechanism"),
+        (26078, "| **C: Delegation** | `Expr::Delegate` |", "turn [32]: property-test matrix row C, three invariants asserted on the node"),
+        (25989, "Expr::Delegate {", "turn [32]: the only place its fields are given"),
+        (25991, "constraint: Constraint", "turn [32]: field 2 of 2 — a T-12 `Constraint`, the same field `Attenuate` carries"),
+        (12145, "pub enum Expr {", "turn [21]: the frozen AST, twelve constructors, no `Delegate`"),
+        (20702, "pub enum Expr {", "turn [28]: `Var, Lit, Prim, If, Seq, Lambda, Call, Attenuate` — no `Delegate`"),
+        (24062, "explicit `Delegate` operations", "turn [32]: prose use"),
+        (25700, "Expr::Delegate", "turn [32]: prose use"),
+      ],
+      statement=(
+        "X-29, AMB-11 and C-16 all record the underlying fact: `Expr::Delegate` is used by the "
+        "frozen source and appears in none of the five `pub enum Expr` declarations (L12145 — "
+        "twelve constructors, L14030, L14413, L20295, L20702). This entry records what the sweep "
+        "found beyond that, which none of the three states: TWO NORMATIVE ARTIFACTS DEPEND ON "
+        "THE UNDECLARED NODE. Theorem 2 (No Authority Amplification, L26056-26058) is proved by "
+        "exhaustion over the ways authority can cross a boundary — “Ordinary `Send` operations "
+        "pass through `marshal()`, which strictly rejects `Value::Capability`. Authority can only "
+        "cross boundaries via `Expr::Delegate`, which invokes `CapabilityKernel::derive`, "
+        "guaranteeing `child <= parent`” — so the node is the proof's single non-trivial case. "
+        "The property-test matrix at L26078 makes row C (“Delegation”) assert three invariants on "
+        "it: kernel derivation called exactly once, `child <= parent`, and a revoked parent "
+        "cannot delegate. The sweep also found two further use sites that AMB-11 does not list "
+        "(L26058, L26078) and one field detail: `Delegate` carries `constraint: Constraint` "
+        "(L25991), the same field `Expr::Attenuate` carries, so attenuation is declared and "
+        "delegation is not despite the two sharing a shape."),
+      why_it_matters=(
+        "A theorem proved by exhaustion is only as sound as its case list, and here one case "
+        "names a constructor the frozen AST does not admit. Two consequences follow, and they "
+        "pull in opposite directions. If `Delegate` is not constructible, Theorem 2's proof has "
+        "an empty case and its conclusion holds only because authority then cannot cross at all "
+        "— a stronger claim than the theorem states, and one that would make row C of the test "
+        "matrix untestable. If `Delegate` IS constructible, then the frozen twelve-constructor "
+        "`Expr` is incomplete, and every obligation quantified over plans — R-VALID-03, "
+        "R-CAPCHK-04, and the boxed `ExternalEffect(E) ⇒ ValidatedPlan(P)` theorem (X-46) — is "
+        "quantified over an AST missing a node that transfers authority. Because L-04 (CapRef ≠ "
+        "Authority) and L-05 (LLM output ≠ Authority) make authority transfer the one operation "
+        "that must not be inferred, an authority-carrying AST node that exists only in a proof "
+        "sketch is the single worst place for a declaration gap to be. This is a "
+        "Verification-versus-Specification defect in the sense L-08 draws: the proof text asserts "
+        "a property of a surface the specification does not declare."),
+      disposition=(
+        "REPORTED, not resolved, nothing renamed and no constructor invented. X-29 keeps the "
+        "declaration-gap finding and gains the two additional use sites; AMB-11 keeps the "
+        "two-readings analysis and its correction to `spec/01` L334; this entry adds only the "
+        "dependence of Theorem 2 and of test-matrix row C, which is what makes the gap blocking "
+        "rather than cosmetic. `Expr::Delegate` is already protected in T-30 and T-15, so it "
+        "cannot be normalized away; `Value::DelegatedCapability` (X-74) is added to T-31's "
+        "`protected` for the same reason. The decision — is `Delegate` a thirteenth constructor, "
+        "or is Theorem 2's case list to be restated without it? — is not recorded in the source "
+        "and is escalated to U-02, which already owns the undefined-name family."),
+      affects=["T-30", "T-15", "T-31", "T-12", "T-13", "T-10"],
+      previously=["C-60", "X-29", "AMB-11", "C-16", "U-02"],
+      decision_needed="Yes — owned by U-02 as extended by this entry: does `Expr::Delegate` become a declared thirteenth constructor (freezing the L25989-25992 field set), or must Theorem 2's proof and test-matrix row C be restated without it?",
+      new_finding=True,
+      doc_sites=[
+        ("spec/06-contradictions-ambiguities.md", 74, "Theorem 2's proof and the property-test matrix", "C-60, rewritten from a duplicate of X-29 to the theorem-dependency finding"),
+        ("req/03-ambiguous.md", 91, "`Expr::Delegate` is absent from the frozen AST", "AMB-11, which already records the declaration gap and is not superseded"),
+      ]),
+    X(xid="X-71",
+      title="`MachineEvent` is declared eight times and used with eight variant paths declared by none of them",
+      kind="UNDECLARED-VARIANT",
+      severity="MAJOR",
+      sites=[
+        (14697, "pub enum MachineEvent {", "turn [23]: first declaration"),
+        (15958, "pub enum MachineEvent {", "turn [24]"),
+        (17588, "pub enum MachineEvent {", "turn [25]: adds `ApplyFunction`"),
+        (18104, "pub enum MachineEvent {", "turn [26]"),
+        (18631, "pub enum MachineEvent {", "turn [26]"),
+        (20318, "pub enum MachineEvent {", "turn [28]: adds `EnterAttenuate`, `DeriveCapability`, `Fault`"),
+        (20724, "pub enum MachineEvent {", "turn [28]"),
+        (22002, "pub enum MachineEvent {", "turn [29]: adds `EffectIssued`, `EffectCompleted`"),
+        (22003, "// ...", "the elision that makes the last declaration non-exhaustive"),
+        (21483, "MachineEvent::EnterRequest", "turn [29]: used, never declared"),
+        (21536, "MachineEvent::BeginRequestTarget", "turn [29]: used, never declared"),
+        (21645, "MachineEvent::BeginRequestArgument", "turn [29]: used, never declared"),
+        (25740, "MachineEvent::Blocked", "turn [32]: the declared name is `Block`"),
+        (25668, "MachineEvent::Spawned", "turn [32]: never declared"),
+        (25966, "MachineEvent::ActorSpawned", "turn [32]: a second name for `Spawned`, with `{ parent, child }`"),
+        (25728, "MachineEvent::Sent", "turn [32]: never declared"),
+        (26027, "MachineEvent::MessageSent", "turn [32]: a second name for `Sent`, with `{ from, to }`"),
+      ],
+      statement=(
+        "`MachineEvent` has EIGHT declarations (L14697, L15958, L17588, L18104, L18631, L20318, "
+        "L20724, L22002), the last with its head elided as `// ...` at L22003. Beyond the drift "
+        "between those declarations, eight further variant paths are used and declared by none "
+        "of them: `EnterRequest` (L21483, L23380), `BeginRequestTarget` (L21536, L23398), "
+        "`BeginRequestArgument` (L21645, L23426), `Blocked` (L25740, L26038), `Spawned` "
+        "(L25668), `ActorSpawned` (L25966), `Sent` (L25728) and `MessageSent` (L26027). Two of "
+        "the eight are second names for a concept the others also name: `Blocked` against the "
+        "declared `Block`, and `Spawned`/`ActorSpawned` and `Sent`/`MessageSent` as pairs used "
+        "in different turns of the same document."),
+      why_it_matters=(
+        "This is the vocabulary the trace is made of, so it decides three things at once: what "
+        "the WAL records (T-45), what the differential observer compares between two "
+        "implementations (R-REF-05), and what a conformance fixture may assert. If one "
+        "implementation emits `Spawned` and another `ActorSpawned` for the same transition, the "
+        "differential harness reports a divergence that is a naming artifact rather than a "
+        "semantic one — the same failure mode as X-21's `Running`/`Active`, but on the event "
+        "stream instead of the actor state, and there are four such pairs here rather than one. "
+        "`Blocked` is worse than cosmetic because `Blocked` is also an `ActorStatus` variant "
+        "(X-74) and a `StepResult` variant (X-73), so a reader of an event log cannot tell "
+        "which layer the event came from. `EffectIssued`/`EffectCompleted` ARE declared here "
+        "(L22005, L22010) with `{ id, digest }`, which is what makes L-06 (EffectIssued ≠ "
+        "EffectCompleted) enforceable at all — so the enum matters to the request's own "
+        "required distinctions, not only to the trace."),
+      disposition=(
+        "REPORTED, not resolved, and `MachineEvent` is filed as T-75 — it had no term of record "
+        "at all before this sweep, despite being the event vocabulary the WAL and the "
+        "differential comparison are built on. The eight declarations are additive across turns "
+        "(each introduces the events for that turn's feature), so a union reading is available; "
+        "but the four duplicate names have to be resolved to one name each by a single source "
+        "ruling, and no such ruling exists. All eight undeclared paths are listed in T-75's "
+        "`protected` so none is normalized away by a later pass. Nothing is renamed."),
+      affects=["T-75", "T-47", "T-45", "T-70", "T-35"],
+      previously=["U-28"],
+      decision_needed="Yes — `spec/09` U-28: is the vocabulary the union of all eight declarations or only the last, which name governs each duplicate pair, and are the three `*Request*` events declared or struck?",
+      new_finding=True,
+      doc_sites=[
+        ("spec/06-contradictions-ambiguities.md", 75, "`MachineEvent` is declared eight times", "C-61, the row this entry backs"),
+        ("spec/09-unresolved-decisions.md", 144,
+         "### U-28 — Which `MachineEvent` names govern",
+         "the decision this entry escalates to; added by the same sweep"),
+        ("req/03-ambiguous.md", 277,
+         "### AMB-36 — `MachineEvent` is declared eight times",
+         "the ambiguity row this entry backs"),
+      ]),
+    X(xid="X-72",
+      title="`CanonicalError` is declared seven times in four shapes, with the same variant names at different arities",
+      kind="DIVERGENT-SHAPE",
+      severity="MAJOR",
+      sites=[
+        (29188, "pub enum CanonicalError {", "turn [38]: shape (i), five unit variants"),
+        (29189, "InvalidVersion,", "turn [38]: a UNIT variant"),
+        (29968, "pub enum CanonicalError {", "turn [41]: shape (ii), seven variants, two respelled"),
+        (29973, "PayloadTooShort,", "turn [41]: where the others say `UnexpectedEof`"),
+        (29975, "Utf8Error,", "turn [41]: where the others say `InvalidUtf8`"),
+        (30661, "pub enum CanonicalError {", "turn [41]: shape (iii), nine struct variants"),
+        (30662, "InvalidVersion { expected: u8, found: u8 }", "turn [41]: the SAME name, now payload-bearing"),
+        (30666, "InvalidUtf8,", "turn [41]: unit, alongside payload-bearing siblings"),
+        (30670, "InvalidBoolValue { found: u8 }", "turn [41]: only in this shape"),
+        (34994, "pub enum CanonicalError {", "turn [47]: shape (iv), head elided"),
+        (34996, "DuplicateMapKey", "turn [47]: “NEW: Enforces strict injectivity”"),
+      ],
+      statement=(
+        "`CanonicalError` has SEVEN declarations (L29188, L29968, L30661, L32083, L32959, "
+        "L33299, L34994) in four materially different shapes. Shape (i) L29188 has five unit "
+        "variants. Shape (ii) L29968 has seven and respells two of them — `Utf8Error` where the "
+        "others say `InvalidUtf8`, `PayloadTooShort` where the others say `UnexpectedEof` — and "
+        "adds `LengthOverflow`, which shape (i) lacks entirely. Shape (iii) L30661 turns six of "
+        "the same names into payload-bearing struct variants (`InvalidVersion { expected: u8, "
+        "found: u8 }`, `InvalidTypeTag { expected: u8, found: u8 }`, `LengthMismatch { expected: "
+        "u32, found: usize }`, `TrailingBytes { count: usize }`, `InvalidDiscriminant { found: "
+        "u8 }`, `InvalidBoolValue { found: u8 }`). Shape (iv) L34994 elides its head as `// ... "
+        "previous variants` and adds `DuplicateMapKey`."),
+      why_it_matters=(
+        "This is the `Err` arm of every `canonical_serialize` and `canonical_deserialize`, so it "
+        "is what reports every violation of the frozen envelope and payload rules — the same "
+        "path on which X-50 (the envelope wire format) is already BLOCKING. The arity "
+        "divergence is not cosmetic: `InvalidVersion` as a unit variant cannot carry the "
+        "expected and found version bytes, so a decoder written against L29188 loses the "
+        "diagnostic L30661 requires, and a test written against L30661 does not compile against "
+        "L29188. Two spellings for one condition (`InvalidUtf8`/`Utf8Error`, "
+        "`UnexpectedEof`/`PayloadTooShort`) is X-21's `Running`/`Active` pattern on the error "
+        "channel, where a fixture matching one spelling silently passes on the other — and "
+        "canonicalization is precisely where a silent pass becomes a consensus fork, because "
+        "two nodes that disagree on which errors are fatal disagree on the digest. "
+        "`DuplicateMapKey` is the only variant that enforces map injectivity, and it exists in "
+        "one of four shapes, so whether canonical encoding rejects duplicate keys at all "
+        "depends on which declaration an implementer reads."),
+      disposition=(
+        "REPORTED, not resolved; `CanonicalError` is filed as T-76 with all four shapes given "
+        "verbatim in `shape`/`supersedes` and every divergent spelling listed in `protected` so "
+        "none is normalized away. L30661 is the most informative and the latest non-elided "
+        "declaration, but nominating it would drop `PayloadTooShort` and `Utf8Error` from the "
+        "record, so no shape is chosen here. U-08 governs `Fault` only; `CanonicalError` needs "
+        "its own ruling before any canonical-codec test can be written, and that ruling has to "
+        "state whether the payload-bearing shape (iii) supersedes (i) and (ii) or whether the "
+        "unit variants remain legal."),
+      affects=["T-76", "T-62", "T-63", "T-47", "T-31"],
+      previously=["C-47", "C-48", "C-49", "U-29", "U-14"],
+      decision_needed="Yes — `spec/09` U-29: which of the four shapes governs, do the unit variants of shapes (i)/(ii) survive shape (iii)'s payload-bearing forms, and which spelling governs each respelled pair?",
+      new_finding=True,
+      doc_sites=[
+        ("spec/06-contradictions-ambiguities.md", 76, "`CanonicalError` is declared seven times", "C-62, the row this entry backs"),
+        ("spec/09-unresolved-decisions.md", 151,
+         "### U-29 — Which `CanonicalError` shape governs",
+         "the decision this entry escalates to; added by the same sweep"),
+        ("req/03-ambiguous.md", 285,
+         "### AMB-37 — `CanonicalError` is declared seven times",
+         "the ambiguity row this entry backs"),
+      ]),
+    X(xid="X-73",
+      title="`StepResult` is two disjoint enums — the CEK machine's and the actor scheduler's — sharing one name",
+      kind="TYPE-HOMONYM",
+      severity="MAJOR",
+      sites=[
+        (1006, "pub enum StepResult {", "turn [3]: the CEK machine's step outcome"),
+        (1007, "Continue,", "turn [3]: machine variant 1"),
+        (1010, "YieldToHost(Effect),", "turn [3]: carries a T-20 `Effect`"),
+        (9586, "pub enum StepResult {", "turn [17]: the actor scheduler's step outcome"),
+        (9587, "Progressed,", "turn [17]: scheduler variant 1"),
+        (9588, "Blocked(ActorId),", "turn [17]: carries an identity the machine's variants never do"),
+        (9591, "Faulted(ActorId, Fault),", "turn [17]: not an alias of the machine's `Fault(Fault)`"),
+        (9592, "NoRunnableActors,", "turn [17]: meaningful only at scheduler level"),
+        (10397, "pub enum StepResult {", "turn [18]: scheduler family restated"),
+        (10947, "pub enum StepResult {", "turn [18]: scheduler family restated"),
+      ],
+      statement=(
+        "Two enums named `StepResult` have no variant in common. L1006 (turn [3], the CEK "
+        "machine) declares `Continue | Halt(Value) | Fault(Fault) | YieldToHost(Effect)` — one "
+        "reduction of one actor, carrying no identity. L9586 (turn [17], the actor scheduler; "
+        "restated at L10397 and L10947) declares `Progressed | Blocked(ActorId) | "
+        "Pending(ActorId, EffectRequest) | Halted(ActorId, Value) | Faulted(ActorId, Fault) | "
+        "NoRunnableActors` — every variant carries an `ActorId`, and `Pending` carries a T-28 "
+        "`EffectRequest`. They are not successive versions of one type; they are the step "
+        "outcome of two different layers, and neither declaration mentions the other."),
+      why_it_matters=(
+        "Both are returned by a method an implementer will call `step`, and a reader of any "
+        "single turn cannot tell which is meant. Turn [3] says a step yields "
+        "`YieldToHost(Effect)`; turn [17] says a step yields `Pending(ActorId, EffectRequest)` "
+        "— and `Effect` (T-16) versus `EffectRequest` (T-17) is one of the distinctions this "
+        "normalization request explicitly requires to be kept separate, so the homonymy puts "
+        "that distinction at risk from the type name itself. The scheduler's `Faulted(ActorId, "
+        "Fault)` and the machine's `Fault(Fault)` are likewise different types, not aliases, and "
+        "X-23 already records `Faulted` versus `Fault` as a live split inside `RunState`. "
+        "Prose saying “the step returned Blocked” is ambiguous between three enums "
+        "(`StepResult`, `ActorStatus`, `RunState`), which is the ambiguity that makes X-71's "
+        "`MachineEvent::Blocked` undiagnosable from a log."),
+      disposition=(
+        "REPORTED, not resolved; recorded as T-77 with both shapes given verbatim. Renaming "
+        "either enum would violate the no-silent-rename constraint, and unlike "
+        "`Observation`/`HostObservation` (X-06) the source provides no second name to adopt — so "
+        "the homonymy stands and is disambiguated by layer in every dictionary entry that "
+        "mentions it (T-70 for the machine, T-35 for the scheduler). T-77's `forbidden` list "
+        "bans the unqualified phrase “step result” for exactly this reason."),
+      affects=["T-77", "T-70", "T-35", "T-36", "T-17"],
+      previously=["C-63", "X-23", "U-26"],
+      decision_needed="Yes — `spec/09` U-26: which layer keeps the name `StepResult` and what the other layer's step outcome is called. The source offers no second name, so this cannot be settled by citation alone.",
+      new_finding=True,
+      doc_sites=[
+        ("spec/06-contradictions-ambiguities.md", 77, "`StepResult` is two disjoint enums", "C-63, the row this entry backs"),
+        ("spec/09-unresolved-decisions.md", 130,
+         "### U-26 — Which layer owns the name `StepResult`?",
+         "the decision this entry escalates to; added by the same sweep"),
+        ("req/03-ambiguous.md", 293,
+         "### AMB-38 — `StepResult` names two disjoint enums",
+         "the ambiguity row this entry backs"),
+      ]),
+    X(xid="X-74",
+      title="`ActorStatus` is declared seven times in three shapes; X-21 records only two declarations",
+      kind="DIVERGENT-SHAPE",
+      severity="MAJOR",
+      sites=[
+        (9411, "pub enum ActorStatus {", "turn [17]: shape (i)"),
+        (10346, "pub enum ActorStatus {", "turn [18]: shape (i) restated"),
+        (10866, "pub enum ActorStatus {", "turn [18]"),
+        (21234, "pub enum ActorStatus {", "turn [29]: shape (ii), a three-field `Pending`"),
+        (21240, "continuation: Continuation,", "turn [29]: the continuation INSIDE `Pending`"),
+        (21244, "Blocked(Continuation),", "turn [29]: and also inside `Blocked`"),
+        (23306, "pub enum ActorStatus {", "turn [30]: shape (iii), `continuation` dropped"),
+        (23793, "pub enum ActorStatus {", "turn [30]: shape (iii) restated"),
+      ],
+      statement=(
+        "X-21 records `ActorStatus` as declared twice (L9411 and L10346). A full sweep finds "
+        "SEVEN declarations — L9411, L10346, L10866, L21234, L23306, L23793 and the turn-[20] "
+        "restatement at L10866 — in THREE distinct shapes. Shape (i), L9411/L10346: "
+        "`Pending(PendingEffect), Blocked(Continuation)` — a tuple `Pending` and a "
+        "payload-bearing `Blocked`. Shape (ii), L21234: `Pending { effect: EffectRequest, "
+        "continuation: Continuation, reservation: ReservedCapacity }, Blocked(Continuation)` — a "
+        "three-field struct `Pending`. Shape (iii), L23306/L23793: `Pending { effect: "
+        "EffectRequest, reservation: ReservedCapacity }, Blocked` — `continuation` dropped from "
+        "`Pending` and `Blocked` reduced to a unit variant. The `Continuation` payload therefore "
+        "moves: inside `Blocked` in shapes (i) and (ii), inside `Pending` in shape (ii) as well, "
+        "and absent from both in shape (iii)."),
+      why_it_matters=(
+        "`ActorStatus` is the state that decides whether an actor is resumable, and the location "
+        "of its `Continuation` payload is exactly what a scheduler needs in order to resume it. "
+        "Shape (iii) carries no `Continuation` at all, so an actor in `Pending { effect, "
+        "reservation }` cannot be resumed from its own status — the continuation has to live "
+        "somewhere else — `ActorState.eval.continuation` (T-37, T-32) — and the source never says "
+        "where. That is a semantic gap, "
+        "not a naming one, and it is downstream of the `Running`/`Active` split X-21 already "
+        "records: an implementer who normalizes the name without also picking a shape gets a "
+        "status type that cannot resume its own actors, and every replay test built on it fails "
+        "for a reason the naming fix appears to have solved. The seven-declaration count also "
+        "bears on X-21's disposition, which was written against two and so understates how much "
+        "of the source has to be reconciled."),
+      disposition=(
+        "REPORTED, not resolved, with X-21 kept intact: X-21's `Running`/`Active` finding is "
+        "correct and stands, and this entry corrects its population count rather than "
+        "superseding it, because the two findings are about different things (naming versus "
+        "shape) and merging them would lose one. T-35's note is updated in place to say seven "
+        "declarations in three shapes and to cross-link both entries. No shape is nominated — "
+        "shapes (i) to (iii) are successive turns' views and the source gives no precedence rule "
+        "for `ActorStatus` (U-08 covers `Fault` only). All three shapes are given verbatim in "
+        "T-35's `supersedes`/`shape` so none is lost."),
+      affects=["T-35", "T-37", "T-32", "T-17", "T-26", "T-77"],
+      previously=["C-64", "X-21", "U-27"],
+      decision_needed="Yes — `spec/09` U-27: which shape governs, and where shape (iii)'s continuation lives — the actor table, the WAL, or a `ContinuationFrame`.",
+      new_finding=True,
+      doc_sites=[
+        ("spec/06-contradictions-ambiguities.md", 78, "`ActorStatus` is declared seven times", "C-64, the row this entry backs"),
+        ("spec/09-unresolved-decisions.md", 137,
+         "### U-27 — Which `ActorStatus` shape governs",
+         "the decision this entry escalates to; added by the same sweep"),
+        ("req/03-ambiguous.md", 301,
+         "### AMB-39 — `ActorStatus` is declared seven times",
+         "the ambiguity row this entry backs"),
+      ]),
+    X(xid="X-75",
+      title="Residual used-but-undeclared variant paths across five more enums, and one variant silently dropped",
+      kind="UNDECLARED-VARIANT",
+      severity="MINOR",
+      sites=[
+        (1027, "Value::Null", "turn [3]: the declared sets have `Unit`, not `Null`"),
+        (12283, "pub enum Value {", "turn [21]: the first `Value` declaration"),
+        (25995, "Value::DelegatedCapability", "turn [32]: in no `Value` declaration"),
+        (26000, "DelegatedCapability", "turn [32]: second use, five lines later"),
+        (25694, "MarshalFault::CorruptedPayload", "turn [32]: in neither `MarshalFault` declaration (X-65)"),
+        (985, "pub enum ControlFrame {", "turn [3]: the only declaration, head elided at L989"),
+        (986, "Vec<PlanIR>", "turn [3]: `PlanIR` is declared nowhere"),
+        (987, "FuncRef", "turn [3]: `FuncRef` is declared nowhere"),
+        (988, "EffectSignature", "turn [3]: `EffectSignature` is declared nowhere"),
+        (1031, "ControlFrame::ReduceIR", "turn [3]: used in the machine's own `match`"),
+        (1282, "ControlFrame::ResumeWithResult", "turn [3]: used, never declared"),
+        (1092, "pub enum TransitionEvent {", "turn [3]: the only declaration"),
+        (1055, "TransitionEvent::ActorSpawned", "turn [3]: used 37 lines BEFORE the enum that should declare it"),
+        (24299, "pub enum RunState {", "turn [31]: declares `NotRunnable`"),
+        (24300, "NotRunnable,", "turn [31]: the variant that disappears"),
+        (25526, "pub enum RunState {", "turn [32]: re-declared without `NotRunnable`, no supersession note"),
+      ],
+      statement=(
+        "The same sweep, on the enums too small for a row of their own: (a) `Value::Null` at "
+        "L1027, where every declared `Value` set has `Unit` and not `Null` (L12283 onward); "
+        "(b) `Value::DelegatedCapability` at L25995 and L26000, in no `Value` declaration, the "
+        "declared capability variant being `Capability(Box<CapabilityToken>)`; (c) "
+        "`MarshalFault::CorruptedPayload` at L25694, in neither `MarshalFault` declaration "
+        "(L10846/L25983 versus L30645, already X-65); (d) `ControlFrame::ReduceIR` at L1031 and "
+        "matched at L1035, plus `ControlFrame::ResumeWithResult` at L1282, against the single "
+        "elided declaration at L985; (e) `TransitionEvent::ActorSpawned` at L1055, which precedes "
+        "the only `TransitionEvent` declaration at L1092; and (f) `RunState::NotRunnable`, "
+        "declared at L24300 and silently absent from the L25526 re-declaration."),
+      why_it_matters=(
+        "Each is individually small, but they are the same defect class as X-69 to X-71 and they "
+        "sit on load-bearing paths. `Value::Null` versus `Value::Unit` is the canonical encoding "
+        "of the empty value, which X-50's envelope format and X-72's `CanonicalError` both turn "
+        "on — and C-49 already records that the frozen discriminant table lists 5 of 8 variants, "
+        "so the empty value's tag is not pinned down from either direction. "
+        "`Value::DelegatedCapability` is the value form of the delegation mechanism whose AST "
+        "node is also undeclared (X-70), so delegation is missing at both layers, and "
+        "`MarshalFault::CapabilityRequiresDelegation` (L25984) is the error for it — a fault "
+        "whose success case cannot be represented. `ControlFrame`'s three declared variants "
+        "reference `PlanIR`, `FuncRef` and `EffectSignature`, none of which is declared "
+        "anywhere, so the control stack cannot be constructed from the frozen text at all, and "
+        "its two undeclared variants are used in the machine's own `match` at L1031-L1035. "
+        "`RunState::NotRunnable` vanishing between L24300 and L25526 with no supersession note "
+        "is the R-SCOPE-03 pattern occurring inside the frozen source itself."),
+      disposition=(
+        "REPORTED as one grouped finding so a single ruling can close it; nothing renamed. "
+        "`ControlFrame` is filed as T-78 with `ReduceIR` and `ResumeWithResult` protected and "
+        "its three undeclared payload types named in the note. `Value::Null` and "
+        "`Value::DelegatedCapability` are added to T-31's `protected` as source-used spellings "
+        "rather than normalized to `Unit`/`Capability`; `MarshalFault::CorruptedPayload` is "
+        "added to T-73's. `TransitionEvent` gets no term of its own — it is declared once "
+        "(L1092) and its use-before-declaration is recorded in this entry's sites — while the "
+        "dropped `RunState::NotRunnable` is added to T-36's `protected` with both declarations cited."),
+      affects=["T-31", "T-78", "T-73", "T-36", "T-08", "T-76"],
+      previously=["C-65", "X-65", "X-66", "C-49", "U-02", "U-09"],
+      decision_needed="Only in part: `NotRunnable`'s removal and `Null` versus `Unit` need a ruling; the rest follow from the X-69/X-70/X-72 rulings.",
+      new_finding=True,
+      doc_sites=[
+        ("spec/06-contradictions-ambiguities.md", 79, "Residual used-but-undeclared variant paths", "C-65, the row this entry backs"),
       ]),
 ]

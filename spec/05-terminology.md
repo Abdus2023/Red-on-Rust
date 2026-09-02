@@ -122,13 +122,13 @@ Canonical terms used in `01-canonical-specification.md`, with the aliases observ
 
 ## 8. Normalization of record
 
-This glossary lists the canonical terms used by `01-canonical-specification.md`. The **full terminology normalization** — 74 canonical terms each carrying `CANONICAL_TERM`, `FORBIDDEN_VARIANTS`, `DEFINITION`, `TYPE`, `OWNER`, `FIRST_DEFINITION` and `DEPENDENTS`; 31 non-conflation laws; and a 68-entry collision register (4 of them BLOCKING) in which every finding is cited to a frozen-source line and re-grepped by a checker — lives in `../term/`:
+This glossary lists the canonical terms used by `01-canonical-specification.md`. The **full terminology normalization** — 78 canonical terms each carrying `CANONICAL_TERM`, `FORBIDDEN_VARIANTS`, `DEFINITION`, `TYPE`, `OWNER`, `FIRST_DEFINITION` and `DEPENDENTS`; 31 non-conflation laws; and a 68-entry collision register (4 of them BLOCKING) in which every finding is cited to a frozen-source line and re-grepped by a checker — lives in `../term/`:
 
 | File | Contents |
 |---|---|
 | `../term/00-overview.md` | method, guarantees, how to read an entry, corrections made outside `term/` |
-| `../term/01-dictionary.md` | the 74 canonical terms (`T-01`…`T-74`) |
-| `../term/02-collisions.md` | the collision register (`X-01`…`X-68`) |
+| `../term/01-dictionary.md` | the 78 canonical terms (`T-01`…`T-78`) |
+| `../term/02-collisions.md` | the collision register (`X-01`…`X-75`) |
 | `../term/03-laws.md` | the non-conflation laws (`N-01`…`N-31`) |
 
 Where this glossary and `../term/` disagree, the disagreement is itself filed as a collision and the correction is applied here with its `X-` id cited — see rows marked **Correction** in §1 and §4 above (X-39, X-40, X-51, X-61). Nothing in `../term/` overrides the normative text in `01` or the obligations in `03`; it normalizes the *names* those documents use.

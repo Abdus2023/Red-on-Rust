@@ -291,13 +291,15 @@ def main() -> int:
     u_ids = set(_re.findall(r"^### (U-\d{2}) ", (A.REPO_ROOT / "spec" / "09-unresolved-decisions.md").read_text(encoding="utf-8"), _re.M))
     # 45 -> 53 -> 58 and 16 -> 19: the terminology-normalization pass (term/)
     # added C-46...C-53 and U-23...U-25, and its fault-taxonomy audit then added
-    # C-54...C-58 (X-64...X-68) and re-graded C-08 from MINOR to MAJOR.  The
+    # C-54...C-58 (X-64...X-68) and re-graded C-08 from MINOR to MAJOR, and the
+    # declaration sweep that followed added C-59...C-65 (X-69...X-75), U-26...U-29, and rewrote
+    # C-54 -- which it had first filed on a false premise, now withdrawn.  The
     # expectations are updated here explicitly rather than left to fail, so that
     # the growth of the registers is a recorded change and not silent drift.
-    if len(c_ids) != 58:
-        err(f"expected 58 C- rows in spec/06, found {len(c_ids)}")
-    if len(u_ids) != 19:
-        err(f"expected 19 U- headings in spec/09, found {len(u_ids)}")
+    if len(c_ids) != 65:
+        err(f"expected 65 C- rows in spec/06, found {len(c_ids)}")
+    if len(u_ids) != 23:
+        err(f"expected 23 U- headings in spec/09, found {len(u_ids)}")
     for path in sorted(A.REQ_DIR.glob("*.md")):
         body = path.read_text(encoding="utf-8")
         for m in _re.finditer(r"\b(C-\d{2}|U-\d{2})\b", body):

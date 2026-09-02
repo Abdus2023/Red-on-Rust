@@ -121,6 +121,41 @@ Three BLOCKING terminology collisions require an explicit architectural decision
 - **Decision needed:** the module paths under which each namespace is imported, and confirmation that the dense `0x00`–`0x07` discriminant set governs. No constant may be renamed: both sets are frozen identifiers, and renaming either changes a byte value that digests depend on.
 - **Linked:** C-48, C-49, `term/` X-54 (BLOCKING), X-55, X-56, T-31, T-62, T-63; extends C-02 and C-15.
 - **Blocking:** yes — for milestone M1.
+---
+
+## Decisions added by the declaration sweep
+
+Four further decisions come from the sweep that checked every `Enum::Variant` path in `Red-on-Rust.md` L1–42312 against every declaration of that enum (`term/` X-69…X-75, `spec/06` C-59…C-65). Like U-23…U-25 they are filed in their own section so that the line numbers cited by existing records do not move. None is settled by the source, and none can be settled by renaming: every identifier below is frozen.
+
+### U-26 — Which layer owns the name `StepResult`?
+- **Where:** R-CEK-01 (S-07), R-ACTOR-04 (S-15); `term/` T-77.
+- **State of source:** two disjoint enums share the name and have no variant in common. L1006 (turn [3]) is the CEK machine's step outcome — `Continue`, `Halt(Value)`, `Fault(Fault)`, `YieldToHost(Effect)` — and carries no identity. L9586 (turn [17]), restated at L10397 and L10947 (turn [18]), is the actor scheduler's — `Progressed`, `Blocked(ActorId)`, `Pending(ActorId, EffectRequest)`, `Halted(ActorId, Value)`, `Faulted(ActorId, Fault)`, `NoRunnableActors` — and every variant carries an `ActorId`. Neither declaration mentions the other, and the source offers no second name for either.
+- **Decision needed:** which layer keeps `StepResult` and what the other layer's step outcome is to be called — this cannot be settled by citation because no alternative name exists in the source; and whether prose must distinguish the machine's `Fault(Fault)` from the scheduler's `Faulted(ActorId, Fault)` by layer or by name, given that X-23 already records the same `Faulted`/`Fault` split inside `RunState`.
+- **Linked:** C-63, `term/` X-73, X-23, T-77, T-70, T-35, T-36.
+- **Blocking:** yes — for any conformance test that asserts on a step outcome. The two enums do not compile against each other, so a fixture written from one turn fails against an implementation written from another.
+
+### U-27 — Which `ActorStatus` shape governs, and where does shape (iii)'s continuation live?
+- **Where:** R-ACTOR-02, R-ACTOR-04 (S-15); `term/` T-35.
+- **State of source:** seven declarations in three shapes. (i) L9411 (turn [17]) and L10346 (turn [18]): `Pending(PendingEffect), Blocked(Continuation)` — the continuation inside `Blocked`. (ii) L21234 (turn [29]): `Pending { effect: EffectRequest, continuation: Continuation, reservation: ReservedCapacity }, Blocked(Continuation)` — the continuation in both variants. (iii) L23306 and L23793 (turn [30]): `Pending { effect: EffectRequest, reservation: ReservedCapacity }, Blocked` — the continuation in neither, which is the form the frozen turn-[30] machine assumes when it keeps the continuation in `actor.eval.continuation`. X-21 separately records the `Running`/`Active` naming split; this decision is about shape, not naming.
+- **Decision needed:** which shape governs, and — under shape (iii) — where the continuation is held and how it is persisted, since an actor in `Pending { effect, reservation }` cannot be resumed from its own status. Whether it lives in the actor table, the WAL or a `ContinuationFrame` determines what a snapshot must contain (U-17 is adjacent) and what recovery must reconstruct.
+- **Linked:** C-64, `term/` X-74, X-21, X-22, T-35, T-37, T-32, T-45; adjacent to U-17.
+- **Blocking:** yes — for replay and recovery conformance, and for any test that resumes a blocked actor.
+
+### U-28 — Which `MachineEvent` names govern, and are the eight undeclared paths declared or struck?
+- **Where:** R-CORE-08, R-ACTOR-07, R-REF-05; `term/` T-75, T-47, T-45.
+- **State of source:** eight declarations — L14697 (turn [23]), L15958 (turn [24]), L17588 (turn [25]), L18104 and L18631 (turn [26]), L20318 and L20724 (turn [28]), L22002 (turn [29]) — three of which elide their heads (`// ... (Previous events)` L20319, `// ... (previous variants)` L20725, `// ...` L22003), and none of which carries a supersession note. Eight further variant paths are used and declared by none: `EnterRequest` (L21483, L23380), `BeginRequestTarget` (L21536, L23398), `BeginRequestArgument` (L21645, L23426), `Blocked` (L25740, L26038), `Spawned` (L25668), `ActorSpawned` (L25966), `Sent` (L25728), `MessageSent` (L26027). Three of them are second names for an event the source also names another way: `Blocked` against the declared `Block`, and `Spawned`/`ActorSpawned`, `Sent`/`MessageSent` as pairs; the three `*Request*` events resemble the declared `BeginArgument`/`EndArgument` pair without matching it.
+- **Decision needed:** whether the event vocabulary is the union of all eight declarations or only the last; one name for each duplicate pair; and whether the three request events and the four actor/message events are to be declared or struck. The choice is observable: `MachineEvent` is what the WAL records and what the differential observer compares, so two implementations that pick different names report a divergence that is a naming artifact rather than a semantic one.
+- **Linked:** C-61, `term/` X-71, T-75, T-47, T-45, T-70; extends the U-02 family (machine-state encodings).
+- **Blocking:** yes — for trace-equality, WAL-format and differential tests.
+
+### U-29 — Which `CanonicalError` shape governs, and do the unit variants survive?
+- **Where:** R-CANON-01, R-CANON-02 (S-17); `term/` T-76, T-62, T-63.
+- **State of source:** seven declarations in four materially different shapes — L29188 (turn [38], five unit variants), L29968 (turn [41], seven variants with `Utf8Error` and `PayloadTooShort` where the others say `InvalidUtf8` and `UnexpectedEof`, plus `LengthOverflow` which the first lacks), L30661 (turn [41], nine payload-bearing struct variants such as `InvalidVersion { expected: u8, found: u8 }` and `LengthMismatch { expected: u32, found: usize }`), L32083 (turn [43]), L32959 and L33299 (turn [45]), and L34994 (turn [47], head elided as `// ... previous variants`, adding `DuplicateMapKey` — “NEW: Enforces strict injectivity”). The same variant name therefore occurs as a unit variant and as a struct variant with different arities.
+- **Decision needed:** which shape governs; whether the payload-bearing forms supersede the unit forms or both remain legal; which spelling governs each respelled pair; and whether `LengthOverflow` and `DuplicateMapKey` are in the governing set — `DuplicateMapKey` is the only variant that enforces map injectivity, so whether canonical encoding rejects duplicate keys at all currently depends on which declaration an implementer reads.
+- **Linked:** C-62, U-24, U-25, `term/` X-72, X-50, T-76, T-62, T-63; extends U-14 (error-variant enumeration).
+- **Blocking:** yes — for milestone M1 and for any golden vector, on the same path as U-24 and U-25.
+---
+
 
 ## Process notes
 
@@ -128,4 +163,5 @@ Three BLOCKING terminology collisions require an explicit architectural decision
 2. U-01…U-06 are **blocking** for their components: U-01 (M5 budgeting of duration), U-02 (M7 persistence), U-03 (M6 spawn), U-04/U-05 (M2–M3 surface freeze confirmation), U-06 (M5 effect classes / M7 reconciliation).
 3. The rest may be resolved incrementally before the corresponding milestone's evidence gate (M9/M10/M11) is declared.
 5. U-23, U-24 and U-25 were added by the terminology-normalization pass (`term/`). All three are **blocking**: U-23 for any mechanization of the external-effect chain, U-24 and U-25 for milestone M1. They are filed in their own section so that the line numbers cited by existing records do not move; U-15 above was corrected in place on the same pass (X-61).
+6. U-26, U-27, U-28 and U-29 were added by the same pass's **declaration sweep**, which checked every `Enum::Variant` path in the frozen source against every declaration of that enum. All four are blocking for a conformance test rather than for a milestone gate: U-26 and U-27 for any test that asserts on a step outcome or resumes a blocked actor, U-28 for trace-equality and differential tests, U-29 for milestone M1 alongside U-24 and U-25. They are filed in their own section for the same reason as U-23…U-25 — so that the line numbers cited by existing records do not move.
 4. A decision that *weakens* a security guarantee (e.g., allowing `NotExecuted` inference, unordered replay, saturating arithmetic) is out of scope for these items — those are prohibited outright (R-CLAIM-02).
