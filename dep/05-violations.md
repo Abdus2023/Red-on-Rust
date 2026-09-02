@@ -239,7 +239,7 @@ L39807-39828 §14 + L39645-39651 §10; no `R-…`, `REQ-…` or `C-…` record c
 
 ### HD-6 — Verification-layer edges that would become Cargo edges (23)
 
-Test-time couplings between the verification layer and production crates. `ror-differential -> ror-runtime` is the one `spec/07` §6 already lists ('black box'), and it is the only place the production machine and `ror-reference` co-reside in one dependency closure. Keep every one of these dev-dependency-only and behind the observation interface (R-REF-05), or the independence of the differential oracle becomes a build-graph fact instead of a semantic one.
+Test-time couplings between the verification layer and production crates. `ror-runtime -> ror-differential` — the 'ror-runtime (black box)' entry of `spec/07` §6 — is the one such edge a crate list already carries, and it is the only place the production machine and `ror-reference` co-reside in one dependency closure. Keep every one of these dev-dependency-only and behind the observation interface (R-REF-05), or the independence of the differential oracle becomes a build-graph fact instead of a semantic one.
 
 | Item | Detail |
 |---|---|

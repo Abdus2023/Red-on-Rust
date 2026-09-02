@@ -92,7 +92,7 @@ Every L2 pair is classified by the first matching rule of `dep/_edges.py` `KIND_
 | `05-violations.md` | hidden dependencies, invalid directions, independence violations (output 5) | generated |
 | `10-graph.json` | machine-readable graph + analysis. The crate, module and section layers carry full node and edge lists; the requirement layer carries `node_count`, its 927 edges, roots, leaves, non-trivial SCCs and the 50 largest forward references, but not the 545 node names | generated |
 | `_edges.py` | typed edge tables, classification rules, findings | hand-written |
-| `_graph.py` | generator + checker (the 9 checks in its docstring) | hand-written |
+| `_graph.py` | generator + checker (the 10 checks in its docstring) | hand-written |
 
 ```
 python3 dep/_graph.py            # check; non-zero exit on any error

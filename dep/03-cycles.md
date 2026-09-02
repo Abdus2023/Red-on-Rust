@@ -102,7 +102,7 @@ Every cycle below is matched against a family in `dep/_edges.py` `CYCLE_FAMILIES
 |---|---|---|
 | `MOD-08` ↔ `MOD-09` | RUNTIME [crate-table+prose+2 req] | RUNTIME [prose+2 req] |
 
-**Verdict:** Acceptable, resolved by dependency inversion. `MOD-08 -> MOD-09` is the real crate edge (`ror-host -> ror-runtime`, adapter boundary): the host implements a trait the runtime defines. The reverse `MOD-09 -> MOD-08` (receipts resume continuations, durable-trace sourcing) is a callback through that trait, so the crate DAG stays acyclic even though the module graph does not.
+**Verdict:** Acceptable, resolved by dependency inversion. `MOD-08 -> MOD-09` is the real crate edge (`ror-runtime -> ror-host`, adapter boundary): the host implements a trait the runtime defines. The reverse `MOD-09 -> MOD-08` (receipts resume continuations, durable-trace sourcing) is a callback through that trait, so the crate DAG stays acyclic even though the module graph does not.
 
 #### F-ESCROW-DURABILITY — escrow durability / post-crash revalidation (2)
 
@@ -136,7 +136,7 @@ Every cycle below is matched against a family in `dep/_edges.py` `CYCLE_FAMILIES
 | `MOD-15` ↔ `MOD-17` | VERIFICATION [13 req] | VERIFICATION [crate-table+prose+4 req] |
 | `MOD-16` ↔ `MOD-17` | VERIFICATION [5 req] | VERIFICATION [crate-table+prose+2 req] |
 
-**Verdict:** Not a code cycle. Both directions are VERIFICATION_DEPENDENCY (or the reference's SEMANTIC mirror): a module's obligations cite the evidence that discharges them, and the verification layer cites the obligations it tests. These edges are test-time only and are excluded from the implementation graph by construction (no frozen crate edge carries them, except `ror-differential -> ror-reference` / `-> ror-runtime`, which are dev-dependencies — HD-6).
+**Verdict:** Not a code cycle. Both directions are VERIFICATION_DEPENDENCY (or the reference's SEMANTIC mirror): a module's obligations cite the evidence that discharges them, and the verification layer cites the obligations it tests. These edges are test-time only and are excluded from the implementation graph by construction (no frozen crate edge carries them, except `ror-reference -> ror-differential` and `ror-runtime -> ror-differential`, which are dev-dependencies — HD-6).
 
 #### F-HOST-AGENT — end-to-end replay composition (1)
 

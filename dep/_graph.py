@@ -47,6 +47,11 @@ Checks (always)
       ID-1…ID-7 (`spec/04` vs `mod/18` arrow conventions, §13 edges,
       `spec/10-index.json` vocabulary, `MODULE_DEPS` `crate` labels, trust-table
       provenance of `AUTHORITY`) are reported in `dep/05` §4.
+ 10.  every edge citation in the generated text points the right way: a cited
+      `A -> B` that is not an edge of its layer while `B -> A` is fails the run
+      (the V-06 arrow-conversion hazard, checked mechanically over ~500
+      citations). Quotations of `spec/07`/`mod/18`/`spec/10-index.json` notation
+      are exempt, as is the one allowlisted assertion of an absent direction.
 """
 
 from __future__ import annotations
@@ -554,8 +559,9 @@ def hidden_dependencies(mod_graph, prose_pairs, mdeps, witnesses, crate_index,
                  {"ror-runtime", "ror-reference", "ror-differential"}]
     hd.append(("HD-6", "Verification-layer edges that would become Cargo edges",
                "Test-time couplings between the verification layer and production "
-               "crates. `ror-differential -> ror-runtime` is the one `spec/07` §6 "
-               "already lists ('black box'), and it is the only place the "
+               "crates. `ror-runtime -> ror-differential` — the 'ror-runtime "
+               "(black box)' entry of `spec/07` §6 — is the one such edge a crate "
+               "list already carries, and it is the only place the "
                "production machine and `ror-reference` co-reside in one dependency "
                "closure. Keep every one of these dev-dependency-only and behind "
                "the observation interface (R-REF-05), or the independence of the "
@@ -960,7 +966,7 @@ def gen_overview(ctx):
       "carries `node_count`, its 927 edges, roots, leaves, non-trivial SCCs and "
       "the 50 largest forward references, but not the 545 node names | generated |")
     A("| `_edges.py` | typed edge tables, classification rules, findings | hand-written |")
-    A("| `_graph.py` | generator + checker (the 9 checks in its docstring) | hand-written |")
+    A("| `_graph.py` | generator + checker (the 10 checks in its docstring) | hand-written |")
     A("")
     A("```")
     A("python3 dep/_graph.py            # check; non-zero exit on any error")
@@ -1976,6 +1982,63 @@ def gen_index(ctx):
 
 
 # --------------------------------------------------------------------------
+CITE_MOD = re.compile(r"`(MOD-\d\d)(?: [A-Z]+)? -> (MOD-\d\d)(?: [A-Z]+)?`")
+CITE_CRATE = re.compile(r"`(ror-[a-z]+) -> (ror-[a-z]+)`")
+CITE_SEC = re.compile(r"`(S-\d\d) -> (S-\d\d)`")
+
+# A citation immediately preceded by one of these is a quotation of that
+# document's own notation (spec/07 §6 and mod/18 both write dependent ->
+# dependency), not an assertion in this document set's convention.
+CITE_ATTRIBUTION = ("spec/07", "spec/10-index.json", "mod/18", "mod/19")
+
+# Citations that are correct but read as an inversion: they assert that a
+# direction is ABSENT, which is exactly the reverse of a frozen edge.
+CITE_ALLOWLIST = {
+    ("ror-agent", "ror-core"):
+        "V-03 asserts this direction does not exist; the frozen edge is the "
+        "reverse (`ror-core -> ror-agent`)",
+}
+
+
+def citation_inversions(ctx, docs):
+    """Scan the generated prose for edge citations that point the wrong way.
+
+    A citation `A -> B` is suspect when `A -> B` is *not* an edge of the relevant
+    layer but `B -> A` is: that is the signature of an arrow written in the
+    `mod/18` convention inside a document that states the `spec/04` one (V-06).
+    Citing an edge that exists in neither direction is allowed — findings discuss
+    forbidden and absent edges on purpose — and for the crate layer only a
+    *frozen* reverse counts, so HD-1's "would need crate edge X (absent)" rows
+    are not false positives.
+    """
+    mod_edges = {(e["provider"], e["consumer"]) for e in ctx["module"].edges}
+    sec_edges = {(e["provider"], e["consumer"]) for e in ctx["section"].edges}
+    frozen = {(p, c) for p, c, _k, _e in E.CRATE_EDGES}
+    known_crate = frozen | {(p, c) for p, c, _k, _w in E.CRATE_MISSING_EDGES} \
+        | {(p, c) for p, c in E.CRATE_DIAGRAM_EDGES} \
+        | {(c, p) for p, c, _e in E.FORBIDDEN_CRATE_EDGES}
+    suspects = []
+    for path, body in sorted(docs.items()):
+        for rx, edges, reverse_only, layer in (
+                (CITE_MOD, mod_edges, mod_edges, "module"),
+                (CITE_CRATE, known_crate, frozen, "crate"),
+                (CITE_SEC, sec_edges, sec_edges, "section")):
+            for m in rx.finditer(body):
+                a, b = m.group(1), m.group(2)
+                if a == b or (a, b) in edges:
+                    continue
+                if (b, a) not in reverse_only:
+                    continue
+                # quoting another document's notation is not an assertion of ours
+                before = body[max(0, m.start() - 40):m.start()]
+                if any(src in before for src in CITE_ATTRIBUTION):
+                    continue
+                if (a, b) in CITE_ALLOWLIST:
+                    continue
+                suspects.append((Path(path).name, layer, a, b))
+    return suspects
+
+
 def main():
     write = "--write" in sys.argv
     records = load_records()
@@ -2089,6 +2152,10 @@ def main():
         DEP / "05-violations.md": gen_violations(ctx),
         DEP / "10-graph.json": json.dumps(gen_index(ctx), indent=1, ensure_ascii=False) + "\n",
     }
+    for fname, layer, a, b in citation_inversions(ctx, docs):
+        err(f"{fname}: `{a} -> {b}` is not a {layer} edge but `{b} -> {a}` is — "
+            "probable arrow-convention inversion (V-06)")
+
     for path, content in docs.items():
         if write:
             path.write_text(content)

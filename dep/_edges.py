@@ -756,8 +756,8 @@ CYCLE_FAMILIES = [
      "that discharges them, and the verification layer cites the obligations it "
      "tests. These edges are test-time only and are excluded from the "
      "implementation graph by construction (no frozen crate edge carries them, "
-     "except `ror-differential -> ror-reference` / `-> ror-runtime`, which are "
-     "dev-dependencies — HD-6)."),
+     "except `ror-reference -> ror-differential` and "
+     "`ror-runtime -> ror-differential`, which are dev-dependencies — HD-6)."),
     ("F-HOST-AGENT", "end-to-end replay composition",
      lambda fs: fs == {"MOD-09", "MOD-13"},
      "**REQUIRES ARCHITECTURAL REVIEW.** `mod/09-host.md` declares MOD-13 and "
@@ -769,7 +769,7 @@ CYCLE_FAMILIES = [
     ("F-EFFECT-HOST", "effect / host handshake",
      lambda fs: fs == {"MOD-08", "MOD-09"},
      "Acceptable, resolved by dependency inversion. `MOD-08 -> MOD-09` is the "
-     "real crate edge (`ror-host -> ror-runtime`, adapter boundary): the host "
+     "real crate edge (`ror-runtime -> ror-host`, adapter boundary): the host "
      "implements a trait the runtime defines. The reverse `MOD-09 -> MOD-08` "
      "(receipts resume continuations, durable-trace sourcing) is a callback "
      "through that trait, so the crate DAG stays acyclic even though the module "
