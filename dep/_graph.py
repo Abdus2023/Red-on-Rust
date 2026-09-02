@@ -69,6 +69,11 @@ Checks (always)
       they were generated from (crate edge labels included). Optional: with no
       `pydot` importable the run reports the check as SKIPPED rather than
       passing it, and the blocks have then had only the regex validation.
+ 13.  every resolution option in `dep/_edges.py` `RESOLUTIONS` (the what-if
+      table behind `dep/05` §7) is a well-formed mutation of the graph as
+      recorded: its crate pairs exist, its kinds are in the vocabulary, its
+      rekind/drop targets are real module edges, and no option adds an edge
+      §14 forbids.
 """
 
 from __future__ import annotations
@@ -1733,6 +1738,75 @@ def gen_table(ctx):
     return "\n".join(L) + "\n"
 
 
+def _realisable_with(e, crate_of, pairs):
+    """`realisable` against an injected crate-edge set, for what-if analysis."""
+    cp, cc = crate_of[e["provider"]], crate_of[e["consumer"]]
+    return cp == cc or (cp, cc) in pairs
+
+
+def graph_metrics(mg, cg, crate_of, pairs):
+    """The numbers a decision turns on, computed from the graphs given.
+
+    The implementation graph is defined exactly as `dep/02` §2.1 and `dep/03`
+    §2.1 define it — every edge a frozen crate edge can carry, of any kind — so
+    the baseline row here reads 50 edges / 3 non-trivial SCCs like the rest of
+    the document set. Filtering by `IMPLEMENTABLE_KINDS` as well would give 43 /
+    2 and quietly disagree with them.
+    """
+    impl = Graph("impl", mg.nodes,
+                 [e for e in mg.edges if _realisable_with(e, crate_of, pairs)])
+    return dict(
+        acyclic=not any(len(c) > 1 for c in cg.sccs()),
+        module_edges=len(mg.edges),
+        impl_edges=len(impl.edges),
+        hd1=sum(1 for e in mg.edges
+                if e["provider"] in E.PRODUCTION_NODES
+                and e["consumer"] in E.PRODUCTION_NODES
+                and not _realisable_with(e, crate_of, pairs)),
+        impl_sccs=len([c for c in impl.sccs() if len(c) > 1]),
+        mutual_full=len(mutual_pairs(mg)),
+        mutual_impl=len(mutual_pairs(impl)),
+        sc_fail=[c for c, _t, o, _b in security_checks(mg) if o],
+    )
+
+
+def resolution_analysis(ctx):
+    """Apply each `RESOLUTIONS` mutation and measure what actually changes.
+
+    Nothing here is quoted from prose: every cell of `dep/05` §7 is recomputed
+    from the mutated graphs, so an option cannot claim an effect it does not
+    have. Returns (baseline_metrics, {finding: {"question", "options"}}).
+    """
+    mg, cg, crate_of = ctx["module"], ctx["crate"], ctx["crate_of"]
+    base_pairs = crate_edge_pairs()
+    baseline = graph_metrics(mg, cg, crate_of, base_pairs)
+    out = {}
+    for fid, spec in E.RESOLUTIONS.items():
+        rows = []
+        for opt in spec["options"]:
+            ch = opt["change"]
+            extra = ch.get("add_crate_edges", [])
+            rekind = ch.get("rekind", {})
+            drop = {tuple(x) for x in ch.get("drop_module_edges", [])}
+            pairs = base_pairs | {(p, c) for p, c, _k in extra}
+            cg2 = Graph("crate+option", cg.nodes, cg.edges + [
+                dict(provider=p, consumer=c, kind=k, visibility="OPTION", basis="")
+                for p, c, k in extra])
+            edges = []
+            for e in mg.edges:
+                key = (e["provider"], e["consumer"])
+                if key in drop:
+                    continue
+                e2 = dict(e)
+                if key in rekind:
+                    e2["kind"] = rekind[key]
+                edges.append(e2)
+            rows.append((opt, graph_metrics(Graph("module+option", mg.nodes, edges),
+                                            cg2, crate_of, pairs)))
+        out[fid] = dict(question=spec["question"], options=rows)
+    return baseline, out
+
+
 def gen_violations(ctx):
     L = []
     A = L.append
@@ -1931,6 +2005,51 @@ def gen_violations(ctx):
     A("- Every `SECURITY_DEPENDENCY` except the planner case of V-03 has an "
       "authoritative-boundary provider (SC-1).")
     A("")
+
+    A("---\n\n## 7. What each blocking finding needs, and what each answer "
+      "costs\n")
+    baseline, resolutions = resolution_analysis(ctx)
+
+    def delta(v, base):
+        return f"{v}" if v == base else f"{v} ({v - base:+d})"
+
+    A("V-01, V-03 and V-04 are the three findings that leave the module layer "
+      "with no partial order at all (`dep/02` §2.2). Each option below is a "
+      "mutation of the graph **as recorded** — a crate edge added to `spec/07` "
+      "§6, a module edge re-recorded with another kind, or a prose declaration "
+      "withdrawn. **None of them is applied, and none is a recommendation**: the "
+      "decision belongs to the specification owner. What this layer contributes "
+      "is the price of each answer, recomputed from the mutated graph rather "
+      "than estimated. Deltas are against the graph as recorded.\n")
+    A(f"**As recorded:** crate layer "
+      f"{'acyclic' if baseline['acyclic'] else '**CYCLIC**'}; "
+      f"{baseline['impl_edges']} of {baseline['module_edges']} module edges have "
+      f"a crate realisation (the implementation graph of `dep/02` §2.1), with "
+      f"{baseline['impl_sccs']} non-trivial SCCs; HD-1 = {baseline['hd1']}; "
+      f"{baseline['mutual_full']} mutual pairs, {baseline['mutual_impl']} of them "
+      f"inside that implementation graph; security failures "
+      f"{', '.join(baseline['sc_fail']) or 'none'}.\n")
+    for i, fid in enumerate(("V-01", "V-03", "V-04"), 1):
+        spec = resolutions[fid]
+        A(f"### 7.{i} {fid} — {E.FINDINGS[fid]['title']}\n")
+        A(f"*{spec['question']}*\n")
+        A("| Option | Crate DAG | Impl graph (edges a crate edge can carry) | "
+          "Impl SCCs | HD-1 | Mutual pairs (full / impl) | SC failures |")
+        A("|---|---|---|---|---|---|---|")
+        for opt, m in spec["options"]:
+            A(f"| **{opt['id']}** {opt['label']} | "
+              f"{'acyclic' if m['acyclic'] else '**CYCLIC**'} | "
+              f"{delta(m['impl_edges'], baseline['impl_edges'])} of "
+              f"{m['module_edges']} | "
+              f"{delta(m['impl_sccs'], baseline['impl_sccs'])} | "
+              f"{delta(m['hd1'], baseline['hd1'])} | "
+              f"{delta(m['mutual_full'], baseline['mutual_full'])} / "
+              f"{delta(m['mutual_impl'], baseline['mutual_impl'])} | "
+              f"{', '.join(m['sc_fail']) or 'none'} |")
+        A("")
+        for opt, _m in spec["options"]:
+            A(f"- **{opt['id']}** — {opt['note']}")
+        A("")
     return "\n".join(L) + "\n"
 
 
@@ -2251,6 +2370,44 @@ def main():
         desc, pred = E.KIND_PROVIDER_CHECK[e["kind"]]
         if pred is not None and not pred(e["provider"], e["consumer"]):
             err(f"{edge_line(e)} breaks its kind's provider constraint: {desc}")
+    # 13. every RESOLUTIONS option must be a well-formed mutation of the graph as
+    # recorded, and none may add an edge §14 forbids.
+    crate_names = {n for n, _r in E.CRATE_NODES}
+    forbidden = {(d, p) for d, p, _ev in E.FORBIDDEN_CRATE_EDGES}  # (dependent, dependency)
+    for fid, spec in E.RESOLUTIONS.items():
+        if fid not in E.FINDINGS:
+            err(f"RESOLUTIONS offers options for {fid}, which is not a finding")
+        for opt in spec["options"]:
+            for p, c, k in opt["change"].get("add_crate_edges", []):
+                if p not in crate_names or c not in crate_names:
+                    err(f"{opt['id']}: `{p} -> {c}` is not a crate pair")
+                if k not in E.KINDS:
+                    err(f"{opt['id']}: unknown kind {k}")
+                if (c, p) in forbidden:
+                    err(f"{opt['id']}: `{p} -> {c}` would make {c} depend on "
+                        f"{p}, which §14 forbids")
+            for (p, c), k in opt["change"].get("rekind", {}).items():
+                if (p, c) not in mod_pairs:
+                    err(f"{opt['id']}: rekind target `{p} -> {c}` is not a "
+                        "module edge")
+                if k not in E.KINDS:
+                    err(f"{opt['id']}: unknown kind {k}")
+            for pair in opt["change"].get("drop_module_edges", []):
+                if tuple(pair) not in mod_pairs:
+                    err(f"{opt['id']}: drop target `{pair[0]} -> {pair[1]}` is "
+                        "not a module edge")
+    # the §7 baseline must be the very graph `dep/02` §2.1 and `dep/03` §2.1
+    # print, or the what-if table silently uses a different implementation graph.
+    base_m = graph_metrics(mod_graph, crate_graph, crate_of, crate_edge_pairs())
+    if base_m["impl_edges"] != len(impl_graph.edges):
+        err(f"`dep/05` §7 baseline implementation graph has {base_m['impl_edges']} "
+            f"edges; `dep/02` §2.1 prints {len(impl_graph.edges)}")
+    if base_m["impl_sccs"] != len([c for c in impl_graph.sccs() if len(c) > 1]):
+        err(f"`dep/05` §7 baseline counts {base_m['impl_sccs']} non-trivial "
+            f"implementation SCCs; `dep/03` §2.1 prints "
+            f"{len([c for c in impl_graph.sccs() if len(c) > 1])}")
+    if base_m["mutual_full"] != len(mutual_pairs(mod_graph)):
+        err("`dep/05` §7 baseline mutual-pair count disagrees with `dep/03` §2.2")
     # 7. acyclicity where required
     if any(len(c) > 1 for c in crate_graph.sccs()):
         err("crate graph is not acyclic")

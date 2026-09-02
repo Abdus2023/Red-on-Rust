@@ -73,7 +73,7 @@ A repository-wide search of `req/*.md`, `spec/*.md` and `mod/*.md` for the line 
 - **severity:** BLOCKING
 - **constraint:** crate DAG completeness (R-REPO-02, R-ARCH-03)
 - L39962-39998 §17 freezes `fn execute(plan: &ExecutablePlan)` with `ExecutablePlan { ir, bounds, _sealed: Sealed }` and construction `pub(crate) fn finalize(...)` restricted to the compiler (L39947-39950 §16). `pub(crate)` privacy is per-crate, so the type must either be exported from `ror-compiler` (which requires the edge `ror-runtime -> ror-compiler`) or live in `ror-core` behind a seal that Rust cannot express as `pub(crate)`. `spec/07` §6 and `spec/10-index.json` state `ror-runtime -> ror-core, ror-kernel` only, i.e. they silently assume the second option without specifying the sealing mechanism. §13's diagram (L39762-39790) shows `ror-compiler -> ror-runtime`, i.e. the first.
-- **decision required:** Fix the crate home of `ExecutablePlan` and the sealing mechanism; add the resulting edge to `spec/07` §6. Needs a new `U-` item (no existing U-item covers it — `spec/09` has 16).
+- **decision required:** Fix the crate home of `ExecutablePlan` and the sealing mechanism; add the resulting edge to `spec/07` §6. Needs a new `U-` item (no existing U-item covers it — `spec/09` has 16). L39831 is the only frozen sentence that speaks to the choice — it permits adjusting the compiler/kernel direction where implementation mechanics require it, provided the compiler never receives authority to execute effects — and no document in `spec/`, `req/` or `mod/` cites it. `dep/05` §7 prices both answers.
 
 ### V-02 — The frozen forbidden-edge list is not tracked by any obligation or atomic record
 
@@ -314,4 +314,54 @@ The direction question that matters is **ID-3/V-04**: `Red-on-Rust.md` L39762-39
 - No MOD-14 dependency has an implementable kind (RI-2), and no production module takes an implementable dependency on the reference model (RI-3).
 - No production module depends implementably on a verification node (RI-4).
 - Every `SECURITY_DEPENDENCY` except the planner case of V-03 has an authoritative-boundary provider (SC-1).
+
+---
+
+## 7. What each blocking finding needs, and what each answer costs
+
+V-01, V-03 and V-04 are the three findings that leave the module layer with no partial order at all (`dep/02` §2.2). Each option below is a mutation of the graph **as recorded** — a crate edge added to `spec/07` §6, a module edge re-recorded with another kind, or a prose declaration withdrawn. **None of them is applied, and none is a recommendation**: the decision belongs to the specification owner. What this layer contributes is the price of each answer, recomputed from the mutated graph rather than estimated. Deltas are against the graph as recorded.
+
+**As recorded:** crate layer acyclic; 50 of 137 module edges have a crate realisation (the implementation graph of `dep/02` §2.1), with 3 non-trivial SCCs; HD-1 = 31; 41 mutual pairs, 5 of them inside that implementation graph; security failures SC-1, SC-2, SC-3.
+
+### 7.1 V-01 — `ExecutablePlan` has no determined crate home, so a required crate edge is undecided
+
+*Where does `ExecutablePlan` live, and how is it sealed?*
+
+| Option | Crate DAG | Impl graph (edges a crate edge can carry) | Impl SCCs | HD-1 | Mutual pairs (full / impl) | SC failures |
+|---|---|---|---|---|---|---|
+| **V-01a** Home it in `ror-core`, behind a seal | acyclic | 50 of 137 | 3 | 31 | 41 / 5 | SC-1, SC-2, SC-3 |
+| **V-01b** Export it from `ror-compiler` | acyclic | 51 (+1) of 137 | 3 | 30 (-1) | 41 / 5 | SC-1, SC-2, SC-3 |
+
+- **V-01a** — No new crate edge: the runtime already depends on `ror-core`. The open part is the mechanism, not the direction — L39947-39950 §16 restricts construction to `pub(crate) fn finalize`, and `pub(crate)` is per-crate, so a `ror-core` home needs a seal Rust cannot express that way. As recorded the module edge stays `MOD-02 -> MOD-05`, which would then overstate who owns the type.
+- **V-01b** — Adds `ror-compiler -> ror-runtime`, i.e. the runtime names the compiler's type — the direction §13's diagram already draws. §14 L39826 forbids only the reverse (the compiler depending on the runtime), and L39831 permits adjusting the compiler/kernel direction where implementation mechanics require it, provided the compiler never receives authority to execute effects, which a type dependency does not grant.
+
+### 7.2 V-03 — Security dependencies whose provider is the LLM/planner module
+
+*Who provides the security property that R-TRUST-01/R-CORE-01 record against the planner prohibitions?*
+
+| Option | Crate DAG | Impl graph (edges a crate edge can carry) | Impl SCCs | HD-1 | Mutual pairs (full / impl) | SC failures |
+|---|---|---|---|---|---|---|
+| **V-03a** Keep as recorded | acyclic | 50 of 137 | 3 | 31 | 41 / 5 | SC-1, SC-2, SC-3 |
+| **V-03b** Re-home the obligations onto the enforcing boundary and drop the planner as provider | acyclic | 50 of 136 | 3 | 30 (-1) | 40 (-1) / 5 | SC-3 |
+| **V-03c** Keep the pair, record it as specification-layer | acyclic | 50 of 137 | 3 | 31 | 41 / 5 | SC-3 |
+
+- **V-03a** — SC-1 and SC-2 stay FAIL: on 14 obligations the LLM/planner module is the provider of a security property. The architecture is sound — enforcement sits at the machine boundary (`spec/07` §3) — so what is unsound is the record, not the design.
+- **V-03b** — The coupling does not vanish: `MOD-03 -> MOD-01` already exists (SEMANTIC, 13 req), so the invariant stays in the graph with an authoritative provider. This is what F-PLANNER-TRUST's verdict recommends.
+- **V-03c** — The weakest change that clears SC-1/SC-2: no SECURITY_DEPENDENCY has a non-authoritative provider any more. It leaves the planner as the module the trust obligations point at, so it fixes the check without fixing the reading.
+
+### 7.3 V-04 — The source's §13 'Dependency Graph' contradicts the frozen crate edge list on one edge and adds three no crate list carries
+
+*Which direction does the host/agent replay composition run, or does it belong to neither crate?*
+
+| Option | Crate DAG | Impl graph (edges a crate edge can carry) | Impl SCCs | HD-1 | Mutual pairs (full / impl) | SC failures |
+|---|---|---|---|---|---|---|
+| **V-04a** The agent depends on the host | acyclic | 51 (+1) of 137 | 3 | 30 (-1) | 41 / 5 | SC-1, SC-2, SC-3 |
+| **V-04b** The host depends on the agent | acyclic | 51 (+1) of 137 | 3 | 30 (-1) | 41 / 5 | SC-1, SC-2, SC-3 |
+| **V-04c** Carry both prose declarations as they stand | **CYCLIC** | 52 (+2) of 137 | 4 (+1) | 29 (-2) | 41 / 6 (+1) | SC-1, SC-2, SC-3 |
+| **V-04d** Neither crate owns it — the conformance suite composes the two | acyclic | 50 of 135 | 3 | 29 (-2) | 40 (-1) / 5 | SC-1, SC-2 |
+
+- **V-04a** — Carries `MOD-09 -> MOD-13` (R8-replay-composition) and leaves `MOD-13 -> MOD-09` uncarried.
+- **V-04b** — Carries `MOD-13 -> MOD-09` and leaves `MOD-09 -> MOD-13` uncarried.
+- **V-04c** — Measured below rather than asserted: both directions typed RUNTIME is a crate-level 2-cycle, so this option is not available while the crate layer is required to be a DAG (check 7).
+- **V-04d** — F-HOST-AGENT's own verdict: `tests/` composes host and agent, and both prose declarations are withdrawn. No crate edge is needed and no obligation is lost, because the composition is a test-time concern.
 

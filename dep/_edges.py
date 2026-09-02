@@ -538,7 +538,13 @@ FINDINGS = {
             "(L39762-39790) shows `ror-compiler -> ror-runtime`, i.e. the first."),
         decision="Fix the crate home of `ExecutablePlan` and the sealing "
                  "mechanism; add the resulting edge to `spec/07` §6. Needs a new "
-                 "`U-` item (no existing U-item covers it — `spec/09` has 16).",
+                 "`U-` item (no existing U-item covers it — `spec/09` has 16). "
+                 "L39831 is the only frozen sentence that speaks to the choice — "
+                 "it permits adjusting the compiler/kernel direction where "
+                 "implementation mechanics require it, provided the compiler "
+                 "never receives authority to execute effects — and no document "
+                 "in `spec/`, `req/` or `mod/` cites it. `dep/05` §7 prices both "
+                 "answers.",
     ),
     "V-02": dict(
         title="The frozen forbidden-edge list is not tracked by any obligation or "
@@ -775,6 +781,113 @@ FINDINGS = {
                  "they are inside the TCB by the obligations cited), and fix "
                  "C-37's provenance line.",
     ),
+}
+
+# ---------------------------------------------------------------------------
+# 6b. Resolution options for the three findings that block the module layer
+# ---------------------------------------------------------------------------
+# An option is a *mutation of the graph as recorded*, never a decision: the
+# decision belongs to the specification owner.  `dep/_graph.py` applies each
+# mutation, recomputes the metrics, and prints what actually changes, so the
+# consequences next to an option are measured rather than asserted.  Mutations:
+#   add_crate_edges   (provider, consumer, kind) triples added to `spec/07` §6
+#   rekind            {(provider, consumer): kind} — a module edge re-recorded
+#                     with a different kind (e.g. specification-layer)
+#   drop_module_edges [(provider, consumer)] — module edges removed because the
+#                     obligation is re-homed or the prose declaration withdrawn
+RESOLUTIONS = {
+    "V-01": dict(
+        question="Where does `ExecutablePlan` live, and how is it sealed?",
+        options=[
+            dict(id="V-01a",
+                 label="Home it in `ror-core`, behind a seal",
+                 change={},
+                 note="No new crate edge: the runtime already depends on "
+                      "`ror-core`. The open part is the mechanism, not the "
+                      "direction — L39947-39950 §16 restricts construction to "
+                      "`pub(crate) fn finalize`, and `pub(crate)` is per-crate, "
+                      "so a `ror-core` home needs a seal Rust cannot express "
+                      "that way. As recorded the module edge stays "
+                      "`MOD-02 -> MOD-05`, which would then overstate who owns "
+                      "the type."),
+            dict(id="V-01b",
+                 label="Export it from `ror-compiler`",
+                 change=dict(add_crate_edges=[
+                     ("ror-compiler", "ror-runtime", "TYPE_DEPENDENCY")]),
+                 note="Adds `ror-compiler -> ror-runtime`, i.e. the runtime "
+                      "names the compiler's type — the direction §13's diagram "
+                      "already draws. §14 L39826 forbids only the reverse (the "
+                      "compiler depending on the runtime), and L39831 permits "
+                      "adjusting the compiler/kernel direction where "
+                      "implementation mechanics require it, provided the "
+                      "compiler never receives authority to execute effects, "
+                      "which a type dependency does not grant."),
+        ]),
+    "V-03": dict(
+        question="Who provides the security property that R-TRUST-01/R-CORE-01 "
+                 "record against the planner prohibitions?",
+        options=[
+            dict(id="V-03a",
+                 label="Keep as recorded",
+                 change={},
+                 note="SC-1 and SC-2 stay FAIL: on 14 obligations the "
+                      "LLM/planner module is the provider of a security "
+                      "property. The architecture is sound — enforcement sits "
+                      "at the machine boundary (`spec/07` §3) — so what is "
+                      "unsound is the record, not the design."),
+            dict(id="V-03b",
+                 label="Re-home the obligations onto the enforcing boundary and "
+                       "drop the planner as provider",
+                 change=dict(drop_module_edges=[("MOD-13", "MOD-01")]),
+                 note="The coupling does not vanish: `MOD-03 -> MOD-01` already "
+                      "exists (SEMANTIC, 13 req), so the invariant stays in the "
+                      "graph with an authoritative provider. This is what "
+                      "F-PLANNER-TRUST's verdict recommends."),
+            dict(id="V-03c",
+                 label="Keep the pair, record it as specification-layer",
+                 change=dict(rekind={("MOD-13", "MOD-01"):
+                                     "SEMANTIC_DEPENDENCY"}),
+                 note="The weakest change that clears SC-1/SC-2: no "
+                      "SECURITY_DEPENDENCY has a non-authoritative provider any "
+                      "more. It leaves the planner as the module the trust "
+                      "obligations point at, so it fixes the check without "
+                      "fixing the reading."),
+        ]),
+    "V-04": dict(
+        question="Which direction does the host/agent replay composition run, "
+                 "or does it belong to neither crate?",
+        options=[
+            dict(id="V-04a",
+                 label="The agent depends on the host",
+                 change=dict(add_crate_edges=[
+                     ("ror-host", "ror-agent", "RUNTIME_DEPENDENCY")]),
+                 note="Carries `MOD-09 -> MOD-13` (R8-replay-composition) and "
+                      "leaves `MOD-13 -> MOD-09` uncarried."),
+            dict(id="V-04b",
+                 label="The host depends on the agent",
+                 change=dict(add_crate_edges=[
+                     ("ror-agent", "ror-host", "RUNTIME_DEPENDENCY")]),
+                 note="Carries `MOD-13 -> MOD-09` and leaves `MOD-09 -> MOD-13` "
+                      "uncarried."),
+            dict(id="V-04c",
+                 label="Carry both prose declarations as they stand",
+                 change=dict(add_crate_edges=[
+                     ("ror-host", "ror-agent", "RUNTIME_DEPENDENCY"),
+                     ("ror-agent", "ror-host", "RUNTIME_DEPENDENCY")]),
+                 note="Measured below rather than asserted: both directions "
+                      "typed RUNTIME is a crate-level 2-cycle, so this option "
+                      "is not available while the crate layer is required to be "
+                      "a DAG (check 7)."),
+            dict(id="V-04d",
+                 label="Neither crate owns it — the conformance suite composes "
+                       "the two",
+                 change=dict(drop_module_edges=[("MOD-09", "MOD-13"),
+                                                ("MOD-13", "MOD-09")]),
+                 note="F-HOST-AGENT's own verdict: `tests/` composes host and "
+                      "agent, and both prose declarations are withdrawn. No "
+                      "crate edge is needed and no obligation is lost, because "
+                      "the composition is a test-time concern."),
+        ]),
 }
 
 # ---------------------------------------------------------------------------

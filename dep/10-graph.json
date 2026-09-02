@@ -8793,7 +8793,7 @@
    "severity": "BLOCKING",
    "constraint": "crate DAG completeness (R-REPO-02, R-ARCH-03)",
    "body": "L39962-39998 §17 freezes `fn execute(plan: &ExecutablePlan)` with `ExecutablePlan { ir, bounds, _sealed: Sealed }` and construction `pub(crate) fn finalize(...)` restricted to the compiler (L39947-39950 §16). `pub(crate)` privacy is per-crate, so the type must either be exported from `ror-compiler` (which requires the edge `ror-runtime -> ror-compiler`) or live in `ror-core` behind a seal that Rust cannot express as `pub(crate)`. `spec/07` §6 and `spec/10-index.json` state `ror-runtime -> ror-core, ror-kernel` only, i.e. they silently assume the second option without specifying the sealing mechanism. §13's diagram (L39762-39790) shows `ror-compiler -> ror-runtime`, i.e. the first.",
-   "decision": "Fix the crate home of `ExecutablePlan` and the sealing mechanism; add the resulting edge to `spec/07` §6. Needs a new `U-` item (no existing U-item covers it — `spec/09` has 16)."
+   "decision": "Fix the crate home of `ExecutablePlan` and the sealing mechanism; add the resulting edge to `spec/07` §6. Needs a new `U-` item (no existing U-item covers it — `spec/09` has 16). L39831 is the only frozen sentence that speaks to the choice — it permits adjusting the compiler/kernel direction where implementation mechanics require it, provided the compiler never receives authority to execute effects — and no document in `spec/`, `req/` or `mod/` cites it. `dep/05` §7 prices both answers."
   },
   "V-02": {
    "title": "The frozen forbidden-edge list is not tracked by any obligation or atomic record",
