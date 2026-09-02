@@ -784,7 +784,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-PERSIST-019
 - REQ-ID: REQ-PERSIST-019
 - CATEGORY: persistence
-- SOURCE: Red-on-Rust.md L35177–35188([47]); L26216–26240([33]); spec/01 S-18 R-PERSIST-05
+- SOURCE: Red-on-Rust.md L35177–35188([47]); L26216–26240([33]); L38252–L38260([54] §13); spec/01 S-18 R-PERSIST-05
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `ValidSnapshot(S) ⇔ Commit(S) ∧ Digest(Canonical(S)) = RecordedDigest(S)`.
 - PRECONDITIONS: a snapshot is evaluated for validity

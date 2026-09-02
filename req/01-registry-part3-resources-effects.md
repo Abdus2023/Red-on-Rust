@@ -178,7 +178,7 @@ The v0.3 budget/transition text (`Red-on-Rust.md` L8643–9050, turn `[16]`) is 
 ### REQ-BUDGET-013
 - REQ-ID: REQ-BUDGET-013
 - CATEGORY: budget
-- SOURCE: Red-on-Rust.md L38002([54] §7); L38864([54] §28); L9219([17] "not saturating"); spec/01 S-11 R-BUDGET-02
+- SOURCE: Red-on-Rust.md L38002([54] §7); L38864([54] §28); L9219([17] "not saturating"); L41572([60] restated [60]); spec/01 S-11 R-BUDGET-02
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: `saturating_sub` MUST NOT be used for semantic accounting; saturating budget arithmetic is a prohibited shortcut.
 - PRECONDITIONS: any budget subtraction
@@ -854,7 +854,7 @@ The v0.3 budget/transition text (`Red-on-Rust.md` L8643–9050, turn `[16]`) is 
 ### REQ-EFFECT-029
 - REQ-ID: REQ-EFFECT-029
 - CATEGORY: effect-protocol
-- SOURCE: Red-on-Rust.md L23949–24002([30]); spec/01 S-12 R-EFFECT-06
+- SOURCE: Red-on-Rust.md L23949–24002([30]); L38070([54] §8); spec/01 S-12 R-EFFECT-06
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: On receipt mismatch the continuation is NOT resumed.
 - PRECONDITIONS: mismatch detected

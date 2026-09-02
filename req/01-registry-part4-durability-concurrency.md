@@ -9,7 +9,7 @@ Areas: `DUR` (14), `HOST` (14), `ACTOR` (35), `MARSHAL` (10) — 73 atomic units
 ### REQ-DUR-001
 - REQ-ID: REQ-DUR-001
 - CATEGORY: durability
-- SOURCE: Red-on-Rust.md L38050([54] §8); L35147–35156([47]); L38217–38221([54] §12); spec/01 S-13 R-DUR-01
+- SOURCE: Red-on-Rust.md L38050([54] §8); L35147–35156([47]); L38217–38221([54] §12); L41612–L41616([60] restated [60]); spec/01 S-13 R-DUR-01
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: `HostInvoked(E) ⇒ DurableIssued(E)`; the machine MUST NEVER invoke the host before the durable issuance boundary.
 - PRECONDITIONS: any host invocation
@@ -135,7 +135,7 @@ Areas: `DUR` (14), `HOST` (14), `ACTOR` (35), `MARSHAL` (10) — 73 atomic units
 ### REQ-DUR-010
 - REQ-ID: REQ-DUR-010
 - CATEGORY: durability
-- SOURCE: Red-on-Rust.md L38222–38226([54] §12); L35159–35176([47]); L26592–26598([33]); spec/01 S-13 R-DUR-04
+- SOURCE: Red-on-Rust.md L38222–38226([54] §12); L35159–35176([47]); L26592–26598([33]); L41736([60] restated [60]); spec/01 S-13 R-DUR-04
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `Prepared ∧ ¬Issued ⇒ Discard`; incomplete preparation is rolled back and the budget restored.
 - PRECONDITIONS: recovery finds `Prepared` with no `Issued`
@@ -163,7 +163,7 @@ Areas: `DUR` (14), `HOST` (14), `ACTOR` (35), `MARSHAL` (10) — 73 atomic units
 ### REQ-DUR-012
 - REQ-ID: REQ-DUR-012
 - CATEGORY: durability
-- SOURCE: Red-on-Rust.md L38241–38248([54] §12); L37968–37981([54] master prompt); spec/01 S-13 R-DUR-04
+- SOURCE: Red-on-Rust.md L38241–38248([54] §12); L37968–37981([54] master prompt); L41751([60] restated [60]); spec/01 S-13 R-DUR-04
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: An `Issued ∧ ¬Completed` effect is NEVER automatically classified `NotExecuted`; the host may have executed it.
 - PRECONDITIONS: recovery or reconciliation considers an interrupted effect
@@ -959,7 +959,7 @@ Areas: `DUR` (14), `HOST` (14), `ACTOR` (35), `MARSHAL` (10) — 73 atomic units
 ### REQ-MARSHAL-005
 - REQ-ID: REQ-MARSHAL-005
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L25972–26001([32]); L37955–37960([54] §6); spec/01 S-16 R-MARSHAL-02
+- SOURCE: Red-on-Rust.md L25972–26001([32]); L37955–37960([54] §6); L38131–L38133([54] §10); spec/01 S-16 R-MARSHAL-02
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `DelegatedAuthority ≼ ParentAuthority`.
 - PRECONDITIONS: any delegation

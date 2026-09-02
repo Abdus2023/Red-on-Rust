@@ -151,7 +151,7 @@
   {
    "REQ-ID": "REQ-SCOPE-008",
    "CATEGORY": "process",
-   "SOURCE": "Red-on-Rust.md L37664–37688([54] §1.1); spec/01 S-01 R-SCOPE-03",
+   "SOURCE": "Red-on-Rust.md L37664–37688([54] §1.1); L37648([54] §1.1 freeze rule); spec/01 S-01 R-SCOPE-03",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "The implementer MUST NOT redesign, reinterpret, simplify away, or silently modify frozen semantics: CEK semantics; evaluation order; lexical scoping; closure semantics; capability algebra; attenuation; revocation; budget algebra; effect authorization; effect issuance protocol; actor isolation; deterministic scheduling; marshalling rules; delegation semantics; canonical serialization; persistence protocol; crash matrix; recovery classification; LLM trust boundary; reference-model independence; differential-testing contract.",
    "PRECONDITIONS": "any implementation decision touching the enumerated surface",
@@ -263,7 +263,7 @@
   {
    "REQ-ID": "REQ-CORE-004",
    "CATEGORY": "security-invariant",
-   "SOURCE": "Red-on-Rust.md L42066–42072([60]); L6404([11]); L37931–37935([54] §6); spec/01 S-02 R-CORE-04",
+   "SOURCE": "Red-on-Rust.md L42066–42072([60]); L6404([11]); L37931–37935([54] §6); L41526–L41530([60] restated [60]); spec/01 S-02 R-CORE-04",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "No authority amplification: `derive(A,C) ≼ A` always holds.",
    "PRECONDITIONS": "any derivation/attenuation/delegation",
@@ -1453,7 +1453,7 @@
   {
    "REQ-ID": "REQ-CEK-002",
    "CATEGORY": "machine-semantics",
-   "SOURCE": "Red-on-Rust.md L37840([54] §4); L38858([54] §28); spec/01 S-08 R-CEK-01",
+   "SOURCE": "Red-on-Rust.md L37840([54] §4); L38858([54] §28); L41503([60] restated [60]); spec/01 S-08 R-CEK-01",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "The evaluator MUST NOT depend on recursive host-language calls for call-stack management; recursive evaluation is a prohibited shortcut.",
    "PRECONDITIONS": "any nested call",
@@ -2363,7 +2363,7 @@
   {
    "REQ-ID": "REQ-BUDGET-013",
    "CATEGORY": "budget",
-   "SOURCE": "Red-on-Rust.md L38002([54] §7); L38864([54] §28); L9219([17] \"not saturating\"); spec/01 S-11 R-BUDGET-02",
+   "SOURCE": "Red-on-Rust.md L38002([54] §7); L38864([54] §28); L9219([17] \"not saturating\"); L41572([60] restated [60]); spec/01 S-11 R-BUDGET-02",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "`saturating_sub` MUST NOT be used for semantic accounting; saturating budget arithmetic is a prohibited shortcut.",
    "PRECONDITIONS": "any budget subtraction",
@@ -3035,7 +3035,7 @@
   {
    "REQ-ID": "REQ-EFFECT-029",
    "CATEGORY": "effect-protocol",
-   "SOURCE": "Red-on-Rust.md L23949–24002([30]); spec/01 S-12 R-EFFECT-06",
+   "SOURCE": "Red-on-Rust.md L23949–24002([30]); L38070([54] §8); spec/01 S-12 R-EFFECT-06",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "On receipt mismatch the continuation is NOT resumed.",
    "PRECONDITIONS": "mismatch detected",
@@ -3203,7 +3203,7 @@
   {
    "REQ-ID": "REQ-DUR-001",
    "CATEGORY": "durability",
-   "SOURCE": "Red-on-Rust.md L38050([54] §8); L35147–35156([47]); L38217–38221([54] §12); spec/01 S-13 R-DUR-01",
+   "SOURCE": "Red-on-Rust.md L38050([54] §8); L35147–35156([47]); L38217–38221([54] §12); L41612–L41616([60] restated [60]); spec/01 S-13 R-DUR-01",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "`HostInvoked(E) ⇒ DurableIssued(E)`; the machine MUST NEVER invoke the host before the durable issuance boundary.",
    "PRECONDITIONS": "any host invocation",
@@ -3329,7 +3329,7 @@
   {
    "REQ-ID": "REQ-DUR-010",
    "CATEGORY": "durability",
-   "SOURCE": "Red-on-Rust.md L38222–38226([54] §12); L35159–35176([47]); L26592–26598([33]); spec/01 S-13 R-DUR-04",
+   "SOURCE": "Red-on-Rust.md L38222–38226([54] §12); L35159–35176([47]); L26592–26598([33]); L41736([60] restated [60]); spec/01 S-13 R-DUR-04",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`Prepared ∧ ¬Issued ⇒ Discard`; incomplete preparation is rolled back and the budget restored.",
    "PRECONDITIONS": "recovery finds `Prepared` with no `Issued`",
@@ -3357,7 +3357,7 @@
   {
    "REQ-ID": "REQ-DUR-012",
    "CATEGORY": "durability",
-   "SOURCE": "Red-on-Rust.md L38241–38248([54] §12); L37968–37981([54] master prompt); spec/01 S-13 R-DUR-04",
+   "SOURCE": "Red-on-Rust.md L38241–38248([54] §12); L37968–37981([54] master prompt); L41751([60] restated [60]); spec/01 S-13 R-DUR-04",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "An `Issued ∧ ¬Completed` effect is NEVER automatically classified `NotExecuted`; the host may have executed it.",
    "PRECONDITIONS": "recovery or reconciliation considers an interrupted effect",
@@ -4141,7 +4141,7 @@
   {
    "REQ-ID": "REQ-MARSHAL-005",
    "CATEGORY": "security-invariant",
-   "SOURCE": "Red-on-Rust.md L25972–26001([32]); L37955–37960([54] §6); spec/01 S-16 R-MARSHAL-02",
+   "SOURCE": "Red-on-Rust.md L25972–26001([32]); L37955–37960([54] §6); L38131–L38133([54] §10); spec/01 S-16 R-MARSHAL-02",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`DelegatedAuthority ≼ ParentAuthority`.",
    "PRECONDITIONS": "any delegation",
@@ -4995,7 +4995,7 @@
   {
    "REQ-ID": "REQ-PERSIST-019",
    "CATEGORY": "persistence",
-   "SOURCE": "Red-on-Rust.md L35177–35188([47]); L26216–26240([33]); spec/01 S-18 R-PERSIST-05",
+   "SOURCE": "Red-on-Rust.md L35177–35188([47]); L26216–26240([33]); L38252–L38260([54] §13); spec/01 S-18 R-PERSIST-05",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`ValidSnapshot(S) ⇔ Commit(S) ∧ Digest(Canonical(S)) = RecordedDigest(S)`.",
    "PRECONDITIONS": "a snapshot is evaluated for validity",
@@ -5751,7 +5751,7 @@
   {
    "REQ-ID": "REQ-TEST-014",
    "CATEGORY": "test-infrastructure",
-   "SOURCE": "Red-on-Rust.md L38506([54] §19); L38895([54] §29); L40951([58] M9); spec/01 S-21 R-TEST-05; spec/06 C-32",
+   "SOURCE": "Red-on-Rust.md L38506([54] §19); L38895([54] §29); L40951([58] M9); L41935–L41939([60] restated [60]); spec/01 S-21 R-TEST-05; spec/06 C-32",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`MutationKillRate = 100%` for all registered **non-equivalent** mutations.",
    "PRECONDITIONS": "the mutation suite has run",
@@ -6521,7 +6521,7 @@
   {
    "REQ-ID": "REQ-ORDER-019",
    "CATEGORY": "security-invariant",
-   "SOURCE": "Red-on-Rust.md L41064–41074([58] §36); spec/01 S-23 R-ORDER-03 (omitted there)",
+   "SOURCE": "Red-on-Rust.md L41064–41074([58] §36); L41060–L41068([58] §36); spec/01 S-23 R-ORDER-03 (omitted there)",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "First security gate property 3: `Value::Capability ⇏ OrdinaryMessageTransfer`.",
    "PRECONDITIONS": "before effect implementation",
@@ -6535,7 +6535,7 @@
   {
    "REQ-ID": "REQ-ORDER-020",
    "CATEGORY": "security-invariant",
-   "SOURCE": "Red-on-Rust.md L41076–41082([58] §36); spec/01 S-23 R-ORDER-03 (omitted there)",
+   "SOURCE": "Red-on-Rust.md L41076–41082([58] §36); L41072–L41080([58] §36); spec/01 S-23 R-ORDER-03 (omitted there)",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "First security gate property 4: `HostInvocation ⇒ DurableIssued`.",
    "PRECONDITIONS": "before effect implementation",

@@ -21,6 +21,7 @@ Source of record: `../Red-on-Rust.md` (42,312 lines, 60-turn design transcript).
 | `04-verification-undefined.md` | 8 records with an undefined verification method, 4 non-normative, 3 permissions, 79 review-only | **4. Requirements whose verification method is currently undefined** |
 | `registry.json` | Machine-readable registry (generated) | 1 |
 | `_anchors.py`, `_validate.py` | Provenance constants and the checker | — (tooling) |
+| `_coverage.py` | Omission audit: normative-marker source lines that no record cites | — (tooling) |
 
 ## Record shape
 
@@ -38,8 +39,11 @@ Every record is `SPECIFIED`. The repository contains no Cargo workspace, crate, 
 ```
 python3 req/_validate.py           # 0 errors / 0 warnings on a clean tree
 python3 req/_validate.py --write   # regenerate req/registry.json
+python3 req/_coverage.py           # omission audit: 74/74 normative-marker lines cited
 ```
 
 The checker re-derives its facts from `Red-on-Rust.md` and `spec/` rather than trusting the documents: field order, ID uniqueness and numbering, normative and evidence vocabularies, line-range bounds, agreement between every cited range and the turn it claims, existence and full coverage of the 148 parent obligations, resolution of every internal cross-reference, existence of every `C-nn`/`U-nn` reference in `spec/06`/`spec/09`, occurrence of every backticked identifier inside a cited range, and the frozen line anchors.
+
+**Omission audit:** in the three requirement-dense regions (turn `[54]` master prompt, turn `[58]` bootstrap pack, closing turns `[59]`–`[60]`), all **74/74** normative-marker lines are cited by at least one record; none is uncited.
 
 **Cross-reference completeness:** all **45/45** contradictions in `spec/06` and all **16/16** unresolved decisions in `spec/09` are accounted for by a registry record or an ambiguity entry — none is silently dropped, and no reference points at an item that does not exist. `00-method.md` §6 lists each check with the injected fault that demonstrated it fires.

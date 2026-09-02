@@ -108,7 +108,7 @@ Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records a
 ### REQ-SCOPE-008
 - REQ-ID: REQ-SCOPE-008
 - CATEGORY: process
-- SOURCE: Red-on-Rust.md L37664–37688([54] §1.1); spec/01 S-01 R-SCOPE-03
+- SOURCE: Red-on-Rust.md L37664–37688([54] §1.1); L37648([54] §1.1 freeze rule); spec/01 S-01 R-SCOPE-03
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: The implementer MUST NOT redesign, reinterpret, simplify away, or silently modify frozen semantics: CEK semantics; evaluation order; lexical scoping; closure semantics; capability algebra; attenuation; revocation; budget algebra; effect authorization; effect issuance protocol; actor isolation; deterministic scheduling; marshalling rules; delegation semantics; canonical serialization; persistence protocol; crash matrix; recovery classification; LLM trust boundary; reference-model independence; differential-testing contract.
 - PRECONDITIONS: any implementation decision touching the enumerated surface
@@ -224,7 +224,7 @@ Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records a
 ### REQ-CORE-004
 - REQ-ID: REQ-CORE-004
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L42066–42072([60]); L6404([11]); L37931–37935([54] §6); spec/01 S-02 R-CORE-04
+- SOURCE: Red-on-Rust.md L42066–42072([60]); L6404([11]); L37931–37935([54] §6); L41526–L41530([60] restated [60]); spec/01 S-02 R-CORE-04
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: No authority amplification: `derive(A,C) ≼ A` always holds.
 - PRECONDITIONS: any derivation/attenuation/delegation

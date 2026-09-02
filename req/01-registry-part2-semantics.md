@@ -308,7 +308,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-CEK-002
 - REQ-ID: REQ-CEK-002
 - CATEGORY: machine-semantics
-- SOURCE: Red-on-Rust.md L37840([54] §4); L38858([54] §28); spec/01 S-08 R-CEK-01
+- SOURCE: Red-on-Rust.md L37840([54] §4); L38858([54] §28); L41503([60] restated [60]); spec/01 S-08 R-CEK-01
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: The evaluator MUST NOT depend on recursive host-language calls for call-stack management; recursive evaluation is a prohibited shortcut.
 - PRECONDITIONS: any nested call

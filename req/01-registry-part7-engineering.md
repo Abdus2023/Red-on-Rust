@@ -531,7 +531,7 @@ Areas: `REPO` (19), `ORDER` (25), `CLAIM` (22) — 66 atomic units.
 ### REQ-ORDER-019
 - REQ-ID: REQ-ORDER-019
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L41064–41074([58] §36); spec/01 S-23 R-ORDER-03 (omitted there)
+- SOURCE: Red-on-Rust.md L41064–41074([58] §36); L41060–L41068([58] §36); spec/01 S-23 R-ORDER-03 (omitted there)
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: First security gate property 3: `Value::Capability ⇏ OrdinaryMessageTransfer`.
 - PRECONDITIONS: before effect implementation
@@ -545,7 +545,7 @@ Areas: `REPO` (19), `ORDER` (25), `CLAIM` (22) — 66 atomic units.
 ### REQ-ORDER-020
 - REQ-ID: REQ-ORDER-020
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L41076–41082([58] §36); spec/01 S-23 R-ORDER-03 (omitted there)
+- SOURCE: Red-on-Rust.md L41076–41082([58] §36); L41072–L41080([58] §36); spec/01 S-23 R-ORDER-03 (omitted there)
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: First security gate property 4: `HostInvocation ⇒ DurableIssued`.
 - PRECONDITIONS: before effect implementation

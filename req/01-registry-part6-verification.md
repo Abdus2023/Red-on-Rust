@@ -419,7 +419,7 @@ Areas: `REF` (16), `TEST` (31) — 47 atomic units.
 ### REQ-TEST-014
 - REQ-ID: REQ-TEST-014
 - CATEGORY: test-infrastructure
-- SOURCE: Red-on-Rust.md L38506([54] §19); L38895([54] §29); L40951([58] M9); spec/01 S-21 R-TEST-05; spec/06 C-32
+- SOURCE: Red-on-Rust.md L38506([54] §19); L38895([54] §29); L40951([58] M9); L41935–L41939([60] restated [60]); spec/01 S-21 R-TEST-05; spec/06 C-32
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `MutationKillRate = 100%` for all registered **non-equivalent** mutations.
 - PRECONDITIONS: the mutation suite has run
