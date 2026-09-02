@@ -73,6 +73,7 @@ ExternalEffect(E) ⇒ ValidatedPlan(P)
 2. **Track a requirement** via its `R-…` ID: definition in `01`, dependencies in `04`, implementation home in `07`, test/evidence mapping in `08`.
 3. **Check risk** via `06` (contradictions/ambiguities) and `09` (unresolved decisions). These are the items where implementation MUST stop and seek an explicit specification decision (per the frozen "STOP and report" rule, source L37690).
 4. **Machine processing** uses `10-index.json`, which is the authoritative cross-index of sections, requirements, findings, unresolved items, and status.
+5. **Architectural view** uses `../mod/`: the same obligations partitioned into 17 semantic modules (`MOD-01`…`MOD-17`) by architectural responsibility, with one canonical owner per obligation, explicit cross-references, and a marked-duplication register (`D-01`…`D-12`). Normative text stays here in `01`; `mod/` registers ownership and contracts and never restates it.
 
 ## 6. Normative conventions used in this document set
 

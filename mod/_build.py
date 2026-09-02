@@ -27,8 +27,13 @@ Checks (always, error = non-zero exit):
      matches the computed partition.
   7. Every open decision item mapped to a module (U_AFFECTED) is named in that
      module's file (U-NN token present).
-  8. Generated files (when present) are up to date with the map (checked in --check
-     mode by regenerating and comparing).
+  8. Module dependency graph (MODULE_DEPS): endpoints exist, no self-edges, the
+     graph is acyclic, intra-crate couplings (INTRA_CRATE) never appear as module
+     edges, and the reference-model independence rules hold structurally
+     (R-REF-02: no MOD-14 edge points at a production module; an inbound edge to
+     MOD-14 exists only from MOD-15's runner or as an explicit "oracle" edge).
+  9. Generated files (when present) are up to date with the map (checked by
+     regenerating and comparing).
 """
 
 import json
@@ -226,7 +231,49 @@ def check_map(errors):
         for m in ms:
             if m not in mods:
                 errors.append(f"milestone {mm} -> unknown module {m}")
+    check_module_graph(errors, mods)
     return obl
+
+
+def check_module_graph(errors, mods):
+    """Check 8: the module dependency graph is well-formed and acyclic, and the
+    reference model cannot depend on production modules (R-REF-02)."""
+    toposort_ok = True
+    for src, dst, kind, basis in O.MODULE_DEPS:
+        if src not in mods or dst not in mods:
+            errors.append(f"module edge {src} -> {dst}: unknown endpoint")
+        if src == dst:
+            errors.append(f"module self-edge {src}")
+        if src == "MOD-14":
+            errors.append(f"MOD-14 must have no production-module dependency (R-REF-02): {src} -> {dst}")
+        if dst == "MOD-14" and kind != "oracle" and src not in ("MOD-15",):
+            errors.append(f"only MOD-15 (differential runner) may edge to MOD-14: {src} -> {dst} ({kind})")
+    # intra-crate groups must not also appear as graph edges between members
+    for crate, members in O.INTRA_CRATE.items():
+        s = set(members)
+        for src, dst, kind, basis in O.MODULE_DEPS:
+            if src in s and dst in s:
+                errors.append(f"intra-crate coupling {src} -> {dst} ({crate}) must stay a cross-reference, not a module edge")
+    # acyclicity (Kahn)
+    from collections import deque
+    indeg = defaultdict(int)
+    adj = defaultdict(list)
+    for src, dst, _k, _b in O.MODULE_DEPS:
+        adj[src].append(dst)
+        indeg[dst] += 1
+        indeg.setdefault(src, 0)
+    q = deque([m for m in indeg if indeg[m] == 0])
+    seen = 0
+    while q:
+        n = q.popleft(); seen += 1
+        for t in adj[n]:
+            indeg[t] -= 1
+            if indeg[t] == 0:
+                q.append(t)
+    if seen != len(indeg):
+        toposort_ok = False
+    if not toposort_ok:
+        errors.append("module dependency graph has a cycle")
 
 
 # ---------------------------------------------------------------------------
@@ -263,6 +310,25 @@ def generate_matrix(obl, req_owner):
     A("full cross-reference prose lives in the module files' CROSS-REFERENCES sections).")
     A("The provenance column quotes `spec/03` verbatim; where `req/00-method.md` §5.1 corrected")
     A("an anchor, the corrected range is carried in the owning module file's SOURCE-PROVENANCE.")
+    A("")
+    A("## 0. Module dependency graph (structural; mirrors the frozen crate direction)")
+    A("")
+    A("Edges below restate the frozen crate dependency direction (`spec/07` §6, R-REPO-02 /")
+    A("R-ARCH-04) at module granularity: each edge is an existing architectural fact, not a")
+    A("choice made by this split. Semantic couplings richer than crate edges live in the")
+    A("module files' DEPENDENCIES/CROSS-REFERENCES prose. The graph is acyclic (checked by")
+    A("`mod/_build.py`, Kahn's algorithm); intra-crate couplings never appear as edges:")
+    A("")
+    for crate, members in O.INTRA_CRATE.items():
+        A(f"- `{crate}` hosts {'; '.join(f'{m} {O.DOMAIN[m]}' for m in members)} "
+          "(couplings inside the crate are cross-references, not module dependencies)")
+    A("")
+    A("```")
+    A("MOD-01 CORE + MOD-14 REFERENCE   (no module dependencies; REFERENCE is forbidden production deps by R-REF-02)")
+    for src, dst, kind, basis in O.MODULE_DEPS:
+        A(f"{src} {O.DOMAIN[src]:<12} -> {dst} {O.DOMAIN[dst]:<14} [{kind}] {basis}")
+    A("MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no producer dependencies.")
+    A("```")
     A("")
     A("## 1. Obligation partition (148)")
     A("")
@@ -379,6 +445,13 @@ def generate_index(obl, req_owner):
         "record_count": sum(m["record_count"] for m in mods),
         "evidence_status_of_every_obligation": "SPECIFIED",
         "modules": mods,
+        "module_dependency_graph": {
+            "basis": "frozen crate dependency direction (spec/07 section 6, R-REPO-02/R-ARCH-04)",
+            "edges": [{"from": s, "to": t, "kind": k, "basis": b} for s, t, k, b in O.MODULE_DEPS],
+            "intra_crate_groups": O.INTRA_CRATE,
+            "reference_forbidden_production_dependencies": O.REFERENCE_FORBIDDEN_DEPS,
+            "acyclic": True,  # enforced by mod/_build.py check 8 on every run
+        },
         "duplications": [
             {"id": did, "kind": kind, "endpoints": eps, "canonical": canonical, "note": note}
             for did, kind, eps, canonical, note in O.DUPLICATES

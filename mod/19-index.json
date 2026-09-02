@@ -1209,6 +1209,192 @@
       "open_items_affecting": []
     }
   ],
+  "module_dependency_graph": {
+    "basis": "frozen crate dependency direction (spec/07 section 6, R-REPO-02/R-ARCH-04)",
+    "edges": [
+      {
+        "from": "MOD-02",
+        "to": "MOD-01",
+        "kind": "crate",
+        "basis": "ror-compiler -> ror-core"
+      },
+      {
+        "from": "MOD-03",
+        "to": "MOD-01",
+        "kind": "crate",
+        "basis": "ror-kernel -> ror-core"
+      },
+      {
+        "from": "MOD-04",
+        "to": "MOD-03",
+        "kind": "crate",
+        "basis": "budget primitives co-located with ror-kernel; ceiling operand from the algebra"
+      },
+      {
+        "from": "MOD-05",
+        "to": "MOD-01",
+        "kind": "crate",
+        "basis": "ror-runtime -> ror-core"
+      },
+      {
+        "from": "MOD-05",
+        "to": "MOD-03",
+        "kind": "crate",
+        "basis": "ror-runtime -> ror-kernel (authorize/derive calls)"
+      },
+      {
+        "from": "MOD-06",
+        "to": "MOD-01",
+        "kind": "crate",
+        "basis": "ror-runtime -> ror-core"
+      },
+      {
+        "from": "MOD-06",
+        "to": "MOD-03",
+        "kind": "crate",
+        "basis": "ror-runtime -> ror-kernel (spawn/delegation derive)"
+      },
+      {
+        "from": "MOD-07",
+        "to": "MOD-01",
+        "kind": "crate",
+        "basis": "ror-runtime -> ror-core"
+      },
+      {
+        "from": "MOD-07",
+        "to": "MOD-03",
+        "kind": "crate",
+        "basis": "ror-runtime -> ror-kernel"
+      },
+      {
+        "from": "MOD-08",
+        "to": "MOD-01",
+        "kind": "crate",
+        "basis": "ror-runtime -> ror-core"
+      },
+      {
+        "from": "MOD-08",
+        "to": "MOD-03",
+        "kind": "crate",
+        "basis": "ror-runtime -> ror-kernel (gates 5..7)"
+      },
+      {
+        "from": "MOD-08",
+        "to": "MOD-11",
+        "kind": "crate",
+        "basis": "request step 14 calls ror-persistence append/sync"
+      },
+      {
+        "from": "MOD-09",
+        "to": "MOD-01",
+        "kind": "crate",
+        "basis": "ror-host -> ror-core"
+      },
+      {
+        "from": "MOD-09",
+        "to": "MOD-08",
+        "kind": "crate",
+        "basis": "ror-host -> ror-runtime (adapter boundary, spec/07 section 6)"
+      },
+      {
+        "from": "MOD-11",
+        "to": "MOD-01",
+        "kind": "crate",
+        "basis": "ror-persistence -> ror-core"
+      },
+      {
+        "from": "MOD-12",
+        "to": "MOD-01",
+        "kind": "crate",
+        "basis": "ror-persistence -> ror-core"
+      },
+      {
+        "from": "MOD-12",
+        "to": "MOD-14",
+        "kind": "oracle",
+        "basis": "independent recovery oracle (R-RECOV-04, REQ-TEST-045) - not a crate edge"
+      },
+      {
+        "from": "MOD-13",
+        "to": "MOD-01",
+        "kind": "crate",
+        "basis": "ror-agent -> ror-core"
+      },
+      {
+        "from": "MOD-13",
+        "to": "MOD-02",
+        "kind": "crate",
+        "basis": "ror-agent -> ror-compiler"
+      },
+      {
+        "from": "MOD-13",
+        "to": "MOD-05",
+        "kind": "crate",
+        "basis": "ror-agent -> ror-runtime"
+      },
+      {
+        "from": "MOD-15",
+        "to": "MOD-14",
+        "kind": "crate",
+        "basis": "ror-differential -> ror-reference"
+      },
+      {
+        "from": "MOD-15",
+        "to": "MOD-05",
+        "kind": "sut",
+        "basis": "ror-differential -> ror-runtime as black-box SUT"
+      },
+      {
+        "from": "MOD-15",
+        "to": "MOD-17",
+        "kind": "crate",
+        "basis": "ror-differential -> ror-testkit"
+      },
+      {
+        "from": "MOD-16",
+        "to": "MOD-15",
+        "kind": "crate",
+        "basis": "kill evidence gathered through the differential harness"
+      },
+      {
+        "from": "MOD-16",
+        "to": "MOD-17",
+        "kind": "crate",
+        "basis": "injection infrastructure in ror-testkit"
+      }
+    ],
+    "intra_crate_groups": {
+      "ror-core": [
+        "MOD-01",
+        "MOD-04",
+        "MOD-10"
+      ],
+      "ror-runtime": [
+        "MOD-05",
+        "MOD-06",
+        "MOD-07",
+        "MOD-08"
+      ],
+      "ror-persistence": [
+        "MOD-11",
+        "MOD-12"
+      ]
+    },
+    "reference_forbidden_production_dependencies": [
+      "MOD-02",
+      "MOD-03",
+      "MOD-04",
+      "MOD-05",
+      "MOD-06",
+      "MOD-07",
+      "MOD-08",
+      "MOD-09",
+      "MOD-10",
+      "MOD-11",
+      "MOD-13"
+    ],
+    "acyclic": true
+  },
   "duplications": [
     {
       "id": "D-01",

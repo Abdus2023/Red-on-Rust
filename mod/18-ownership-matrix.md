@@ -8,6 +8,48 @@ full cross-reference prose lives in the module files' CROSS-REFERENCES sections)
 The provenance column quotes `spec/03` verbatim; where `req/00-method.md` §5.1 corrected
 an anchor, the corrected range is carried in the owning module file's SOURCE-PROVENANCE.
 
+## 0. Module dependency graph (structural; mirrors the frozen crate direction)
+
+Edges below restate the frozen crate dependency direction (`spec/07` §6, R-REPO-02 /
+R-ARCH-04) at module granularity: each edge is an existing architectural fact, not a
+choice made by this split. Semantic couplings richer than crate edges live in the
+module files' DEPENDENCIES/CROSS-REFERENCES prose. The graph is acyclic (checked by
+`mod/_build.py`, Kahn's algorithm); intra-crate couplings never appear as edges:
+
+- `ror-core` hosts MOD-01 CORE; MOD-04 BUDGET; MOD-10 SERIALIZATION (couplings inside the crate are cross-references, not module dependencies)
+- `ror-runtime` hosts MOD-05 EVALUATOR; MOD-06 ACTOR; MOD-07 SCHEDULER; MOD-08 EFFECT (couplings inside the crate are cross-references, not module dependencies)
+- `ror-persistence` hosts MOD-11 PERSISTENCE; MOD-12 RECOVERY (couplings inside the crate are cross-references, not module dependencies)
+
+```
+MOD-01 CORE + MOD-14 REFERENCE   (no module dependencies; REFERENCE is forbidden production deps by R-REF-02)
+MOD-02 COMPILER     -> MOD-01 CORE           [crate] ror-compiler -> ror-core
+MOD-03 CAPABILITY   -> MOD-01 CORE           [crate] ror-kernel -> ror-core
+MOD-04 BUDGET       -> MOD-03 CAPABILITY     [crate] budget primitives co-located with ror-kernel; ceiling operand from the algebra
+MOD-05 EVALUATOR    -> MOD-01 CORE           [crate] ror-runtime -> ror-core
+MOD-05 EVALUATOR    -> MOD-03 CAPABILITY     [crate] ror-runtime -> ror-kernel (authorize/derive calls)
+MOD-06 ACTOR        -> MOD-01 CORE           [crate] ror-runtime -> ror-core
+MOD-06 ACTOR        -> MOD-03 CAPABILITY     [crate] ror-runtime -> ror-kernel (spawn/delegation derive)
+MOD-07 SCHEDULER    -> MOD-01 CORE           [crate] ror-runtime -> ror-core
+MOD-07 SCHEDULER    -> MOD-03 CAPABILITY     [crate] ror-runtime -> ror-kernel
+MOD-08 EFFECT       -> MOD-01 CORE           [crate] ror-runtime -> ror-core
+MOD-08 EFFECT       -> MOD-03 CAPABILITY     [crate] ror-runtime -> ror-kernel (gates 5..7)
+MOD-08 EFFECT       -> MOD-11 PERSISTENCE    [crate] request step 14 calls ror-persistence append/sync
+MOD-09 HOST         -> MOD-01 CORE           [crate] ror-host -> ror-core
+MOD-09 HOST         -> MOD-08 EFFECT         [crate] ror-host -> ror-runtime (adapter boundary, spec/07 section 6)
+MOD-11 PERSISTENCE  -> MOD-01 CORE           [crate] ror-persistence -> ror-core
+MOD-12 RECOVERY     -> MOD-01 CORE           [crate] ror-persistence -> ror-core
+MOD-12 RECOVERY     -> MOD-14 REFERENCE      [oracle] independent recovery oracle (R-RECOV-04, REQ-TEST-045) - not a crate edge
+MOD-13 AGENT        -> MOD-01 CORE           [crate] ror-agent -> ror-core
+MOD-13 AGENT        -> MOD-02 COMPILER       [crate] ror-agent -> ror-compiler
+MOD-13 AGENT        -> MOD-05 EVALUATOR      [crate] ror-agent -> ror-runtime
+MOD-15 DIFFERENTIAL -> MOD-14 REFERENCE      [crate] ror-differential -> ror-reference
+MOD-15 DIFFERENTIAL -> MOD-05 EVALUATOR      [sut] ror-differential -> ror-runtime as black-box SUT
+MOD-15 DIFFERENTIAL -> MOD-17 VERIFICATION   [crate] ror-differential -> ror-testkit
+MOD-16 MUTATION     -> MOD-15 DIFFERENTIAL   [crate] kill evidence gathered through the differential harness
+MOD-16 MUTATION     -> MOD-17 VERIFICATION   [crate] injection infrastructure in ror-testkit
+MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no producer dependencies.
+```
+
 ## 1. Obligation partition (148)
 
 ### MOD-01 — CORE (27 obligations)

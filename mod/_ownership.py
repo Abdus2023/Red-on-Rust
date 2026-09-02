@@ -325,3 +325,59 @@ U_AFFECTED = {
     "U-16": ["MOD-11"], "U-17": ["MOD-11", "MOD-12", "MOD-07"],
     "U-21": ["MOD-01", "MOD-03", "MOD-10"], "U-22": ["MOD-02"],
 }
+
+# ---------------------------------------------------------------------------
+# Module dependency graph (structural level).
+#
+# Edges mirror the FROZEN crate dependency direction (spec/07 section 6, from
+# R-REPO-02/R-ARCH-04); they are architectural facts, not editorial choices.
+# kind: "crate" = frozen Cargo edge module-crate -> target-crate;
+#       "oracle" = verification coupling that is not a crate edge
+#       (MOD-12's independent recovery oracle lives in ror-reference);
+#       "sut"    = system-under-test black-box observation edge.
+# Intra-crate couplings (ror-runtime hosts EVALUATOR/ACTOR/SCHEDULER/EFFECT;
+# ror-core hosts CORE/BUDGET/SERIALIZATION; ror-persistence hosts
+# PERSISTENCE/RECOVERY) are recorded in INTRA_CRATE and expressed in prose as
+# cross-references, never as module dependency edges, so the module graph stays
+# acyclic exactly where the crate DAG is acyclic.
+# ---------------------------------------------------------------------------
+INTRA_CRATE = {
+    "ror-core":        ["MOD-01", "MOD-04", "MOD-10"],
+    "ror-runtime":     ["MOD-05", "MOD-06", "MOD-07", "MOD-08"],
+    "ror-persistence": ["MOD-11", "MOD-12"],
+}
+
+MODULE_DEPS = [
+    # (from, to, kind, basis)
+    ("MOD-02", "MOD-01", "crate", "ror-compiler -> ror-core"),
+    ("MOD-03", "MOD-01", "crate", "ror-kernel -> ror-core"),
+    ("MOD-04", "MOD-03", "crate", "budget primitives co-located with ror-kernel; ceiling operand from the algebra"),
+    ("MOD-05", "MOD-01", "crate", "ror-runtime -> ror-core"),
+    ("MOD-05", "MOD-03", "crate", "ror-runtime -> ror-kernel (authorize/derive calls)"),
+    ("MOD-06", "MOD-01", "crate", "ror-runtime -> ror-core"),
+    ("MOD-06", "MOD-03", "crate", "ror-runtime -> ror-kernel (spawn/delegation derive)"),
+    ("MOD-07", "MOD-01", "crate", "ror-runtime -> ror-core"),
+    ("MOD-07", "MOD-03", "crate", "ror-runtime -> ror-kernel"),
+    ("MOD-08", "MOD-01", "crate", "ror-runtime -> ror-core"),
+    ("MOD-08", "MOD-03", "crate", "ror-runtime -> ror-kernel (gates 5..7)"),
+    ("MOD-08", "MOD-11", "crate", "request step 14 calls ror-persistence append/sync"),
+    ("MOD-09", "MOD-01", "crate", "ror-host -> ror-core"),
+    ("MOD-09", "MOD-08", "crate", "ror-host -> ror-runtime (adapter boundary, spec/07 section 6)"),
+    ("MOD-11", "MOD-01", "crate", "ror-persistence -> ror-core"),
+    ("MOD-12", "MOD-01", "crate", "ror-persistence -> ror-core"),
+    ("MOD-12", "MOD-14", "oracle", "independent recovery oracle (R-RECOV-04, REQ-TEST-045) - not a crate edge"),
+    ("MOD-13", "MOD-01", "crate", "ror-agent -> ror-core"),
+    ("MOD-13", "MOD-02", "crate", "ror-agent -> ror-compiler"),
+    ("MOD-13", "MOD-05", "crate", "ror-agent -> ror-runtime"),
+    ("MOD-15", "MOD-14", "crate", "ror-differential -> ror-reference"),
+    ("MOD-15", "MOD-05", "sut",   "ror-differential -> ror-runtime as black-box SUT"),
+    ("MOD-15", "MOD-17", "crate", "ror-differential -> ror-testkit"),
+    ("MOD-16", "MOD-15", "crate", "kill evidence gathered through the differential harness"),
+    ("MOD-16", "MOD-17", "crate", "injection infrastructure in ror-testkit"),
+]
+# MOD-14 (REFERENCE) has NO module dependencies: reference core logic depends on
+# the frozen semantics, never on production modules (R-REF-02). MOD-17
+# (VERIFICATION) orchestrates every module as SUT (tests/, scripts/) and records
+# no producer dependencies.
+REFERENCE_FORBIDDEN_DEPS = ["MOD-02", "MOD-03", "MOD-04", "MOD-05", "MOD-06",
+                            "MOD-07", "MOD-08", "MOD-09", "MOD-10", "MOD-11", "MOD-13"]
