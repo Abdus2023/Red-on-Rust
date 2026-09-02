@@ -12,37 +12,44 @@
  "kind_definitions": {
   "TYPE_DEPENDENCY": {
    "meaning": "The consumer names types/constructors declared by the provider.",
-   "legitimate_provider": "domain-type owner (`ror-core`: MOD-01/MOD-04/MOD-10)",
+   "provider_constraint": "a production module that declares the type — `ror-core` domain types (MOD-01/MOD-04/MOD-10) and the plan-input, capability-ceiling and durable-state shapes (MOD-02/MOD-03/MOD-06/MOD-07); no MOD-14…MOD-17 module supplies a production type",
+   "provider_constraint_machine_checked": true,
    "implementable": true
   },
   "SEMANTIC_DEPENDENCY": {
    "meaning": "The consumer's meaning is fixed by the provider's normative rule; no code edge is implied (specification-layer coupling).",
-   "legitimate_provider": "the module that single-homes the operative statement",
+   "provider_constraint": "the module that single-homes the operative statement — a property of the source text, not of the graph, so it is the one kind with no machine-checkable provider rule",
+   "provider_constraint_machine_checked": false,
    "implementable": false
   },
   "SECURITY_DEPENDENCY": {
    "meaning": "The consumer's security property is *discharged* by the provider, which must be an authoritative machine-boundary component.",
-   "legitimate_provider": "authoritative boundary only (never the LLM/planner)",
+   "provider_constraint": "an authoritative machine boundary, never the LLM/planner — with exactly one recorded exception, `MOD-13 -> MOD-01`, which is the V-03 defect (also reported by SC-1)",
+   "provider_constraint_machine_checked": true,
    "implementable": true
   },
   "SERIALIZATION_DEPENDENCY": {
    "meaning": "The consumer's payloads/identities are encoded or decoded with the provider's canonical (15A) format.",
-   "legitimate_provider": "MOD-10 SERIALIZATION (`ror-core` canonical)",
+   "provider_constraint": "MOD-10 SERIALIZATION (`ror-core` canonical)",
+   "provider_constraint_machine_checked": true,
    "implementable": true
   },
   "PERSISTENCE_DEPENDENCY": {
    "meaning": "The consumer's durability, journal, snapshot or recovery behaviour is defined by the provider (15B).",
-   "legitimate_provider": "MOD-11 PERSISTENCE / MOD-12 RECOVERY (`ror-persistence`)",
+   "provider_constraint": "MOD-11 PERSISTENCE / MOD-12 RECOVERY (`ror-persistence`)",
+   "provider_constraint_machine_checked": true,
    "implementable": true
   },
   "VERIFICATION_DEPENDENCY": {
-   "meaning": "The consumer's evidence (oracle, harness, mutation, CI, claim discipline) is defined by the provider; test-time only, never a production code edge.",
-   "legitimate_provider": "MOD-14…MOD-17 (`ror-reference`, `ror-differential`, `ror-testkit`, `tests/`)",
+   "meaning": "Test-time coupling across the verification boundary: one endpoint is a MOD-14…MOD-17 module that supplies the oracle, harness, mutation run, CI or claim discipline, the other is the module under test. Never a production code edge.",
+   "provider_constraint": "one endpoint is MOD-14…MOD-17 (`ror-reference`, `ror-differential`, `ror-testkit`, `tests/`) and that endpoint is the evidence supplier; the other endpoint is the module under test — no edge may join two production modules",
+   "provider_constraint_machine_checked": true,
    "implementable": false
   },
   "RUNTIME_DEPENDENCY": {
    "meaning": "The consumer calls the provider during execution (a real call edge in the frozen crate DAG).",
-   "legitimate_provider": "the callee component",
+   "provider_constraint": "the callee component — always a production module; no MOD-14…MOD-17 module is a runtime callee",
+   "provider_constraint_machine_checked": true,
    "implementable": true
   }
  },
@@ -556,7 +563,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "15 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-ARCH-001 -> REQ-REPO-001, REQ-ARCH-002 -> REQ-REF-016, REQ-ARCH-002 -> REQ-REPO-002 ..."
     },
     {
@@ -610,7 +617,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "3 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-COMPILE-001 -> REQ-ORDER-017, REQ-COMPILE-004 -> REQ-REPO-008, REQ-COMPILE-013 -> REQ-REPO-008"
     },
     {
@@ -709,7 +716,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "8 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-CAP-012 -> REQ-ORDER-008, REQ-CAP-013 -> REQ-ORDER-008, REQ-CAP-021 -> REQ-CLAIM-006 ..."
     },
     {
@@ -817,7 +824,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "1 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-BUDGET-013 -> REQ-CLAIM-007"
     },
     {
@@ -889,7 +896,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "4 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-CEK-002 -> REQ-CLAIM-001, REQ-CEK-013 -> REQ-ORDER-007, REQ-CEK-014 -> REQ-ORDER-007 ..."
     },
     {
@@ -970,7 +977,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "5 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-ACTOR-020 -> REQ-CLAIM-004, REQ-ACTOR-030 -> REQ-ORDER-010, REQ-MARSHAL-001 -> REQ-CLAIM-005 ..."
     },
     {
@@ -1042,7 +1049,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "1 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-ACTOR-010 -> REQ-ORDER-010"
     },
     {
@@ -1123,7 +1130,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "3 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-EFFECT-005 -> REQ-ORDER-009, REQ-EFFECT-023 -> REQ-REF-014, REQ-EFFECT-027 -> REQ-ORDER-009"
     },
     {
@@ -1177,7 +1184,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "1 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-HOST-004 -> REQ-REPO-012"
     },
     {
@@ -1249,7 +1256,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "5 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-CANON-018 -> REQ-ORDER-005, REQ-CANON-025 -> REQ-ORDER-005, REQ-CANON-036 -> REQ-CLAIM-017 ..."
     },
     {
@@ -1357,7 +1364,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "8 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-DUR-001 -> REQ-CLAIM-008, REQ-DUR-001 -> REQ-ORDER-020, REQ-DUR-001 -> REQ-REF-014 ..."
     },
     {
@@ -1411,7 +1418,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "19 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-RECOV-003 -> REQ-ORDER-014, REQ-RECOV-003 -> REQ-TEST-022, REQ-RECOV-004 -> REQ-ORDER-014 ..."
     },
     {
@@ -1438,7 +1445,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "1 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-PLANNER-002 -> REQ-REPO-013"
     },
     {
@@ -1483,7 +1490,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "8 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-REF-001 -> REQ-ORDER-006, REQ-REF-001 -> REQ-ORDER-021, REQ-REF-001 -> REQ-TEST-030 ..."
     },
     {
@@ -1528,7 +1535,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "13 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-REF-010 -> REQ-ORDER-012, REQ-REF-012 -> REQ-ORDER-012, REQ-REF-012 -> REQ-REPO-015 ..."
     },
     {
@@ -1537,7 +1544,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R1-verification-sink",
      "visibility": "5 req",
-     "basis": "the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
+     "basis": "the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)",
      "evidence": "witnesses: REQ-TEST-014 -> REQ-ORDER-013, REQ-TEST-014 -> REQ-TEST-028, REQ-TEST-014 -> REQ-TEST-030 ..."
     },
     {
@@ -1546,7 +1553,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R2-verification-source",
      "visibility": "9 req",
-     "basis": "MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`)",
+     "basis": "MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`)",
      "evidence": "witnesses: REQ-CLAIM-002 -> REQ-CALC-004, REQ-CLAIM-017 -> REQ-SCOPE-007, REQ-CLAIM-020 -> REQ-SCOPE-006 ..."
     },
     {
@@ -1555,7 +1562,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R2-verification-source",
      "visibility": "1 req",
-     "basis": "MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`)",
+     "basis": "MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`)",
      "evidence": "witnesses: REQ-ORDER-017 -> REQ-COMPILE-001"
     },
     {
@@ -1564,7 +1571,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R2-verification-source",
      "visibility": "1 req",
-     "basis": "MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`)",
+     "basis": "MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`)",
      "evidence": "witnesses: REQ-CLAIM-006 -> REQ-CAP-021"
     },
     {
@@ -1573,7 +1580,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R2-verification-source",
      "visibility": "1 req",
-     "basis": "MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`)",
+     "basis": "MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`)",
      "evidence": "witnesses: REQ-CLAIM-007 -> REQ-BUDGET-013"
     },
     {
@@ -1582,7 +1589,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R2-verification-source",
      "visibility": "1 req",
-     "basis": "MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`)",
+     "basis": "MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`)",
      "evidence": "witnesses: REQ-CLAIM-001 -> REQ-CEK-002"
     },
     {
@@ -1591,7 +1598,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R2-verification-source",
      "visibility": "1 req",
-     "basis": "MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`)",
+     "basis": "MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`)",
      "evidence": "witnesses: REQ-CLAIM-004 -> REQ-ACTOR-020"
     },
     {
@@ -1600,7 +1607,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R2-verification-source",
      "visibility": "1 req",
-     "basis": "MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`)",
+     "basis": "MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`)",
      "evidence": "witnesses: REQ-REF-014 -> REQ-EFFECT-023"
     },
     {
@@ -1609,7 +1616,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R2-verification-source",
      "visibility": "1 req",
-     "basis": "MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`)",
+     "basis": "MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`)",
      "evidence": "witnesses: REQ-CLAIM-017 -> REQ-CANON-036"
     },
     {
@@ -1618,7 +1625,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R2-verification-source",
      "visibility": "1 req",
-     "basis": "MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`)",
+     "basis": "MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`)",
      "evidence": "witnesses: REQ-CLAIM-009 -> REQ-DUR-012"
     },
     {
@@ -1627,7 +1634,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R2-verification-source",
      "visibility": "2 req",
-     "basis": "MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`)",
+     "basis": "MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`)",
      "evidence": "witnesses: REQ-CLAIM-010 -> REQ-RECOV-012, REQ-CLAIM-011 -> REQ-RECOV-015"
     },
     {
@@ -1636,7 +1643,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R2-verification-source",
      "visibility": "5 req",
-     "basis": "MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`)",
+     "basis": "MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`)",
      "evidence": "witnesses: REQ-CLAIM-011 -> REQ-TEST-045, REQ-CLAIM-012 -> REQ-TEST-046, REQ-CLAIM-017 -> REQ-REF-003 ..."
     },
     {
@@ -1645,7 +1652,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R2-verification-source",
      "visibility": "crate-table+prose+4 req",
-     "basis": "MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`)",
+     "basis": "MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`)",
      "evidence": "MODULE_DEPS kind `crate`: ror-differential -> ror-testkit | witnesses: REQ-CLAIM-013 -> REQ-REF-013, REQ-CLAIM-014 -> REQ-TEST-005, REQ-ORDER-010 -> REQ-TEST-057 ..."
     },
     {
@@ -1654,7 +1661,7 @@
      "kind": "VERIFICATION_DEPENDENCY",
      "rule": "R2-verification-source",
      "visibility": "crate-table+prose+2 req",
-     "basis": "MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`)",
+     "basis": "MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`)",
      "evidence": "MODULE_DEPS kind `crate`: injection infrastructure in ror-testkit | witnesses: REQ-TEST-023 -> REQ-TEST-016, REQ-TEST-029 -> REQ-TEST-017"
     }
    ],

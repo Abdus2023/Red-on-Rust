@@ -20,17 +20,19 @@ This is the convention of `spec/04-dependency-graph.md` (its DOT edge `S07->S08`
 
 ## 2. Edge kinds
 
-| Kind | Meaning | Legitimate provider | Implementable (would be a Cargo edge) |
+| Kind | Meaning | Provider constraint (check 11) | Implementable (would be a Cargo edge) |
 |---|---|---|---|
-| `TYPE_DEPENDENCY` | The consumer names types/constructors declared by the provider. | domain-type owner (`ror-core`: MOD-01/MOD-04/MOD-10) | yes |
-| `SEMANTIC_DEPENDENCY` | The consumer's meaning is fixed by the provider's normative rule; no code edge is implied (specification-layer coupling). | the module that single-homes the operative statement | no |
-| `SECURITY_DEPENDENCY` | The consumer's security property is *discharged* by the provider, which must be an authoritative machine-boundary component. | authoritative boundary only (never the LLM/planner) | yes |
+| `TYPE_DEPENDENCY` | The consumer names types/constructors declared by the provider. | a production module that declares the type — `ror-core` domain types (MOD-01/MOD-04/MOD-10) and the plan-input, capability-ceiling and durable-state shapes (MOD-02/MOD-03/MOD-06/MOD-07); no MOD-14…MOD-17 module supplies a production type | yes |
+| `SEMANTIC_DEPENDENCY` | The consumer's meaning is fixed by the provider's normative rule; no code edge is implied (specification-layer coupling). | the module that single-homes the operative statement — a property of the source text, not of the graph, so it is the one kind with no machine-checkable provider rule | no |
+| `SECURITY_DEPENDENCY` | The consumer's security property is *discharged* by the provider, which must be an authoritative machine-boundary component. | an authoritative machine boundary, never the LLM/planner — with exactly one recorded exception, `MOD-13 -> MOD-01`, which is the V-03 defect (also reported by SC-1) | yes |
 | `SERIALIZATION_DEPENDENCY` | The consumer's payloads/identities are encoded or decoded with the provider's canonical (15A) format. | MOD-10 SERIALIZATION (`ror-core` canonical) | yes |
 | `PERSISTENCE_DEPENDENCY` | The consumer's durability, journal, snapshot or recovery behaviour is defined by the provider (15B). | MOD-11 PERSISTENCE / MOD-12 RECOVERY (`ror-persistence`) | yes |
-| `VERIFICATION_DEPENDENCY` | The consumer's evidence (oracle, harness, mutation, CI, claim discipline) is defined by the provider; test-time only, never a production code edge. | MOD-14…MOD-17 (`ror-reference`, `ror-differential`, `ror-testkit`, `tests/`) | no |
-| `RUNTIME_DEPENDENCY` | The consumer calls the provider during execution (a real call edge in the frozen crate DAG). | the callee component | yes |
+| `VERIFICATION_DEPENDENCY` | Test-time coupling across the verification boundary: one endpoint is a MOD-14…MOD-17 module that supplies the oracle, harness, mutation run, CI or claim discipline, the other is the module under test. Never a production code edge. | one endpoint is MOD-14…MOD-17 (`ror-reference`, `ror-differential`, `ror-testkit`, `tests/`) and that endpoint is the evidence supplier; the other endpoint is the module under test — no edge may join two production modules | no |
+| `RUNTIME_DEPENDENCY` | The consumer calls the provider during execution (a real call edge in the frozen crate DAG). | the callee component — always a production module; no MOD-14…MOD-17 module is a runtime callee | yes |
 
 `IMPLEMENTABLE_KINDS` = TYPE / SECURITY / SERIALIZATION / PERSISTENCE / RUNTIME. `SPECIFICATION_KINDS` = SEMANTIC / VERIFICATION. A cycle that needs a specification-kind edge to close is a *specification* cycle (a wording problem); a cycle inside the implementable subgraph is an *implementation* cycle (a code problem). `dep/03` separates the two.
+
+The provider constraint is a predicate in `dep/_edges.py` `KIND_PROVIDER_CHECK`, stated over `MOD-NN` names, so check 11 verifies it against the module layer (L2) and fails the run if any edge of that kind breaks it. `SEMANTIC_DEPENDENCY` is the one kind that declares itself not machine-checkable, and check 11 enforces that it stays the only one.
 
 ## 3. Layers
 
@@ -84,7 +86,7 @@ Every L2 pair is classified by the first matching rule of `dep/_edges.py` `KIND_
 
 | File | Content | Maintenance |
 |---|---|---|
-| `00-overview.md` | this document | hand-written |
+| `00-overview.md` | this document | generated |
 | `01-graph.md` | the typed graph, all four layers (output 1) | generated |
 | `02-topological-order.md` | topological orderings and levels (output 2) | generated |
 | `03-cycles.md` | SCCs, cycles, and per-cycle verdicts (output 3) | generated |
@@ -92,7 +94,7 @@ Every L2 pair is classified by the first matching rule of `dep/_edges.py` `KIND_
 | `05-violations.md` | hidden dependencies, invalid directions, independence violations (output 5) | generated |
 | `10-graph.json` | machine-readable graph + analysis. The crate, module and section layers carry full node and edge lists; the requirement layer carries `node_count`, its 927 edges, roots, leaves, non-trivial SCCs and the 50 largest forward references, but not the 545 node names | generated |
 | `_edges.py` | typed edge tables, classification rules, findings | hand-written |
-| `_graph.py` | generator + checker (the 10 checks in its docstring) | hand-written |
+| `_graph.py` | generator + checker (the 12 checks in its docstring) | hand-written |
 
 ```
 python3 dep/_graph.py            # check; non-zero exit on any error

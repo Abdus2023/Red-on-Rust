@@ -33,47 +33,45 @@ KINDS = (
     "RUNTIME_DEPENDENCY",
 )
 
+# (meaning, implementable).  The provider-side constraint used to be a third
+# free-text field here; it was contradicted by the classified edges for three of
+# the seven kinds, so it moved to `KIND_PROVIDER_CHECK` below, where the rendered
+# text and the predicate that enforces it are one entry (check 11).
 KIND_DEF = {
     "TYPE_DEPENDENCY": (
         "The consumer names types/constructors declared by the provider.",
-        "domain-type owner (`ror-core`: MOD-01/MOD-04/MOD-10)",
         True,
     ),
     "SEMANTIC_DEPENDENCY": (
         "The consumer's meaning is fixed by the provider's normative rule; no "
         "code edge is implied (specification-layer coupling).",
-        "the module that single-homes the operative statement",
         False,
     ),
     "SECURITY_DEPENDENCY": (
         "The consumer's security property is *discharged* by the provider, which "
         "must be an authoritative machine-boundary component.",
-        "authoritative boundary only (never the LLM/planner)",
         True,
     ),
     "SERIALIZATION_DEPENDENCY": (
         "The consumer's payloads/identities are encoded or decoded with the "
         "provider's canonical (15A) format.",
-        "MOD-10 SERIALIZATION (`ror-core` canonical)",
         True,
     ),
     "PERSISTENCE_DEPENDENCY": (
         "The consumer's durability, journal, snapshot or recovery behaviour is "
         "defined by the provider (15B).",
-        "MOD-11 PERSISTENCE / MOD-12 RECOVERY (`ror-persistence`)",
         True,
     ),
     "VERIFICATION_DEPENDENCY": (
-        "The consumer's evidence (oracle, harness, mutation, CI, claim "
-        "discipline) is defined by the provider; test-time only, never a "
+        "Test-time coupling across the verification boundary: one endpoint is a "
+        "MOD-14…MOD-17 module that supplies the oracle, harness, mutation run, CI "
+        "or claim discipline, the other is the module under test. Never a "
         "production code edge.",
-        "MOD-14…MOD-17 (`ror-reference`, `ror-differential`, `ror-testkit`, `tests/`)",
         False,
     ),
     "RUNTIME_DEPENDENCY": (
         "The consumer calls the provider during execution (a real call edge in "
         "the frozen crate DAG).",
-        "the callee component",
         True,
     ),
 }
@@ -280,17 +278,67 @@ CRATE_DIAGRAM_EDGES = [
 RUNTIME_PROVIDER = ("MOD-05", "MOD-06", "MOD-07", "MOD-08", "MOD-09")
 RUNTIME_CONSUMER = ("MOD-05", "MOD-06", "MOD-07", "MOD-08")
 
+# Provider-side constraint per kind: (text rendered by `dep/00` §2 and `dep/01`
+# §2.x, predicate over (provider, consumer)).  `dep/_graph.py` check 11 fails the
+# run if any module edge of that kind violates the predicate, so the column in
+# the documents cannot drift away from the classified edges the way the
+# free-text "Legitimate provider" field did.  `None` means the constraint is a
+# property of the source text rather than of the graph and so cannot be tested
+# here; SEMANTIC_DEPENDENCY is the only such kind and check 11 enforces that.
+KIND_PROVIDER_CHECK = {
+    "TYPE_DEPENDENCY": (
+        "a production module that declares the type — `ror-core` domain types "
+        "(MOD-01/MOD-04/MOD-10) and the plan-input, capability-ceiling and "
+        "durable-state shapes (MOD-02/MOD-03/MOD-06/MOD-07); no MOD-14…MOD-17 "
+        "module supplies a production type",
+        lambda p, c: p in PRODUCTION_NODES,
+    ),
+    "SEMANTIC_DEPENDENCY": (
+        "the module that single-homes the operative statement — a property of the "
+        "source text, not of the graph, so it is the one kind with no "
+        "machine-checkable provider rule",
+        None,
+    ),
+    "SECURITY_DEPENDENCY": (
+        "an authoritative machine boundary, never the LLM/planner — with exactly "
+        "one recorded exception, `MOD-13 -> MOD-01`, which is the V-03 defect "
+        "(also reported by SC-1)",
+        lambda p, c: p in AUTHORITY or (p, c) == ("MOD-13", "MOD-01"),
+    ),
+    "SERIALIZATION_DEPENDENCY": (
+        "MOD-10 SERIALIZATION (`ror-core` canonical)",
+        lambda p, c: p == "MOD-10",
+    ),
+    "PERSISTENCE_DEPENDENCY": (
+        "MOD-11 PERSISTENCE / MOD-12 RECOVERY (`ror-persistence`)",
+        lambda p, c: p in ("MOD-11", "MOD-12"),
+    ),
+    "VERIFICATION_DEPENDENCY": (
+        "one endpoint is MOD-14…MOD-17 (`ror-reference`, `ror-differential`, "
+        "`ror-testkit`, `tests/`) and that endpoint is the evidence supplier; the "
+        "other endpoint is the module under test — no edge may join two "
+        "production modules",
+        lambda p, c: p in VERIFICATION_NODES or c in VERIFICATION_NODES,
+    ),
+    "RUNTIME_DEPENDENCY": (
+        "the callee component — always a production module; no MOD-14…MOD-17 "
+        "module is a runtime callee",
+        lambda p, c: p in PRODUCTION_NODES,
+    ),
+}
+
 KIND_RULES = [
     ("R1-verification-sink",
      lambda p, c: c == "MOD-17",
      "VERIFICATION_DEPENDENCY",
-     "the consumer's claims/evidence/order obligations are defined in MOD-17 "
-     "(R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*)"),
+     "the provider's claims/evidence/order obligations are defined in MOD-17, "
+     "which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, "
+     "R-REPO-*)"),
     ("R2-verification-source",
      lambda p, c: p == "MOD-17",
      "VERIFICATION_DEPENDENCY",
-     "MOD-17 supplies test infrastructure and CI to the harnesses it schedules "
-     "(R-TEST-10; `ror-testkit`)"),
+     "MOD-17 supplies test infrastructure and CI to the modules whose test and "
+     "CI obligations it defines (R-TEST-10; `ror-testkit`)"),
     ("R3-reference-mirror",
      lambda p, c: c == "MOD-14" and p in PRODUCTION_NODES,
      "SEMANTIC_DEPENDENCY",

@@ -17,10 +17,15 @@ Reads
     mod/18-ownership-matrix.md       cross-checked for consistency
 
 Writes (--write)
-    dep/01-graph.md  dep/02-topological-order.md  dep/03-cycles.md
-    dep/04-cross-section-table.md  dep/05-violations.md  dep/10-graph.json
+    dep/00-overview.md  dep/01-graph.md  dep/02-topological-order.md
+    dep/03-cycles.md  dep/04-cross-section-table.md  dep/05-violations.md
+    dep/10-graph.json
 
 Checks (always)
+  0.  the node-set definitions agree with the crate roles: every module of a
+      production crate is in `PRODUCTION_NODES` and none is in
+      `VERIFICATION_NODES`, and vice versa (a module missing from
+      `PRODUCTION_NODES` would be invisible to HD-1).
   1.  every edge endpoint exists; no self-edges; every kind is in the
       seven-kind vocabulary; every edge carries non-empty evidence.
   2.  every `mod/_ownership.py` MODULE_DEPS edge appears in the module layer
@@ -38,7 +43,9 @@ Checks (always)
       implementation graph (edges a frozen crate edge can carry) and every
       mutual module pair is listed and matches a named cycle family in
       `dep/_edges.py` `CYCLE_FAMILIES`.
-  8.  the generated files (when present) are up to date with the tables.
+  8.  the generated files (when present) are up to date with the tables — all
+      seven of them, `dep/00-overview.md` included; it used to be exempt, which
+      let the document describing the deliverable drift from the generator.
   9.  two provenance guards: the frozen dependency-direction blocks
       (`Red-on-Rust.md` L39757-39790 §13 and L39807-39828 §14) are still cited
       nowhere in `spec/`, `req/` or `mod/` (the basis of V-02/HD-5), and
@@ -52,6 +59,11 @@ Checks (always)
       (the V-06 arrow-conversion hazard, checked mechanically over ~500
       citations). Quotations of `spec/07`/`mod/18`/`spec/10-index.json` notation
       are exempt, as is the one allowlisted assertion of an absent direction.
+ 11.  the provider constraint that `dep/00` §2 and `dep/01` §2.x print for each
+      kind actually holds for every module edge of that kind, so the rendered
+      column cannot drift from the classified edges. Each constraint is a
+      predicate in `dep/_edges.py` `KIND_PROVIDER_CHECK`; SEMANTIC_DEPENDENCY is
+      the only kind allowed to declare itself not machine-checkable.
 """
 
 from __future__ import annotations
@@ -70,6 +82,16 @@ import _edges as E  # noqa: E402
 import _ownership as O  # noqa: E402
 
 ERRORS: list[str] = []
+
+
+def n_checks() -> int:
+    """Number of numbered entries in this module's `Checks (always)` list.
+
+    Counted rather than hardcoded: the rendered count in `dep/00` §5 used to say
+    "10 checks" while the list actually held 11 entries, because check 0 had been
+    added without a docstring line.
+    """
+    return len(re.findall(r"^\s*\d+\.\s", __doc__, re.M))
 
 
 def err(msg: str) -> None:
@@ -908,17 +930,23 @@ def gen_overview(ctx):
       "consumer).")
     A("- **topological order** = dependencies before dependents (a build order).\n")
     A("## 2. Edge kinds\n")
-    A("| Kind | Meaning | Legitimate provider | Implementable (would be a Cargo edge) |")
+    A("| Kind | Meaning | Provider constraint (check 11) | Implementable (would be a Cargo edge) |")
     A("|---|---|---|---|")
     for k in E.KINDS:
-        meaning, target, impl = E.KIND_DEF[k]
-        A(f"| `{k}` | {meaning} | {target} | {'yes' if impl else 'no'} |")
+        meaning, impl = E.KIND_DEF[k]
+        A(f"| `{k}` | {meaning} | {E.KIND_PROVIDER_CHECK[k][0]} | "
+          f"{'yes' if impl else 'no'} |")
     A("")
     A("`IMPLEMENTABLE_KINDS` = TYPE / SECURITY / SERIALIZATION / PERSISTENCE / "
       "RUNTIME. `SPECIFICATION_KINDS` = SEMANTIC / VERIFICATION. A cycle that needs "
       "a specification-kind edge to close is a *specification* cycle (a wording "
       "problem); a cycle inside the implementable subgraph is an *implementation* "
       "cycle (a code problem). `dep/03` separates the two.\n")
+    A("The provider constraint is a predicate in `dep/_edges.py` "
+      "`KIND_PROVIDER_CHECK`, stated over `MOD-NN` names, so check 11 verifies it "
+      "against the module layer (L2) and fails the run if any edge of that kind "
+      "breaks it. `SEMANTIC_DEPENDENCY` is the one kind that declares itself not "
+      "machine-checkable, and check 11 enforces that it stays the only one.\n")
     A("## 3. Layers\n")
     A("| Layer | Nodes | Source of the edges | Document |")
     A("|---|---|---|---|")
@@ -955,7 +983,7 @@ def gen_overview(ctx):
     A("## 5. Files\n")
     A("| File | Content | Maintenance |")
     A("|---|---|---|")
-    A("| `00-overview.md` | this document | hand-written |")
+    A("| `00-overview.md` | this document | generated |")
     A("| `01-graph.md` | the typed graph, all four layers (output 1) | generated |")
     A("| `02-topological-order.md` | topological orderings and levels (output 2) | generated |")
     A("| `03-cycles.md` | SCCs, cycles, and per-cycle verdicts (output 3) | generated |")
@@ -966,7 +994,8 @@ def gen_overview(ctx):
       "carries `node_count`, its 927 edges, roots, leaves, non-trivial SCCs and "
       "the 50 largest forward references, but not the 545 node names | generated |")
     A("| `_edges.py` | typed edge tables, classification rules, findings | hand-written |")
-    A("| `_graph.py` | generator + checker (the 10 checks in its docstring) | hand-written |")
+    A(f"| `_graph.py` | generator + checker (the {n_checks()} checks in its docstring) "
+      "| hand-written |")
     A("")
     A("```")
     A("python3 dep/_graph.py            # check; non-zero exit on any error")
@@ -1105,9 +1134,16 @@ def gen_graph(ctx):
         if not sub:
             A("_none_\n")
             continue
-        meaning, target, impl = E.KIND_DEF[kind]
-        A(f"_{meaning}_ Legitimate provider: {target}. Implementable: "
-          f"{'yes' if impl else 'no'}.\n")
+        meaning, impl = E.KIND_DEF[kind]
+        pred = E.KIND_PROVIDER_CHECK[kind][1]
+        A(f"_{meaning}_ Provider constraint: {E.KIND_PROVIDER_CHECK[kind][0]}. "
+          f"Implementable: {'yes' if impl else 'no'}.\n")
+        if pred:
+            A(f"Check 11 verifies that constraint against all {len(sub)} edges "
+              "below.\n")
+        else:
+            A(f"Check 11 records this kind as not machine-checkable, so the "
+              f"{len(sub)} edges below carry no provider assertion.\n")
         A("| `A -> B` (B depends on A) | Rule | Visibility | Why |")
         A("|---|---|---|---|")
         for e in sorted(sub, key=lambda e: (e["provider"], e["consumer"])):
@@ -1174,13 +1210,20 @@ def gen_graph(ctx):
         A(f"| `{k}` | {counts.get(k, 0)} |")
     A(f"| **total** | **{len(rg.edges)}** |")
     A("")
-    A("### 3.2 Aggregated to modules (122 pairs)\n")
-    A("Counts are record pairs; the kind is the module-layer kind of the pair.\n")
     agg = collections.Counter()
+    intra = 0
     for e in rg.edges:
         pm, cm = ctx["owner"][e["provider"]], ctx["owner"][e["consumer"]]
         if pm != cm:
             agg[(pm, cm)] += 1
+        else:
+            intra += 1
+    A(f"### 3.2 Aggregated to modules ({len(agg)} pairs)\n")
+    A(f"Counts are record pairs; the kind is the module-layer kind of the pair. "
+      f"{sum(agg.values())} of the {len(rg.edges)} requirement-layer edges cross a "
+      f"module boundary and aggregate into these {len(agg)} pairs; the remaining "
+      f"{intra} join two records of the same module, so they aggregate to nothing "
+      "at this layer.\n")
     A("| `A -> B` (B depends on A) | Kind | Record pairs |")
     A("|---|---|---|")
     kind_of = {(e["provider"], e["consumer"]): e["kind"] for e in ctx["module"].edges}
@@ -1738,11 +1781,13 @@ def gen_violations(ctx):
       "makes `ror-agent` a security dependency of `R-TRUST-01`.\n")
 
     A("### 1.4 The frozen prohibitions are not tracked anywhere\n")
-    hits = ctx["direction"][-1][2]
+    hits = forbidden_block_citations()
     A(f"A repository-wide search of `req/*.md`, `spec/*.md` and `mod/*.md` for the "
       f"line numbers of `Red-on-Rust.md` §13 (L39757-39790) and §14 "
-      f"(L39807-39828) returns **{hits if hits != 'none' else 'no citation at all'}**. "
-      "The only tracked statement of any part of it is REQ-REPO-014 "
+      f"(L39807-39828) returns **{len(hits)} citations**"
+      + (" — no document tracks the block." if not hits else
+         ": " + ", ".join(f"`{f}` L{ln}" for f, ln in hits) + ".")
+      + " The only tracked statement of any part of it is REQ-REPO-014 "
       "(`ror-reference` … no production dependencies), whose SOURCE range "
       "L39196-40762 swallows the block without stating it. See V-02 / HD-5.\n")
     A("### 1.5 Where the authority set comes from\n")
@@ -1881,8 +1926,14 @@ def gen_index(ctx):
     return {
         "convention": "A -> B means B depends on A (provider -> consumer); matches spec/04, opposite of mod/18",
         "kinds": list(E.KINDS),
-        "kind_definitions": {k: {"meaning": v[0], "legitimate_provider": v[1],
-                                 "implementable": v[2]} for k, v in E.KIND_DEF.items()},
+        "kind_definitions": {
+            k: {"meaning": E.KIND_DEF[k][0],
+                "provider_constraint": E.KIND_PROVIDER_CHECK[k][0],
+                "provider_constraint_machine_checked":
+                    E.KIND_PROVIDER_CHECK[k][1] is not None,
+                "implementable": E.KIND_DEF[k][1]}
+            for k in E.KINDS
+        },
         "implementable_kinds": list(E.IMPLEMENTABLE_KINDS),
         "layers": {
             "crate": {
@@ -2102,6 +2153,20 @@ def main():
                 err(f"{g.name}: {edge_line(e)} unknown kind {e['kind']}")
             if e["provider"] not in g.nodes or e["consumer"] not in g.nodes:
                 err(f"{g.name}: {edge_line(e)} unknown endpoint")
+    # 11. the provider constraint that `dep/00` §2 and `dep/01` §2.x print for
+    # each kind must hold for every module edge of that kind.  Stated over MOD-NN
+    # names, so it is the module layer that is checked.
+    for kind in E.KINDS:
+        if kind not in E.KIND_PROVIDER_CHECK:
+            err(f"{kind} has no entry in KIND_PROVIDER_CHECK — its rendered "
+                "provider constraint would be unchecked")
+        elif E.KIND_PROVIDER_CHECK[kind][1] is None and kind != "SEMANTIC_DEPENDENCY":
+            err(f"{kind} is marked not machine-checkable; SEMANTIC_DEPENDENCY is "
+                "the only kind allowed to be")
+    for e in mod_graph.edges:
+        desc, pred = E.KIND_PROVIDER_CHECK[e["kind"]]
+        if pred is not None and not pred(e["provider"], e["consumer"]):
+            err(f"{edge_line(e)} breaks its kind's provider constraint: {desc}")
     # 7. acyclicity where required
     if any(len(c) > 1 for c in crate_graph.sccs()):
         err("crate graph is not acyclic")
@@ -2159,7 +2224,7 @@ def main():
     for path, content in docs.items():
         if write:
             path.write_text(content)
-        elif path.name != "00-overview.md":
+        else:
             if not path.exists():
                 err(f"{path.name} missing; run `python3 dep/_graph.py --write`")
             elif path.read_text() != content:

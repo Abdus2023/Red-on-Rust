@@ -138,7 +138,9 @@ See `dep/05` V-05 (and ID-4 for the non-crate entries).
 
 ### 2.1 `TYPE_DEPENDENCY` (20 edges)
 
-_The consumer names types/constructors declared by the provider._ Legitimate provider: domain-type owner (`ror-core`: MOD-01/MOD-04/MOD-10). Implementable: yes.
+_The consumer names types/constructors declared by the provider._ Provider constraint: a production module that declares the type — `ror-core` domain types (MOD-01/MOD-04/MOD-10) and the plan-input, capability-ceiling and durable-state shapes (MOD-02/MOD-03/MOD-06/MOD-07); no MOD-14…MOD-17 module supplies a production type. Implementable: yes.
+
+Check 11 verifies that constraint against all 20 edges below.
 
 | `A -> B` (B depends on A) | Rule | Visibility | Why |
 |---|---|---|---|
@@ -165,7 +167,9 @@ _The consumer names types/constructors declared by the provider._ Legitimate pro
 
 ### 2.2 `SEMANTIC_DEPENDENCY` (28 edges)
 
-_The consumer's meaning is fixed by the provider's normative rule; no code edge is implied (specification-layer coupling)._ Legitimate provider: the module that single-homes the operative statement. Implementable: no.
+_The consumer's meaning is fixed by the provider's normative rule; no code edge is implied (specification-layer coupling)._ Provider constraint: the module that single-homes the operative statement — a property of the source text, not of the graph, so it is the one kind with no machine-checkable provider rule. Implementable: no.
+
+Check 11 records this kind as not machine-checkable, so the 28 edges below carry no provider assertion.
 
 | `A -> B` (B depends on A) | Rule | Visibility | Why |
 |---|---|---|---|
@@ -200,7 +204,9 @@ _The consumer's meaning is fixed by the provider's normative rule; no code edge 
 
 ### 2.3 `SECURITY_DEPENDENCY` (7 edges)
 
-_The consumer's security property is *discharged* by the provider, which must be an authoritative machine-boundary component._ Legitimate provider: authoritative boundary only (never the LLM/planner). Implementable: yes.
+_The consumer's security property is *discharged* by the provider, which must be an authoritative machine-boundary component._ Provider constraint: an authoritative machine boundary, never the LLM/planner — with exactly one recorded exception, `MOD-13 -> MOD-01`, which is the V-03 defect (also reported by SC-1). Implementable: yes.
+
+Check 11 verifies that constraint against all 7 edges below.
 
 | `A -> B` (B depends on A) | Rule | Visibility | Why |
 |---|---|---|---|
@@ -214,7 +220,9 @@ _The consumer's security property is *discharged* by the provider, which must be
 
 ### 2.4 `SERIALIZATION_DEPENDENCY` (4 edges)
 
-_The consumer's payloads/identities are encoded or decoded with the provider's canonical (15A) format._ Legitimate provider: MOD-10 SERIALIZATION (`ror-core` canonical). Implementable: yes.
+_The consumer's payloads/identities are encoded or decoded with the provider's canonical (15A) format._ Provider constraint: MOD-10 SERIALIZATION (`ror-core` canonical). Implementable: yes.
+
+Check 11 verifies that constraint against all 4 edges below.
 
 | `A -> B` (B depends on A) | Rule | Visibility | Why |
 |---|---|---|---|
@@ -225,7 +233,9 @@ _The consumer's payloads/identities are encoded or decoded with the provider's c
 
 ### 2.5 `PERSISTENCE_DEPENDENCY` (10 edges)
 
-_The consumer's durability, journal, snapshot or recovery behaviour is defined by the provider (15B)._ Legitimate provider: MOD-11 PERSISTENCE / MOD-12 RECOVERY (`ror-persistence`). Implementable: yes.
+_The consumer's durability, journal, snapshot or recovery behaviour is defined by the provider (15B)._ Provider constraint: MOD-11 PERSISTENCE / MOD-12 RECOVERY (`ror-persistence`). Implementable: yes.
+
+Check 11 verifies that constraint against all 10 edges below.
 
 | `A -> B` (B depends on A) | Rule | Visibility | Why |
 |---|---|---|---|
@@ -242,63 +252,67 @@ _The consumer's durability, journal, snapshot or recovery behaviour is defined b
 
 ### 2.6 `VERIFICATION_DEPENDENCY` (49 edges)
 
-_The consumer's evidence (oracle, harness, mutation, CI, claim discipline) is defined by the provider; test-time only, never a production code edge._ Legitimate provider: MOD-14…MOD-17 (`ror-reference`, `ror-differential`, `ror-testkit`, `tests/`). Implementable: no.
+_Test-time coupling across the verification boundary: one endpoint is a MOD-14…MOD-17 module that supplies the oracle, harness, mutation run, CI or claim discipline, the other is the module under test. Never a production code edge._ Provider constraint: one endpoint is MOD-14…MOD-17 (`ror-reference`, `ror-differential`, `ror-testkit`, `tests/`) and that endpoint is the evidence supplier; the other endpoint is the module under test — no edge may join two production modules. Implementable: no.
+
+Check 11 verifies that constraint against all 49 edges below.
 
 | `A -> B` (B depends on A) | Rule | Visibility | Why |
 |---|---|---|---|
 | `MOD-01 CORE -> MOD-15 DIFFERENTIAL` | R4-harness-target | prose+1 req | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
-| `MOD-01 CORE -> MOD-17 VERIFICATION` | R1-verification-sink | 15 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-01 CORE -> MOD-17 VERIFICATION` | R1-verification-sink | 15 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
 | `MOD-02 COMPILER -> MOD-15 DIFFERENTIAL` | R4-harness-target | prose | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
-| `MOD-02 COMPILER -> MOD-17 VERIFICATION` | R1-verification-sink | 3 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-02 COMPILER -> MOD-17 VERIFICATION` | R1-verification-sink | 3 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
 | `MOD-03 CAPABILITY -> MOD-15 DIFFERENTIAL` | R4-harness-target | prose+1 req | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
-| `MOD-03 CAPABILITY -> MOD-17 VERIFICATION` | R1-verification-sink | 8 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-03 CAPABILITY -> MOD-17 VERIFICATION` | R1-verification-sink | 8 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
 | `MOD-04 BUDGET -> MOD-15 DIFFERENTIAL` | R4-harness-target | prose | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
-| `MOD-04 BUDGET -> MOD-17 VERIFICATION` | R1-verification-sink | 1 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-04 BUDGET -> MOD-17 VERIFICATION` | R1-verification-sink | 1 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
 | `MOD-05 EVALUATOR -> MOD-15 DIFFERENTIAL` | R4-harness-target | crate-table+prose+4 req | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
-| `MOD-05 EVALUATOR -> MOD-17 VERIFICATION` | R1-verification-sink | 4 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-05 EVALUATOR -> MOD-17 VERIFICATION` | R1-verification-sink | 4 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
 | `MOD-06 ACTOR -> MOD-15 DIFFERENTIAL` | R4-harness-target | prose+4 req | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
-| `MOD-06 ACTOR -> MOD-17 VERIFICATION` | R1-verification-sink | 5 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-06 ACTOR -> MOD-17 VERIFICATION` | R1-verification-sink | 5 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
 | `MOD-07 SCHEDULER -> MOD-15 DIFFERENTIAL` | R4-harness-target | prose+5 req | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
-| `MOD-07 SCHEDULER -> MOD-17 VERIFICATION` | R1-verification-sink | 1 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-07 SCHEDULER -> MOD-17 VERIFICATION` | R1-verification-sink | 1 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
 | `MOD-08 EFFECT -> MOD-15 DIFFERENTIAL` | R4-harness-target | prose+3 req | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
-| `MOD-08 EFFECT -> MOD-17 VERIFICATION` | R1-verification-sink | 3 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-08 EFFECT -> MOD-17 VERIFICATION` | R1-verification-sink | 3 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
 | `MOD-09 HOST -> MOD-15 DIFFERENTIAL` | R4-harness-target | prose+1 req | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
-| `MOD-09 HOST -> MOD-17 VERIFICATION` | R1-verification-sink | 1 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-09 HOST -> MOD-17 VERIFICATION` | R1-verification-sink | 1 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
 | `MOD-10 SERIALIZATION -> MOD-15 DIFFERENTIAL` | R4-harness-target | prose+1 req | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
-| `MOD-10 SERIALIZATION -> MOD-17 VERIFICATION` | R1-verification-sink | 5 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-10 SERIALIZATION -> MOD-17 VERIFICATION` | R1-verification-sink | 5 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
 | `MOD-11 PERSISTENCE -> MOD-15 DIFFERENTIAL` | R4-harness-target | prose | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
-| `MOD-11 PERSISTENCE -> MOD-17 VERIFICATION` | R1-verification-sink | 8 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-11 PERSISTENCE -> MOD-17 VERIFICATION` | R1-verification-sink | 8 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
 | `MOD-12 RECOVERY -> MOD-15 DIFFERENTIAL` | R4-harness-target | prose | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
-| `MOD-12 RECOVERY -> MOD-17 VERIFICATION` | R1-verification-sink | 19 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
-| `MOD-13 AGENT -> MOD-17 VERIFICATION` | R1-verification-sink | 1 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-12 RECOVERY -> MOD-17 VERIFICATION` | R1-verification-sink | 19 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-13 AGENT -> MOD-17 VERIFICATION` | R1-verification-sink | 1 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
 | `MOD-14 REFERENCE -> MOD-01 CORE` | R5-oracle | 2 req | independent oracle: the consumer's evidence is produced by the reference model (R-RECOV-04, REQ-TEST-045; MODULE_DEPS kind 'oracle') |
 | `MOD-14 REFERENCE -> MOD-12 RECOVERY` | R5-oracle | crate-table+prose+1 req | independent oracle: the consumer's evidence is produced by the reference model (R-RECOV-04, REQ-TEST-045; MODULE_DEPS kind 'oracle') |
 | `MOD-14 REFERENCE -> MOD-15 DIFFERENTIAL` | R4-harness-target | crate-table+prose+2 req | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
 | `MOD-14 REFERENCE -> MOD-16 MUTATION` | R4-harness-target | prose | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
-| `MOD-14 REFERENCE -> MOD-17 VERIFICATION` | R1-verification-sink | 8 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-14 REFERENCE -> MOD-17 VERIFICATION` | R1-verification-sink | 8 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
 | `MOD-15 DIFFERENTIAL -> MOD-09 HOST` | R6-harness-output | 1 req | live-vs-replay differential / kill evidence consumed by the module whose obligations are under test |
 | `MOD-15 DIFFERENTIAL -> MOD-10 SERIALIZATION` | R6-harness-output | 1 req | live-vs-replay differential / kill evidence consumed by the module whose obligations are under test |
 | `MOD-15 DIFFERENTIAL -> MOD-14 REFERENCE` | R6-harness-output | 4 req | live-vs-replay differential / kill evidence consumed by the module whose obligations are under test |
 | `MOD-15 DIFFERENTIAL -> MOD-16 MUTATION` | R4-harness-target | crate-table+prose | the differential/mutation layer observes the provider as a black-box SUT or consumes its oracle |
-| `MOD-15 DIFFERENTIAL -> MOD-17 VERIFICATION` | R1-verification-sink | 13 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
-| `MOD-16 MUTATION -> MOD-17 VERIFICATION` | R1-verification-sink | 5 req | the consumer's claims/evidence/order obligations are defined in MOD-17 (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
-| `MOD-17 VERIFICATION -> MOD-01 CORE` | R2-verification-source | 9 req | MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`) |
-| `MOD-17 VERIFICATION -> MOD-02 COMPILER` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`) |
-| `MOD-17 VERIFICATION -> MOD-03 CAPABILITY` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`) |
-| `MOD-17 VERIFICATION -> MOD-04 BUDGET` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`) |
-| `MOD-17 VERIFICATION -> MOD-05 EVALUATOR` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`) |
-| `MOD-17 VERIFICATION -> MOD-06 ACTOR` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`) |
-| `MOD-17 VERIFICATION -> MOD-08 EFFECT` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`) |
-| `MOD-17 VERIFICATION -> MOD-10 SERIALIZATION` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`) |
-| `MOD-17 VERIFICATION -> MOD-11 PERSISTENCE` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`) |
-| `MOD-17 VERIFICATION -> MOD-12 RECOVERY` | R2-verification-source | 2 req | MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`) |
-| `MOD-17 VERIFICATION -> MOD-14 REFERENCE` | R2-verification-source | 5 req | MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`) |
-| `MOD-17 VERIFICATION -> MOD-15 DIFFERENTIAL` | R2-verification-source | crate-table+prose+4 req | MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`) |
-| `MOD-17 VERIFICATION -> MOD-16 MUTATION` | R2-verification-source | crate-table+prose+2 req | MOD-17 supplies test infrastructure and CI to the harnesses it schedules (R-TEST-10; `ror-testkit`) |
+| `MOD-15 DIFFERENTIAL -> MOD-17 VERIFICATION` | R1-verification-sink | 13 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-16 MUTATION -> MOD-17 VERIFICATION` | R1-verification-sink | 5 req | the provider's claims/evidence/order obligations are defined in MOD-17, which is therefore the consumer here (R-TEST-*, R-CLAIM-*, R-ORDER-*, R-REPO-*) |
+| `MOD-17 VERIFICATION -> MOD-01 CORE` | R2-verification-source | 9 req | MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`) |
+| `MOD-17 VERIFICATION -> MOD-02 COMPILER` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`) |
+| `MOD-17 VERIFICATION -> MOD-03 CAPABILITY` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`) |
+| `MOD-17 VERIFICATION -> MOD-04 BUDGET` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`) |
+| `MOD-17 VERIFICATION -> MOD-05 EVALUATOR` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`) |
+| `MOD-17 VERIFICATION -> MOD-06 ACTOR` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`) |
+| `MOD-17 VERIFICATION -> MOD-08 EFFECT` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`) |
+| `MOD-17 VERIFICATION -> MOD-10 SERIALIZATION` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`) |
+| `MOD-17 VERIFICATION -> MOD-11 PERSISTENCE` | R2-verification-source | 1 req | MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`) |
+| `MOD-17 VERIFICATION -> MOD-12 RECOVERY` | R2-verification-source | 2 req | MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`) |
+| `MOD-17 VERIFICATION -> MOD-14 REFERENCE` | R2-verification-source | 5 req | MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`) |
+| `MOD-17 VERIFICATION -> MOD-15 DIFFERENTIAL` | R2-verification-source | crate-table+prose+4 req | MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`) |
+| `MOD-17 VERIFICATION -> MOD-16 MUTATION` | R2-verification-source | crate-table+prose+2 req | MOD-17 supplies test infrastructure and CI to the modules whose test and CI obligations it defines (R-TEST-10; `ror-testkit`) |
 
 ### 2.7 `RUNTIME_DEPENDENCY` (19 edges)
 
-_The consumer calls the provider during execution (a real call edge in the frozen crate DAG)._ Legitimate provider: the callee component. Implementable: yes.
+_The consumer calls the provider during execution (a real call edge in the frozen crate DAG)._ Provider constraint: the callee component — always a production module; no MOD-14…MOD-17 module is a runtime callee. Implementable: yes.
+
+Check 11 verifies that constraint against all 19 edges below.
 
 | `A -> B` (B depends on A) | Rule | Visibility | Why |
 |---|---|---|---|
@@ -519,7 +533,7 @@ digraph ror_modules {
 
 ### 3.2 Aggregated to modules (122 pairs)
 
-Counts are record pairs; the kind is the module-layer kind of the pair.
+Counts are record pairs; the kind is the module-layer kind of the pair. 465 of the 927 requirement-layer edges cross a module boundary and aggregate into these 122 pairs; the remaining 462 join two records of the same module, so they aggregate to nothing at this layer.
 
 | `A -> B` (B depends on A) | Kind | Record pairs |
 |---|---|---|
