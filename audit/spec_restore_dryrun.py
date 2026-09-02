@@ -10,7 +10,11 @@ Applies audit/spec01-restoration-draft.md to TEMPORARY COPIES of:
     quoted-not-deleted discipline),
 then re-runs the spec_check detectors against the copies.
 
-No repository file is modified.  Exit 0 = dry run completed (see report).
+With --apply, the restored texts are written to the REAL files instead of
+temporary copies (in-place restoration; the change is fully visible in git).
+
+Exit 0 = run completed (see report).  Exit 2 = --apply requested but the
+restored-text build did not touch exactly the flagged set (safety abort).
 """
 
 from __future__ import annotations
@@ -84,6 +88,9 @@ def restore_spec01(flagged: set[str], recs) -> tuple[str, int]:
         header_end = m.group(0).find("**", m.group(0).find("**") + 2) + 2
         header = m.group(0)[:header_end]  # includes opening **...**
         rest_text = flatten(recs[rid][0])
+        # a record's Original sometimes begins with its own bold header; strip
+        # that duplicate (the body already carries the canonical header)
+        rest_text = re.sub(rf"^\*\*{re.escape(rid)}\s*\([^*]*?\)\.\*\*\s*", "", rest_text)
         cite = CITE_RE.search(m.group(2).strip())
         if cite and not re.search(r"\(L\d", rest_text):
             rest_text = rest_text.rstrip(".") + ". " + cite.group(0).strip()
@@ -113,7 +120,7 @@ def restore_records(flagged: set[str], recs) -> tuple[str, int]:
                 r"(?ms)^(\s*- \*\*Normalized:\*\*.*)$(?=\s*- \*\*(Reason|Semantic Risk))",
                 lambda _m: f"  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**\n"
                            f"  > {norm_flat}\n"
-                           f"  - **Normalized (restored from Original):**\n{new_norm}",
+                           f"  - **Normalized:**\n{new_norm}",
                 body,
                 count=1,
             )
@@ -124,30 +131,53 @@ def restore_records(flagged: set[str], recs) -> tuple[str, int]:
 
 
 def main() -> int:
+    apply = "--apply" in sys.argv[1:]
     recs = parse_records()
     flagged = set(flagged_ids(recs))
     print(f"flagged records: {len(flagged)}")
 
-    with tempfile.TemporaryDirectory() as td:
-        td = Path(td)
-        spec01_new, n1 = restore_spec01(flagged, recs)
-        records_new, n2 = restore_records(flagged, recs)
-        p1, p2 = td / "spec01.md", td / "records.md"
-        p1.write_text(spec01_new, encoding="utf-8")
-        p2.write_text(records_new, encoding="utf-8")
-        print(f"restored bodies applied to spec/01 copy: {n1}; records Normalized restored: {n2}")
+    spec01_new, n1 = restore_spec01(flagged, recs)
+    records_new, n2 = restore_records(flagged, recs)
+    print(f"restored bodies built for spec/01: {n1}; records Normalized restored: {n2}")
 
-        r = subprocess.run(
-            [sys.executable, str(CHECKER), "--spec01", str(p1), "--records", str(p2)],
-            capture_output=True, text=True,
-        )
-        print("---- checker on restored copies ----")
-        print(r.stdout.strip()[-3000:])
-        d1 = r.stdout.count("[D1]")
-        d2 = r.stdout.count("[D2]")
-        d3 = r.stdout.count("[D3]")
-        print(f"---- summary: exit={r.returncode}  D1={d1} D2={d2} D3={d3} (was 48/52/54) ----")
+    if apply:
+        if n1 != len(flagged) or n2 != len(flagged):
+            print("SAFETY ABORT: restoration did not cover exactly the flagged set "
+                  f"({n1}/{n2} vs {len(flagged)}); nothing written.")
+            return 2
+        SPEC01.write_text(spec01_new, encoding="utf-8")
+        RECORDS.write_text(records_new, encoding="utf-8")
+        print(f"APPLIED: {SPEC01.relative_to(REPO)} and {RECORDS.relative_to(REPO)} updated in place.")
+        targets = [str(SPEC01), str(RECORDS)]
+    else:
+        with tempfile.TemporaryDirectory() as td:
+            td = Path(td)
+            p1, p2 = td / "spec01.md", td / "records.md"
+            p1.write_text(spec01_new, encoding="utf-8")
+            p2.write_text(records_new, encoding="utf-8")
+            print("dry run only (no repository file modified; pass --apply to restore in place)")
+            r = subprocess.run(
+                [sys.executable, str(CHECKER), "--spec01", str(p1), "--records", str(p2)],
+                capture_output=True, text=True,
+            )
+            _report(r, False)
+        return 0
+
+    r = subprocess.run(
+        [sys.executable, str(CHECKER), "--spec01", str(SPEC01), "--records", str(RECORDS)],
+        capture_output=True, text=True,
+    )
+    _report(r, True)
     return 0
+
+
+def _report(r, applied: bool) -> None:
+    print("---- checker on restored files ----" if applied else "---- checker on restored copies ----")
+    print(r.stdout.strip()[-3000:])
+    d1 = r.stdout.count("[D1]")
+    d2 = r.stdout.count("[D2]")
+    d3 = r.stdout.count("[D3]")
+    print(f"---- summary: exit={r.returncode}  D1={d1} D2={d2} D3={d3} (was 48/52/54) ----")
 
 
 if __name__ == "__main__":

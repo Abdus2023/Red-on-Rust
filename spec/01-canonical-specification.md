@@ -149,17 +149,15 @@ The production implementation and executable reference model MUST NOT share core
 
 *(L16878–16905 (frozen); L17379–17412 (correction, same rule); L37826–37838.)*
 
-**R-CEK-03 (continuation frames).** Continuation frames MUST be explicit stack values in the Rust representation. Continuation frames MUST NOT rely on implicit host-language recursion stack frames.
-
-*(L16928–16958; L23821–23856.)*
+**R-CEK-03 (continuation frames).** The frozen frame set is: `LetValue { name, body, env } | Seq { second, env } | If { then, else, env } | CallFunction { args, env } | CallArgument { function, evaluated, remaining, caller_env } | Attenuate { name, body, env } | RequestCapability { operation, target, params, env } | RequestTarget { capability, operation, params, caller_env } | RequestArgument { capability, operation, target, evaluated, remaining, caller_env }`. `function.env` (closure lexical environment) and `caller_env` (call-site environment) are semantically different and MUST never be conflated. *(L16928–16958; L23821–23856.)*
 
 **R-CEK-04 (lambda).** Lambda creation MUST be pure and deterministic: it MUST capture the lexical environment at creation and MUST produce `FunctionValue { params, body, env }`; the resulting value MUST pass through the ordinary value-return mechanism and MUST NOT halt the machine immediately. [INFORMATIVE: "deterministic" is explicitly defined in S-02 / R-CORE-08]. *(L16971–16995; L19095–19110 (attenuate/lexical invariant context).)*
 
 **R-CEK-05 (call).** Function application MUST proceed left-to-right: (1) evaluate `func` to `FunctionValue`; (2) evaluate arguments left-to-right (`CEK-CALL-ARGS-LTR`); (3) pre-check arity (`CEK-CALL-ARITY-PRECHECK`) — mismatch MUST produce `fault(F_arity)` before frame stack allocation; (4) bind parameters in a fresh child environment inheriting captured bindings; (5) push return frame and evaluate body. *(L16878–16905 (frozen); L37840–37862; L18723–18851.)*
 
-**R-CEK-06 (continuation preservation).** Environment lookup MUST walk the lexical chain. An unbound variable MUST produce `fault(F_unbound)`. Environment mutation MUST NOT occur. *(L14632–14642.)*
+**R-CEK-06 (continuation preservation).** For pure transitions the continuation length changes by exactly +1 on entry or −1 on resume; no transition silently discards or duplicates frames.
 
-**R-CEK-07 (progress & preservation).** Evaluation MUST continue small-step until `Halt(v)` or `Fault(f)` is reached. Recursion limits MAY optionally yield `fault(F_stack_exhausted)`. *(L7273–7277; L8850.)*
+**R-CEK-07 (progress & preservation).** A well-typed, well-budgeted configuration is either a value, a fault, pending an effect, blocked on a message, or can take a step; every transition preserves well-typedness and well-budgetness.
 
 ## S-09 Capability algebra
 
@@ -172,25 +170,19 @@ The production implementation and executable reference model MUST NOT share core
 
 *(L6354–6379.)*
 
-**R-CAP-02 (operation-indexed authority).** Derivation `derive(A, C)` MUST produce attenuated authority `A'`. Derivation MUST NOT amplify authority: `derive(A, C) ≼ A` MUST hold invariant. Derivation MUST NOT grant operations, scopes, resources, or lifetimes missing from parent authority `A`. *(L6370–6380.)*
+**R-CAP-02 (operation-indexed authority).** Authority is indexed by operation to prevent cross-operation contamination: `A = { (o, A_o) | o ∈ O_granted }` with `A_o = ⟨S, Q, R, T⟩`.
 
-**R-CAP-03 (partial order).** Partial ordering `A₁ ≼ A₂` MUST hold if and only if `ops(A₁) ⊆ ops(A₂)` and `scope(A₁) ⊆ scope(A₂)` and `Q₁ ⇐ Q₂` and `R₁ ≤ R₂` and `T₁ ≤ T₂`. Meet `A₁ ⊓ A₂` MUST yield maximal common attenuation. *(L6381–6390.)*
+**R-CAP-03 (partial order).** `A₁ ≼ A₂` iff `O₁ ⊆ O₂` and for all `o ∈ O₁`: `S₁ ≼_S S₂ ∧ Q₁ ≼_Q Q₂ ∧ R₁ ≤ R₂ ∧ T₁ ⊆ T₂`.
 
-**R-CAP-04 (constraint vs authority).** Authorization `Authorized(c, e, t)` MUST hold if and only if `c` is valid at logical time `t`, `op(e) ∈ ops(κ(c))`, `target(e) ∈ scope`, `Q(params(e))` holds, `cost(e) ≤ R`, and `t ≤ T`. *(L6391–6396; L6406.)*
+**R-CAP-04 (constraint vs authority).** A `Constraint` is a *request to narrow* an existing grant, conceptually distinct from `Authority`.
 
-**R-CAP-05 (derivation).** Revocation MUST be ancestor-cascading: revoking `c` MUST invalidate `c` and all derived descendants `Descendants(c)`. The revocation check MUST walk the lineage in O(depth). *(L6397–6404; Theorem 1, L6657–6661.)*
+**R-CAP-05 (derivation).** `derive(A, C) = { (o, derive_op(A_o, C_o)) | o ∈ O_A ∩ O_C }` where `derive_op(⟨S,Q,R,T⟩, ⟨S_c,Q_c,R_c,T_c⟩) = ⟨S ⊓ S_c, Q ⊓ Q_c, R ⊓ R_c, T ⊓ T_c⟩`. **Invariant:** `derive(A,C) ≼ A` holds by definition of meet.
 
-**R-CAP-06 (canonical authorization predicate).** Every capability derivation MUST record parent-child edges `parent(c') = c`. The lineage graph MUST form a forest of rooted trees.
+**R-CAP-06 (canonical authorization predicate).** For effect `E = ⟨op, target, params, cost⟩` at logical time `t`: `Authorized(A, E, t) ⇔ op ∈ O_A ∧ target ∈ ⟦A_op.S⟧ ∧ A_op.Q(params) ∧ cost ≤ A_op.R ∧ t ∈ A_op.T`. The `cost` here is the effect's static resource requirement checked against the capability ceiling `R_A`; the dynamic execution budget is checked separately (dual gate). *(L6406–6421; L6647–6656.)*
 
-*(L6406–6421; L6647–6656.)*
+**R-CAP-07 (revocation / lineage).** `Valid(c, t) ⇔ Live(c) ∧ t ∈ Lifetime(c) ∧ ∀a ∈ Ancestors(c). Live(a)`. Revoking a parent sets `Live(parent) = false`; descendants are invalidated lazily by walking the ancestor chain during the `Valid` check (O(d), d = lineage depth). **No authority amplification** and **ancestor revocation** are frozen obligations (tags `CAP-DERIVE-NO-AMPLIFICATION`, `CAP-REVOCATION-ANCESTOR`).
 
-**R-CAP-07 (revocation / lineage).** Capability lifetime `T` MUST be bounded by logical clock `t`. When `t > T`, `Authorized(c, e, t)` MUST evaluate to `false` and resolution MUST yield `fault(F_cap_expired)`. *(L6434–6445; L6647–6656.)*
-
-**R-CAP-08 (algebra theorems, frozen statements).** The `Attenuate { cap, constraint }` operation MUST evaluate `cap`, resolve `κ(cap)`, compute `A' = derive(κ(cap), constraint)`, allocate a fresh `CapRef`, store `A'`, record the parent edge, and return the fresh `CapRef`.
-
-
-
-*(L6422–6433; L6657–6671.)*
+**R-CAP-08 (algebra theorems, frozen statements).** - Theorem 1 (Attenuation soundness): `derive(A,C) ≼ A`. - Theorem 2 (Authority monotonicity): `A' ≼ A ∧ Authorized(A',E,t) ⇒ Authorized(A,E,t)`. - Theorem 3 (Attenuation corollary): assuming `Authorized(A,E,t)`, `Authorized(derive(A,C),E,t) ⇔ Satisfies(C,E,t)`. These are `SPECIFIED` statements with proof sketches in the source; no mechanized proof exists in the repository (`PROVEN` is NOT claimed). *(L6422–6433; L6657–6671.)*
 
 **R-CAP-09 (time).** Logical time `t` MUST NOT be fetched from the host OS; time `t` MUST be an explicit component of machine state (logical clock / deterministic timestamp) to ensure replay determinism. Wall-clock time MUST NOT be used as semantic machine state. [INFORMATIVE: "deterministic" is explicitly defined in S-02 / R-CORE-08]. *(L6434–6436; L38858–38890.)*
 
@@ -204,21 +196,17 @@ The production implementation and executable reference model MUST NOT share core
 
 *(L6672–6728; L19153–19175; L37870–37886.)*
 
-**R-KERN-03 (substrate privacy).** The capability kernel MUST enforce that authority state mutations occur only via kernel interface methods and MUST NOT expose mutable references to internal authority nodes. *(L39397–39407; L37722–37748.)*
-
----
-
-# Part III — Resources
+**R-KERN-03 (substrate privacy).** `AuthorityNode` and all authority internals MUST remain `pub(crate)`/inaccessible to evaluator and runtime consumers. No hidden authority inspection.
 
 ## S-11 Budget model
 
-**R-BUDGET-01 (structure).** Budget MUST be structured as `B = ⟨C, R, W⟩` (Consumable C, Reserved R, Deadline W). Budget accounting MUST be exact; budget arithmetic MUST NOT use saturating subtraction. *(L8683–8700 (v0.3 frozen); L9161–9175 (Rust shapes); L41537–41560.)*
+**R-BUDGET-01 (structure).** Budget `B = ⟨C, R, W⟩` where `C = ⟨F, I, D⟩` (consumables: fuel, I/O, duration), `R = ⟨M, S⟩` (reserved: memory bytes, concurrency slots), `W ∈ ℕ ∪ {∞}` (absolute logical-time deadline; `Deadline(None)` = infinity). Consumables are strictly decreasing and never returned; reserved capacities are held for a scope then released; the deadline is checked against logical time, not wall-clock.
 
-**R-BUDGET-02 (checked arithmetic).** Consumable vector `C = ⟨fuel, io, duration⟩` MUST strictly decrease on consumption. If `C_available < C_required`, execution MUST yield `fault(F_budget_exhausted)`. *(L9207–9245; L38044–38046; L41557.)*
+**R-BUDGET-02 (checked arithmetic).** Budget operations MUST use checked arithmetic and expose failure (`BudgetError { ConsumableExhausted, ReservedCapacityExceeded, ReservedCapacityUnderflow, DeadlineExceeded }`). `saturating_sub` MUST NOT be used for semantic accounting.
 
-**R-BUDGET-03 (reservation predicates).** Reserved vector `R = ⟨memory, slots⟩` MUST track held capacity. Reservation MUST fail with `fault(F_budget_exhausted)` if allocation exceeds limit. Memory/slot release MUST restore available capacity. *(L7487–7520; L8692–8696.)*
+**R-BUDGET-03 (reservation predicates).** `ReserveOK(r, R, R_max) ⇔ R + r ≤ R_max`; `ReleaseOK(r, R) ⇔ r ≤ R`; updates `R' = R + r` / `R' = R − r`. (Supersedes the earlier single `BudgetOK` that mixed directions — see `C-07`. )
 
-**R-BUDGET-04 (dual-gate within-budget).** Deadline `W` MUST be an absolute logical clock bound (`W ∈ ℕ ∪ {∞}`). When logical clock `t > W`, execution MUST yield `fault(F_deadline_exceeded)`. *(L8692–8696; L7426–7440.)*
+**R-BUDGET-04 (dual-gate within-budget).** `WithinBudget(E, C, R, R_A) ⇔ cost_C(E) ≤ C ∧ ReserveOK(cost_R(E), R, R_max) ∧ cost(E) ≤ R_A` (effect cost within both runtime budget and capability ceiling).
 
 **R-BUDGET-05 (conservation).** Effect issuance MUST escrow `complete_max` from consumable budget `C`. Effect completion MUST refund `complete_max - complete_actual` to `C_available`. Escrow conservation MUST hold invariant: `C_available + C_escrowed + C_consumed = C_initial`.
 
@@ -226,21 +214,17 @@ The production implementation and executable reference model MUST NOT share core
 
 *(L7408–7425; L28203–28240 (frozen partition); L35210–35215.)*
 
-**R-BUDGET-06 (time advancement).** Actor spawn MUST escrow budget from parent to child (`BudgetAllocationSpec` → `validate_and_escrow`). Child termination MUST return unconsumed budget to parent. *(L8698–8700; L10164–10168. The per-transition delta values beyond this rule are an open item — see `U-07`.)*
+**R-BUDGET-06 (time advancement).** Every transition has a logical-time delta `δ_t(c) ∈ ℕ`: pure computation `δ_t = 0`; host interactions and scheduler steps `δ_t > 0`. A transition is valid only if `t + δ_t(c) ≤ W`.
 
 **R-BUDGET-07 (cost model).** Cost model `CostModel` MUST map operations to costs `Cost { consumable, reserved }`. Evaluator transitions MUST charge fuel cost before executing small-step transitions. *(L9155–9205; L10171–10177.)*
 
-**R-BUDGET-08 (budget fault).** Budget arithmetic MUST NOT overflow or wrap. Arithmetic overflow MUST yield `fault(F_budget_overflow)`. *(L7345–7352; L7410–7419.)*
-
----
-
-# Part IV — Effects
+**R-BUDGET-08 (budget fault).** If `¬BudgetOK` (any gate fails), the transition is replaced by `fault(BudgetExhausted)`; no partial debit occurs.
 
 ## S-12 Effect model and request sequence
 
 **R-EFFECT-01 (request semantics).** Effect requests MUST proceed through the 16-step protocol: (1) evaluate `Request` expression; (2) resolve `CapRef`; (3) verify capability valid and unrevoked; (4) verify authorization `Authorized(c, e, t)`; (5) verify capability within ceiling; (6) verify budget available for `issue + complete_max`; (7) verify deadline `t ≤ W`; (8) verify host policy; (9) charge `issue` cost; (10) escrow `complete_max` cost; (11) reserve capacity; (12) allocate monotonic `EffectId`; (13) construct canonical `Effect`; (14) write durable `Prepared` log record; (15) emit `EffectRequest` to host; (16) write durable `Issued` record before host execution completes. *(L12177–12194.)*
 
-**R-EFFECT-02 (gated transition shape).** The machine MUST NOT invoke the host for an external effect before durable issuance is recorded (`HostInvoked(E) ⇒ DurableIssued(E)`). *(L7145–7155; L8700–8710.)*
+**R-EFFECT-02 (gated transition shape).** Every active transition takes the canonical gated form: `Pre(c, Σ) ∧ BudgetOK(c, Σ) ∧ AuthOK(c, Σ) ⊢ Σ →_c Σ'`. `AuthOK` applies only to authority-requiring transitions.
 
 **R-EFFECT-03 (frozen 16-step request sequence, canonical).** `EffectId` MUST be allocated from a global monotonic counter (`N' = N + 1`). `EffectId` MUST NOT be derived from wall-clock timestamps, memory addresses, or random generators. [INFORMATIVE: "deterministic" allocation is defined by monotonic integer counters].
 
@@ -265,53 +249,41 @@ The production implementation and executable reference model MUST NOT share core
 
 *(L37891–37908 (master-prompt 16-step, latest frozen form); L23857–23948 (14-gate machine-internal form, gates 1–14, superseded numbering — see `C-01`); L11053–11090 (14-step `step_request` form, superseded numbering).)*
 
-**R-EFFECT-04 (short-circuit).** Host responses MUST return `EffectReceipt { id, effect_digest, result }`. The machine MUST verify `receipt.effect_digest == SHA-256(canonical_bytes(effect))` and MUST reject mismatched receipts with `fault(F_digest_mismatch)`. *(L24003–24045 (Track C); L37891–37908.)*
+**R-EFFECT-04 (short-circuit).** A denial at any gate MUST short-circuit: subsequent gates are not called, `next_effect_id` is not incremented, the actor budget is unchanged, the event log gains no new entries, and `HostExecutor::execute` is never invoked.
 
-**R-EFFECT-05 (guaranteed completion accounting).** On receipt of valid `EffectReceipt`, the machine MUST: (1) reconcile escrowed `complete_max` vs actual cost; (2) release reserved capacity; (3) write durable `EffectCompleted` record; (4) deliver result value to caller or raise host fault. *(L25799–25825.)*
+**R-EFFECT-05 (guaranteed completion accounting).** At issuance the machine MUST guarantee the maximum possible completion cost is affordable: gate 8 checks `can_consume(issue.checked_add(complete_max))` (overflow ⇒ `Fault::ArithmeticOverflow`/budget fault). The remaining budget is then mathematically guaranteed ≥ `complete_max`.
 
-**R-EFFECT-06 (causal receipt validation).** Host execution failure MUST yield `fault(F_host_fault)` or `fault(F_policy_denied)`. Host faults MUST NOT corrupt machine state or alter unconsumed budget. *(L23949–24002; L25952–25970; L37910–37922.)*
+**R-EFFECT-06 (causal receipt validation).** A receipt MUST be validated against **both** `EffectId` and `EffectDigest` of the pending effect before resumption: mismatch ⇒ `fault(ReplayCorruption)`, continuation is NOT resumed, reservation is NOT released. `EffectReceipt { id, effect_digest, result: Result<Value, HostFault> }`.
 
-**R-EFFECT-07 (completion accounting).** Replay host `ReplayHost` MUST consume recorded receipt log without invoking real external systems. Recorded receipts MUST match effect digests exactly. *(L23949–24002; L25799–25825.)*
+**R-EFFECT-07 (completion accounting).** On valid receipt: charge `complete` (≤ `complete_max`) from consumables, release the reservation, append `EffectCompleted { id, digest, result }` to the event log, resume the continuation with the receipt's value (host faults map to the fault/value mapping defined by the machine).
 
 ## S-13 Transactional issuance and durability boundary
 
-**R-DUR-01.** Durable boundaries MUST ensure that `Prepared`, `Issued`, `Completed`, and `Reconciled` records are fsynced to persistent storage before downstream transitions occur. *(L35150–35156; L37910.)*
+**R-DUR-01.** `HostInvoked(E) ⇒ DurableIssued(E)`. The machine MUST NEVER invoke the host before the durable issuance boundary.
 
-**R-DUR-02 (issuance transaction, strict order).** Durability guarantees MUST hold across process crashes, power failures, and kernel panics. Un-fsynced in-memory state MUST NOT be treated as durable.
+**R-DUR-02 (issuance transaction, strict order).** 1. Pure validation / authorization / budget checks; 2. `persistence.append(EffectPrepared { id, actor, digest })`; 3. `persistence.sync()` (fsync); 4. `persistence.append(EffectIssued { id, actor, digest })`; 5. `persistence.sync()` (fsync); 6. machine transitions actor to `Pending`; 7. host adapter receives `EffectRequest`. *(L35150–35158.)*
 
-
-
-
-
-
-
-*(L35150–35158.)*
-
-**R-DUR-03 (causal effect protocol).** The persistence boundary MUST enforce write-ahead logging before state mutations are visible to external observers. *(L35111–35144; L37953–37965.)*
+**R-DUR-03 (causal effect protocol).** `Issued(E) ⇒ Prepared(E)`; `Completed(E) ⇒ Issued(E)`; `Reconciled(E) ⇒ Issued(E)`. Every subsequent record for an effect MUST carry the identical `EffectId` and `EffectDigest`; a digest mismatch is `EffectJournalCorruption`, not a different effect.
 
 **R-DUR-04 (crash classification of effects).** Effect state transitions MUST strictly follow `Prepared → Issued → Completed` or `Issued → Reconciled`. A prepared-but-never-issued effect MUST be discarded during recovery. An issued-but-not-completed effect MUST be classified as `Indeterminate` unless authoritative host reconciliation establishes its outcome. *(L35159–35176; L37968–37981.)*
 
-**R-DUR-05 (escrow survives crash).** WAL framing MUST include header magic `0x526F5231` ('RoR1'), format version `0x01`, monotonic sequence `u64`, payload length `u32`, payload bytes, and SHA-256 checksum `[u8; 32]`. Framing errors MUST yield `fault(F_wal_corrupt)`. *(L35210–35215.)*
+**R-DUR-05 (escrow survives crash).** An `Issued` effect with no durable completion retains its `completion_maximum` in the `escrowed` partition until reconciliation determines the outcome. Escrow does not vanish on crash.
 
 ## S-14 Host boundary and replay
 
-**R-HOST-01 (host gate, defense in depth).** The host interface MUST be isolated behind explicit trait boundaries (`HostAdapter`). Direct OS access from evaluator code MUST NOT occur. *(L8560–8580; L10168–10172.)*
+**R-HOST-01 (host gate, defense in depth).** The live host independently validates concrete OS-level authority/policy for each effect (`HostPolicyOK`); `¬HostPolicyOK(E) ⇒ ¬ExternalEffect(E)`. The machine's gate-11 check is fail-early; the host check is authoritative.
 
-**R-HOST-02 (host adapter scope).** Host policies MUST enforce fine-grained access control beyond capability checks. Host policy denial MUST yield `fault(F_policy_denied)` without mutating machine budget. *(L41823–41841; L27644.)*
+**R-HOST-02 (host adapter scope).** The host performs **only issued effects**. It is partially trusted.
 
-**R-HOST-03 (replay host).** Replay host MUST reproduce recorded receipt outputs deterministically given identical effect inputs and sequence order. [INFORMATIVE: "deterministically" is explicitly defined by trace equality]. *(L25972–25996 (Phase 12 digest-validation correction); L33757+ §15B.9; L37985–38000.)*
+**R-HOST-03 (replay host).** `ReplayHost` reconstructs recorded effects; it NEVER touches the external world. It is **ordered**: for every request it consumes the next trace entry and validates both `EffectId` and `EffectDigest` sequentially; a mismatch or exhausted trace ⇒ `ReplayCorruption`/`ReplayTraceExhausted`. An unordered map MUST NOT be used as the normative replay mechanism.
 
-**R-HOST-04 (replay correspondence theorem).** Live host implementations MUST enforce timeouts on external IO operations. Exceeded host timeout MUST yield `fault(F_host_timeout)`. *(L3947–3958 (v2 Theorem 4); L26249–26262 (effect classes, A7 refinement).)*
+**R-HOST-04 (replay correspondence theorem).** If `LiveRun(Σ₀)` produces trace `T` of (EffectIssued, EffectCompleted) pairs, `ReplayRun(Σ₀, T)` produces the same final configuration, provided replay verifies for each step `E_replay,k = E_recorded,k` and `R_replay,k.id = R_recorded,k.id` (and, in the frozen form, matching digests). Machine-state replay is always valid; real-world replay is only valid for reversible/idempotent effects — the replay host refuses to re-execute irreversible effects and returns the recorded result.
 
-**R-HOST-05 (replay validates trace, not just final state).** Host callbacks MUST NOT directly mutate machine memory, actor registries, or capability kernel state. *(L38278–38300.)*
-
----
-
-# Part V — Concurrency
+**R-HOST-05 (replay validates trace, not just final state).** Replay MUST validate the trace, not merely load the final state.
 
 ## S-15 Actors and deterministic scheduling
 
-**R-ACTOR-01 (isolation).** Actor state MUST be isolated: `ActorState { id: ActorId, run_state: RunState, eval: EvalState, capabilities: CapabilityContext, heap: GenerationalArena<Value>, budget: Budget, mailbox: VecDeque<MarshalledValue>, status: ActorStatus }`. Direct cross-actor heap reference access MUST NOT occur. *(L41623–41641; L24268–24290; L25884–25900 (Theorem 4).)*
+**R-ACTOR-01 (isolation).** Actors have isolated environments, continuations, heaps, mailboxes, budgets, and capability contexts. For `a ≠ b`: `Heap(a) ∩ Heap(b) = ∅ ∧ Env(a) ∩ Env(b) = ∅`. No actor mutates another actor's heap, environment, or continuation. Actors are instantiated with fresh arenas and `Environment::empty()` (no implicit environment inheritance).
 
 **R-ACTOR-02 (global state).** Global state MUST manage actors in a `BTreeMap<ActorId, ActorState>`. Global time `LogicalTime` MUST advance monotonically on scheduler steps. *(L24148–24163; L25514–25546.)*
 
@@ -325,60 +297,49 @@ The production implementation and executable reference model MUST NOT share core
 
 **R-ACTOR-07 (deterministic concurrency theorem).** Concurrency MUST satisfy the deterministic scheduling theorem: `InitialState + SchedulerTrace + HostTrace ⇒ UniqueMachineTrace` — scheduler MUST be strictly FIFO, IDs MUST be monotonic, CEK machine MUST be deterministic; hence global state transitions MUST be uniquely determined given identical initial state and external observations. [INFORMATIVE: "deterministic" is explicitly defined by this theorem]. *(L25759–25766 (Theorem 1).)*
 
-**R-ACTOR-08 (no amplification / no teleportation theorems).** Actor termination (`Halt` or unhandled `Fault`) MUST release reserved budget capacity, set status to `Halted` or `Faulted`, and remove actor from runnable queue. *(L26048–26070 (Theorems 2–3).)*
+**R-ACTOR-08 (no amplification / no teleportation theorems).** `Authority_after ≼ Authority_before ∪ ExplicitlyDelegatedAuthority` (ordinary `Send` passes through `marshal()`, which rejects raw capabilities). `Σ_actors C_consumable + Σ_escrow C_escrow + Σ_issued C_issue = C_global_initial` (budget is created only at root initialization; spawn escrows; send carries no budget).
 
 ## S-16 Marshalling and delegation
 
-**R-MARSHAL-01 (capability rejection, recursive).** Marshalling MUST serialize values into canonical bytes `MarshalledValue(Vec<u8>)` for cross-actor transfer. Unmarshalling MUST validate canonical wire format before constructing target values. *(L41647–41658; L25674–25701; L37946–37951.)*
+**R-MARSHAL-01 (capability rejection, recursive).** Ordinary data marshalling MUST reject capabilities recursively — including capabilities nested inside lists, tuples, functions, or any nested structure. Raw `CapRef` transfer through ordinary messages is forbidden: `marshal_value(v) ⇒ Err(MarshalFault::CapabilityRequiresDelegation)` if `contains_capability(v)`.
 
 **R-MARSHAL-02 (explicit delegation).** Raw capability references `Value::Capability(CapRef)` MUST NOT be transferred through ordinary messages; ordinary marshalling MUST reject raw capabilities with `MarshalFault`. Delegation of authority MUST require explicit `Value::DelegatedCapability(DelegatedCapability)` envelopes. *(L25972–26001; L37953–37959.)*
 
-**R-MARSHAL-03 (canonical transport).** Delegated capability envelopes MUST contain explicit attenuation constraints and target actor restrictions. Receiving actors MUST attenuate delegated capabilities through local kernel before use. *(L25674–25701; L26072–26079 (Track B).)*
+**R-MARSHAL-03 (canonical transport).** `MarshalledValue` is the canonical serialized byte representation (`canonical_serialize(v)`); `unmarshal(marshal(v)) = v` for all pure values.
 
-**R-MARSHAL-04 (semantic marshalling rule).** Cyclic heap structures MUST NOT be marshalled. Marshalling recursive structure depth exceeding limits MUST yield `fault(F_marshal_depth_exceeded)`. *(L8695–8698.)*
-
----
-
-# Part VI — Persistence
+**R-MARSHAL-04 (semantic marshalling rule).** `marshal(v)` traverses `v`; by default `CapRef ∉ marshal(v)`; authority transfer requires the explicit `delegate(c, C, target_actor)` operation.
 
 ## S-17 Canonical serialization (frozen wire format, Phase 15A)
 
-**R-CANON-01 (purpose & independence).** Canonical serialization (15A) MUST enforce strict canonical bytes representation: single byte order (little-endian), no unassigned tags, no invalid bool values, no invalid discriminant tags, no trailing bytes. Non-canonical encodings MUST be rejected. Duplicate map keys MUST be rejected. Encoded collection counts MUST NOT authorize preallocation of attacker-controlled memory. *(L28185–28228; L28453–28465; L41659–41690.)*
+**R-CANON-01 (purpose & independence).** Semantic serialization is explicit and independent of Rust memory layout and of any Rust serializer. `bincode` may *implement* the format but MUST NOT *define* it. Canonical encoding defines semantic identity; it is not based on struct layout, pointer addresses, allocator behavior, or platform-specific representation.
 
-**R-CANON-02 (universal envelope, frozen).** Wire format integers MUST use little-endian encoding (`u16`, `u32`, `u64`, `i64`). Floating-point NaNs MUST be rejected if floating-point types are present.
+**R-CANON-02 (universal envelope, frozen).** ``` Envelope := version: u8            (currently 0x01) + type_tag: u8           (stable explicit constant per type) + payload_length: u32 BE (checked) + payload: bytes[payload_length] ``` *(L30532–30543; L33290–33347 (final frozen).)*
 
-
-
-
-
-
-*(L30532–30543; L33290–33347 (final frozen).)*
-
-**R-CANON-03 (type tags, frozen).** Strings and Symbols MUST be UTF-8 encoded. Invalid UTF-8 byte sequences MUST yield `fault(F_utf8_invalid)`. *(L30532–30598 (stale §1.3); L33087–33154 (final).)*
+**R-CANON-03 (type tags, frozen).** Standalone envelope tags: `Value` = `0x00`; `Symbol` = `0x20`; `CapRef` = `0x30`; `ActorId` = `0x40`; `EffectId` = `0x41`. **Non-normative note:** the "revised grammar" §1.3 text listing Boolean `0x10` / Integer `0x11` / String `0x13` as standalone tags is stale and contradicted by the golden vectors and the final frozen implementation (see `C-02`); bool/integer/string exist only as `Value` discriminants.
 
 **R-CANON-04 (Value encoding, frozen).** Collection encodings (List, Tuple, Map) MUST prefix element counts as `u32` length headers. Decoders MUST verify payload byte availability before allocating collection memory. *(L30544–30552 (correction); L33155–33265 (final).)*
 
-**R-CANON-05 (primitives, frozen).** Canonical serialization MUST be strictly injective: `A == B ⇔ encode(A) == encode(B)`. Decoded round-trip MUST satisfy `decode(encode(v)) == v`. *(L33087–33154.)*
+**R-CANON-05 (primitives, frozen).** `Symbol(u32)` payload = 4 bytes BE; `CapRef` payload = `[index u32 BE][generation u32 BE]`; `ActorId`/`EffectId` payloads = 8 bytes u64 BE.
 
-**R-CANON-06 (collections, frozen).** Canonical envelope header MUST consist of: magic bytes `0x526F5231`, version `0x01`, domain tag `u8`, payload length `u32`. Header validation failure MUST yield `fault(F_envelope_invalid)`. *(L30566–30573; L34987–35024 (final 15A patch); L38164–38172.)*
+**R-CANON-06 (collections, frozen).** `List = [count u32 BE][element₁]…[elementₙ]`, each element a complete envelope. `Map = [count u32 BE][key₁][val₁]…`, entries ordered by the **semantic `Ord` relation on keys** (for `BTreeMap<u32, Value>`: numeric u32 order). Map decoding MUST reject duplicate keys (`CanonicalError::DuplicateMapKey`) to preserve injectivity.
 
-**R-CANON-07 (decoder contract, frozen).** Deserialization cursor `ReadCursor` MUST track read offsets explicitly and MUST reject inputs where payload length exceeds available bytes. *(L30575–30586; L32948–33049.)*
+**R-CANON-07 (decoder contract, frozen).** `CanonicalDecode` is a strict parser enforcing, in order: (1) version = `0x01`; (2) type tag matches expected; (3) exact length (payload is exactly `payload_length` bytes); (4) internal payload well-formedness; (5) EOF/trailing-byte rejection. All discriminants are explicit stable constants (source-order changes MUST NOT change the wire format). Malformed encodings are rejected with explicit `CanonicalError` values (`InvalidVersion, InvalidTypeTag, LengthMismatch, LengthOverflow, InvalidUtf8, UnexpectedEof, TrailingBytes, InvalidDiscriminant, InvalidBoolValue, DuplicateMapKey`).
 
-**R-CANON-08 (checked arithmetic).** Enum variants MUST be encoded as 1-byte discriminant tags followed by variant payload. Unrecognized discriminant tags MUST yield `fault(F_invalid_discriminant)`. *(L30574–30578; L32948–33265; L33266–33286.)*
+**R-CANON-08 (checked arithmetic).** All length/pointer arithmetic is checked. A collection exceeding `u32::MAX` yields `LengthOverflow`. Encoded collection counts MUST NOT authorize attacker-controlled preallocation (collections grow organically from `Vec::new()`, no `with_capacity` on untrusted input). Nested decoding uses bounded cursors (`read_envelope_payload` returns only the payload slice; payload decoding uses a fresh bounded cursor). Envelope construction is fallible (no panics).
 
-**R-CANON-09 (digests).** Bool values MUST be encoded strictly as `0x00` (false) or `0x01` (true). Any other byte value MUST yield `fault(F_invalid_bool)`. *(L28185–28228 (correction); L30588–30590; L28453–28465.)*
+**R-CANON-09 (digests).** `StateDigest = SHA-256(canonical_bytes)`; `EffectDigest = SHA-256(canonical_bytes(effect))`. Mechanically: `Canonical(x) = Canonical(y) ⇒ Digest(x) = Digest(y)`. The reverse direction holds only as an operational integrity assumption under cryptographic collision resistance. When both states are available, compare canonical bytes directly; use digests for persistence integrity, causal identity, and compact checkpoints.
 
-**R-CANON-10 (injectivity, scoped claim).** Map keys MUST be sorted in lexicographical byte order. Out-of-order map keys MUST yield `fault(F_map_keys_unsorted)`. *(L30592–30598 (corrected wording); L35068.)*
+**R-CANON-10 (injectivity, scoped claim).** Injectivity (`Canonical(x) = Canonical(y) ⇒ x = y`) is a **structural specification property** of the encoding design; the conformance suite provides machine-checked evidence via round-trip and differential testing over the generated distribution. It is NOT claimed as a mathematical proof of arbitrary Rust programs.
 
-**R-CANON-11 (golden vectors, normative fixtures).** Canonical serializer MUST NOT allocate dynamic heap memory proportional to unverified length headers during header parsing. *(L30599–30646; L31948–32010 (regenerated); L33266–33286 (freeze).)*
+**R-CANON-11 (golden vectors, normative fixtures).** The frozen golden vectors (e.g., `Value::Integer(42)` ⇒ `01 00 00 00 00 09 02 00 00 00 00 00 00 00 2A`; `CapRef{5,2}` ⇒ `01 30 00 00 00 08 00 00 00 05 00 00 00 02`) are normative **test fixtures** for the format, not additional behavioral rules.
 
 ## S-18 Persistence protocol (Phase 15B)
 
-**R-PERSIST-01 (separation).** Persistence layer MUST maintain WAL and GlobalSnapshot storage transactional integrity. Partial writes MUST be detected and rejected during recovery. *(L33757–33790; L35078–35087.)*
+**R-PERSIST-01 (separation).** The persistence layer is not a semantic machine; it records and reconstructs the existing machine. **No secondary serialization:** the payload of every persistence record is strictly the byte output of Phase 15A `CanonicalEncode`.
 
 **R-PERSIST-02 (two-level framing).** WAL append operations MUST write `WalFrame` records with incrementing `WalSequence` counters. Sequence gaps MUST NOT be permitted. *(L33802–33830; L35088–35110.)*
 
-**R-PERSIST-03 (record taxonomy).** WAL frames MUST calculate SHA-256 checksums over `sequence || kind || payload_length || payload`. Mismatched frame checksums MUST yield `fault(F_wal_checksum_mismatch)`. *(L33861–33900; L35111–35144.)*
+**R-PERSIST-03 (record taxonomy).** `WalRecord ::= Event(EventEnvelope) | EffectPrepared { id, actor, digest } | EffectIssued { id, actor, digest } | EffectCompleted { id, digest, result_digest } | EffectReconciled { id, digest, outcome } | SnapshotCommit { event_sequence, snapshot_version, state_digest }`. `EventEnvelope { sequence: EventSequence, logical_time: LogicalTime, event: GlobalEvent }` with `e_i.sequence < e_{i+1}.sequence` (total ordering).
 
 **R-PERSIST-04 (snapshot content).** Global snapshots MUST capture complete machine state necessary for resumption: logical_time, ID counters, runnable queue, actor states, capability arena, budget state, effect journal cursor. Snapshots MUST be canonical 15A encoded. *(L26293–26330.)*
 

@@ -77,6 +77,10 @@ def main() -> int:
     for rid, self_sc, near, near_sc, cls in rows:
         print(f"  {rid:14s} self={self_sc:.2f}  nearest={near:14s} {near_sc:.2f}  {cls}")
 
+    if not rows:
+        print("no D1-flagged records; nothing to draft (draft left untouched)")
+        return 0
+
     if "--draft" in ap or "--write-draft" in ap or True:
         # The draft is cheap and deterministic; always (re)write it.
         with open(draft_path, "w", encoding="utf-8") as f:

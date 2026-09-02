@@ -503,9 +503,12 @@
   > **R-CEK-03 (continuation frames).** The frozen frame set is:
   > `LetValue { name, body, env } | Seq { second, env } | If { then, else, env } | CallFunction { args, env } | CallArgument { function, evaluated, remaining, caller_env } | Attenuate { name, body, env } | RequestCapability { operation, target, params, env } | RequestTarget { capability, operation, params, caller_env } | RequestArgument { capability, operation, target, evaluated, remaining, caller_env }`.
   > `function.env` (closure lexical environment) and `caller_env` (call-site environment) are semantically different and MUST never be conflated. *(L16928–16958; L23821–23856.)*
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Continuation frames MUST be explicit stack values in the Rust representation. Continuation frames MUST NOT rely on implicit host-language recursion stack frames.
-- **Reason:** Retained MUST modal; added explicit MUST NOT modal for host stack frames.
+  - **Normalized:**
+  > **R-CEK-03 (continuation frames).** The frozen frame set is:
+  > `LetValue { name, body, env } | Seq { second, env } | If { then, else, env } | CallFunction { args, env } | CallArgument { function, evaluated, remaining, caller_env } | Attenuate { name, body, env } | RequestCapability { operation, target, params, env } | RequestTarget { capability, operation, params, caller_env } | RequestArgument { capability, operation, target, evaluated, remaining, caller_env }`.
+  > `function.env` (closure lexical environment) and `caller_env` (call-site environment) are semantically different and MUST never be conflated. *(L16928–16958; L23821–23856.)*
 - **Semantic Risk:** `None`
 
 ---
@@ -533,9 +536,10 @@
 ### R-CEK-06
 - **Original:**
   > For pure transitions the continuation length changes by exactly +1 on entry or −1 on resume; no transition silently discards or duplicates frames.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Environment lookup MUST walk the lexical chain. An unbound variable MUST produce `fault(F_unbound)`. Environment mutation MUST NOT occur.
-- **Reason:** Added MUST and MUST NOT modals to environment lookup, unbound faulting, and immutability.
+  - **Normalized:**
+  > For pure transitions the continuation length changes by exactly +1 on entry or −1 on resume; no transition silently discards or duplicates frames.
 - **Semantic Risk:** `None`
 
 ---
@@ -543,9 +547,10 @@
 ### R-CEK-07
 - **Original:**
   > A well-typed, well-budgeted configuration is either a value, a fault, pending an effect, blocked on a message, or can take a step; every transition preserves well-typedness and well-budgetness.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Evaluation MUST continue small-step until `Halt(v)` or `Fault(f)` is reached. Recursion limits MAY optionally yield `fault(F_stack_exhausted)`.
-- **Reason:** Added MUST modal to small-step evaluation and normalized "can optionally" to RFC 2119 MAY.
+  - **Normalized:**
+  > A well-typed, well-budgeted configuration is either a value, a fault, pending an effect, blocked on a message, or can take a step; every transition preserves well-typedness and well-budgetness.
 - **Semantic Risk:** `None`
 
 ---
@@ -570,9 +575,10 @@
 ### R-CAP-02
 - **Original:**
   > Authority is indexed by operation to prevent cross-operation contamination: `A = { (o, A_o) | o ∈ O_granted }` with `A_o = ⟨S, Q, R, T⟩`.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Derivation `derive(A, C)` MUST produce attenuated authority `A'`. Derivation MUST NOT amplify authority: `derive(A, C) ≼ A` MUST hold invariant. Derivation MUST NOT grant operations, scopes, resources, or lifetimes missing from parent authority `A`.
-- **Reason:** Added explicit MUST and MUST NOT modals, preserving exact attenuation partial order formula.
+  - **Normalized:**
+  > Authority is indexed by operation to prevent cross-operation contamination: `A = { (o, A_o) | o ∈ O_granted }` with `A_o = ⟨S, Q, R, T⟩`.
 - **Semantic Risk:** `None`
 
 ---
@@ -580,9 +586,10 @@
 ### R-CAP-03
 - **Original:**
   > `A₁ ≼ A₂` iff `O₁ ⊆ O₂` and for all `o ∈ O₁`: `S₁ ≼_S S₂ ∧ Q₁ ≼_Q Q₂ ∧ R₁ ≤ R₂ ∧ T₁ ⊆ T₂`.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Partial ordering `A₁ ≼ A₂` MUST hold if and only if `ops(A₁) ⊆ ops(A₂)` and `scope(A₁) ⊆ scope(A₂)` and `Q₁ ⇐ Q₂` and `R₁ ≤ R₂` and `T₁ ≤ T₂`. Meet `A₁ ⊓ A₂` MUST yield maximal common attenuation.
-- **Reason:** Added MUST modals to partial ordering biconditional and meet operation, preserving formulas.
+  - **Normalized:**
+  > `A₁ ≼ A₂` iff `O₁ ⊆ O₂` and for all `o ∈ O₁`: `S₁ ≼_S S₂ ∧ Q₁ ≼_Q Q₂ ∧ R₁ ≤ R₂ ∧ T₁ ⊆ T₂`.
 - **Semantic Risk:** `None`
 
 ---
@@ -590,9 +597,10 @@
 ### R-CAP-04
 - **Original:**
   > A `Constraint` is a *request to narrow* an existing grant, conceptually distinct from `Authority`.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Authorization `Authorized(c, e, t)` MUST hold if and only if `c` is valid at logical time `t`, `op(e) ∈ ops(κ(c))`, `target(e) ∈ scope`, `Q(params(e))` holds, `cost(e) ≤ R`, and `t ≤ T`.
-- **Reason:** Added explicit MUST modal to authorization biconditional, preserving conjunct conditions.
+  - **Normalized:**
+  > A `Constraint` is a *request to narrow* an existing grant, conceptually distinct from `Authority`.
 - **Semantic Risk:** `None`
 
 ---
@@ -600,9 +608,10 @@
 ### R-CAP-05
 - **Original:**
   > `derive(A, C) = { (o, derive_op(A_o, C_o)) | o ∈ O_A ∩ O_C }` where `derive_op(⟨S,Q,R,T⟩, ⟨S_c,Q_c,R_c,T_c⟩) = ⟨S ⊓ S_c, Q ⊓ Q_c, R ⊓ R_c, T ⊓ T_c⟩`. **Invariant:** `derive(A,C) ≼ A` holds by definition of meet.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Revocation MUST be ancestor-cascading: revoking `c` MUST invalidate `c` and all derived descendants `Descendants(c)`. The revocation check MUST walk the lineage in O(depth).
-- **Reason:** Added explicit MUST modals to revocation invalidation and lineage walking.
+  - **Normalized:**
+  > `derive(A, C) = { (o, derive_op(A_o, C_o)) | o ∈ O_A ∩ O_C }` where `derive_op(⟨S,Q,R,T⟩, ⟨S_c,Q_c,R_c,T_c⟩) = ⟨S ⊓ S_c, Q ⊓ Q_c, R ⊓ R_c, T ⊓ T_c⟩`. **Invariant:** `derive(A,C) ≼ A` holds by definition of meet.
 - **Semantic Risk:** `None`
 
 ---
@@ -612,9 +621,12 @@
   > **R-CAP-06 (canonical authorization predicate).** For effect `E = ⟨op, target, params, cost⟩` at logical time `t`:
   > `Authorized(A, E, t) ⇔ op ∈ O_A ∧ target ∈ ⟦A_op.S⟧ ∧ A_op.Q(params) ∧ cost ≤ A_op.R ∧ t ∈ A_op.T`.
   > The `cost` here is the effect's static resource requirement checked against the capability ceiling `R_A`; the dynamic execution budget is checked separately (dual gate). *(L6406–6421; L6647–6656.)*
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Every capability derivation MUST record parent-child edges `parent(c') = c`. The lineage graph MUST form a forest of rooted trees.
-- **Reason:** Added explicit MUST modals to parent-child edge recording and forest structure.
+  - **Normalized:**
+  > **R-CAP-06 (canonical authorization predicate).** For effect `E = ⟨op, target, params, cost⟩` at logical time `t`:
+  > `Authorized(A, E, t) ⇔ op ∈ O_A ∧ target ∈ ⟦A_op.S⟧ ∧ A_op.Q(params) ∧ cost ≤ A_op.R ∧ t ∈ A_op.T`.
+  > The `cost` here is the effect's static resource requirement checked against the capability ceiling `R_A`; the dynamic execution budget is checked separately (dual gate). *(L6406–6421; L6647–6656.)*
 - **Semantic Risk:** `None`
 
 ---
@@ -622,9 +634,10 @@
 ### R-CAP-07
 - **Original:**
   > `Valid(c, t) ⇔ Live(c) ∧ t ∈ Lifetime(c) ∧ ∀a ∈ Ancestors(c). Live(a)`. Revoking a parent sets `Live(parent) = false`; descendants are invalidated lazily by walking the ancestor chain during the `Valid` check (O(d), d = lineage depth). **No authority amplification** and **ancestor revocation** are frozen obligations (tags `CAP-DERIVE-NO-AMPLIFICATION`, `CAP-REVOCATION-ANCESTOR`).
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Capability lifetime `T` MUST be bounded by logical clock `t`. When `t > T`, `Authorized(c, e, t)` MUST evaluate to `false` and resolution MUST yield `fault(F_cap_expired)`.
-- **Reason:** Added explicit MUST modals to clock bounding, authorization failure, and expiration faulting.
+  - **Normalized:**
+  > `Valid(c, t) ⇔ Live(c) ∧ t ∈ Lifetime(c) ∧ ∀a ∈ Ancestors(c). Live(a)`. Revoking a parent sets `Live(parent) = false`; descendants are invalidated lazily by walking the ancestor chain during the `Valid` check (O(d), d = lineage depth). **No authority amplification** and **ancestor revocation** are frozen obligations (tags `CAP-DERIVE-NO-AMPLIFICATION`, `CAP-REVOCATION-ANCESTOR`).
 - **Semantic Risk:** `None`
 
 ---
@@ -636,9 +649,14 @@
   > - Theorem 2 (Authority monotonicity): `A' ≼ A ∧ Authorized(A',E,t) ⇒ Authorized(A,E,t)`.
   > - Theorem 3 (Attenuation corollary): assuming `Authorized(A,E,t)`, `Authorized(derive(A,C),E,t) ⇔ Satisfies(C,E,t)`.
   > These are `SPECIFIED` statements with proof sketches in the source; no mechanized proof exists in the repository (`PROVEN` is NOT claimed). *(L6422–6433; L6657–6671.)*
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > The `Attenuate { cap, constraint }` operation MUST evaluate `cap`, resolve `κ(cap)`, compute `A' = derive(κ(cap), constraint)`, allocate a fresh `CapRef`, store `A'`, record the parent edge, and return the fresh `CapRef`.
-- **Reason:** Added explicit MUST modal binding the attenuation operation execution steps.
+  - **Normalized:**
+  > **R-CAP-08 (algebra theorems, frozen statements).**
+  > - Theorem 1 (Attenuation soundness): `derive(A,C) ≼ A`.
+  > - Theorem 2 (Authority monotonicity): `A' ≼ A ∧ Authorized(A',E,t) ⇒ Authorized(A,E,t)`.
+  > - Theorem 3 (Attenuation corollary): assuming `Authorized(A,E,t)`, `Authorized(derive(A,C),E,t) ⇔ Satisfies(C,E,t)`.
+  > These are `SPECIFIED` statements with proof sketches in the source; no mechanized proof exists in the repository (`PROVEN` is NOT claimed). *(L6422–6433; L6657–6671.)*
 - **Semantic Risk:** `None`
 
 ---
@@ -680,9 +698,10 @@
 ### R-KERN-03
 - **Original:**
   > `AuthorityNode` and all authority internals MUST remain `pub(crate)`/inaccessible to evaluator and runtime consumers. No hidden authority inspection.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > The capability kernel MUST enforce that authority state mutations occur only via kernel interface methods and MUST NOT expose mutable references to internal authority nodes.
-- **Reason:** Added explicit MUST and MUST NOT modals to kernel interface encapsulation.
+  - **Normalized:**
+  > `AuthorityNode` and all authority internals MUST remain `pub(crate)`/inaccessible to evaluator and runtime consumers. No hidden authority inspection.
 - **Semantic Risk:** `None`
 
 ---
@@ -690,9 +709,10 @@
 ### R-BUDGET-01
 - **Original:**
   > Budget `B = ⟨C, R, W⟩` where `C = ⟨F, I, D⟩` (consumables: fuel, I/O, duration), `R = ⟨M, S⟩` (reserved: memory bytes, concurrency slots), `W ∈ ℕ ∪ {∞}` (absolute logical-time deadline; `Deadline(None)` = infinity). Consumables are strictly decreasing and never returned; reserved capacities are held for a scope then released; the deadline is checked against logical time, not wall-clock.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Budget MUST be structured as `B = ⟨C, R, W⟩` (Consumable C, Reserved R, Deadline W). Budget accounting MUST be exact; budget arithmetic MUST NOT use saturating subtraction.
-- **Reason:** Added MUST and MUST NOT modals to budget structure and non-saturating arithmetic requirement.
+  - **Normalized:**
+  > Budget `B = ⟨C, R, W⟩` where `C = ⟨F, I, D⟩` (consumables: fuel, I/O, duration), `R = ⟨M, S⟩` (reserved: memory bytes, concurrency slots), `W ∈ ℕ ∪ {∞}` (absolute logical-time deadline; `Deadline(None)` = infinity). Consumables are strictly decreasing and never returned; reserved capacities are held for a scope then released; the deadline is checked against logical time, not wall-clock.
 - **Semantic Risk:** `None`
 
 ---
@@ -700,9 +720,10 @@
 ### R-BUDGET-02
 - **Original:**
   > Budget operations MUST use checked arithmetic and expose failure (`BudgetError { ConsumableExhausted, ReservedCapacityExceeded, ReservedCapacityUnderflow, DeadlineExceeded }`). `saturating_sub` MUST NOT be used for semantic accounting.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Consumable vector `C = ⟨fuel, io, duration⟩` MUST strictly decrease on consumption. If `C_available < C_required`, execution MUST yield `fault(F_budget_exhausted)`.
-- **Reason:** Added MUST modals to consumable vector monotonicity and budget exhaustion faulting.
+  - **Normalized:**
+  > Budget operations MUST use checked arithmetic and expose failure (`BudgetError { ConsumableExhausted, ReservedCapacityExceeded, ReservedCapacityUnderflow, DeadlineExceeded }`). `saturating_sub` MUST NOT be used for semantic accounting.
 - **Semantic Risk:** `None`
 
 ---
@@ -710,9 +731,10 @@
 ### R-BUDGET-03
 - **Original:**
   > `ReserveOK(r, R, R_max) ⇔ R + r ≤ R_max`; `ReleaseOK(r, R) ⇔ r ≤ R`; updates `R' = R + r` / `R' = R − r`. (Supersedes the earlier single `BudgetOK` that mixed directions — see `C-07`. )
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Reserved vector `R = ⟨memory, slots⟩` MUST track held capacity. Reservation MUST fail with `fault(F_budget_exhausted)` if allocation exceeds limit. Memory/slot release MUST restore available capacity.
-- **Reason:** Added MUST modals to reserved capacity tracking, exhaustion faulting, and release restoration.
+  - **Normalized:**
+  > `ReserveOK(r, R, R_max) ⇔ R + r ≤ R_max`; `ReleaseOK(r, R) ⇔ r ≤ R`; updates `R' = R + r` / `R' = R − r`. (Supersedes the earlier single `BudgetOK` that mixed directions — see `C-07`. )
 - **Semantic Risk:** `None`
 
 ---
@@ -720,9 +742,10 @@
 ### R-BUDGET-04
 - **Original:**
   > `WithinBudget(E, C, R, R_A) ⇔ cost_C(E) ≤ C ∧ ReserveOK(cost_R(E), R, R_max) ∧ cost(E) ≤ R_A` (effect cost within both runtime budget and capability ceiling).
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Deadline `W` MUST be an absolute logical clock bound (`W ∈ ℕ ∪ {∞}`). When logical clock `t > W`, execution MUST yield `fault(F_deadline_exceeded)`.
-- **Reason:** Added MUST modals to absolute logical deadline representation and deadline faulting.
+  - **Normalized:**
+  > `WithinBudget(E, C, R, R_A) ⇔ cost_C(E) ≤ C ∧ ReserveOK(cost_R(E), R, R_max) ∧ cost(E) ≤ R_A` (effect cost within both runtime budget and capability ceiling).
 - **Semantic Risk:** `None`
 
 ---
@@ -744,9 +767,10 @@
 ### R-BUDGET-06
 - **Original:**
   > Every transition has a logical-time delta `δ_t(c) ∈ ℕ`: pure computation `δ_t = 0`; host interactions and scheduler steps `δ_t > 0`. A transition is valid only if `t + δ_t(c) ≤ W`.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Actor spawn MUST escrow budget from parent to child (`BudgetAllocationSpec` → `validate_and_escrow`). Child termination MUST return unconsumed budget to parent.
-- **Reason:** Added MUST modals to spawn budget escrowing and child termination refunding.
+  - **Normalized:**
+  > Every transition has a logical-time delta `δ_t(c) ∈ ℕ`: pure computation `δ_t = 0`; host interactions and scheduler steps `δ_t > 0`. A transition is valid only if `t + δ_t(c) ≤ W`.
 - **Semantic Risk:** `None`
 
 ---
@@ -764,9 +788,10 @@
 ### R-BUDGET-08
 - **Original:**
   > If `¬BudgetOK` (any gate fails), the transition is replaced by `fault(BudgetExhausted)`; no partial debit occurs.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Budget arithmetic MUST NOT overflow or wrap. Arithmetic overflow MUST yield `fault(F_budget_overflow)`.
-- **Reason:** Added MUST NOT and MUST modals to budget arithmetic overflow prevention and faulting.
+  - **Normalized:**
+  > If `¬BudgetOK` (any gate fails), the transition is replaced by `fault(BudgetExhausted)`; no partial debit occurs.
 - **Semantic Risk:** `None`
 
 ---
@@ -784,9 +809,10 @@
 ### R-EFFECT-02
 - **Original:**
   > Every active transition takes the canonical gated form: `Pre(c, Σ) ∧ BudgetOK(c, Σ) ∧ AuthOK(c, Σ) ⊢ Σ →_c Σ'`. `AuthOK` applies only to authority-requiring transitions.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > The machine MUST NOT invoke the host for an external effect before durable issuance is recorded (`HostInvoked(E) ⇒ DurableIssued(E)`).
-- **Reason:** Added explicit MUST NOT modal to host invocation before durable issuance.
+  - **Normalized:**
+  > Every active transition takes the canonical gated form: `Pre(c, Σ) ∧ BudgetOK(c, Σ) ∧ AuthOK(c, Σ) ⊢ Σ →_c Σ'`. `AuthOK` applies only to authority-requiring transitions.
 - **Semantic Risk:** `None`
 
 ---
@@ -825,9 +851,10 @@
 ### R-EFFECT-04
 - **Original:**
   > A denial at any gate MUST short-circuit: subsequent gates are not called, `next_effect_id` is not incremented, the actor budget is unchanged, the event log gains no new entries, and `HostExecutor::execute` is never invoked.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Host responses MUST return `EffectReceipt { id, effect_digest, result }`. The machine MUST verify `receipt.effect_digest == SHA-256(canonical_bytes(effect))` and MUST reject mismatched receipts with `fault(F_digest_mismatch)`.
-- **Reason:** Added MUST and MUST NOT modals to effect receipt format, digest verification, and mismatch faulting.
+  - **Normalized:**
+  > A denial at any gate MUST short-circuit: subsequent gates are not called, `next_effect_id` is not incremented, the actor budget is unchanged, the event log gains no new entries, and `HostExecutor::execute` is never invoked.
 - **Semantic Risk:** `None`
 
 ---
@@ -835,9 +862,10 @@
 ### R-EFFECT-05
 - **Original:**
   > At issuance the machine MUST guarantee the maximum possible completion cost is affordable: gate 8 checks `can_consume(issue.checked_add(complete_max))` (overflow ⇒ `Fault::ArithmeticOverflow`/budget fault). The remaining budget is then mathematically guaranteed ≥ `complete_max`.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > On receipt of valid `EffectReceipt`, the machine MUST: (1) reconcile escrowed `complete_max` vs actual cost; (2) release reserved capacity; (3) write durable `EffectCompleted` record; (4) deliver result value to caller or raise host fault.
-- **Reason:** Added MUST modal to post-receipt effect completion steps.
+  - **Normalized:**
+  > At issuance the machine MUST guarantee the maximum possible completion cost is affordable: gate 8 checks `can_consume(issue.checked_add(complete_max))` (overflow ⇒ `Fault::ArithmeticOverflow`/budget fault). The remaining budget is then mathematically guaranteed ≥ `complete_max`.
 - **Semantic Risk:** `None`
 
 ---
@@ -845,9 +873,10 @@
 ### R-EFFECT-06
 - **Original:**
   > A receipt MUST be validated against **both** `EffectId` and `EffectDigest` of the pending effect before resumption: mismatch ⇒ `fault(ReplayCorruption)`, continuation is NOT resumed, reservation is NOT released. `EffectReceipt { id, effect_digest, result: Result<Value, HostFault> }`.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Host execution failure MUST yield `fault(F_host_fault)` or `fault(F_policy_denied)`. Host faults MUST NOT corrupt machine state or alter unconsumed budget.
-- **Reason:** Added MUST and MUST NOT modals to host failure faulting and state/budget corruption prohibition.
+  - **Normalized:**
+  > A receipt MUST be validated against **both** `EffectId` and `EffectDigest` of the pending effect before resumption: mismatch ⇒ `fault(ReplayCorruption)`, continuation is NOT resumed, reservation is NOT released. `EffectReceipt { id, effect_digest, result: Result<Value, HostFault> }`.
 - **Semantic Risk:** `None`
 
 ---
@@ -855,9 +884,10 @@
 ### R-EFFECT-07
 - **Original:**
   > On valid receipt: charge `complete` (≤ `complete_max`) from consumables, release the reservation, append `EffectCompleted { id, digest, result }` to the event log, resume the continuation with the receipt's value (host faults map to the fault/value mapping defined by the machine).
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Replay host `ReplayHost` MUST consume recorded receipt log without invoking real external systems. Recorded receipts MUST match effect digests exactly.
-- **Reason:** Added MUST modals to replay host receipt consumption and digest matching.
+  - **Normalized:**
+  > On valid receipt: charge `complete` (≤ `complete_max`) from consumables, release the reservation, append `EffectCompleted { id, digest, result }` to the event log, resume the continuation with the receipt's value (host faults map to the fault/value mapping defined by the machine).
 - **Semantic Risk:** `None`
 
 ---
@@ -865,9 +895,10 @@
 ### R-DUR-01
 - **Original:**
   > `HostInvoked(E) ⇒ DurableIssued(E)`. The machine MUST NEVER invoke the host before the durable issuance boundary.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Durable boundaries MUST ensure that `Prepared`, `Issued`, `Completed`, and `Reconciled` records are fsynced to persistent storage before downstream transitions occur.
-- **Reason:** Added explicit MUST modal to durable boundary fsync requirement.
+  - **Normalized:**
+  > `HostInvoked(E) ⇒ DurableIssued(E)`. The machine MUST NEVER invoke the host before the durable issuance boundary.
 - **Semantic Risk:** `None`
 
 ---
@@ -883,9 +914,18 @@
   > 6. machine transitions actor to `Pending`;
   > 7. host adapter receives `EffectRequest`.
   > *(L35150–35158.)*
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Durability guarantees MUST hold across process crashes, power failures, and kernel panics. Un-fsynced in-memory state MUST NOT be treated as durable.
-- **Reason:** Added MUST and MUST NOT modals to durability crash resilience.
+  - **Normalized:**
+  > **R-DUR-02 (issuance transaction, strict order).**
+  > 1. Pure validation / authorization / budget checks;
+  > 2. `persistence.append(EffectPrepared { id, actor, digest })`;
+  > 3. `persistence.sync()` (fsync);
+  > 4. `persistence.append(EffectIssued { id, actor, digest })`;
+  > 5. `persistence.sync()` (fsync);
+  > 6. machine transitions actor to `Pending`;
+  > 7. host adapter receives `EffectRequest`.
+  > *(L35150–35158.)*
 - **Semantic Risk:** `None`
 
 ---
@@ -893,9 +933,10 @@
 ### R-DUR-03
 - **Original:**
   > `Issued(E) ⇒ Prepared(E)`; `Completed(E) ⇒ Issued(E)`; `Reconciled(E) ⇒ Issued(E)`. Every subsequent record for an effect MUST carry the identical `EffectId` and `EffectDigest`; a digest mismatch is `EffectJournalCorruption`, not a different effect.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > The persistence boundary MUST enforce write-ahead logging before state mutations are visible to external observers.
-- **Reason:** Added MUST modal to write-ahead logging before state mutation visibility.
+  - **Normalized:**
+  > `Issued(E) ⇒ Prepared(E)`; `Completed(E) ⇒ Issued(E)`; `Reconciled(E) ⇒ Issued(E)`. Every subsequent record for an effect MUST carry the identical `EffectId` and `EffectDigest`; a digest mismatch is `EffectJournalCorruption`, not a different effect.
 - **Semantic Risk:** `None`
 
 ---
@@ -913,9 +954,10 @@
 ### R-DUR-05
 - **Original:**
   > An `Issued` effect with no durable completion retains its `completion_maximum` in the `escrowed` partition until reconciliation determines the outcome. Escrow does not vanish on crash.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > WAL framing MUST include header magic `0x526F5231` ('RoR1'), format version `0x01`, monotonic sequence `u64`, payload length `u32`, payload bytes, and SHA-256 checksum `[u8; 32]`. Framing errors MUST yield `fault(F_wal_corrupt)`.
-- **Reason:** Added MUST modals to WAL framing specification and corruption faulting.
+  - **Normalized:**
+  > An `Issued` effect with no durable completion retains its `completion_maximum` in the `escrowed` partition until reconciliation determines the outcome. Escrow does not vanish on crash.
 - **Semantic Risk:** `None`
 
 ---
@@ -923,9 +965,10 @@
 ### R-HOST-01
 - **Original:**
   > The live host independently validates concrete OS-level authority/policy for each effect (`HostPolicyOK`); `¬HostPolicyOK(E) ⇒ ¬ExternalEffect(E)`. The machine's gate-11 check is fail-early; the host check is authoritative.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > The host interface MUST be isolated behind explicit trait boundaries (`HostAdapter`). Direct OS access from evaluator code MUST NOT occur.
-- **Reason:** Added MUST and MUST NOT modals to host trait isolation and direct OS access prohibition.
+  - **Normalized:**
+  > The live host independently validates concrete OS-level authority/policy for each effect (`HostPolicyOK`); `¬HostPolicyOK(E) ⇒ ¬ExternalEffect(E)`. The machine's gate-11 check is fail-early; the host check is authoritative.
 - **Semantic Risk:** `None`
 
 ---
@@ -933,9 +976,10 @@
 ### R-HOST-02
 - **Original:**
   > The host performs **only issued effects**. It is partially trusted.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Host policies MUST enforce fine-grained access control beyond capability checks. Host policy denial MUST yield `fault(F_policy_denied)` without mutating machine budget.
-- **Reason:** Added MUST and MUST NOT modals to host policy enforcement and non-mutation on denial.
+  - **Normalized:**
+  > The host performs **only issued effects**. It is partially trusted.
 - **Semantic Risk:** `None`
 
 ---
@@ -943,9 +987,10 @@
 ### R-HOST-03
 - **Original:**
   > `ReplayHost` reconstructs recorded effects; it NEVER touches the external world. It is **ordered**: for every request it consumes the next trace entry and validates both `EffectId` and `EffectDigest` sequentially; a mismatch or exhausted trace ⇒ `ReplayCorruption`/`ReplayTraceExhausted`. An unordered map MUST NOT be used as the normative replay mechanism.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Replay host MUST reproduce recorded receipt outputs deterministically given identical effect inputs and sequence order. [INFORMATIVE: "deterministically" is explicitly defined by trace equality].
-- **Reason:** Added MUST modal to replay host deterministic output reproduction.
+  - **Normalized:**
+  > `ReplayHost` reconstructs recorded effects; it NEVER touches the external world. It is **ordered**: for every request it consumes the next trace entry and validates both `EffectId` and `EffectDigest` sequentially; a mismatch or exhausted trace ⇒ `ReplayCorruption`/`ReplayTraceExhausted`. An unordered map MUST NOT be used as the normative replay mechanism.
 - **Semantic Risk:** `None`
 
 ---
@@ -953,9 +998,10 @@
 ### R-HOST-04
 - **Original:**
   > If `LiveRun(Σ₀)` produces trace `T` of (EffectIssued, EffectCompleted) pairs, `ReplayRun(Σ₀, T)` produces the same final configuration, provided replay verifies for each step `E_replay,k = E_recorded,k` and `R_replay,k.id = R_recorded,k.id` (and, in the frozen form, matching digests). Machine-state replay is always valid; real-world replay is only valid for reversible/idempotent effects — the replay host refuses to re-execute irreversible effects and returns the recorded result.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Live host implementations MUST enforce timeouts on external IO operations. Exceeded host timeout MUST yield `fault(F_host_timeout)`.
-- **Reason:** Added MUST modals to live host IO operation timeouts and timeout faulting.
+  - **Normalized:**
+  > If `LiveRun(Σ₀)` produces trace `T` of (EffectIssued, EffectCompleted) pairs, `ReplayRun(Σ₀, T)` produces the same final configuration, provided replay verifies for each step `E_replay,k = E_recorded,k` and `R_replay,k.id = R_recorded,k.id` (and, in the frozen form, matching digests). Machine-state replay is always valid; real-world replay is only valid for reversible/idempotent effects — the replay host refuses to re-execute irreversible effects and returns the recorded result.
 - **Semantic Risk:** `None`
 
 ---
@@ -963,9 +1009,10 @@
 ### R-HOST-05
 - **Original:**
   > Replay MUST validate the trace, not merely load the final state.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Host callbacks MUST NOT directly mutate machine memory, actor registries, or capability kernel state.
-- **Reason:** Added MUST NOT modal to host callback memory and kernel mutation prohibition.
+  - **Normalized:**
+  > Replay MUST validate the trace, not merely load the final state.
 - **Semantic Risk:** `None`
 
 ---
@@ -973,9 +1020,10 @@
 ### R-ACTOR-01
 - **Original:**
   > Actors have isolated environments, continuations, heaps, mailboxes, budgets, and capability contexts. For `a ≠ b`: `Heap(a) ∩ Heap(b) = ∅ ∧ Env(a) ∩ Env(b) = ∅`. No actor mutates another actor's heap, environment, or continuation. Actors are instantiated with fresh arenas and `Environment::empty()` (no implicit environment inheritance).
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Actor state MUST be isolated: `ActorState { id: ActorId, run_state: RunState, eval: EvalState, capabilities: CapabilityContext, heap: GenerationalArena<Value>, budget: Budget, mailbox: VecDeque<MarshalledValue>, status: ActorStatus }`. Direct cross-actor heap reference access MUST NOT occur.
-- **Reason:** Added MUST and MUST NOT modals to actor state isolation.
+  - **Normalized:**
+  > Actors have isolated environments, continuations, heaps, mailboxes, budgets, and capability contexts. For `a ≠ b`: `Heap(a) ∩ Heap(b) = ∅ ∧ Env(a) ∩ Env(b) = ∅`. No actor mutates another actor's heap, environment, or continuation. Actors are instantiated with fresh arenas and `Environment::empty()` (no implicit environment inheritance).
 - **Semantic Risk:** `None`
 
 ---
@@ -1043,9 +1091,10 @@
 ### R-ACTOR-08
 - **Original:**
   > `Authority_after ≼ Authority_before ∪ ExplicitlyDelegatedAuthority` (ordinary `Send` passes through `marshal()`, which rejects raw capabilities). `Σ_actors C_consumable + Σ_escrow C_escrow + Σ_issued C_issue = C_global_initial` (budget is created only at root initialization; spawn escrows; send carries no budget).
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Actor termination (`Halt` or unhandled `Fault`) MUST release reserved budget capacity, set status to `Halted` or `Faulted`, and remove actor from runnable queue.
-- **Reason:** Added MUST modal to actor termination cleanup steps.
+  - **Normalized:**
+  > `Authority_after ≼ Authority_before ∪ ExplicitlyDelegatedAuthority` (ordinary `Send` passes through `marshal()`, which rejects raw capabilities). `Σ_actors C_consumable + Σ_escrow C_escrow + Σ_issued C_issue = C_global_initial` (budget is created only at root initialization; spawn escrows; send carries no budget).
 - **Semantic Risk:** `None`
 
 ---
@@ -1053,9 +1102,10 @@
 ### R-MARSHAL-01
 - **Original:**
   > Ordinary data marshalling MUST reject capabilities recursively — including capabilities nested inside lists, tuples, functions, or any nested structure. Raw `CapRef` transfer through ordinary messages is forbidden: `marshal_value(v) ⇒ Err(MarshalFault::CapabilityRequiresDelegation)` if `contains_capability(v)`.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Marshalling MUST serialize values into canonical bytes `MarshalledValue(Vec<u8>)` for cross-actor transfer. Unmarshalling MUST validate canonical wire format before constructing target values.
-- **Reason:** Added MUST modals to cross-actor marshalling and unmarshalling validation.
+  - **Normalized:**
+  > Ordinary data marshalling MUST reject capabilities recursively — including capabilities nested inside lists, tuples, functions, or any nested structure. Raw `CapRef` transfer through ordinary messages is forbidden: `marshal_value(v) ⇒ Err(MarshalFault::CapabilityRequiresDelegation)` if `contains_capability(v)`.
 - **Semantic Risk:** `None`
 
 ---
@@ -1073,9 +1123,10 @@
 ### R-MARSHAL-03
 - **Original:**
   > `MarshalledValue` is the canonical serialized byte representation (`canonical_serialize(v)`); `unmarshal(marshal(v)) = v` for all pure values.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Delegated capability envelopes MUST contain explicit attenuation constraints and target actor restrictions. Receiving actors MUST attenuate delegated capabilities through local kernel before use.
-- **Reason:** Added MUST modals to delegation envelope contents and receiving actor attenuation.
+  - **Normalized:**
+  > `MarshalledValue` is the canonical serialized byte representation (`canonical_serialize(v)`); `unmarshal(marshal(v)) = v` for all pure values.
 - **Semantic Risk:** `None`
 
 ---
@@ -1083,9 +1134,10 @@
 ### R-MARSHAL-04
 - **Original:**
   > `marshal(v)` traverses `v`; by default `CapRef ∉ marshal(v)`; authority transfer requires the explicit `delegate(c, C, target_actor)` operation.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Cyclic heap structures MUST NOT be marshalled. Marshalling recursive structure depth exceeding limits MUST yield `fault(F_marshal_depth_exceeded)`.
-- **Reason:** Added MUST NOT and MUST modals to cyclic structure marshalling prohibition and depth limits.
+  - **Normalized:**
+  > `marshal(v)` traverses `v`; by default `CapRef ∉ marshal(v)`; authority transfer requires the explicit `delegate(c, C, target_actor)` operation.
 - **Semantic Risk:** `None`
 
 ---
@@ -1093,9 +1145,10 @@
 ### R-CANON-01
 - **Original:**
   > Semantic serialization is explicit and independent of Rust memory layout and of any Rust serializer. `bincode` may *implement* the format but MUST NOT *define* it. Canonical encoding defines semantic identity; it is not based on struct layout, pointer addresses, allocator behavior, or platform-specific representation.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Canonical serialization (15A) MUST enforce strict canonical bytes representation: single byte order (little-endian), no unassigned tags, no invalid bool values, no invalid discriminant tags, no trailing bytes. Non-canonical encodings MUST be rejected. Duplicate map keys MUST be rejected. Encoded collection counts MUST NOT authorize preallocation of attacker-controlled memory.
-- **Reason:** Normalized lowercase "may" to RFC 2119 MAY where applicable; retained MUST and MUST NOT modals.
+  - **Normalized:**
+  > Semantic serialization is explicit and independent of Rust memory layout and of any Rust serializer. `bincode` may *implement* the format but MUST NOT *define* it. Canonical encoding defines semantic identity; it is not based on struct layout, pointer addresses, allocator behavior, or platform-specific representation.
 - **Semantic Risk:** `None`
 
 ---
@@ -1110,9 +1163,17 @@
   >           + payload: bytes[payload_length]
   > ```
   > *(L30532–30543; L33290–33347 (final frozen).)*
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Wire format integers MUST use little-endian encoding (`u16`, `u32`, `u64`, `i64`). Floating-point NaNs MUST be rejected if floating-point types are present.
-- **Reason:** Added MUST modals to integer endianness and NaN rejection.
+  - **Normalized:**
+  > **R-CANON-02 (universal envelope, frozen).**
+  > ```
+  > Envelope := version: u8            (currently 0x01)
+  >           + type_tag: u8           (stable explicit constant per type)
+  >           + payload_length: u32 BE (checked)
+  >           + payload: bytes[payload_length]
+  > ```
+  > *(L30532–30543; L33290–33347 (final frozen).)*
 - **Semantic Risk:** `None`
 
 ---
@@ -1120,9 +1181,10 @@
 ### R-CANON-03
 - **Original:**
   > Standalone envelope tags: `Value` = `0x00`; `Symbol` = `0x20`; `CapRef` = `0x30`; `ActorId` = `0x40`; `EffectId` = `0x41`. **Non-normative note:** the "revised grammar" §1.3 text listing Boolean `0x10` / Integer `0x11` / String `0x13` as standalone tags is stale and contradicted by the golden vectors and the final frozen implementation (see `C-02`); bool/integer/string exist only as `Value` discriminants.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Strings and Symbols MUST be UTF-8 encoded. Invalid UTF-8 byte sequences MUST yield `fault(F_utf8_invalid)`.
-- **Reason:** Added MUST modals to string UTF-8 encoding and invalid UTF-8 faulting.
+  - **Normalized:**
+  > Standalone envelope tags: `Value` = `0x00`; `Symbol` = `0x20`; `CapRef` = `0x30`; `ActorId` = `0x40`; `EffectId` = `0x41`. **Non-normative note:** the "revised grammar" §1.3 text listing Boolean `0x10` / Integer `0x11` / String `0x13` as standalone tags is stale and contradicted by the golden vectors and the final frozen implementation (see `C-02`); bool/integer/string exist only as `Value` discriminants.
 - **Semantic Risk:** `None`
 
 ---
@@ -1140,9 +1202,10 @@
 ### R-CANON-05
 - **Original:**
   > `Symbol(u32)` payload = 4 bytes BE; `CapRef` payload = `[index u32 BE][generation u32 BE]`; `ActorId`/`EffectId` payloads = 8 bytes u64 BE.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Canonical serialization MUST be strictly injective: `A == B ⇔ encode(A) == encode(B)`. Decoded round-trip MUST satisfy `decode(encode(v)) == v`.
-- **Reason:** Added MUST modals to serialization injectivity theorem and round-trip identity.
+  - **Normalized:**
+  > `Symbol(u32)` payload = 4 bytes BE; `CapRef` payload = `[index u32 BE][generation u32 BE]`; `ActorId`/`EffectId` payloads = 8 bytes u64 BE.
 - **Semantic Risk:** `None`
 
 ---
@@ -1150,9 +1213,10 @@
 ### R-CANON-06
 - **Original:**
   > `List = [count u32 BE][element₁]…[elementₙ]`, each element a complete envelope. `Map = [count u32 BE][key₁][val₁]…`, entries ordered by the **semantic `Ord` relation on keys** (for `BTreeMap<u32, Value>`: numeric u32 order). Map decoding MUST reject duplicate keys (`CanonicalError::DuplicateMapKey`) to preserve injectivity.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Canonical envelope header MUST consist of: magic bytes `0x526F5231`, version `0x01`, domain tag `u8`, payload length `u32`. Header validation failure MUST yield `fault(F_envelope_invalid)`.
-- **Reason:** Added MUST modals to envelope header fields and validation faulting.
+  - **Normalized:**
+  > `List = [count u32 BE][element₁]…[elementₙ]`, each element a complete envelope. `Map = [count u32 BE][key₁][val₁]…`, entries ordered by the **semantic `Ord` relation on keys** (for `BTreeMap<u32, Value>`: numeric u32 order). Map decoding MUST reject duplicate keys (`CanonicalError::DuplicateMapKey`) to preserve injectivity.
 - **Semantic Risk:** `None`
 
 ---
@@ -1160,9 +1224,10 @@
 ### R-CANON-07
 - **Original:**
   > `CanonicalDecode` is a strict parser enforcing, in order: (1) version = `0x01`; (2) type tag matches expected; (3) exact length (payload is exactly `payload_length` bytes); (4) internal payload well-formedness; (5) EOF/trailing-byte rejection. All discriminants are explicit stable constants (source-order changes MUST NOT change the wire format). Malformed encodings are rejected with explicit `CanonicalError` values (`InvalidVersion, InvalidTypeTag, LengthMismatch, LengthOverflow, InvalidUtf8, UnexpectedEof, TrailingBytes, InvalidDiscriminant, InvalidBoolValue, DuplicateMapKey`).
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Deserialization cursor `ReadCursor` MUST track read offsets explicitly and MUST reject inputs where payload length exceeds available bytes.
-- **Reason:** Added MUST modals to deserialization cursor tracking and length verification.
+  - **Normalized:**
+  > `CanonicalDecode` is a strict parser enforcing, in order: (1) version = `0x01`; (2) type tag matches expected; (3) exact length (payload is exactly `payload_length` bytes); (4) internal payload well-formedness; (5) EOF/trailing-byte rejection. All discriminants are explicit stable constants (source-order changes MUST NOT change the wire format). Malformed encodings are rejected with explicit `CanonicalError` values (`InvalidVersion, InvalidTypeTag, LengthMismatch, LengthOverflow, InvalidUtf8, UnexpectedEof, TrailingBytes, InvalidDiscriminant, InvalidBoolValue, DuplicateMapKey`).
 - **Semantic Risk:** `None`
 
 ---
@@ -1170,9 +1235,10 @@
 ### R-CANON-08
 - **Original:**
   > All length/pointer arithmetic is checked. A collection exceeding `u32::MAX` yields `LengthOverflow`. Encoded collection counts MUST NOT authorize attacker-controlled preallocation (collections grow organically from `Vec::new()`, no `with_capacity` on untrusted input). Nested decoding uses bounded cursors (`read_envelope_payload` returns only the payload slice; payload decoding uses a fresh bounded cursor). Envelope construction is fallible (no panics).
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Enum variants MUST be encoded as 1-byte discriminant tags followed by variant payload. Unrecognized discriminant tags MUST yield `fault(F_invalid_discriminant)`.
-- **Reason:** Added MUST modals to enum variant discriminant encoding and unrecognized tag faulting.
+  - **Normalized:**
+  > All length/pointer arithmetic is checked. A collection exceeding `u32::MAX` yields `LengthOverflow`. Encoded collection counts MUST NOT authorize attacker-controlled preallocation (collections grow organically from `Vec::new()`, no `with_capacity` on untrusted input). Nested decoding uses bounded cursors (`read_envelope_payload` returns only the payload slice; payload decoding uses a fresh bounded cursor). Envelope construction is fallible (no panics).
 - **Semantic Risk:** `None`
 
 ---
@@ -1180,9 +1246,10 @@
 ### R-CANON-09
 - **Original:**
   > `StateDigest = SHA-256(canonical_bytes)`; `EffectDigest = SHA-256(canonical_bytes(effect))`. Mechanically: `Canonical(x) = Canonical(y) ⇒ Digest(x) = Digest(y)`. The reverse direction holds only as an operational integrity assumption under cryptographic collision resistance. When both states are available, compare canonical bytes directly; use digests for persistence integrity, causal identity, and compact checkpoints.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Bool values MUST be encoded strictly as `0x00` (false) or `0x01` (true). Any other byte value MUST yield `fault(F_invalid_bool)`.
-- **Reason:** Added MUST modals to strict bool byte encoding and invalid value faulting.
+  - **Normalized:**
+  > `StateDigest = SHA-256(canonical_bytes)`; `EffectDigest = SHA-256(canonical_bytes(effect))`. Mechanically: `Canonical(x) = Canonical(y) ⇒ Digest(x) = Digest(y)`. The reverse direction holds only as an operational integrity assumption under cryptographic collision resistance. When both states are available, compare canonical bytes directly; use digests for persistence integrity, causal identity, and compact checkpoints.
 - **Semantic Risk:** `None`
 
 ---
@@ -1190,9 +1257,10 @@
 ### R-CANON-10
 - **Original:**
   > Injectivity (`Canonical(x) = Canonical(y) ⇒ x = y`) is a **structural specification property** of the encoding design; the conformance suite provides machine-checked evidence via round-trip and differential testing over the generated distribution. It is NOT claimed as a mathematical proof of arbitrary Rust programs.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Map keys MUST be sorted in lexicographical byte order. Out-of-order map keys MUST yield `fault(F_map_keys_unsorted)`.
-- **Reason:** Added MUST modals to map key sorting and unsorted key faulting.
+  - **Normalized:**
+  > Injectivity (`Canonical(x) = Canonical(y) ⇒ x = y`) is a **structural specification property** of the encoding design; the conformance suite provides machine-checked evidence via round-trip and differential testing over the generated distribution. It is NOT claimed as a mathematical proof of arbitrary Rust programs.
 - **Semantic Risk:** `None`
 
 ---
@@ -1200,9 +1268,10 @@
 ### R-CANON-11
 - **Original:**
   > The frozen golden vectors (e.g., `Value::Integer(42)` ⇒ `01 00 00 00 00 09 02 00 00 00 00 00 00 00 2A`; `CapRef{5,2}` ⇒ `01 30 00 00 00 08 00 00 00 05 00 00 00 02`) are normative **test fixtures** for the format, not additional behavioral rules.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Canonical serializer MUST NOT allocate dynamic heap memory proportional to unverified length headers during header parsing.
-- **Reason:** Added MUST NOT modal to unverified header preallocation prohibition.
+  - **Normalized:**
+  > The frozen golden vectors (e.g., `Value::Integer(42)` ⇒ `01 00 00 00 00 09 02 00 00 00 00 00 00 00 2A`; `CapRef{5,2}` ⇒ `01 30 00 00 00 08 00 00 00 05 00 00 00 02`) are normative **test fixtures** for the format, not additional behavioral rules.
 - **Semantic Risk:** `None`
 
 ---
@@ -1210,9 +1279,10 @@
 ### R-PERSIST-01
 - **Original:**
   > The persistence layer is not a semantic machine; it records and reconstructs the existing machine. **No secondary serialization:** the payload of every persistence record is strictly the byte output of Phase 15A `CanonicalEncode`.
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > Persistence layer MUST maintain WAL and GlobalSnapshot storage transactional integrity. Partial writes MUST be detected and rejected during recovery.
-- **Reason:** Added MUST modals to WAL/Snapshot transactional integrity and partial write rejection.
+  - **Normalized:**
+  > The persistence layer is not a semantic machine; it records and reconstructs the existing machine. **No secondary serialization:** the payload of every persistence record is strictly the byte output of Phase 15A `CanonicalEncode`.
 - **Semantic Risk:** `None`
 
 ---
@@ -1230,9 +1300,10 @@
 ### R-PERSIST-03
 - **Original:**
   > `WalRecord ::= Event(EventEnvelope) | EffectPrepared { id, actor, digest } | EffectIssued { id, actor, digest } | EffectCompleted { id, digest, result_digest } | EffectReconciled { id, digest, outcome } | SnapshotCommit { event_sequence, snapshot_version, state_digest }`. `EventEnvelope { sequence: EventSequence, logical_time: LogicalTime, event: GlobalEvent }` with `e_i.sequence < e_{i+1}.sequence` (total ordering).
-- **Normalized:**
+  - **Superseded Normalized (SEC-023 substitution, quoted not deleted):**
   > WAL frames MUST calculate SHA-256 checksums over `sequence || kind || payload_length || payload`. Mismatched frame checksums MUST yield `fault(F_wal_checksum_mismatch)`.
-- **Reason:** Added MUST modals to WAL frame SHA-256 checksum computation and mismatch faulting.
+  - **Normalized:**
+  > `WalRecord ::= Event(EventEnvelope) | EffectPrepared { id, actor, digest } | EffectIssued { id, actor, digest } | EffectCompleted { id, digest, result_digest } | EffectReconciled { id, digest, outcome } | SnapshotCommit { event_sequence, snapshot_version, state_digest }`. `EventEnvelope { sequence: EventSequence, logical_time: LogicalTime, event: GlobalEvent }` with `e_i.sequence < e_{i+1}.sequence` (total ordering).
 - **Semantic Risk:** `None`
 
 ---
