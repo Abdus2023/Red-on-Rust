@@ -861,6 +861,14 @@ Adversarial-conformance path (no runtime exploit needed — the defect *is* the 
 - Documentation-level mutation **M036**: "rotate one `spec/01` security body onto adjacent content" — the consistency check must kill it (guarding the normative layer the way M015/M016 guard the WAL).
 - Post-restoration spot-proof: `derive(A,C) ≼ A`, the five short-circuit assertions, `can_consume(issue + complete_max)`, the 7-step order, `receipt.id ∧ receipt.digest`, recursive marshal rejection, `HostInvoked ⇒ DurableIssued`, and both host-boundary rules each appear under their stable IDs in `spec/01`, greppably.
 
+**EXTENT, DISTRIBUTION, AND DETECTION GAP (measured)**
+
+- **`req/` is intact.** The atomic registry carries every rotated rule verbatim: the derivation law (part2 L765/L821/L824), the 5-conjunct predicate (L737), the escrow fix `can_consume(issue + complete_max)` (part3 L593), the receipt ID∧digest conjunction (part3 L834), recursive marshal rejection (part4 L908/L922), and the full 7-step issuance transaction (REQ-DUR-002, part4 L23–30, with both fsync positions); `req/02` CN-01 keeps the 7-conjunct chain as one unsplit record. The README's "single-homed in `spec/01`/`req/`" therefore half-broke: one home lost the rules, the other kept them — which makes restoration fully mechanical and traceable.
+- **Rotation extent: ~19 obligations across 8 blocks**, concentrated on enforcement: R-CAP-04…08, R-EFFECT-04…07, R-DUR-02/03/05, R-HOST-01/02, R-ACTOR-08, R-MARSHAL-01/04, R-BUDGET-02 (weakened: monotonic-decrease + fault text; the checked-arithmetic/no-`saturating_sub` rule gone), R-CANON-08 (discriminant-encoding text; the hostile-input rules — checked lengths, no preallocation, bounded cursors — gone).
+- **Distribution is the worst possible**: the *definitional/structural* obligations survived intact — R-KERN-01/02 (opacity, kernel-only construction), R-CEK-05 (LTR + arity precheck), R-PERSIST-05 (atomic snapshot protocol), R-RECOV-05 (no silent repair), R-TRUST-02/03 (LLM ∉ TCB, no hidden authority) all verified correct in `spec/01` — while the *authority- and effect-enforcement* obligations were displaced. A reader auditing the canonical layer would find the machine's shape fully specified and its security gates missing.
+- **Detection gap is precise**: `req/_validate.py` check #5 verifies only that each `spec/01` obligation ID is *cited* by some record (existence, not content), and its check #7 — "signature provenance: every type-like identifier in STATEMENT … occurs inside the cited line range … the check that catches a copied-but-wrong `L3xxxx` citation" — is applied **only to registry records, never to `spec/01` bodies**. The repository built exactly the right weapon and pointed it away from the layer that rotated. (Applied to `spec/01`, check #7 alone would flag R-DUR-02's body citing L35150–35158 while containing none of the transaction's identifiers, and R-MARSHAL-04 citing L8695–8698 while discussing cyclic heaps.)
+- **Remediation refinement**: extend `req/_validate.py` (or the proposed `spec/_check.py`) so that every type-like identifier in every `spec/01` obligation body must occur within that body's own cited source range, and every `spec/03` row's short description must be consistent with the `spec/01` body — both disciplines already implemented in this repository for other layers.
+
 ---
 
 ## 4. Escalation-vector coverage matrix
@@ -916,3 +924,15 @@ No frozen `unsafe`, `extern "C"`, `transmute`, or native-callback-in-AST surface
 8. **SEC-013, SEC-014, SEC-015, SEC-019, SEC-021** — isolation posture decision; `AdmissibleConstraint`; root-grant protocol and crate separation; mailbox/payload resource-admission rules; escrow disposition totality for live faults.
 
 All remediations are specification-level (frozen-addendum) actions; per R-SCOPE-03, none may be resolved by implementation choice or test adjustment. Proposed new mutation-registry entries M019–M036 are additive per R-TEST-04.
+
+---
+
+## 7. Audit closure
+
+**Layers examined:** frozen source `Red-on-Rust.md` (grep-swept in full; ~60 sections read in depth), `spec/` (01–09 + normalization records + index), `mod/` (all 20 files), `req/` (registry parts 1–8 + method/compound/ambiguous + `registry.json` structure + `_validate.py` scope), `term/` (collisions index, laws, dictionary spot-checks), `dep/` (violations register §1–§7, graph), `README.md`.
+
+**Vectors covered:** the 14 requested escalation vectors plus four that emerged (resource-boundary DoS, trust-model/dependency integrity, normative-layer integrity, panic/crash-oracle) — 18 vectors × 23 findings in §4.
+
+**Closure criteria:** every finding cites frozen-source or repository-layer line evidence verified in this session; every requested vector maps to at least one primary finding; every security-relevant gap not filed here is already registered in the repository's own machinery (U-01…U-34, C-01…C-76, the X-01…X-86 blocking set, V-01…V-11, AMB-01…39) and is cross-referenced where it aggravates a finding. No further passes are planned; the highest-value next action is the remediation order in §6, beginning with SEC-023's mechanical restoration from `req/` and the records' "Original" quotations.
+
+**Totals:** 23 findings — 3 CRITICAL (SEC-001, SEC-002, SEC-023), 5 HIGH (SEC-003, SEC-004, SEC-005, SEC-016, SEC-018), 3 MEDIUM-HIGH (SEC-006, SEC-020, SEC-022), 9 MEDIUM (SEC-007, SEC-008, SEC-009, SEC-010, SEC-011, SEC-012, SEC-017, SEC-019, SEC-021), 2 LOW-MEDIUM (SEC-013, SEC-014), 1 LOW (SEC-015); 18 proposed mutation-registry additions (M019–M036); 2 proposed new verification tags (`EFFECT-RECEIPT-RESULT-NO-AUTHORITY`, `RECOVERY-REVOCATION-DURABLE`).
