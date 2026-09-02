@@ -45,12 +45,46 @@ def covered(lines: list[str]) -> list[bool]:
     return mask
 
 
+def all_turns(lines: list[str], mask: list[bool], full: bool) -> int:
+    """Per-turn coverage over the whole 60-turn transcript."""
+    starts = A.turn_starts(lines)
+    total_cand = total_uncited = 0
+    rows = []
+    for i, (turn, first) in enumerate(starts):
+        last = starts[i + 1][1] - 1 if i + 1 < len(starts) else A.SOURCE_MAX_LINE
+        cand, uncited = [], []
+        for n in range(first, last + 1):
+            text = lines[n - 1]
+            if not text.strip() or NOISE.match(text):
+                continue
+            if NORMATIVE.search(text) or BOXED.search(text):
+                cand.append(n)
+                if not mask[n]:
+                    uncited.append(n)
+        total_cand += len(cand)
+        total_uncited += len(uncited)
+        rows.append((turn, first, last, cand, uncited))
+    rows.sort(key=lambda r: -len(r[4]))
+    print(f"{'turn':>5} {'span':>18} {'norm':>5} {'uncited':>8}")
+    for turn, first, last, cand, uncited in rows:
+        if not cand:
+            continue
+        print(f"[{turn:>3}] L{first:>6}-L{last:<6} {len(cand):>5} {len(uncited):>8}")
+        if full:
+            for n in uncited:
+                print(f"        L{n}: {lines[n-1].strip()[:110]}")
+    print(f"\nTOTAL normative-marker lines: {total_cand}, uncited: {total_uncited}")
+    return 0
+
+
 def main() -> int:
     full = "--full" in sys.argv
     lines = A.read_source_lines()
     mask = covered(lines)
     records = A.load_registry_records()
     print(f"records: {len(records)}   cited lines: {sum(mask)} / {A.SOURCE_MAX_LINE}")
+    if "--all-turns" in sys.argv:
+        return all_turns(lines, mask, full)
     total_cand = total_uncited = 0
     for name, lo, hi in REGIONS:
         cand, uncited = [], []

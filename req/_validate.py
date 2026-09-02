@@ -300,6 +300,51 @@ def main() -> int:
                 line_no = body[:m.start()].count("\n") + 1
                 err(f"{path.name}:{line_no}: references {ref}, which does not exist in {doc}")
 
+    # 7d. the counts stated in 04-verification-undefined.md must match the records
+    doc04 = (A.REQ_DIR / "04-verification-undefined.md").read_text(encoding="utf-8")
+    counts = {"undefined": 0, "notapplicable": 0, "reviewonly": 0}
+    for rec in records:
+        vm = rec.get("VERIFICATION-METHOD", "")
+        if vm.startswith("UNDEFINED"):
+            counts["undefined"] += 1
+        elif vm.startswith("not applicable"):
+            counts["notapplicable"] += 1
+        elif all(re.fullmatch(r"[^;]*review[^;]*", part.strip()) for part in vm.split(";")):
+            counts["reviewonly"] += 1
+    counts["nonnormative"] = sum(
+        1 for rec in records if rec.get("NORMATIVE-LEVEL") == "NON-NORMATIVE"
+    )
+    rows = {
+        "undefined": r"§1 `UNDEFINED` verification method \| (\d+)",
+        "nonnormative": r"§2 `NON-NORMATIVE` \| (\d+)",
+        "permissions": r"§3 `MAY` permission with no obligation \| (\d+)",
+        "reviewonly": r"§4 review-only \| (\d+)",
+    }
+    found = {}
+    for key, pattern in rows.items():
+        m = re.search(pattern, doc04)
+        if not m:
+            err(f"04-verification-undefined.md: cannot find the {key} count row")
+            continue
+        found[key] = int(m.group(1))
+    for key in ("undefined", "nonnormative", "reviewonly"):
+        if key in found and found[key] != counts[key]:
+            err(f"04-verification-undefined.md declares {key}={found[key]}, registry has {counts[key]}")
+    if "permissions" in found and "nonnormative" in found:
+        want = counts["nonnormative"] + found["permissions"]
+        if want != counts["notapplicable"]:
+            err(
+                f"04-verification-undefined.md §2+§3 = {want} but the registry has "
+                f"{counts['notapplicable']} records with no verification obligation"
+            )
+    other = len(records) - counts["undefined"] - counts["notapplicable"] - counts["reviewonly"]
+    m = re.search(r"differential test\) \| (\d+) \|", doc04)
+    if m and int(m.group(1)) != other:
+        err(f"04-verification-undefined.md declares other={m.group(1)}, registry has {other}")
+    m = re.search(r"\*\*Total registry records\*\* \| \*\*(\d+)\*\*", doc04)
+    if m and int(m.group(1)) != len(records):
+        err(f"04-verification-undefined.md declares total={m.group(1)}, registry has {len(records)}")
+
     # 8. anchors
     for tok, ln in A.ANCHORS.items():
         if ln > len(lines) or tok not in lines[ln - 1]:

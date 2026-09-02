@@ -2,7 +2,7 @@
 
 Extraction of every normative requirement in the frozen Red-on-Rust specification into atomic requirement units.
 Source of record: `../Red-on-Rust.md` (42,312 lines, 60-turn design transcript). Canonicalization set: `../spec/00`…`../spec/10`.
-**Result: 491 atomic requirement records, all `EVIDENCE-STATUS: SPECIFIED`, covering 148/148 canonical obligations.**
+**Result: 495 atomic requirement records, all `EVIDENCE-STATUS: SPECIFIED`, covering 148/148 canonical obligations.**
 
 ## Files
 
@@ -10,11 +10,11 @@ Source of record: `../Red-on-Rust.md` (42,312 lines, 60-turn design transcript).
 |---|---|---|
 | `00-method.md` | Extraction rules, field semantics, evidence discipline, split/keep policy, provenance audit and corrections, validation log | — (method) |
 | `01-registry-part1-foundations.md` | 79 records — SCOPE 12, CORE 16, TRUST 9, ARCH 6, PLANNER 22, COMPILE 14 | **1. Atomic requirement registry** |
-| `01-registry-part2-semantics.md` | 74 records — CALC 20, CEK 22, CAP 24, KERN 8 | 1 |
+| `01-registry-part2-semantics.md` | 75 records — CALC 20, CEK 22, CAP 24, KERN 9 | 1 |
 | `01-registry-part3-resources-effects.md` | 72 records — BUDGET 32, EFFECT 40 | 1 |
 | `01-registry-part4-durability-concurrency.md` | 73 records — DUR 14, HOST 14, ACTOR 35, MARSHAL 10 | 1 |
-| `01-registry-part5-persistence.md` | 80 records — CANON 37, PERSIST 22, RECOV 21 | 1 |
-| `01-registry-part6-verification.md` | 47 records — REF 16, TEST 31 | 1 |
+| `01-registry-part5-persistence.md` | 82 records — CANON 37, PERSIST 23, RECOV 22 | 1 |
+| `01-registry-part6-verification.md` | 48 records — REF 17, TEST 31 | 1 |
 | `01-registry-part7-engineering.md` | 66 records — REPO 19, ORDER 25, CLAIM 22 | 1 |
 | `02-compound-not-split.md` | 42 entries (CN-01…CN-42) covering 117 records kept whole, with the reason each cannot be split | **2. Compound requirements that could not safely be split** |
 | `03-ambiguous.md` | 28 open ambiguities (AMB-01…AMB-29, AMB-15 withdrawn), plus 4 contradictions the source itself settles | **3. Ambiguous requirements** |
@@ -44,6 +44,6 @@ python3 req/_coverage.py           # omission audit: 74/74 normative-marker line
 
 The checker re-derives its facts from `Red-on-Rust.md` and `spec/` rather than trusting the documents: field order, ID uniqueness and numbering, normative and evidence vocabularies, line-range bounds, agreement between every cited range and the turn it claims, existence and full coverage of the 148 parent obligations, resolution of every internal cross-reference, existence of every `C-nn`/`U-nn` reference in `spec/06`/`spec/09`, occurrence of every backticked identifier inside a cited range, and the frozen line anchors.
 
-**Omission audit:** in the three requirement-dense regions (turn `[54]` master prompt, turn `[58]` bootstrap pack, closing turns `[59]`–`[60]`), all **74/74** normative-marker lines are cited by at least one record; none is uncited.
+**Omission audit:** in the three requirement-dense regions (turn `[54]` master prompt, turn `[58]` bootstrap pack, closing turns `[59]`–`[60]`), all **74/74** normative-marker lines are cited by at least one record. Extended with `--all-turns` over the whole transcript, the frozen-content turns were triaged line by line: turn `[58]` is 23/23, turn `[46]` and turn `[21]` are complete apart from LaTeX continuation lines, code comments, and two commentary sentences; three requirements that pass had missed were found that way and are now REQ-KERN-009, REQ-PERSIST-023, REQ-RECOV-022 (plus the MAY permission REQ-REF-017).
 
 **Cross-reference completeness:** all **45/45** contradictions in `spec/06` and all **16/16** unresolved decisions in `spec/09` are accounted for by a registry record or an ambiguity entry — none is silently dropped, and no reference points at an item that does not exist. `00-method.md` §6 lists each check with the injected fault that demonstrated it fires.

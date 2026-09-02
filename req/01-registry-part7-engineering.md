@@ -9,7 +9,7 @@ Areas: `REPO` (19), `ORDER` (25), `CLAIM` (22) — 66 atomic units.
 ### REQ-REPO-001
 - REQ-ID: REQ-REPO-001
 - CATEGORY: repository-structure
-- SOURCE: Red-on-Rust.md L39140–39195([58]); L41161–41200([58] §39); spec/01 S-22 R-REPO-01
+- SOURCE: Red-on-Rust.md L39140–39195([58]); L41161–41200([58] §39); L39066–L39073([58] §1 objective box); spec/01 S-22 R-REPO-01
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: The workspace separates the pipeline untrusted language data → compiler → trusted executable representation → machine → authority/resources → durable effects → host.
 - PRECONDITIONS: workspace layout
@@ -23,7 +23,7 @@ Areas: `REPO` (19), `ORDER` (25), `CLAIM` (22) — 66 atomic units.
 ### REQ-REPO-002
 - REQ-ID: REQ-REPO-002
 - CATEGORY: repository-structure
-- SOURCE: Red-on-Rust.md L41205–41215([58] §39); L41406–41424([60]); spec/01 S-22 R-REPO-01
+- SOURCE: Red-on-Rust.md L41205–41215([58] §39); L41406–41424([60]); L39081–L39086([58] §1 objective box); spec/01 S-22 R-REPO-01
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: The workspace independently maintains the Production ↔ Observation ↔ Reference axis.
 - PRECONDITIONS: workspace layout

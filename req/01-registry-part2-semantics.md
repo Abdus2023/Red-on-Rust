@@ -1,6 +1,6 @@
 # Atomic Requirement Registry — Part 2: Language and Machine Semantics (S-07 … S-10)
 
-Areas: `CALC` (20), `CEK` (22), `CAP` (24), `KERN` (8) — 74 atomic units.
+Areas: `CALC` (20), `CEK` (22), `CAP` (24), `KERN` (9) — 75 atomic units.
 Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at `Red-on-Rust.md` L8700–8800 (turn `[16]`), which `spec/03` does not carry as separate obligations; they are extracted here because they are normative source text, not inference.
 
 ---
@@ -532,7 +532,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-CEK-018
 - REQ-ID: REQ-CEK-018
 - CATEGORY: machine-semantics
-- SOURCE: Red-on-Rust.md L14632–14642([22]); spec/01 S-08 R-CEK-06
+- SOURCE: Red-on-Rust.md L14632–14642([22]); L13655–L13663([21] continuation discipline); L13765–L13830([21] illustrative let/resume trace); spec/01 S-08 R-CEK-06
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: For pure transitions the continuation length changes by exactly +1 on entry or −1 on resume.
 - PRECONDITIONS: a pure transition occurs
@@ -546,7 +546,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-CEK-019
 - REQ-ID: REQ-CEK-019
 - CATEGORY: machine-semantics
-- SOURCE: Red-on-Rust.md L14632–14642([22]); spec/01 S-08 R-CEK-06
+- SOURCE: Red-on-Rust.md L14632–14642([22]); L13663–L13665([21] continuation discipline); L13001([21] consumed by exactly one frame); spec/01 S-08 R-CEK-06
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: No transition silently discards or duplicates continuation frames.
 - PRECONDITIONS: any transition
@@ -1053,4 +1053,18 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 - DEPENDENCIES: REQ-CAP-019
 - SECURITY-IMPACT: high
 - VERIFICATION-METHOD: API review; mock-kernel parameter assertions
+- EVIDENCE-STATUS: SPECIFIED
+
+### REQ-KERN-009
+- REQ-ID: REQ-KERN-009
+- CATEGORY: capability-kernel
+- SOURCE: Red-on-Rust.md L13267–13281([21] §17); L37931–37935([54] §6); spec/01 S-03 R-TRUST-03; spec/01 S-10 R-KERN-01
+- NORMATIVE-LEVEL: MUST NOT
+- STATEMENT: The evaluator never receives `Authority`, `Scope`, `Rights`, `Parent`, or `Revocation state`; only the opaque reference crosses the kernel/evaluator boundary.
+- PRECONDITIONS: any evaluator step
+- POSTCONDITIONS: none of the five appears in evaluator-visible state
+- INVARIANTS: `CapRef ⇏ AuthorityInspection`
+- DEPENDENCIES: REQ-KERN-006, REQ-CALC-002, REQ-TRUST-009
+- SECURITY-IMPACT: critical (a capability carrying its own authority would be forgeable and amplifiable)
+- VERIFICATION-METHOD: evaluator input-domain review; type review of the kernel/evaluator boundary
 - EVIDENCE-STATUS: SPECIFIED

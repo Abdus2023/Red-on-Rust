@@ -424,7 +424,7 @@ Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records a
 ### REQ-TRUST-002
 - REQ-ID: REQ-TRUST-002
 - CATEGORY: trust-model
-- SOURCE: Red-on-Rust.md L27611–27624([33]); L41440–41452([60]); spec/01 S-03 R-TRUST-01
+- SOURCE: Red-on-Rust.md L27611–27624([33]); L41440–41452([60]); L13572([21] type-system boundary); spec/01 S-03 R-TRUST-01
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `Block` (language data) is not trusted; it is untrusted program data and never a security boundary.
 - PRECONDITIONS: —

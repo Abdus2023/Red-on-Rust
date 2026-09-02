@@ -1,15 +1,15 @@
 {
  "specification": "Red-on-Rust.md",
  "source_lines": 42312,
- "record_count": 491,
+ "record_count": 495,
  "evidence_status_of_every_record": "SPECIFIED",
  "per_file": {
   "01-registry-part1-foundations.md": 79,
-  "01-registry-part2-semantics.md": 74,
+  "01-registry-part2-semantics.md": 75,
   "01-registry-part3-resources-effects.md": 72,
   "01-registry-part4-durability-concurrency.md": 73,
-  "01-registry-part5-persistence.md": 80,
-  "01-registry-part6-verification.md": 47,
+  "01-registry-part5-persistence.md": 82,
+  "01-registry-part6-verification.md": 48,
   "01-registry-part7-engineering.md": 66
  },
  "per_area": {
@@ -22,7 +22,7 @@
   "CALC": 20,
   "CEK": 22,
   "CAP": 24,
-  "KERN": 8,
+  "KERN": 9,
   "BUDGET": 32,
   "EFFECT": 40,
   "DUR": 14,
@@ -30,19 +30,19 @@
   "ACTOR": 35,
   "MARSHAL": 10,
   "CANON": 37,
-  "PERSIST": 22,
-  "RECOV": 21,
-  "REF": 16,
+  "PERSIST": 23,
+  "RECOV": 22,
+  "REF": 17,
   "TEST": 31,
   "REPO": 19,
   "ORDER": 25,
   "CLAIM": 22
  },
  "normative_levels": {
-  "MUST": 334,
+  "MUST": 336,
   "IS": 43,
-  "MUST NOT": 91,
-  "MAY": 7,
+  "MUST NOT": 92,
+  "MAY": 8,
   "AMBIGUOUS": 8,
   "NON-NORMATIVE": 4,
   "SHOULD": 4
@@ -459,7 +459,7 @@
   {
    "REQ-ID": "REQ-TRUST-002",
    "CATEGORY": "trust-model",
-   "SOURCE": "Red-on-Rust.md L27611–27624([33]); L41440–41452([60]); spec/01 S-03 R-TRUST-01",
+   "SOURCE": "Red-on-Rust.md L27611–27624([33]); L41440–41452([60]); L13572([21] type-system boundary); spec/01 S-03 R-TRUST-01",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`Block` (language data) is not trusted; it is untrusted program data and never a security boundary.",
    "PRECONDITIONS": "—",
@@ -1677,7 +1677,7 @@
   {
    "REQ-ID": "REQ-CEK-018",
    "CATEGORY": "machine-semantics",
-   "SOURCE": "Red-on-Rust.md L14632–14642([22]); spec/01 S-08 R-CEK-06",
+   "SOURCE": "Red-on-Rust.md L14632–14642([22]); L13655–L13663([21] continuation discipline); L13765–L13830([21] illustrative let/resume trace); spec/01 S-08 R-CEK-06",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "For pure transitions the continuation length changes by exactly +1 on entry or −1 on resume.",
    "PRECONDITIONS": "a pure transition occurs",
@@ -1691,7 +1691,7 @@
   {
    "REQ-ID": "REQ-CEK-019",
    "CATEGORY": "machine-semantics",
-   "SOURCE": "Red-on-Rust.md L14632–14642([22]); spec/01 S-08 R-CEK-06",
+   "SOURCE": "Red-on-Rust.md L14632–14642([22]); L13663–L13665([21] continuation discipline); L13001([21] consumed by exactly one frame); spec/01 S-08 R-CEK-06",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "No transition silently discards or duplicates continuation frames.",
    "PRECONDITIONS": "any transition",
@@ -2190,6 +2190,20 @@
    "DEPENDENCIES": "REQ-CAP-019",
    "SECURITY-IMPACT": "high",
    "VERIFICATION-METHOD": "API review; mock-kernel parameter assertions",
+   "EVIDENCE-STATUS": "SPECIFIED"
+  },
+  {
+   "REQ-ID": "REQ-KERN-009",
+   "CATEGORY": "capability-kernel",
+   "SOURCE": "Red-on-Rust.md L13267–13281([21] §17); L37931–37935([54] §6); spec/01 S-03 R-TRUST-03; spec/01 S-10 R-KERN-01",
+   "NORMATIVE-LEVEL": "MUST NOT",
+   "STATEMENT": "The evaluator never receives `Authority`, `Scope`, `Rights`, `Parent`, or `Revocation state`; only the opaque reference crosses the kernel/evaluator boundary.",
+   "PRECONDITIONS": "any evaluator step",
+   "POSTCONDITIONS": "none of the five appears in evaluator-visible state",
+   "INVARIANTS": "`CapRef ⇏ AuthorityInspection`",
+   "DEPENDENCIES": "REQ-KERN-006, REQ-CALC-002, REQ-TRUST-009",
+   "SECURITY-IMPACT": "critical (a capability carrying its own authority would be forgeable and amplifiable)",
+   "VERIFICATION-METHOD": "evaluator input-domain review; type review of the kernel/evaluator boundary",
    "EVIDENCE-STATUS": "SPECIFIED"
   },
   {
@@ -3203,7 +3217,7 @@
   {
    "REQ-ID": "REQ-DUR-001",
    "CATEGORY": "durability",
-   "SOURCE": "Red-on-Rust.md L38050([54] §8); L35147–35156([47]); L38217–38221([54] §12); L41612–L41616([60] restated [60]); spec/01 S-13 R-DUR-01",
+   "SOURCE": "Red-on-Rust.md L38050([54] §8); L35147–35156([47]); L38217–38221([54] §12); L41612–L41616([60] restated [60]); L34035–L34041([46] issuance boundary); spec/01 S-13 R-DUR-01",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "`HostInvoked(E) ⇒ DurableIssued(E)`; the machine MUST NEVER invoke the host before the durable issuance boundary.",
    "PRECONDITIONS": "any host invocation",
@@ -3259,7 +3273,7 @@
   {
    "REQ-ID": "REQ-DUR-005",
    "CATEGORY": "durability",
-   "SOURCE": "Red-on-Rust.md L38203–38207([54] §12); L35111–35144([47]); spec/01 S-13 R-DUR-03",
+   "SOURCE": "Red-on-Rust.md L38203–38207([54] §12); L35111–35144([47]); L33979([46] causal chain); spec/01 S-13 R-DUR-03",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`Issued(E) ⇒ Prepared(E)`.",
    "PRECONDITIONS": "an `Issued` record exists",
@@ -3273,7 +3287,7 @@
   {
    "REQ-ID": "REQ-DUR-006",
    "CATEGORY": "durability",
-   "SOURCE": "Red-on-Rust.md L38209–38211([54] §12); L35111–35144([47]); L26156–26170([33]); spec/01 S-13 R-DUR-03; spec/06 C-44",
+   "SOURCE": "Red-on-Rust.md L38209–38211([54] §12); L35111–35144([47]); L26156–26170([33]); L33983([46] causal chain); spec/01 S-13 R-DUR-03; spec/06 C-44",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`Completed(E) ⇒ Issued(E)`.",
    "PRECONDITIONS": "a `Completed` record exists",
@@ -3287,7 +3301,7 @@
   {
    "REQ-ID": "REQ-DUR-007",
    "CATEGORY": "durability",
-   "SOURCE": "Red-on-Rust.md L38213–38215([54] §12); L35111–35144([47]); spec/01 S-13 R-DUR-03",
+   "SOURCE": "Red-on-Rust.md L38213–38215([54] §12); L35111–35144([47]); L33987([46] causal chain); spec/01 S-13 R-DUR-03",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`Reconciled(E) ⇒ Issued(E)`.",
    "PRECONDITIONS": "an `EffectReconciled` record exists",
@@ -4463,7 +4477,7 @@
   {
    "REQ-ID": "REQ-CANON-018",
    "CATEGORY": "serialization",
-   "SOURCE": "Red-on-Rust.md L34987–35024([47] final 15A patch); L33719([46]); L38164–38172([54] §11); spec/01 S-17 R-CANON-06; spec/06 C-41",
+   "SOURCE": "Red-on-Rust.md L34987–35024([47] final 15A patch); L33719([46]); L38164–38172([54] §11); L33712([46] § duplicate-key rule first stated); spec/01 S-17 R-CANON-06; spec/06 C-41",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "Map decoding MUST reject duplicate keys with `CanonicalError::DuplicateMapKey`, to preserve injectivity.",
    "PRECONDITIONS": "a decoded map contains a repeated key",
@@ -4757,7 +4771,7 @@
   {
    "REQ-ID": "REQ-PERSIST-002",
    "CATEGORY": "persistence",
-   "SOURCE": "Red-on-Rust.md L33757–33790([46]); L35078–35087([47]); L38187–38201([54] §12); spec/01 S-18 R-PERSIST-01",
+   "SOURCE": "Red-on-Rust.md L33757–33790([46]); L35078–35087([47]); L38187–38201([54] §12); L34264([46] parser rejections); spec/01 S-18 R-PERSIST-01",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "No secondary serialization: the payload of every persistence record is strictly the byte output of Phase 15A `CanonicalEncode`.",
    "PRECONDITIONS": "any record is written",
@@ -4953,7 +4967,7 @@
   {
    "REQ-ID": "REQ-PERSIST-016",
    "CATEGORY": "persistence",
-   "SOURCE": "Red-on-Rust.md L26293–26330([33]); spec/01 S-18 R-PERSIST-04",
+   "SOURCE": "Red-on-Rust.md L26293–26330([33]); L34156([46] snapshot scheduler state); spec/01 S-18 R-PERSIST-04",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "A snapshot contains all machine state necessary to continue execution: logical time, ID counters, runnable queue, and per actor run state / `EvalState` / capabilities / heap / budget / mailbox / status, plus scheduler state, plus `version, last_event_sequence, last_effect_sequence, state_digest`.",
    "PRECONDITIONS": "a snapshot is taken",
@@ -4995,7 +5009,7 @@
   {
    "REQ-ID": "REQ-PERSIST-019",
    "CATEGORY": "persistence",
-   "SOURCE": "Red-on-Rust.md L35177–35188([47]); L26216–26240([33]); L38252–L38260([54] §13); spec/01 S-18 R-PERSIST-05",
+   "SOURCE": "Red-on-Rust.md L35177–35188([47]); L26216–26240([33]); L38252–L38260([54] §13); L34212–L34223([46] snapshot validity); spec/01 S-18 R-PERSIST-05",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`ValidSnapshot(S) ⇔ Commit(S) ∧ Digest(Canonical(S)) = RecordedDigest(S)`.",
    "PRECONDITIONS": "a snapshot is evaluated for validity",
@@ -5049,6 +5063,20 @@
    "EVIDENCE-STATUS": "SPECIFIED"
   },
   {
+   "REQ-ID": "REQ-PERSIST-023",
+   "CATEGORY": "persistence",
+   "SOURCE": "Red-on-Rust.md L33731–33738([46]); L34987–35024([47] final 15A patch); spec/01 S-18 R-PERSIST-05",
+   "NORMATIVE-LEVEL": "MUST",
+   "STATEMENT": "The persistence layer establishes `Committed(D) ⇒ Canonical(D) ∧ IntegrityVerified(D)`: a committed durable artifact is canonically encoded and its integrity is verified.",
+   "PRECONDITIONS": "a durable artifact `D` carries a commit marker",
+   "POSTCONDITIONS": "`D` decodes under the 15A canonical codec and passes its checksum",
+   "INVARIANTS": "`Committed(D) ⇒ Canonical(D) ∧ IntegrityVerified(D)`",
+   "DEPENDENCIES": "REQ-PERSIST-004, REQ-PERSIST-019, REQ-CANON-004",
+   "SECURITY-IMPACT": "critical (a committed but non-canonical or unverified artifact would make recovery non-deterministic)",
+   "VERIFICATION-METHOD": "commit-then-decode property tests; corrupted-commit rejection tests",
+   "EVIDENCE-STATUS": "SPECIFIED"
+  },
+  {
    "REQ-ID": "REQ-RECOV-001",
    "CATEGORY": "recovery",
    "SOURCE": "Red-on-Rust.md L26122–26140([33]); spec/01 S-19 R-RECOV-01",
@@ -5065,7 +5093,7 @@
   {
    "REQ-ID": "REQ-RECOV-002",
    "CATEGORY": "recovery",
-   "SOURCE": "Red-on-Rust.md L26122–26140([33]); spec/01 S-19 R-RECOV-01",
+   "SOURCE": "Red-on-Rust.md L26122–26140([33]); L35037–L35038([47] 15B adoption); spec/01 S-19 R-RECOV-01",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`Recover(D) = Replay(S, L, H)`.",
    "PRECONDITIONS": "durable state `D`",
@@ -5205,7 +5233,7 @@
   {
    "REQ-ID": "REQ-RECOV-012",
    "CATEGORY": "recovery",
-   "SOURCE": "Red-on-Rust.md L35196–35208([47]); L38866([54] §28); spec/01 S-19 R-RECOV-05",
+   "SOURCE": "Red-on-Rust.md L35196–35208([47]); L38866([54] §28); L34430–L34437([46] strict validation); spec/01 S-19 R-RECOV-05",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "The recovery engine MUST NEVER silently repair corruption — no dropping duplicate runnable actors, no fixing budget mismatches, no ignoring gaps, checksums, or causality violations.",
    "PRECONDITIONS": "corruption is detected",
@@ -5340,6 +5368,20 @@
    "DEPENDENCIES": "REQ-RECOV-010; AMB-27",
    "SECURITY-IMPACT": "medium (the two step lists differ in granularity; see AMB-27)",
    "VERIFICATION-METHOD": "recovery-step conformance review against the frozen 12-step list",
+   "EVIDENCE-STATUS": "SPECIFIED"
+  },
+  {
+   "REQ-ID": "REQ-RECOV-022",
+   "CATEGORY": "recovery",
+   "SOURCE": "Red-on-Rust.md L34801–34812([46]); L35189–35208([47] §15B.7); spec/01 S-19 R-RECOV-01",
+   "NORMATIVE-LEVEL": "MUST",
+   "STATEMENT": "`CommittedSnapshot + ValidWAL + ValidEffectJournal + ReconciledEffects ⇒ UniqueRecoveredMachineState`.",
+   "PRECONDITIONS": "all four inputs are valid and effects are reconciled",
+   "POSTCONDITIONS": "recovery yields exactly one machine state",
+   "INVARIANTS": "`CommittedSnapshot ∧ ValidWAL ∧ ValidEffectJournal ∧ ReconciledEffects ⇒ UniqueRecoveredMachineState`",
+   "DEPENDENCIES": "REQ-RECOV-010, REQ-RECOV-021, REQ-DUR-010",
+   "SECURITY-IMPACT": "critical (a non-unique recovered state would break the determinism theorem across crashes)",
+   "VERIFICATION-METHOD": "repeated-recovery determinism tests over the crash matrix T0–T6",
    "EVIDENCE-STATUS": "SPECIFIED"
   },
   {
@@ -5564,6 +5606,20 @@
    "DEPENDENCIES": "REQ-REF-014, REQ-REF-015, REQ-ARCH-002",
    "SECURITY-IMPACT": "high",
    "VERIFICATION-METHOD": "boundary tests",
+   "EVIDENCE-STATUS": "SPECIFIED"
+  },
+  {
+   "REQ-ID": "REQ-REF-017",
+   "CATEGORY": "verification",
+   "SOURCE": "Red-on-Rust.md L12363–12367([21] §13); spec/01 S-20 R-REF-03",
+   "NORMATIVE-LEVEL": "MAY",
+   "STATEMENT": "The reference interpreter may copy an immutable environment snapshot; the optimized runtime may later replace this with heap references.",
+   "PRECONDITIONS": "reference-model implementation",
+   "POSTCONDITIONS": "environment copying is permitted and does not affect observable semantics",
+   "INVARIANTS": "—",
+   "DEPENDENCIES": "REQ-REF-006, REQ-CALC-014",
+   "SECURITY-IMPACT": "low",
+   "VERIFICATION-METHOD": "not applicable (permission, not obligation)",
    "EVIDENCE-STATUS": "SPECIFIED"
   },
   {
@@ -6003,7 +6059,7 @@
   {
    "REQ-ID": "REQ-REPO-001",
    "CATEGORY": "repository-structure",
-   "SOURCE": "Red-on-Rust.md L39140–39195([58]); L41161–41200([58] §39); spec/01 S-22 R-REPO-01",
+   "SOURCE": "Red-on-Rust.md L39140–39195([58]); L41161–41200([58] §39); L39066–L39073([58] §1 objective box); spec/01 S-22 R-REPO-01",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "The workspace separates the pipeline untrusted language data → compiler → trusted executable representation → machine → authority/resources → durable effects → host.",
    "PRECONDITIONS": "workspace layout",
@@ -6017,7 +6073,7 @@
   {
    "REQ-ID": "REQ-REPO-002",
    "CATEGORY": "repository-structure",
-   "SOURCE": "Red-on-Rust.md L41205–41215([58] §39); L41406–41424([60]); spec/01 S-22 R-REPO-01",
+   "SOURCE": "Red-on-Rust.md L41205–41215([58] §39); L41406–41424([60]); L39081–L39086([58] §1 objective box); spec/01 S-22 R-REPO-01",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "The workspace independently maintains the Production ↔ Observation ↔ Reference axis.",
    "PRECONDITIONS": "workspace layout",

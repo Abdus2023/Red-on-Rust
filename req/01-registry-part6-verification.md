@@ -1,6 +1,6 @@
 # Atomic Requirement Registry — Part 6: Reference Model and Test Infrastructure (S-20, S-21)
 
-Areas: `REF` (16), `TEST` (31) — 47 atomic units.
+Areas: `REF` (17), `TEST` (31) — 48 atomic units.
 
 ---
 
@@ -234,6 +234,19 @@ Areas: `REF` (16), `TEST` (31) — 47 atomic units.
 
 ## S-21 Test infrastructure, mutation, and CI
 
+### REQ-REF-017
+- REQ-ID: REQ-REF-017
+- CATEGORY: verification
+- SOURCE: Red-on-Rust.md L12363–12367([21] §13); spec/01 S-20 R-REF-03
+- NORMATIVE-LEVEL: MAY
+- STATEMENT: The reference interpreter may copy an immutable environment snapshot; the optimized runtime may later replace this with heap references.
+- PRECONDITIONS: reference-model implementation
+- POSTCONDITIONS: environment copying is permitted and does not affect observable semantics
+- INVARIANTS: —
+- DEPENDENCIES: REQ-REF-006, REQ-CALC-014
+- SECURITY-IMPACT: low
+- VERIFICATION-METHOD: not applicable (permission, not obligation)
+- EVIDENCE-STATUS: SPECIFIED
 ### REQ-TEST-001
 - REQ-ID: REQ-TEST-001
 - CATEGORY: test-infrastructure

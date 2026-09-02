@@ -9,7 +9,7 @@ Areas: `DUR` (14), `HOST` (14), `ACTOR` (35), `MARSHAL` (10) — 73 atomic units
 ### REQ-DUR-001
 - REQ-ID: REQ-DUR-001
 - CATEGORY: durability
-- SOURCE: Red-on-Rust.md L38050([54] §8); L35147–35156([47]); L38217–38221([54] §12); L41612–L41616([60] restated [60]); spec/01 S-13 R-DUR-01
+- SOURCE: Red-on-Rust.md L38050([54] §8); L35147–35156([47]); L38217–38221([54] §12); L41612–L41616([60] restated [60]); L34035–L34041([46] issuance boundary); spec/01 S-13 R-DUR-01
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: `HostInvoked(E) ⇒ DurableIssued(E)`; the machine MUST NEVER invoke the host before the durable issuance boundary.
 - PRECONDITIONS: any host invocation
@@ -65,7 +65,7 @@ Areas: `DUR` (14), `HOST` (14), `ACTOR` (35), `MARSHAL` (10) — 73 atomic units
 ### REQ-DUR-005
 - REQ-ID: REQ-DUR-005
 - CATEGORY: durability
-- SOURCE: Red-on-Rust.md L38203–38207([54] §12); L35111–35144([47]); spec/01 S-13 R-DUR-03
+- SOURCE: Red-on-Rust.md L38203–38207([54] §12); L35111–35144([47]); L33979([46] causal chain); spec/01 S-13 R-DUR-03
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `Issued(E) ⇒ Prepared(E)`.
 - PRECONDITIONS: an `Issued` record exists
@@ -79,7 +79,7 @@ Areas: `DUR` (14), `HOST` (14), `ACTOR` (35), `MARSHAL` (10) — 73 atomic units
 ### REQ-DUR-006
 - REQ-ID: REQ-DUR-006
 - CATEGORY: durability
-- SOURCE: Red-on-Rust.md L38209–38211([54] §12); L35111–35144([47]); L26156–26170([33]); spec/01 S-13 R-DUR-03; spec/06 C-44
+- SOURCE: Red-on-Rust.md L38209–38211([54] §12); L35111–35144([47]); L26156–26170([33]); L33983([46] causal chain); spec/01 S-13 R-DUR-03; spec/06 C-44
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `Completed(E) ⇒ Issued(E)`.
 - PRECONDITIONS: a `Completed` record exists
@@ -93,7 +93,7 @@ Areas: `DUR` (14), `HOST` (14), `ACTOR` (35), `MARSHAL` (10) — 73 atomic units
 ### REQ-DUR-007
 - REQ-ID: REQ-DUR-007
 - CATEGORY: durability
-- SOURCE: Red-on-Rust.md L38213–38215([54] §12); L35111–35144([47]); spec/01 S-13 R-DUR-03
+- SOURCE: Red-on-Rust.md L38213–38215([54] §12); L35111–35144([47]); L33987([46] causal chain); spec/01 S-13 R-DUR-03
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `Reconciled(E) ⇒ Issued(E)`.
 - PRECONDITIONS: an `EffectReconciled` record exists

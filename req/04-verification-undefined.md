@@ -2,7 +2,7 @@
 
 Four distinct kinds of gap are reported. Only §1 is a true "undefined verification method"; §§2–4 are recorded so that no record is silently passed over as verified.
 
-Global note: **all 491 registry records carry `EVIDENCE-STATUS: SPECIFIED`.** The repository contains no Cargo workspace, no Rust source, no tests, no golden vectors, no mutation registry, and no CI configuration (`git ls-files` returns only `README.md`, `Red-on-Rust.md`, `spec/00`–`spec/10`, and `req/*`). No record may be promoted to `IMPLEMENTED`, `TESTED`, `VERIFIED`, or `PROVEN` on the strength of specification text (extraction rules 10 and the "do not promote evidence states" constraint).
+Global note: **all 495 registry records carry `EVIDENCE-STATUS: SPECIFIED`.** The repository contains no Cargo workspace, no Rust source, no tests, no golden vectors, no mutation registry, and no CI configuration (`git ls-files` returns only `README.md`, `Red-on-Rust.md`, `spec/00`–`spec/10`, and `req/*`). No record may be promoted to `IMPLEMENTED`, `TESTED`, `VERIFIED`, or `PROVEN` on the strength of specification text (extraction rules 10 and the "do not promote evidence states" constraint).
 
 ---
 
@@ -37,21 +37,22 @@ Three further records have a verification method that is *defined but not closed
 | REQ-CANON-033 | "Equal digests imply equal inputs" reverse direction | Digest equality is not collision-resistant by statement; the source offers it as commentary, not obligation |
 | REQ-COMPILE-014 | Observation that no pipeline stage is named as producing the effect set `F` | A gap report, not a requirement (AMB-13, U-22) |
 
-## §3 No verification obligation — the record is a permission (3)
+## §3 No verification obligation — the record is a permission (4)
 
 | Record | Permission |
 |---|---|
 | REQ-PLANNER-016 | Planner MAY propose multiple candidate plans |
 | REQ-REPO-003 | Top-level crate names MAY change for organizational reasons |
 | REQ-CLAIM-019 | Formal mechanization MAY be added later; it is not required to begin |
+| REQ-REF-017 | Reference interpreter MAY copy an immutable environment snapshot |
 
 Four further `MAY` records do carry a review or test method and are therefore not gaps: REQ-SCOPE-012, REQ-TRUST-008, REQ-CAP-006, REQ-REF-005.
 
-## §4 Verification method defined only as human review — 79 records
+## §4 Verification method defined only as human review — 80 records
 
 These have a stated method, but the frozen source attaches no executable obligation (no conformance tag, no mutation, no gate, no vector) to them. They are verifiable only by inspection of the future repository. Grouped by what the review inspects:
 
-- **Dependency/visibility review (21):** REQ-SCOPE-011, REQ-SCOPE-012, REQ-ARCH-005, REQ-ARCH-006, REQ-COMPILE-011, REQ-KERN-002, REQ-CAP-009, REQ-RECOV-014, REQ-REF-004, REQ-REF-005, REQ-REF-009, REQ-REPO-004, REQ-REPO-006, REQ-REPO-007, REQ-REPO-008, REQ-REPO-009, REQ-REPO-014, REQ-CLAIM-003, REQ-CLAIM-011, REQ-CLAIM-012, REQ-PERSIST-001.
+- **Dependency/visibility review (22):** REQ-SCOPE-011, REQ-SCOPE-012, REQ-ARCH-005, REQ-ARCH-006, REQ-COMPILE-011, REQ-KERN-002, REQ-CAP-009, REQ-RECOV-014, REQ-REF-004, REQ-REF-005, REQ-REF-009, REQ-REPO-004, REQ-REPO-006, REQ-REPO-007, REQ-REPO-008, REQ-REPO-009, REQ-REPO-014, REQ-CLAIM-003, REQ-CLAIM-011, REQ-CLAIM-012, REQ-PERSIST-001, REQ-KERN-009.
 - **Type/state-shape review (13):** REQ-COMPILE-010, REQ-CALC-004, REQ-CALC-005, REQ-CALC-007, REQ-CALC-017, REQ-CALC-018, REQ-BUDGET-001, REQ-BUDGET-017, REQ-BUDGET-018, REQ-ACTOR-006, REQ-PERSIST-017, REQ-CAP-020, REQ-BUDGET-026.
 - **Layout/structure review (12):** REQ-REPO-001, REQ-REPO-002, REQ-REPO-005, REQ-REPO-010, REQ-REPO-011, REQ-REPO-012, REQ-REPO-013, REQ-REPO-015, REQ-REPO-016, REQ-REPO-018, REQ-REPO-019, REQ-TRUST-004.
 - **Comparator/reference-model review (8):** REQ-CANON-034, REQ-REF-006, REQ-REF-007, REQ-REF-008, REQ-REF-010, REQ-REF-011, REQ-REF-013, REQ-CLAIM-013.
@@ -67,7 +68,7 @@ Recommendation (non-normative, not part of the extraction): the dependency/visib
 |---|---|
 | §1 `UNDEFINED` verification method | 8 (+3 defined-but-not-closed) |
 | §2 `NON-NORMATIVE` | 4 |
-| §3 `MAY` permission with no obligation | 3 |
-| §4 review-only | 79 |
-| All other records (executable method stated: conformance tag, mutation M0xx, milestone gate, crash matrix, golden vector, property test, or differential test) | 397 |
-| **Total registry records** | **491** |
+| §3 `MAY` permission with no obligation | 4 |
+| §4 review-only | 80 |
+| All other records (executable method stated: conformance tag, mutation M0xx, milestone gate, crash matrix, golden vector, property test, or differential test) | 399 |
+| **Total registry records** | **495** |

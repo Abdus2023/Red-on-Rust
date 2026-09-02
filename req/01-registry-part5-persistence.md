@@ -1,6 +1,6 @@
 # Atomic Requirement Registry — Part 5: Serialization, Persistence, Recovery (S-17 … S-19)
 
-Areas: `CANON` (37), `PERSIST` (22), `RECOV` (21) — 80 atomic units.
+Areas: `CANON` (37), `PERSIST` (23), `RECOV` (22) — 82 atomic units.
 Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[45]`, plus the duplicate-key patch L34987–35024, turn `[46]`); every constant below is copied, not paraphrased.
 
 ---
@@ -248,7 +248,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-CANON-018
 - REQ-ID: REQ-CANON-018
 - CATEGORY: serialization
-- SOURCE: Red-on-Rust.md L34987–35024([47] final 15A patch); L33719([46]); L38164–38172([54] §11); spec/01 S-17 R-CANON-06; spec/06 C-41
+- SOURCE: Red-on-Rust.md L34987–35024([47] final 15A patch); L33719([46]); L38164–38172([54] §11); L33712([46] § duplicate-key rule first stated); spec/01 S-17 R-CANON-06; spec/06 C-41
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: Map decoding MUST reject duplicate keys with `CanonicalError::DuplicateMapKey`, to preserve injectivity.
 - PRECONDITIONS: a decoded map contains a repeated key
@@ -546,7 +546,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-PERSIST-002
 - REQ-ID: REQ-PERSIST-002
 - CATEGORY: persistence
-- SOURCE: Red-on-Rust.md L33757–33790([46]); L35078–35087([47]); L38187–38201([54] §12); spec/01 S-18 R-PERSIST-01
+- SOURCE: Red-on-Rust.md L33757–33790([46]); L35078–35087([47]); L38187–38201([54] §12); L34264([46] parser rejections); spec/01 S-18 R-PERSIST-01
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: No secondary serialization: the payload of every persistence record is strictly the byte output of Phase 15A `CanonicalEncode`.
 - PRECONDITIONS: any record is written
@@ -742,7 +742,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-PERSIST-016
 - REQ-ID: REQ-PERSIST-016
 - CATEGORY: persistence
-- SOURCE: Red-on-Rust.md L26293–26330([33]); spec/01 S-18 R-PERSIST-04
+- SOURCE: Red-on-Rust.md L26293–26330([33]); L34156([46] snapshot scheduler state); spec/01 S-18 R-PERSIST-04
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: A snapshot contains all machine state necessary to continue execution: logical time, ID counters, runnable queue, and per actor run state / `EvalState` / capabilities / heap / budget / mailbox / status, plus scheduler state, plus `version, last_event_sequence, last_effect_sequence, state_digest`.
 - PRECONDITIONS: a snapshot is taken
@@ -784,7 +784,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-PERSIST-019
 - REQ-ID: REQ-PERSIST-019
 - CATEGORY: persistence
-- SOURCE: Red-on-Rust.md L35177–35188([47]); L26216–26240([33]); L38252–L38260([54] §13); spec/01 S-18 R-PERSIST-05
+- SOURCE: Red-on-Rust.md L35177–35188([47]); L26216–26240([33]); L38252–L38260([54] §13); L34212–L34223([46] snapshot validity); spec/01 S-18 R-PERSIST-05
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `ValidSnapshot(S) ⇔ Commit(S) ∧ Digest(Canonical(S)) = RecordedDigest(S)`.
 - PRECONDITIONS: a snapshot is evaluated for validity
@@ -841,6 +841,19 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 
 ## S-19 Crash recovery
 
+### REQ-PERSIST-023
+- REQ-ID: REQ-PERSIST-023
+- CATEGORY: persistence
+- SOURCE: Red-on-Rust.md L33731–33738([46]); L34987–35024([47] final 15A patch); spec/01 S-18 R-PERSIST-05
+- NORMATIVE-LEVEL: MUST
+- STATEMENT: The persistence layer establishes `Committed(D) ⇒ Canonical(D) ∧ IntegrityVerified(D)`: a committed durable artifact is canonically encoded and its integrity is verified.
+- PRECONDITIONS: a durable artifact `D` carries a commit marker
+- POSTCONDITIONS: `D` decodes under the 15A canonical codec and passes its checksum
+- INVARIANTS: `Committed(D) ⇒ Canonical(D) ∧ IntegrityVerified(D)`
+- DEPENDENCIES: REQ-PERSIST-004, REQ-PERSIST-019, REQ-CANON-004
+- SECURITY-IMPACT: critical (a committed but non-canonical or unverified artifact would make recovery non-deterministic)
+- VERIFICATION-METHOD: commit-then-decode property tests; corrupted-commit rejection tests
+- EVIDENCE-STATUS: SPECIFIED
 ### REQ-RECOV-001
 - REQ-ID: REQ-RECOV-001
 - CATEGORY: recovery
@@ -858,7 +871,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-RECOV-002
 - REQ-ID: REQ-RECOV-002
 - CATEGORY: recovery
-- SOURCE: Red-on-Rust.md L26122–26140([33]); spec/01 S-19 R-RECOV-01
+- SOURCE: Red-on-Rust.md L26122–26140([33]); L35037–L35038([47] 15B adoption); spec/01 S-19 R-RECOV-01
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `Recover(D) = Replay(S, L, H)`.
 - PRECONDITIONS: durable state `D`
@@ -998,7 +1011,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-RECOV-012
 - REQ-ID: REQ-RECOV-012
 - CATEGORY: recovery
-- SOURCE: Red-on-Rust.md L35196–35208([47]); L38866([54] §28); spec/01 S-19 R-RECOV-05
+- SOURCE: Red-on-Rust.md L35196–35208([47]); L38866([54] §28); L34430–L34437([46] strict validation); spec/01 S-19 R-RECOV-05
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: The recovery engine MUST NEVER silently repair corruption — no dropping duplicate runnable actors, no fixing budget mismatches, no ignoring gaps, checksums, or causality violations.
 - PRECONDITIONS: corruption is detected
@@ -1133,4 +1146,18 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 - DEPENDENCIES: REQ-RECOV-010; AMB-27
 - SECURITY-IMPACT: medium (the two step lists differ in granularity; see AMB-27)
 - VERIFICATION-METHOD: recovery-step conformance review against the frozen 12-step list
+- EVIDENCE-STATUS: SPECIFIED
+
+### REQ-RECOV-022
+- REQ-ID: REQ-RECOV-022
+- CATEGORY: recovery
+- SOURCE: Red-on-Rust.md L34801–34812([46]); L35189–35208([47] §15B.7); spec/01 S-19 R-RECOV-01
+- NORMATIVE-LEVEL: MUST
+- STATEMENT: `CommittedSnapshot + ValidWAL + ValidEffectJournal + ReconciledEffects ⇒ UniqueRecoveredMachineState`.
+- PRECONDITIONS: all four inputs are valid and effects are reconciled
+- POSTCONDITIONS: recovery yields exactly one machine state
+- INVARIANTS: `CommittedSnapshot ∧ ValidWAL ∧ ValidEffectJournal ∧ ReconciledEffects ⇒ UniqueRecoveredMachineState`
+- DEPENDENCIES: REQ-RECOV-010, REQ-RECOV-021, REQ-DUR-010
+- SECURITY-IMPACT: critical (a non-unique recovered state would break the determinism theorem across crashes)
+- VERIFICATION-METHOD: repeated-recovery determinism tests over the crash matrix T0–T6
 - EVIDENCE-STATUS: SPECIFIED
