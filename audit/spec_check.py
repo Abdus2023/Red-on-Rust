@@ -85,11 +85,12 @@ def overlap(a: set[str], b: set[str]) -> float:
 
 # ---------------------------------------------------------------- parsing
 
-def parse_records() -> dict[str, tuple[str, str]]:
+def parse_records(path: Path | None = None) -> dict[str, tuple[str, str]]:
     """ID -> (original, normalized) from the normalization records."""
+    src = Path(path) if path else RECORDS
     out: dict[str, tuple[str, str]] = {}
     cur, buf, mode = None, {"original": [], "normalized": []}, None
-    for line in RECORDS.read_text(encoding="utf-8").splitlines():
+    for line in src.read_text(encoding="utf-8").splitlines():
         h = re.match(r"^### (R-[A-Z]+-\d+)\s*$", line)
         if h:
             if cur and buf["original"] and buf["normalized"]:
@@ -114,9 +115,10 @@ def parse_records() -> dict[str, tuple[str, str]]:
     return out
 
 
-def parse_spec01() -> dict[str, tuple[str, list[tuple[int, int]]]]:
+def parse_spec01(path: Path | None = None) -> dict[str, tuple[str, list[tuple[int, int]]]]:
     """ID -> (body, cited line ranges) from the canonical specification."""
-    text = SPEC01.read_text(encoding="utf-8")
+    src = Path(path) if path else SPEC01
+    text = src.read_text(encoding="utf-8")
     out: dict[str, tuple[str, list[tuple[int, int]]]] = {}
     for m in re.finditer(
         r"\*\*(R-[A-Z]+-\d+)[^\n]*?\*\*(.+?)(?=\n\n\*\*R-|\n\n## |\n## |\Z)",
@@ -220,13 +222,17 @@ def main() -> int:
     global MIN_OVERLAP
     if "--min-overlap" in ap:
         MIN_OVERLAP = float(ap[ap.index("--min-overlap") + 1])
+    records_path = Path(ap[ap.index("--records") + 1]) if "--records" in ap else None
+    spec01_path = Path(ap[ap.index("--spec01") + 1]) if "--spec01" in ap else None
 
-    records = parse_records()
-    spec01 = parse_spec01()
+    records = parse_records(records_path)
+    spec01 = parse_spec01(spec01_path)
     matrix = parse_matrix()
     src = source_lines()
 
-    print(f"parsed: {len(records)} records, {len(spec01)} spec/01 obligations, {len(matrix)} matrix rows")
+    print(f"parsed: {len(records)} records, {len(spec01)} spec/01 obligations, {len(matrix)} matrix rows"
+          + (f" (spec01={spec01_path})" if spec01_path else "")
+          + (f" (records={records_path})" if records_path else ""))
 
     flags = []
     flags += check_d1(records, verbose)
