@@ -462,7 +462,7 @@ The v0.3 budget/transition text (`Red-on-Rust.md` L8643–9050, turn `[16]`) is 
 ### REQ-EFFECT-001
 - REQ-ID: REQ-EFFECT-001
 - CATEGORY: effect-protocol
-- SOURCE: Red-on-Rust.md L12177–12194([21]); L9652([17]); L10509–10512([18]); spec/01 S-12 R-EFFECT-01
+- SOURCE: Red-on-Rust.md L12177–12194([21]); L9652([17]); L10509–10512([18]); L10391([18] step() never executes the host); spec/01 S-12 R-EFFECT-01
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `Expr::Request` means: construct Effect → authorize → account → log → Pending → yield `EffectRequest`.
 - PRECONDITIONS: a `Request` term is evaluated

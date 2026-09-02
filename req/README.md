@@ -8,7 +8,7 @@ Source of record: `../Red-on-Rust.md` (42,312 lines, 60-turn design transcript).
 
 | File | Content | Required output section |
 |---|---|---|
-| `00-method.md` | Extraction rules, field semantics, evidence discipline, split/keep policy, provenance audit and corrections, validation log | — (method) |
+| `00-method.md` | Extraction rules, field semantics, evidence discipline, split/keep policy, provenance audit and corrections, validation log, Phase 15C line map (§5.4), disposition of the uncited residue (§7) | — (method) |
 | `01-registry-part1-foundations.md` | 79 records — SCOPE 12, CORE 16, TRUST 9, ARCH 6, PLANNER 22, COMPILE 14 | **1. Atomic requirement registry** |
 | `01-registry-part2-semantics.md` | 79 records — CALC 20, CEK 24, CAP 26, KERN 9 | 1 |
 | `01-registry-part3-resources-effects.md` | 72 records — BUDGET 32, EFFECT 40 | 1 |

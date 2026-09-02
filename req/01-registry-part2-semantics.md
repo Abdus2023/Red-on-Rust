@@ -690,7 +690,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-CAP-007
 - REQ-ID: REQ-CAP-007
 - CATEGORY: capability-authority
-- SOURCE: Red-on-Rust.md L6381–6390([11]); spec/01 S-09 R-CAP-03
+- SOURCE: Red-on-Rust.md L6381–6390([11]); L3403([7] v0.1 partial order); L6638([11] v0.2 partial order); spec/01 S-09 R-CAP-03
 - NORMATIVE-LEVEL: IS
 - STATEMENT: `A₁ ≼ A₂` iff `O₁ ⊆ O₂` and for all `o ∈ O₁`: `S₁ ≼_S S₂ ∧ Q₁ ≼_Q Q₂ ∧ R₁ ≤ R₂ ∧ T₁ ⊆ T₂`.
 - PRECONDITIONS: two authorities
@@ -844,7 +844,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-CAP-018
 - REQ-ID: REQ-CAP-018
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L6431–6433([11] Theorem 3); L6667–6671([11]); spec/01 S-09 R-CAP-08
+- SOURCE: Red-on-Rust.md L6431–6433([11] Theorem 3); L6667–6671([11]); L5344–5356([9] Attenuation Preserves Authorization); spec/01 S-09 R-CAP-08
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: Theorem 3 (attenuation corollary): assuming `Authorized(A,E,t)`, `Authorized(derive(A,C),E,t) ⇔ Satisfies(C,E,t)`.
 - PRECONDITIONS: `Authorized(A,E,t)`
@@ -900,7 +900,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-CAP-022
 - REQ-ID: REQ-CAP-022
 - CATEGORY: capability-authority
-- SOURCE: Red-on-Rust.md L8717–8719([16] v0.3 E-Attenuate); L8837([16] resolution 6) — **(v0.3 rules)**
+- SOURCE: Red-on-Rust.md L8717–8719([16] v0.3 E-Attenuate); L8837([16] resolution 6) — **(v0.3 rules)**; L7840–7847([15] derivation needs no effect authorization); spec/01
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `E-Attenuate` requires premises `Valid(c, t)` and `AdmissibleConstraint(C_req)` and produces `c' = kernel.derive(c, C_req)`; it uses `AdmissibleConstraint`, not `Authorized` — security is guaranteed by `derive(A, C) ≼ A`. The transition binds `cap(c')` into the term, adds `c'` to the actor context `κ`, charges `cost_C(att)`, and advances `t` by `δ_t(att)`.
 - PRECONDITIONS: `Valid(c,t)` and `AdmissibleConstraint(C_req)`

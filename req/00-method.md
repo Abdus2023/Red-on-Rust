@@ -251,4 +251,73 @@ A fourth pass covered turns `[17]`, `[25]`, `[32]` and found one further unrecor
 
 A fifth pass covered the canonical-encoding turns `[37]`, `[38]`, `[40]`–`[43]`, `[51]` and the evaluator-invariant list in turn `[22]`. Two further unrecorded obligations became records: `continue_with_value` as the only frame-popping path, with every `enter_*` pushing exactly one frame or returning a terminal `EvalStep` (L14313, REQ-CEK-023), and the evaluator's zero host dependencies — its only side-effect vocabulary is `EvalStep::RequestEffect` (L14315, REQ-CEK-024). Ten second-location citations were added for requirements already extracted: envelope construction never panics (L31750 → REQ-CANON-030); strict parsing and exact length (L29913, L32020 → REQ-CANON-021, REQ-PERSIST-013); no second serialization format in 15B (L31635, L32022 → REQ-PERSIST-002); ascending key order (L28738 → REQ-CANON-017); coverage never substitutes for the differential oracle (L37511 → REQ-TEST-021); and the four remaining turn-`[22]` architectural invariants (L14314 → REQ-CEK-002, L14316 → REQ-KERN-009, L14317 → REQ-CEK-013, L14318 → REQ-CEK-003). Registry 543 → **545**.
 
+A sixth pass closed the audit. The uncited lines were classified mechanically (§7) — of 465, 307 are LaTeX continuation lines inside display formulae, 32 are list items of enumerated sets cited as a whole, 28 are inside code blocks, 4 are block-quote restatements, and 94 are prose. The prose lines of every turn that has any (38 turns) were then read; nine more second-location citations came out of the earliest turns, where a requirement is first stated before it is frozen: capabilities never serialized as plaintext (L352 → REQ-CORE-009); a `Block` never implicitly becomes an `ExecutablePlan` (L846 → REQ-COMPILE-001); execution never introduces capabilities not present or derived (L2032 → REQ-TRUST-006); `step()` never executes the host (L10391 → REQ-EFFECT-001); the `≼` partial-order definition in its v0.1 and v0.2 statements (L3403, L6638 → REQ-CAP-007); the attenuation-preserves-authorization corollary (L5344–5356 → REQ-CAP-018); derivation needs no effect authorization (L7840–7847 → REQ-CAP-022); `send` never implicitly transfers authority (L8176–8182 → REQ-CORE-010); and delegation yields a token, never the raw kernel reference (L2876–2881 → REQ-CORE-009). Uncited 477 → **465** of 736.
+
 This pass found and fixed, by that mechanism: three identifiers I had invented (`B_max`, `f_specific` as a literal token, `BudgetAllocationSpec::validate_and_escrow`), 83 `[turn]` labels that disagreed with the lines they annotated, 56 `SOURCE` fields with no turn marker at all, three stale anchors, and six statements whose wording did not match the source (`Value` tag constants, canonical map key type, hostile-allocation wording, `Expr::Delegate` line range, `EventSequence` shape, `ReconciliationOutcome` variants).
+
+## 7. Disposition of the uncited residue
+
+`req/_coverage.py --all-turns` reports 736 candidate lines (lines matching a normative marker or a boxed-formula token) and 465 of them uncited. Every uncited line falls into exactly one of five mechanical categories, computed by the classifier that built this table (fenced-code membership, `\[…\]` block membership, block-quote prefix, list prefix, else prose):
+
+| Category | Count | Disposition |
+|---|---|---|
+| LaTeX continuation | 307 | Lines inside a display formula (`\boxed{`, `\Rightarrow`, `\iff`, `\preceq`, `\forall`, `\]`) whose requirement is the formula's content, cited at the formula's statement line. The audit already tolerates a fragment when any line of its enclosing block is cited; the remainder belong to blocks whose statement line sits in a different turn, where the requirement was frozen. |
+| Inside a code block | 28 | Rust and test sketches. Specification text, not repository code (rule 10), and not a requirement of their own. |
+| List continuation | 32 | Numbered or bulleted items of an enumerated set that a record cites as a whole (the 35-property acceptance suite, the mutation registry). |
+| Block quote | 4 | Restatement of a line already cited in its own turn. |
+| Prose | 94 | Commentary and design dialogue — the only category requiring judgement. The prose lines of every turn that has any (38 of the 60; the other 22 have no uncited line at all) were read in the triage passes recorded in §6: every line that restated a frozen requirement became a second-location citation, and the remainder is dialogue the marker regex catches on words such as *exactly*, *required* and *never* used rhetorically, or a lead-in fragment (`iff:`, `only when:`) whose requirement is the formula or list that follows it. |
+
+Per-turn uncited counts, highest first (turns with no uncited line are omitted):
+
+| Turn | Span | Candidates | Uncited | code | latex | quote | list | prose |
+|---|---|---|---|---|---|---|---|---|
+| [10] | L5502–L6343 | 37 | 36 | 0 | 32 | 1 | 0 | 3 |
+| [15] | L7469–L8642 | 47 | 36 | 0 | 35 | 0 | 0 | 1 |
+| [29] | L21097–L23241 | 38 | 33 | 3 | 27 | 0 | 0 | 3 |
+| [6] | L2348–L3367 | 31 | 30 | 0 | 27 | 0 | 0 | 3 |
+| [27] | L19077–L20277 | 40 | 30 | 0 | 26 | 0 | 0 | 4 |
+| [8] | L4063–L4755 | 30 | 29 | 0 | 24 | 0 | 0 | 5 |
+| [31] | L24069–L25456 | 39 | 24 | 1 | 19 | 0 | 0 | 4 |
+| [33] | L26109–L27654 | 36 | 22 | 2 | 17 | 0 | 0 | 3 |
+| [9] | L4756–L5501 | 21 | 19 | 0 | 14 | 0 | 4 | 1 |
+| [12] | L6816–L7112 | 15 | 15 | 0 | 15 | 0 | 0 | 0 |
+| [25] | L16861–L18084 | 17 | 12 | 0 | 12 | 0 | 0 | 0 |
+| [20] | L11434–L12074 | 10 | 10 | 2 | 0 | 0 | 2 | 6 |
+| [46] | L33708–L34976 | 28 | 10 | 0 | 10 | 0 | 0 | 0 |
+| [1] | L10–L388 | 10 | 9 | 0 | 1 | 0 | 2 | 6 |
+| [4] | L1340–L1883 | 10 | 9 | 0 | 5 | 0 | 0 | 4 |
+| [11] | L6344–L6815 | 20 | 8 | 0 | 1 | 0 | 6 | 1 |
+| [17] | L9051–L10131 | 9 | 8 | 1 | 4 | 0 | 0 | 3 |
+| [28] | L20278–L21096 | 8 | 8 | 6 | 0 | 0 | 2 | 0 |
+| [2] | L389–L702 | 7 | 7 | 0 | 3 | 1 | 1 | 2 |
+| [3] | L703–L1339 | 9 | 7 | 1 | 0 | 0 | 2 | 4 |
+| [5] | L1884–L2347 | 9 | 7 | 0 | 3 | 0 | 2 | 2 |
+| [7] | L3368–L4062 | 8 | 7 | 0 | 5 | 0 | 1 | 1 |
+| [35] | L27953–L28272 | 12 | 7 | 0 | 5 | 0 | 1 | 1 |
+| [36] | L28273–L28589 | 10 | 7 | 2 | 2 | 0 | 1 | 2 |
+| [38] | L28718–L29435 | 8 | 7 | 0 | 1 | 0 | 3 | 3 |
+| [19] | L11118–L11433 | 5 | 5 | 0 | 1 | 0 | 0 | 4 |
+| [21] | L12075–L13946 | 14 | 5 | 1 | 2 | 0 | 0 | 2 |
+| [23] | L14657–L15938 | 5 | 5 | 0 | 3 | 0 | 0 | 2 |
+| [24] | L15939–L16860 | 4 | 4 | 1 | 0 | 0 | 0 | 3 |
+| [26] | L18085–L19076 | 4 | 4 | 1 | 0 | 0 | 0 | 3 |
+| [34] | L27655–L27952 | 5 | 4 | 2 | 1 | 0 | 0 | 1 |
+| [41] | L29886–L31298 | 7 | 4 | 0 | 0 | 0 | 3 | 1 |
+| [42] | L31299–L31668 | 5 | 4 | 0 | 3 | 1 | 0 | 0 |
+| [43] | L31669–L32640 | 6 | 4 | 0 | 2 | 0 | 1 | 1 |
+| [52] | L37548–L37626 | 4 | 4 | 0 | 4 | 0 | 0 | 0 |
+| [18] | L10132–L11117 | 4 | 3 | 1 | 0 | 0 | 1 | 1 |
+| [47] | L34977–L35271 | 9 | 3 | 0 | 0 | 0 | 0 | 3 |
+| [49] | L37169–L37338 | 3 | 3 | 0 | 0 | 0 | 0 | 3 |
+| [16] | L8643–L9050 | 2 | 2 | 0 | 0 | 0 | 0 | 2 |
+| [22] | L13947–L14656 | 5 | 2 | 1 | 0 | 0 | 0 | 1 |
+| [30] | L23242–L24068 | 4 | 2 | 1 | 0 | 0 | 0 | 1 |
+| [32] | L25457–L26108 | 7 | 2 | 0 | 0 | 0 | 0 | 2 |
+| [37] | L28590–L28717 | 2 | 2 | 0 | 1 | 0 | 0 | 1 |
+| [40] | L29451–L29885 | 2 | 2 | 2 | 0 | 0 | 0 | 0 |
+| [13] | L7113–L7453 | 5 | 1 | 0 | 1 | 0 | 0 | 0 |
+| [14] | L7454–L7468 | 1 | 1 | 0 | 0 | 1 | 0 | 0 |
+| [45] | L32936–L33707 | 2 | 1 | 0 | 0 | 0 | 0 | 1 |
+| [51] | L37460–L37547 | 2 | 1 | 0 | 1 | 0 | 0 | 0 |
+
+The residue is concentrated where the design was still moving: turns `[6]`–`[15]` hold the superseded v0.1/v0.2 algebra and transition drafts that the registry deliberately cites only where each rule was frozen (turn `[16]` for the v0.3 rules, turns `[30]` and `[32]` for the machine and actor layers). The audit is therefore closed: the remaining lines are classified, and the one class that needed reading has been read.

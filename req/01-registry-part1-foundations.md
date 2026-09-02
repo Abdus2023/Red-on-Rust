@@ -294,7 +294,7 @@ Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records a
 ### REQ-CORE-009
 - REQ-ID: REQ-CORE-009
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L42090–42098([60]); L25685–25694([32]); L37955–37960([54] §6); spec/01 S-02 R-CORE-07
+- SOURCE: Red-on-Rust.md L42090–42098([60]); L25685–25694([32]); L37955–37960([54] §6); L2876–2881([6] delegated token, never the raw kernel reference); L352([1] capabilities never serialized as plaintext); spec/01 S-02 R-CORE-07
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: `OrdinaryMarshal(Value::Capability) ⇒ Rejected`; raw capability references MUST NOT cross actor boundaries through ordinary messages.
 - PRECONDITIONS: `marshal(v)` encounters a capability anywhere in `v`
@@ -308,7 +308,7 @@ Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records a
 ### REQ-CORE-010
 - REQ-ID: REQ-CORE-010
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L25700–25710([32] §4); L42090–42098([60]); L25294–25302([31] §26 region); spec/01 S-02 R-CORE-07
+- SOURCE: Red-on-Rust.md L25700–25710([32] §4); L42090–42098([60]); L25294–25302([31] §26 region); L8176–8182([15] send never implicitly transfers authority); spec/01 S-02 R-CORE-07
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: Authority crosses actor boundaries only via explicit delegation.
 - PRECONDITIONS: authority must reach another actor
@@ -480,7 +480,7 @@ Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records a
 ### REQ-TRUST-006
 - REQ-ID: REQ-TRUST-006
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L37722–37744([54] §1.3); L19153–19175([27]); spec/01 S-03 R-TRUST-03
+- SOURCE: Red-on-Rust.md L37722–37744([54] §1.3); L19153–19175([27]); L2032([5] execution never introduces new capabilities); spec/01 S-03 R-TRUST-03
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: The LLM, AST, evaluator, scheduler, host adapter, or ordinary `Value` representation MUST never manufacture authority.
 - PRECONDITIONS: any component handling capabilities or effects
@@ -940,7 +940,7 @@ Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records a
 ### REQ-COMPILE-001
 - REQ-ID: REQ-COMPILE-001
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L41440–41452([60]); L3834–3838([7]); L41038–41050([58] §36); spec/01 S-06 R-COMPILE-01
+- SOURCE: Red-on-Rust.md L41440–41452([60]); L3834–3838([7]); L41038–41050([58] §36); L846([3] Block never implicitly becomes ExecutablePlan); spec/01 S-06 R-COMPILE-01
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `Block ≠ ExecutablePlan`.
 - PRECONDITIONS: —

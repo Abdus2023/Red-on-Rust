@@ -334,7 +334,7 @@
   {
    "REQ-ID": "REQ-CORE-009",
    "CATEGORY": "security-invariant",
-   "SOURCE": "Red-on-Rust.md L42090–42098([60]); L25685–25694([32]); L37955–37960([54] §6); spec/01 S-02 R-CORE-07",
+   "SOURCE": "Red-on-Rust.md L42090–42098([60]); L25685–25694([32]); L37955–37960([54] §6); L2876–2881([6] delegated token, never the raw kernel reference); L352([1] capabilities never serialized as plaintext); spec/01 S-02 R-CORE-07",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "`OrdinaryMarshal(Value::Capability) ⇒ Rejected`; raw capability references MUST NOT cross actor boundaries through ordinary messages.",
    "PRECONDITIONS": "`marshal(v)` encounters a capability anywhere in `v`",
@@ -348,7 +348,7 @@
   {
    "REQ-ID": "REQ-CORE-010",
    "CATEGORY": "security-invariant",
-   "SOURCE": "Red-on-Rust.md L25700–25710([32] §4); L42090–42098([60]); L25294–25302([31] §26 region); spec/01 S-02 R-CORE-07",
+   "SOURCE": "Red-on-Rust.md L25700–25710([32] §4); L42090–42098([60]); L25294–25302([31] §26 region); L8176–8182([15] send never implicitly transfers authority); spec/01 S-02 R-CORE-07",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "Authority crosses actor boundaries only via explicit delegation.",
    "PRECONDITIONS": "authority must reach another actor",
@@ -516,7 +516,7 @@
   {
    "REQ-ID": "REQ-TRUST-006",
    "CATEGORY": "security-invariant",
-   "SOURCE": "Red-on-Rust.md L37722–37744([54] §1.3); L19153–19175([27]); spec/01 S-03 R-TRUST-03",
+   "SOURCE": "Red-on-Rust.md L37722–37744([54] §1.3); L19153–19175([27]); L2032([5] execution never introduces new capabilities); spec/01 S-03 R-TRUST-03",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "The LLM, AST, evaluator, scheduler, host adapter, or ordinary `Value` representation MUST never manufacture authority.",
    "PRECONDITIONS": "any component handling capabilities or effects",
@@ -964,7 +964,7 @@
   {
    "REQ-ID": "REQ-COMPILE-001",
    "CATEGORY": "security-invariant",
-   "SOURCE": "Red-on-Rust.md L41440–41452([60]); L3834–3838([7]); L41038–41050([58] §36); spec/01 S-06 R-COMPILE-01",
+   "SOURCE": "Red-on-Rust.md L41440–41452([60]); L3834–3838([7]); L41038–41050([58] §36); L846([3] Block never implicitly becomes ExecutablePlan); spec/01 S-06 R-COMPILE-01",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`Block ≠ ExecutablePlan`.",
    "PRECONDITIONS": "—",
@@ -1832,7 +1832,7 @@
   {
    "REQ-ID": "REQ-CAP-007",
    "CATEGORY": "capability-authority",
-   "SOURCE": "Red-on-Rust.md L6381–6390([11]); spec/01 S-09 R-CAP-03",
+   "SOURCE": "Red-on-Rust.md L6381–6390([11]); L3403([7] v0.1 partial order); L6638([11] v0.2 partial order); spec/01 S-09 R-CAP-03",
    "NORMATIVE-LEVEL": "IS",
    "STATEMENT": "`A₁ ≼ A₂` iff `O₁ ⊆ O₂` and for all `o ∈ O₁`: `S₁ ≼_S S₂ ∧ Q₁ ≼_Q Q₂ ∧ R₁ ≤ R₂ ∧ T₁ ⊆ T₂`.",
    "PRECONDITIONS": "two authorities",
@@ -1986,7 +1986,7 @@
   {
    "REQ-ID": "REQ-CAP-018",
    "CATEGORY": "security-invariant",
-   "SOURCE": "Red-on-Rust.md L6431–6433([11] Theorem 3); L6667–6671([11]); spec/01 S-09 R-CAP-08",
+   "SOURCE": "Red-on-Rust.md L6431–6433([11] Theorem 3); L6667–6671([11]); L5344–5356([9] Attenuation Preserves Authorization); spec/01 S-09 R-CAP-08",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "Theorem 3 (attenuation corollary): assuming `Authorized(A,E,t)`, `Authorized(derive(A,C),E,t) ⇔ Satisfies(C,E,t)`.",
    "PRECONDITIONS": "`Authorized(A,E,t)`",
@@ -2042,7 +2042,7 @@
   {
    "REQ-ID": "REQ-CAP-022",
    "CATEGORY": "capability-authority",
-   "SOURCE": "Red-on-Rust.md L8717–8719([16] v0.3 E-Attenuate); L8837([16] resolution 6) — **(v0.3 rules)**",
+   "SOURCE": "Red-on-Rust.md L8717–8719([16] v0.3 E-Attenuate); L8837([16] resolution 6) — **(v0.3 rules)**; L7840–7847([15] derivation needs no effect authorization); spec/01",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`E-Attenuate` requires premises `Valid(c, t)` and `AdmissibleConstraint(C_req)` and produces `c' = kernel.derive(c, C_req)`; it uses `AdmissibleConstraint`, not `Authorized` — security is guaranteed by `derive(A, C) ≼ A`. The transition binds `cap(c')` into the term, adds `c'` to the actor context `κ`, charges `cost_C(att)`, and advances `t` by `δ_t(att)`.",
    "PRECONDITIONS": "`Valid(c,t)` and `AdmissibleConstraint(C_req)`",
@@ -2714,7 +2714,7 @@
   {
    "REQ-ID": "REQ-EFFECT-001",
    "CATEGORY": "effect-protocol",
-   "SOURCE": "Red-on-Rust.md L12177–12194([21]); L9652([17]); L10509–10512([18]); spec/01 S-12 R-EFFECT-01",
+   "SOURCE": "Red-on-Rust.md L12177–12194([21]); L9652([17]); L10509–10512([18]); L10391([18] step() never executes the host); spec/01 S-12 R-EFFECT-01",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`Expr::Request` means: construct Effect → authorize → account → log → Pending → yield `EffectRequest`.",
    "PRECONDITIONS": "a `Request` term is evaluated",
