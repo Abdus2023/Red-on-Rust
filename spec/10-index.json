@@ -31,12 +31,12 @@
     },
     "id_schemes": {
       "S-NN": "specification section (24)",
-      "R-AREA-NN": "normative requirement/obligation (148)",
-      "C-NN": "contradiction/ambiguity finding (75 indexed; 76 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
+      "R-AREA-NN": "normative requirement/obligation (152; 148 source-transcribed + 4 post-audit frozen addenda)",
+      "C-NN": "contradiction/ambiguity finding (76 indexed; 77 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
       "U-NN": "unresolved item requiring explicit decision (28)",
       "M-NN": "milestone M0-M11",
-      "TAG": "source verification-obligation tags (17)",
-      "M0NN": "baseline mutation registry (18)",
+      "TAG": "source verification-obligation tags (18; 17 frozen-source + 1 post-audit addendum)",
+      "M0NN": "baseline mutation registry (21; 18 baseline + 3 post-audit)",
       "ROR-NNN": "first-sprint tasks (16)"
     },
     "documents": {
@@ -45,7 +45,7 @@
       "03-obligation-matrix.md": "all requirements with stable IDs, status, provenance",
       "04-dependency-graph.md": "section/object/verification dependency graphs + DOT",
       "05-terminology.md": "glossary, normalization rules, under-specified terms",
-      "06-contradictions-ambiguities.md": "findings C-01..C-76 with severity and status",
+      "06-contradictions-ambiguities.md": "findings C-01..C-77 with severity and status",
       "07-implementation-mapping.md": "obligations -> crates/modules; actual repo state; milestone crosswalk",
       "08-verification-mapping.md": "obligations -> tags/tests/evidence; claim ladder per theorem",
       "09-unresolved-decisions.md": "items U-01..U-34 requiring explicit architectural decisions",
@@ -166,7 +166,8 @@
         "R-COMPILE-02",
         "R-COMPILE-03",
         "R-COMPILE-04",
-        "R-COMPILE-05"
+        "R-COMPILE-05",
+        "R-COMPILE-06"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -264,7 +265,9 @@
       "requirements": [
         "R-KERN-01",
         "R-KERN-02",
-        "R-KERN-03"
+        "R-KERN-03",
+        "R-KERN-04",
+        "R-KERN-05"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -315,7 +318,8 @@
         "R-EFFECT-04",
         "R-EFFECT-05",
         "R-EFFECT-06",
-        "R-EFFECT-07"
+        "R-EFFECT-07",
+        "R-EFFECT-08"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -1270,6 +1274,27 @@
       "related_findings": []
     },
     {
+      "id": "R-COMPILE-06",
+      "section": "S-06",
+      "title": "Capability literals must be plan-bound (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-compiler"
+      ],
+      "verification": [
+        "embedded-literal battery"
+      ],
+      "related_findings": [
+        "U-22"
+      ]
+    },
+    {
       "id": "R-CALC-01",
       "section": "S-07",
       "title": "Machine Value domain (11 variants); Capability is opaque data",
@@ -1854,6 +1879,50 @@
       "related_findings": []
     },
     {
+      "id": "R-KERN-04",
+      "section": "S-10",
+      "title": "Holder-possession binding at the gate (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel"
+      ],
+      "verification": [
+        "M021",
+        "brute-force CapRef exhaustion from a non-holder"
+      ],
+      "related_findings": [
+        "C-77"
+      ]
+    },
+    {
+      "id": "R-KERN-05",
+      "section": "S-10",
+      "title": "CapabilityContext real possession type; snapshots carry it (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel",
+        "ror-persistence"
+      ],
+      "verification": [
+        "snapshot/recovery round-trip of possession sets"
+      ],
+      "related_findings": [
+        "C-77"
+      ]
+    },
+    {
       "id": "R-BUDGET-01",
       "section": "S-11",
       "title": "Budget structure <C=<F,I,D>, R=<M,S>, W>",
@@ -2176,6 +2245,27 @@
       ],
       "verification": [
         "conservation tests"
+      ],
+      "related_findings": []
+    },
+    {
+      "id": "R-EFFECT-08",
+      "section": "S-12",
+      "title": "Receipt-result admission: no authority via results (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "EFFECT-RECEIPT-RESULT-NO-AUTHORITY",
+        "M019",
+        "M020"
       ],
       "related_findings": []
     },
@@ -5103,6 +5193,23 @@
           "23830"
         ]
       }
+    },
+    {
+      "id": "C-77",
+      "title": "The v0.3 formal rules gate authorization with the acting actor's map (Authorized(κ(c), E, t), L8731/L8748) while the frozen kernel resolves CapRefs in a global arena with no holder parameter (authorize(&self, cap, effect, t), L6702–6712; trait L9738–9744; gate 6 L23891) — possession is assumed by the formal layer and absent from the operative gate (audit SEC-002; previously unregistered)",
+      "severity": "BLOCKING",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "8731",
+          "8748",
+          "6702-6712",
+          "9738-9744",
+          "23891"
+        ]
+      }
     }
   ],
   "unresolved": [
@@ -5546,6 +5653,27 @@
       "kills_evidence_for": [
         "R-EFFECT-06"
       ]
+    },
+    {
+      "id": "M019",
+      "defect": "resume with Value::Capability result",
+      "kills_evidence_for": [
+        "R-EFFECT-08"
+      ]
+    },
+    {
+      "id": "M020",
+      "defect": "resume with closure result",
+      "kills_evidence_for": [
+        "R-EFFECT-08"
+      ]
+    },
+    {
+      "id": "M021",
+      "defect": "authorize without possession check",
+      "kills_evidence_for": [
+        "R-KERN-04"
+      ]
     }
   ],
   "verification_tags": [
@@ -5675,6 +5803,13 @@
         "R-PERSIST-05"
       ],
       "milestone": "M7;M10"
+    },
+    {
+      "tag": "EFFECT-RECEIPT-RESULT-NO-AUTHORITY",
+      "obligations": [
+        "R-EFFECT-08"
+      ],
+      "milestone": "M5 (post-audit addendum)"
     }
   ],
   "crash_matrix": [
@@ -5809,7 +5944,9 @@
         "R-CAP-09",
         "R-KERN-01",
         "R-KERN-02",
-        "R-KERN-03"
+        "R-KERN-03",
+        "R-KERN-04",
+        "R-KERN-05"
       ]
     },
     {
@@ -5842,7 +5979,8 @@
         "R-HOST-02",
         "R-HOST-03",
         "R-HOST-04",
-        "R-HOST-05"
+        "R-HOST-05",
+        "R-EFFECT-08"
       ]
     },
     {
@@ -6133,6 +6271,7 @@
         "R-COMPILE-03",
         "R-COMPILE-04",
         "R-COMPILE-05",
+        "R-COMPILE-06",
         "R-ORDER-03"
       ],
       "depends_on": [
@@ -6154,6 +6293,8 @@
         "R-KERN-01",
         "R-KERN-02",
         "R-KERN-03",
+        "R-KERN-04",
+        "R-KERN-05",
         "R-TRUST-03"
       ],
       "depends_on": [
@@ -6180,6 +6321,7 @@
         "R-EFFECT-05",
         "R-EFFECT-06",
         "R-EFFECT-07",
+        "R-EFFECT-08",
         "R-ACTOR-01",
         "R-ACTOR-02",
         "R-ACTOR-03",
@@ -6219,7 +6361,8 @@
         "R-RECOV-04",
         "R-RECOV-05",
         "R-RECOV-06",
-        "R-RECOV-07"
+        "R-RECOV-07",
+        "R-KERN-05"
       ],
       "depends_on": [
         "ror-core"

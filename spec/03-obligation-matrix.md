@@ -40,6 +40,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-COMPILE-03 | Combined static judgment (type, effects, capability req, budget bound) | L3874–3905 | SPECIFIED | ror-compiler | U-22 (J2 re-spec gap) |
 | R-COMPILE-04 | Plan immutability / temporal integrity | L1722–1745, L2052–2070 | SPECIFIED | ror-compiler | — |
 | R-COMPILE-05 | ExecutablePlan constructors private to compiler | L39296–39318 | SPECIFIED | ror-compiler | visibility review |
+| R-COMPILE-06 | Embedded Value::Capability literals must be plan-bound: foreign/garbage/undeclared capability literal is a compilation fault (U-22 security-direction closure) | addendum (SEC-002) | SPECIFIED | ror-compiler | compiler conformance: embedded-literal battery |
 
 ## S-07 Calculus / S-08 CEK
 | ID | Obligation (short) | Provenance | Status | Impl→ | Verify→ |
@@ -79,6 +80,8 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-KERN-01 | CapRef opaque, generation-safe, private fields, kernel-only construction | L9127–9133, L10178–10208 | SPECIFIED | ror-core, ror-kernel | visibility review |
 | R-KERN-02 | Kernel API: authorize/derive/validate with logical time | L6672–6728, L19153–19175 | SPECIFIED | ror-kernel | exactly-one-call mock tests |
 | R-KERN-03 | Authority internals pub(crate)/inaccessible | L39397–39407 | SPECIFIED | ror-kernel | visibility + mutation M005-class |
+| R-KERN-04 | Possession-gated authorization: authorize(holder, cap, effect, t) resolves the CapRef through the actor capability context; global-arena no-holder authorize superseded; CapRef bits never suffice (C-77 resolved) | addendum (SEC-002) | SPECIFIED | ror-kernel | M021, brute-force CapRef exhaustion from a non-holder |
+| R-KERN-05 | CapabilityContext real frozen possession type; unit-type sketch superseded; snapshots carry capability context; recovery reconstructs possession before gate authorization | addendum (SEC-002) | SPECIFIED | ror-kernel, ror-persistence | snapshot/recovery round-trip of possession sets |
 | R-BUDGET-01 | B = ⟨C=⟨F,I,D⟩, R=⟨M,S⟩, W⟩ semantics | L8683–8700, L9161–9175 | SPECIFIED | ror-core | U-01 (D semantics) |
 | R-BUDGET-02 | Checked arithmetic; no saturating_sub | L9207–9245, L38044–38046 | SPECIFIED | ror-core | M007, M009 |
 | R-BUDGET-03 | ReserveOK / ReleaseOK predicates | L7487–7520, L8692–8696 | SPECIFIED | ror-core | reservation property tests |
@@ -98,6 +101,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-EFFECT-05 | complete_max affordability at issuance | L25799–25825 | SPECIFIED | ror-runtime | budget escrow tests |
 | R-EFFECT-06 | Receipt validates ID + digest; mismatch ⇒ ReplayCorruption, no resume | L23949–24002, L25952–25970 | SPECIFIED | ror-runtime | EFFECT-RECEIPT-DIGEST-VALIDATION, M017, M018 |
 | R-EFFECT-07 | Completion accounting (charge complete, release reservation, log, resume) | L23949–24002 | SPECIFIED | ror-runtime | conservation tests |
+| R-EFFECT-08 | Receipt-result admission: recursive contains_capability over the result payload at any nesting depth; no capability, no closure; data-domain only; host error via declared closed fault mapping only | addendum (SEC-001) | SPECIFIED | ror-runtime | EFFECT-RECEIPT-RESULT-NO-AUTHORITY, M019, M020 |
 | R-DUR-01 | HostInvoked ⇒ DurableIssued | L35150–35156, L37910 | SPECIFIED | ror-runtime, ror-persistence | EFFECT-ISSUE-DURABLE-BEFORE-HOST |
 | R-DUR-02 | Issuance transaction order (7 steps, 2 fsyncs) | L35150–35158 | SPECIFIED | ror-persistence | crash harness T0–T4 |
 | R-DUR-03 | Causal effect protocol (Issued⇒Prepared; Completed⇒Issued; Reconciled⇒Issued; ID+digest identity) | L35111–35144, L37953–37965 | SPECIFIED | ror-persistence | journal validator, M017 |
@@ -194,4 +198,4 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-CLAIM-03 | Engineering response format; CONFLICT reporting | L38808–38846 | SPECIFIED | process | — |
 | R-CLAIM-04 | Start condition (no new semantic phase; reference alongside) | L38921–38928 | SPECIFIED | process | — |
 
-**Total: 148 obligations.** All `SPECIFIED`. None may be promoted without repository evidence per `00-overview.md` §2.
+**Total: 152 obligations** (148 transcribed from the frozen source + 4 post-audit frozen addenda: R-COMPILE-06, R-KERN-04, R-KERN-05, R-EFFECT-08). All `SPECIFIED`. None may be promoted without repository evidence per `00-overview.md` §2.

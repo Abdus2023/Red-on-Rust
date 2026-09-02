@@ -19,13 +19,13 @@ sections = [
  ("S-03","Part I — Foundations","Trust model and trusted computing base",["R-TRUST-01","R-TRUST-02","R-TRUST-03"],prov("27611-27624","28178-28230","37722-37748"),None),
  ("S-04","Part I — Foundations","System architecture and component boundaries",["R-ARCH-01","R-ARCH-02","R-ARCH-03","R-ARCH-04"],prov("37750-37790","9059-9118","39036-39195"),None),
  ("S-05","Part I — Foundations","LLM / planner boundary",["R-PLANNER-01","R-PLANNER-02","R-PLANNER-03","R-PLANNER-04","R-PLANNER-05"],prov("27150-27480","27920-27931","37750-37790"),None),
- ("S-06","Part I — Foundations","Compilation boundary",["R-COMPILE-01","R-COMPILE-02","R-COMPILE-03","R-COMPILE-04","R-COMPILE-05"],prov("37750-37790","9059-9097","39253-39308","1722-1775"),"U-22"),
+ ("S-06","Part I — Foundations","Compilation boundary",["R-COMPILE-01","R-COMPILE-02","R-COMPILE-03","R-COMPILE-04","R-COMPILE-05","R-COMPILE-06"],prov("37750-37790","9059-9097","39253-39308","1722-1775"),"U-22"),
  ("S-07","Part II — Language and machine semantics","Core calculus (syntax)",["R-CALC-01","R-CALC-02","R-CALC-03","R-CALC-04","R-CALC-05","R-CALC-06","R-CALC-07","R-CALC-08"],prov("12075-12195","3368-4062","23726-23820","8653-8707"),"U-04;U-06"),
  ("S-08","Part II — Language and machine semantics","CEK machine",["R-CEK-01","R-CEK-02","R-CEK-03","R-CEK-04","R-CEK-05","R-CEK-06","R-CEK-07"],prov("16861-18084","23821-23856","37800-37862","14632-14642"),None),
  ("S-09","Part II — Language and machine semantics","Capability algebra",["R-CAP-01","R-CAP-02","R-CAP-03","R-CAP-04","R-CAP-05","R-CAP-06","R-CAP-07","R-CAP-08","R-CAP-09"],prov("6344-6671","6672-6815"),None),
- ("S-10","Part II — Language and machine semantics","Capability kernel",["R-KERN-01","R-KERN-02","R-KERN-03"],prov("6672-6729","19077-19200","9119-9135","39370-39410"),None),
+ ("S-10","Part II — Language and machine semantics","Capability kernel",["R-KERN-01","R-KERN-02","R-KERN-03","R-KERN-04","R-KERN-05"],prov("6672-6729","19077-19200","9119-9135","39370-39410"),None),
  ("S-11","Part III — Resources","Budget model",["R-BUDGET-01","R-BUDGET-02","R-BUDGET-03","R-BUDGET-04","R-BUDGET-05","R-BUDGET-06","R-BUDGET-07","R-BUDGET-08"],prov("8653-9050","9140-9245","28203-28240"),"U-01;U-07"),
- ("S-12","Part IV — Effects","Effect model and request sequence",["R-EFFECT-01","R-EFFECT-02","R-EFFECT-03","R-EFFECT-04","R-EFFECT-05","R-EFFECT-06","R-EFFECT-07"],prov("37891-37922","23857-24002","25799-25825"),"C-01"),
+ ("S-12","Part IV — Effects","Effect model and request sequence",["R-EFFECT-01","R-EFFECT-02","R-EFFECT-03","R-EFFECT-04","R-EFFECT-05","R-EFFECT-06","R-EFFECT-07","R-EFFECT-08"],prov("37891-37922","23857-24002","25799-25825"),"C-01"),
  ("S-13","Part IV — Effects","Transactional issuance and durability boundary",["R-DUR-01","R-DUR-02","R-DUR-03","R-DUR-04","R-DUR-05"],prov("35078-35258","37908-37981"),None),
  ("S-14","Part IV — Effects","Host boundary and replay",["R-HOST-01","R-HOST-02","R-HOST-03","R-HOST-04","R-HOST-05"],prov("25972-25996","37985-38000","24003-24030"),"U-06"),
  ("S-15","Part V — Concurrency","Actors and deterministic scheduling",["R-ACTOR-01","R-ACTOR-02","R-ACTOR-03","R-ACTOR-04","R-ACTOR-05","R-ACTOR-06","R-ACTOR-07","R-ACTOR-08"],prov("25457-26108","24069-25428"),"U-03;U-05"),
@@ -73,6 +73,7 @@ requirements = [
  ("R-COMPILE-03","S-06","Combined static judgment (type, effects, capability req, budget bound)","3874-3905",SPEC,[],["ror-compiler"],["U-22 (J2 gap)"],["U-22"]),
  ("R-COMPILE-04","S-06","Plan immutability / temporal integrity","1722-1745;2052-2070",SPEC,[],["ror-compiler"],[],[]),
  ("R-COMPILE-05","S-06","ExecutablePlan constructors private to compiler","39296-39318",SPEC,[],["ror-compiler"],["visibility review"],[]),
+ ("R-COMPILE-06","S-06","Capability literals must be plan-bound (frozen addendum)","addendum",SPEC,[],["ror-compiler"],["embedded-literal battery"],["U-22"]),
  ("R-CALC-01","S-07","Machine Value domain (11 variants); Capability is opaque data","12290-12312",SPEC,[],["ror-core"],[],["C-03","U-09"]),
  ("R-CALC-02","S-07","Frozen Expr AST (12 constructors, declarative only)","12132-12170",SPEC,[],["ror-core"],[],["C-04","U-04","U-05"]),
  ("R-CALC-03","S-07","Symbol(u32) runtime identity; compiler maps names","12250-12270",SPEC,[],["ror-core","ror-compiler"],[],[]),
@@ -100,6 +101,8 @@ requirements = [
  ("R-KERN-01","S-10","CapRef opaque, generation-safe, private fields, kernel-only construction","9127-9133;10178-10208",SPEC,[],["ror-core","ror-kernel"],["visibility review"],["C-14"]),
  ("R-KERN-02","S-10","Kernel API: authorize/derive/validate with logical time","6672-6728;19153-19175",SPEC,[],["ror-kernel"],["exactly-one-call mock tests"],[]),
  ("R-KERN-03","S-10","Authority internals inaccessible to evaluator/runtime","39397-39407",SPEC,[],["ror-kernel"],["visibility + mutation M005-class"],[]),
+ ("R-KERN-04","S-10","Holder-possession binding at the gate (frozen addendum)","addendum",SPEC,[],["ror-kernel"],["M021","brute-force CapRef exhaustion from a non-holder"],["C-77"]),
+ ("R-KERN-05","S-10","CapabilityContext real possession type; snapshots carry it (frozen addendum)","addendum",SPEC,[],["ror-kernel","ror-persistence"],["snapshot/recovery round-trip of possession sets"],["C-77"]),
  ("R-BUDGET-01","S-11","Budget structure <C=<F,I,D>, R=<M,S>, W>","8683-8700;9161-9175",SPEC,[],["ror-core"],["U-01 (D semantics)"],["U-01"]),
  ("R-BUDGET-02","S-11","Checked arithmetic; no saturating_sub","9207-9245;38044-38046",SPEC,[],["ror-core"],["M007","M009"],[]),
  ("R-BUDGET-03","S-11","ReserveOK / ReleaseOK predicates","7487-7520;8692-8696",SPEC,[],["ror-core"],["reservation property tests"],["C-07"]),
@@ -115,6 +118,7 @@ requirements = [
  ("R-EFFECT-05","S-12","complete_max affordability at issuance","25799-25825",SPEC,[],["ror-runtime"],["budget escrow tests"],["C-23"]),
  ("R-EFFECT-06","S-12","Receipt validates ID + digest; mismatch implies ReplayCorruption, no resume","23949-24002;25952-25970",SPEC,[],["ror-runtime"],["EFFECT-RECEIPT-DIGEST-VALIDATION","M017","M018"],[]),
  ("R-EFFECT-07","S-12","Completion accounting (charge complete, release reservation, log, resume)","23949-24002",SPEC,[],["ror-runtime"],["conservation tests"],[]),
+ ("R-EFFECT-08","S-12","Receipt-result admission: no authority via results (frozen addendum)","addendum",SPEC,[],["ror-runtime"],["EFFECT-RECEIPT-RESULT-NO-AUTHORITY","M019","M020"],[]),
  ("R-DUR-01","S-13","HostInvoked implies DurableIssued","35150-35156;37910",SPEC,[],["ror-runtime","ror-persistence"],["EFFECT-ISSUE-DURABLE-BEFORE-HOST"],[]),
  ("R-DUR-02","S-13","Issuance transaction order (7 steps, 2 fsyncs)","35150-35158",SPEC,[],["ror-persistence"],["crash harness T0-T4"],[]),
  ("R-DUR-03","S-13","Causal effect protocol (Issued=>Prepared; Completed=>Issued; Reconciled=>Issued; ID+digest identity)","35111-35144;37953-37965",SPEC,[],["ror-persistence"],["journal validator","M017"],["C-44"]),
@@ -307,6 +311,8 @@ def _status(cell):
         return "open"
     if "resolved-by-later-text" in low:
         return "resolved-by-later-text"
+    if "resolved-by-addendum" in low:
+        return "resolved-by-addendum"
     if "superseded" in low:
         return "info-superseded"
     if low.startswith("info"):
@@ -432,6 +438,9 @@ mutations = [
  ("M016","ignore checksum mismatch",["R-PERSIST-02"]),
  ("M017","accept mismatched EffectDigest",["R-EFFECT-06","R-DUR-03"]),
  ("M018","resume after corrupted receipt",["R-EFFECT-06"]),
+ ("M019","resume with Value::Capability result",["R-EFFECT-08"]),
+ ("M020","resume with closure result",["R-EFFECT-08"]),
+ ("M021","authorize without possession check",["R-KERN-04"]),
 ]
 
 tags = [
@@ -452,6 +461,7 @@ tags = [
  ("WAL-GAP-REJECT",["R-PERSIST-06"],"M7 (alias emphasis)"),
  ("RECOVERY-ISSUED-INDETERMINATE",["R-DUR-04","R-RECOV-02"],"M10"),
  ("SNAPSHOT-COMMIT-INTEGRITY",["R-PERSIST-05"],"M7;M10"),
+ ("EFFECT-RECEIPT-RESULT-NO-AUTHORITY",["R-EFFECT-08"],"M5 (post-audit addendum)"),
 ]
 
 crash_matrix = [
@@ -469,8 +479,8 @@ milestones = [
  ("M1","Canonical serialization",["golden vectors pass","round trips pass","malformed inputs reject","duplicate keys reject","canonical bytes deterministic"],["R-CANON-01","R-CANON-02","R-CANON-03","R-CANON-04","R-CANON-05","R-CANON-06","R-CANON-07","R-CANON-08","R-CANON-09","R-CANON-10","R-CANON-11"]),
  ("M2","Pure CEK",["differential equivalence for Value Var Let Seq If"],["R-CEK-01","R-CEK-02","R-CEK-06","R-CEK-07","R-REF-01"]),
  ("M3","Lambda / Call",["CEK-CALL-ARITY-PRECHECK","CEK-CALL-ARGS-LTR","CEK-CLOSURE-LEXICAL-CAPTURE","deep-call stress"],["R-CEK-03","R-CEK-04","R-CEK-05"]),
- ("M4","Capability / Attenuation",["CAP-DERIVE-NO-AMPLIFICATION","revocation","expiration","lexical capability binding","independent reference capability algebra"],["R-CAP-01","R-CAP-02","R-CAP-03","R-CAP-04","R-CAP-05","R-CAP-06","R-CAP-07","R-CAP-08","R-CAP-09","R-KERN-01","R-KERN-02","R-KERN-03"]),
- ("M5","Effects",["authorization","budget gates","deadline","host policy","EffectId","EffectDigest","durable issuance","receipt validation"],["R-EFFECT-01","R-EFFECT-02","R-EFFECT-03","R-EFFECT-04","R-EFFECT-05","R-EFFECT-06","R-EFFECT-07","R-DUR-01","R-DUR-02","R-DUR-03","R-DUR-04","R-DUR-05","R-HOST-01","R-HOST-02","R-HOST-03","R-HOST-04","R-HOST-05"]),
+ ("M4","Capability / Attenuation",["CAP-DERIVE-NO-AMPLIFICATION","revocation","expiration","lexical capability binding","independent reference capability algebra"],["R-CAP-01","R-CAP-02","R-CAP-03","R-CAP-04","R-CAP-05","R-CAP-06","R-CAP-07","R-CAP-08","R-CAP-09","R-KERN-01","R-KERN-02","R-KERN-03","R-KERN-04","R-KERN-05"]),
+ ("M5","Effects",["authorization","budget gates","deadline","host policy","EffectId","EffectDigest","durable issuance","receipt validation"],["R-EFFECT-01","R-EFFECT-02","R-EFFECT-03","R-EFFECT-04","R-EFFECT-05","R-EFFECT-06","R-EFFECT-07","R-DUR-01","R-DUR-02","R-DUR-03","R-DUR-04","R-DUR-05","R-HOST-01","R-HOST-02","R-HOST-03","R-HOST-04","R-HOST-05","R-EFFECT-08"]),
  ("M6","Actors",["FIFO scheduler","FIFO mailbox","spawn isolation","send/receive","delegation","blocked/wakeup semantics"],["R-ACTOR-01","R-ACTOR-02","R-ACTOR-03","R-ACTOR-04","R-ACTOR-05","R-ACTOR-06","R-ACTOR-07","R-ACTOR-08","R-MARSHAL-01","R-MARSHAL-02","R-MARSHAL-03","R-MARSHAL-04"]),
  ("M7","Persistence",["WAL","snapshot","effect journal","checksum","sequence continuity","recovery"],["R-PERSIST-01","R-PERSIST-02","R-PERSIST-03","R-PERSIST-04","R-PERSIST-05","R-PERSIST-06","R-RECOV-01","R-RECOV-03","R-RECOV-04","R-RECOV-05","R-RECOV-06"]),
  ("M8","Differential system",["generated programs","reference execution","production execution","normalized comparison","first-divergence reporting","shrinking"],["R-REF-01","R-REF-02","R-REF-03","R-REF-04","R-REF-05","R-REF-06","R-TEST-02","R-TEST-03","R-TEST-07"]),
@@ -500,10 +510,10 @@ sprint = [
 
 crates = [
  ("ror-core","Lowest-level semantic domain types; std-only",["R-CALC-01","R-CALC-02","R-CALC-03","R-CALC-04","R-CALC-05","R-CALC-06","R-CALC-08","R-BUDGET-01","R-BUDGET-02","R-BUDGET-03","R-BUDGET-04","R-BUDGET-05","R-BUDGET-06","R-BUDGET-07","R-CAP-01","R-KERN-01","R-CANON-01","R-CANON-02","R-CANON-03","R-CANON-04","R-CANON-05","R-CANON-06","R-CANON-07","R-CANON-08","R-CANON-09","R-CANON-10","R-CANON-11"],[]),
- ("ror-compiler","Block -> ExecutablePlan; plan constructors private",["R-ARCH-03","R-COMPILE-01","R-COMPILE-02","R-COMPILE-03","R-COMPILE-04","R-COMPILE-05","R-ORDER-03"],["ror-core"]),
- ("ror-kernel","CapabilityKernel: derive/authorize/validate/revocation; authority storage",["R-CAP-02","R-CAP-03","R-CAP-04","R-CAP-05","R-CAP-06","R-CAP-07","R-CAP-08","R-CAP-09","R-KERN-01","R-KERN-02","R-KERN-03","R-TRUST-03"],["ror-core"]),
- ("ror-runtime","CEK machine, actors, scheduler, effects, marshalling",["R-ARCH-01","R-CORE-08","R-CEK-01","R-CEK-02","R-CEK-03","R-CEK-04","R-CEK-05","R-CEK-06","R-CEK-07","R-EFFECT-01","R-EFFECT-02","R-EFFECT-03","R-EFFECT-04","R-EFFECT-05","R-EFFECT-06","R-EFFECT-07","R-ACTOR-01","R-ACTOR-02","R-ACTOR-03","R-ACTOR-04","R-ACTOR-05","R-ACTOR-06","R-ACTOR-07","R-ACTOR-08","R-MARSHAL-01","R-MARSHAL-02","R-MARSHAL-03","R-MARSHAL-04"],["ror-core","ror-kernel"]),
- ("ror-persistence","WAL, snapshots, effect journal, recovery",["R-DUR-01","R-DUR-02","R-DUR-03","R-DUR-04","R-DUR-05","R-PERSIST-01","R-PERSIST-02","R-PERSIST-03","R-PERSIST-04","R-PERSIST-05","R-PERSIST-06","R-RECOV-01","R-RECOV-02","R-RECOV-03","R-RECOV-04","R-RECOV-05","R-RECOV-06","R-RECOV-07"],["ror-core"]),
+ ("ror-compiler","Block -> ExecutablePlan; plan constructors private",["R-ARCH-03","R-COMPILE-01","R-COMPILE-02","R-COMPILE-03","R-COMPILE-04","R-COMPILE-05","R-COMPILE-06","R-ORDER-03"],["ror-core"]),
+ ("ror-kernel","CapabilityKernel: derive/authorize/validate/revocation; authority storage",["R-CAP-02","R-CAP-03","R-CAP-04","R-CAP-05","R-CAP-06","R-CAP-07","R-CAP-08","R-CAP-09","R-KERN-01","R-KERN-02","R-KERN-03","R-KERN-04","R-KERN-05","R-TRUST-03"],["ror-core"]),
+ ("ror-runtime","CEK machine, actors, scheduler, effects, marshalling",["R-ARCH-01","R-CORE-08","R-CEK-01","R-CEK-02","R-CEK-03","R-CEK-04","R-CEK-05","R-CEK-06","R-CEK-07","R-EFFECT-01","R-EFFECT-02","R-EFFECT-03","R-EFFECT-04","R-EFFECT-05","R-EFFECT-06","R-EFFECT-07","R-EFFECT-08","R-ACTOR-01","R-ACTOR-02","R-ACTOR-03","R-ACTOR-04","R-ACTOR-05","R-ACTOR-06","R-ACTOR-07","R-ACTOR-08","R-MARSHAL-01","R-MARSHAL-02","R-MARSHAL-03","R-MARSHAL-04"],["ror-core","ror-kernel"]),
+ ("ror-persistence","WAL, snapshots, effect journal, recovery",["R-DUR-01","R-DUR-02","R-DUR-03","R-DUR-04","R-DUR-05","R-PERSIST-01","R-PERSIST-02","R-PERSIST-03","R-PERSIST-04","R-PERSIST-05","R-PERSIST-06","R-RECOV-01","R-RECOV-02","R-RECOV-03","R-RECOV-04","R-RECOV-05","R-RECOV-06","R-RECOV-07","R-KERN-05"],["ror-core"]),
  ("ror-host","Host execution and replay boundaries",["R-HOST-01","R-HOST-02","R-HOST-03","R-HOST-04","R-HOST-05"],["ror-core"]),
  ("ror-agent","Planner/observation/supervisor integration",["R-ARCH-01","R-PLANNER-01","R-PLANNER-02","R-PLANNER-03","R-PLANNER-04","R-PLANNER-05"],["ror-core","ror-compiler","ror-runtime"]),
  ("ror-reference","Independent executable semantic model",["R-REF-01","R-REF-02","R-REF-03","R-REF-04"],["frozen semantics only (no production core deps)"]),
@@ -526,6 +536,12 @@ section_edges = [
  ("S-23","S-22"),("S-21","S-23"),
 ]
 
+def _prov(p):
+    if p == "addendum":
+        return {"file": "01-canonical-specification.md", "line_ranges": [],
+                "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"}
+    return prov(*p.split(";"))
+
 index = {
   "meta": {
     "specification": "Red-on-Rust frozen technical specification (canonicalized)",
@@ -546,12 +562,12 @@ index = {
     },
     "id_schemes": {
       "S-NN": "specification section (24)",
-      "R-AREA-NN": "normative requirement/obligation (148)",
+      "R-AREA-NN": "normative requirement/obligation (152; 148 source-transcribed + 4 post-audit frozen addenda)",
       "C-NN": f"contradiction/ambiguity finding ({len(findings)} indexed; {len(findings)+len(INDEX_EXCLUSIONS)} rows in spec/06, incl. pointer C-39 which duplicates C-25)",
       "U-NN": f"unresolved item requiring explicit decision ({len(unresolved)})",
       "M-NN": "milestone M0-M11",
-      "TAG": "source verification-obligation tags (17)",
-      "M0NN": "baseline mutation registry (18)",
+      "TAG": "source verification-obligation tags (18; 17 frozen-source + 1 post-audit addendum)",
+      "M0NN": "baseline mutation registry (21; 18 baseline + 3 post-audit)",
       "ROR-NNN": "first-sprint tasks (16)"
     },
     "documents": {
@@ -572,7 +588,7 @@ index = {
     for (s,p,t,reqs,pr,u) in sections
   ],
   "requirements": [
-    {"id": r, "section": s, "title": t, "provenance": prov(*p.split(";")), "status": st,
+    {"id": r, "section": s, "title": t, "provenance": _prov(p), "status": st,
      "dependencies": deps, "implementation": impl, "verification": ver, "related_findings": rel}
     for (r,s,t,p,st,deps,impl,ver,rel) in requirements
   ],

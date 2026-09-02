@@ -1,11 +1,15 @@
 # SEC-001 / SEC-002 frozen-addendum draft — receipt-result admission + holder-possession binding
 
-**Status: DRAFT FOR SPECIFICATION-OWNER ADOPTION — not applied.** No frozen or
-canonical text is changed by this file. The exact edit set lives in
-`audit/spec_addendum.py` (this draft is generated from its constants, so the two
-cannot drift); `python3 audit/spec_addendum.py` proves it on temporary copies,
-`--apply` executes it in place. Rollback after apply: `git revert` of the
-adoption commit (the addendum is additive and quoted-not-deleted throughout).
+**Status: APPLIED** via `audit/spec_addendum.py --apply` (adoption commit on
+`arena/01a063c4-red-on-rust`; post-apply verification: 152 obligations /
+152 matrix rows / 148 records, `spec/_check.py` D1=0 exit 0 with only the
+pre-existing adjudicated warnings, `req/_validate.py` 0 errors, index rebuilt
+at 152/76/21/18 with C-77 `resolved-by-addendum`). This file is retained as
+the review record of exactly what was adopted and why; rollback is
+`git revert` of the adoption commit. The exact edit set lives in
+`audit/spec_addendum.py` (this draft was generated from its constants, so the
+two cannot drift); `python3 audit/spec_addendum.py` re-proves the (now
+idempotency-guarded) edit set on temporary copies.
 
 ## 1. What this freezes (audit report §6 item 2)
 

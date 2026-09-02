@@ -29,7 +29,13 @@ The master prompt §21 COVERAGE (L38544–38577) freezes this tag list; mileston
 
 **Tag normalization note:** the README (L41969–42010) lists a slightly different example set (e.g., `CEK-CALL-ARITY-PRECHECK`, `BUDGET-ESCROW-CONSERVATION`, `MARSHAL-CAPABILITY-REJECT`); the master-prompt list above is the frozen canonical set; `MARSHAL-CAPABILITY-REJECT` ≙ `MARSHAL-NO-RAW-CAPABILITY` (C-10, terminology 05 §5).
 
-## 2. Mutation registry → obligation map (M001–M018, R-TEST-04)
+**Post-audit addendum tag** (not part of the frozen source set; added by the SEC-001 remediation, obligation R-EFFECT-08):
+
+| Tag | Obligation(s) covered | Required evidence | Repo evidence |
+|---|---|---|---|
+| `EFFECT-RECEIPT-RESULT-NO-AUTHORITY` | R-EFFECT-08 (post-audit addendum) | Receipt-result admission: result payload is data-domain only, capability/closure-free at any nesting depth, verified before resumption (mutations M019, M020) | NONE |
+
+## 2. Mutation registry → obligation map (M001–M021, R-TEST-04)
 
 | Mutant | Injected defect | Obligation it must kill evidence for |
 |---|---|---|
@@ -51,6 +57,9 @@ The master prompt §21 COVERAGE (L38544–38577) freezes this tag list; mileston
 | M016 | ignore checksum mismatch | R-PERSIST-02 |
 | M017 | accept mismatched EffectDigest | R-EFFECT-06, R-DUR-03 |
 | M018 | resume after corrupted receipt | R-EFFECT-06 |
+| M019 | resume with `Value::Capability` result | R-EFFECT-08 |
+| M020 | resume with closure result | R-EFFECT-08 |
+| M021 | authorize without possession check | R-KERN-04 |
 
 **Evidence status:** registry is `SPECIFIED` (frozen content). No mutant is registered, injected, or killed in this repository; `MutationKillRate` is **not measured** (nothing to measure). 100% is a target, not a current claim (R-CLAIM-01).
 

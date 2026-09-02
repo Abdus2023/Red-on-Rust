@@ -113,6 +113,8 @@ The production implementation and executable reference model MUST NOT share core
 
 **R-COMPILE-05.** `ExecutablePlan` constructors MUST remain private to the compiler crate.  [INFORMATIVE (gap): The detailed effect-set inference (v1 judgment J2, `Γ ⊢ e ↝ Φ`) is not re-specified]. *(L39296–39318.)*
 
+**R-COMPILE-06 (capability literals must be plan-bound — frozen addendum).** A `Block` MUST NOT carry a `Value::Capability` literal that is not plan-bound: compilation MUST fault on any embedded capability literal — foreign, garbage-generation, or own-but-undeclared — unless the compiler itself substituted it from the plan's declared capability set. Undecided capability-analysis depth (U-22) MUST NOT leave embedded authority literals unconstrained; this closes the U-22 gap in the security direction. *(Frozen addendum — post-audit remediation SEC-002 item 3; additive per R-SCOPE-03; extends R-COMPILE-02/R-COMPILE-03; no source transcription.)*
+
 **Non-normative (gap).** The detailed effect-set inference (v1 judgment J2, `Γ ⊢ e ↝ Φ`) is not re-specified in the frozen pipeline stages; see `U-22` in `09-unresolved-decisions.md`.
 
 ---
@@ -198,6 +200,10 @@ The production implementation and executable reference model MUST NOT share core
 
 **R-KERN-03 (substrate privacy).** `AuthorityNode` and all authority internals MUST remain `pub(crate)`/inaccessible to evaluator and runtime consumers. No hidden authority inspection.
 
+**R-KERN-04 (holder-possession binding at the gate — frozen addendum).** Authority exercise at the machine's authorization gate MUST be possession-gated: `Authorized_gated(actor, c, E, t) ⇔ c ∈ CapabilityContext(actor) ∧ Valid(c, t) ∧ Authorized(κ(c), E, t)` — possession is a conjunct of the gated authorization predicate, not a marshalling courtesy. The kernel `authorize` API MUST be holder-parameterized (`authorize(holder, cap, effect, t)`) and MUST resolve the `CapRef` through the requesting actor's capability context; the global-arena no-holder form (`authorize(cap, effect, t)`) is SUPERSEDED (quoted, not deleted). `CapRef` bits MUST NOT suffice to exercise authority — `CapRef ≠ authority ownership` is a kernel-side possession rule. This binds the per-actor reading of the v0.3 formal rules (`Authorized(κ(c), E, t)`) over the kernel-substrate global arena (conflict C-77, resolved by this addendum). *(Frozen addendum — post-audit remediation SEC-002 items 1 and 4; additive per R-SCOPE-03; extends R-CAP-06/R-KERN-02; no source transcription.)*
+
+**R-KERN-05 (CapabilityContext is a real possession type — frozen addendum).** `CapabilityContext` MUST be a real frozen type: the per-actor possession structure mapping the actor's capability slots to live `CapRef`s. The unit-type sketch (`pub type CapabilityContext = ();`) is SUPERSEDED (quoted, not deleted). Snapshots MUST carry the capability context, and recovery MUST reconstruct each actor's possession set before any gate authorization — a possession gate that does not survive recovery enforces nothing. *(Frozen addendum — post-audit remediation SEC-002 item 2; additive per R-SCOPE-03; extends R-KERN-02/R-KERN-04; no source transcription.)*
+
 ## S-11 Budget model
 
 **R-BUDGET-01 (structure).** Budget `B = ⟨C, R, W⟩` where `C = ⟨F, I, D⟩` (consumables: fuel, I/O, duration), `R = ⟨M, S⟩` (reserved: memory bytes, concurrency slots), `W ∈ ℕ ∪ {∞}` (absolute logical-time deadline; `Deadline(None)` = infinity). Consumables are strictly decreasing and never returned; reserved capacities are held for a scope then released; the deadline is checked against logical time, not wall-clock.
@@ -256,6 +262,8 @@ The production implementation and executable reference model MUST NOT share core
 **R-EFFECT-06 (causal receipt validation).** A receipt MUST be validated against **both** `EffectId` and `EffectDigest` of the pending effect before resumption: mismatch ⇒ `fault(ReplayCorruption)`, continuation is NOT resumed, reservation is NOT released. `EffectReceipt { id, effect_digest, result: Result<Value, HostFault> }`.
 
 **R-EFFECT-07 (completion accounting).** On valid receipt: charge `complete` (≤ `complete_max`) from consumables, release the reservation, append `EffectCompleted { id, digest, result }` to the event log, resume the continuation with the receipt's value (host faults map to the fault/value mapping defined by the machine).
+
+**R-EFFECT-08 (receipt-result admission — frozen addendum).** A receipt may complete an effect; it MUST NOT confer authority. Before any continuation is resumed, the machine MUST run the recursive `contains_capability` predicate over the receipt's result payload at every nesting depth (`List`/`Map`/`Tuple` included) and MUST fault (`Fault::InvalidReceipt` family) on any `Value::Capability` and on any host `Function`/closure value. An admitted result MUST lie in the canonical data-domain (the 8-variant codec value set); host error results MUST enter machine values only through a declared, closed fault mapping — raw debug-formatted host text MUST NOT. This extends R-EFFECT-06 (causal validation of `id` and digest) from the receipt's identity to its payload: every value-crossing — messages, receipts, snapshots, replay traces — is subject to the no-raw-capability-transfer rule (R-CORE-07). *(Frozen addendum — post-audit remediation SEC-001 items 1–4; additive per R-SCOPE-03; extends R-EFFECT-06/R-EFFECT-07; no source transcription.)*
 
 ## S-13 Transactional issuance and durability boundary
 
