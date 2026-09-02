@@ -157,6 +157,46 @@ Four further decisions come from the sweep that checked every `Enum::Variant` pa
 ---
 
 
+### U-30 — Which payload does `MarshalledValue` carry — `Value` or canonical `Vec<u8>`?
+- **Where:** R-MARSHAL-01, R-MARSHAL-02, R-MARSHAL-03, R-ACTOR-03 (S-15…S-17); `term/` T-79, T-39, T-31.
+- **State of source:** five declarations in two payloads — `MarshalledValue(Value)` at L9925 (turn [17]), L10828 (turn [18], with `new(v: Value)` at L10831 and `into_inner(self) -> Value` at L10832) and L24765 (turn [31]); `MarshalledValue(pub Vec<u8>)` at L25683 and `MarshalledValue(Vec<u8>)` at L25981 (turn [32]), built by `canonical_serialize` at L25690 and called 'an opaque, canonical byte representation' at L25980. No supersession note connects them.
+- **Decision needed:** which payload governs; whether the frozen `new`/`into_inner` API survives (it cannot type-check over bytes) or the `canonical_serialize` constructor does; whether the payload is `pub` (L25683) or private/opaque (L25980–25981); and, if bytes, which canonical encoding — U-02 records that no canonical byte encoding is frozen for machine state, and C-15 that none is frozen for `Mailbox`.
+- **Linked:** C-66, C-15, U-02, `term/` X-76, X-50, X-65, T-79, T-39.
+- **Blocking:** yes — for milestone M1's actor-isolation path and for any golden vector that encodes a mailbox.
+---
+
+### U-31 — Which field set is `Authority`'s, which is `Constraint`'s, and what holds the kernel's arena?
+- **Where:** R-CAP-01…R-CAP-04, R-KERN-01…R-KERN-03 (S-09, S-10); law N-28; `term/` T-10, T-11, T-12, T-13.
+- **State of source:** `Authority` is declared seven times in six field sets (L488, L918 — a revocation node; L3591, L4360, L4979 — a permission set; L5368 — the two merged; L6501 — a map to `OpAuthority`), and `Constraint` twice in the same turn: L6536 with a body character-for-character identical to L6501's under the comment 'Constraint: distinct from Authority', and L6686 with the five-field shape `Authority` has at L4360. The kernel's arena holds `Authority` (L927, L5430), `RuntimeAuthority` (L3657, L5044) or `AuthorityNode` (L6696) in `SlotMap` or `GenerationalArena`; `revocation_set` is `HashSet<DefaultKey>` (L928, L5431), `HashSet<CapRef>` (L6697) or absent (L3656, L5044), with the in-source comment 'Or epoch-based generation tracking'; `children` exists only at L5432.
+- **Decision needed:** which `Authority` field set governs and which `Constraint` field set governs, given that N-28's required distinction is contradicted by L6536's body; whether the revocation node is `Authority`, `RuntimeAuthority` or `AuthorityNode` and whether it carries `generation`; which container and value type the kernel's arena has; whether revocation is tracked by a set of slot keys, a set of `CapRef`s, or epoch-based generations; and whether `children` (cascading revocation) exists.
+- **Linked:** C-67, C-72, C-25, U-02, `term/` X-77, X-82, X-37, X-25, N-28, T-10, T-11, T-12, T-13.
+- **Blocking:** yes — for the capability algebra's milestone gate and for `CAP-DERIVE-NO-AMPLIFICATION` (M006), which has no type-level support while the two types are structurally identical.
+---
+
+### U-32 — Does the durable `WalFrame` carry `payload_length`, and what is its checksum's input domain?
+- **Where:** R-PERSIST-01, R-PERSIST-02 (S-18); `term/` T-45, T-46, T-47.
+- **State of source:** L34237–34242 (turn [46]) declares four fields — `sequence`, `kind`, `payload`, `checksum` — with no stated checksum domain; L35099–35105 (turn [47]) declares five, adding `payload_length: u32` marked 'Big-endian, checked', and fixes the checksum as `SHA-256(sequence || kind || payload_length || payload)`. The turn-[47] parser rule at L35109 requires rejection of 'truncated headers, truncated payloads, impossible lengths', which presumes a length field. `kind`'s type `WalRecordKind` is declared nowhere, and `GlobalSnapshot.last_effect_sequence: EffectSequence` (L26305, L34126) uses a third sequence name that is also undeclared.
+- **Decision needed:** whether the frame carries `payload_length`; whether the checksum covers it (so every turn-[46] digest is invalid) or the four-field concatenation; whether the header is big-endian while the canonical envelope is little-endian (U-24, C-47) and where that boundary falls; what `WalRecordKind`'s variants are; and whether `EffectSequence` is a third sequence domain or a misspelling of `EventSequence`.
+- **Linked:** C-70, C-47, U-16, U-24, `term/` X-80, X-31, X-47, X-50, X-84, T-46.
+- **Blocking:** yes — for any recovery test and for every golden WAL vector; a format whose checksum domain is undecided cannot be written or verified.
+---
+
+### U-33 — Which reference-model declarations govern, and are its undeclared types declared or struck?
+- **Where:** R-REF-01…R-REF-06 (S-20); `term/` T-58, T-80, T-81.
+- **State of source:** `RefState` is `{ expr: Expr, env: Environment, kont: Vec<Frame>, outcome: RefOutcome }` at L14728, L15985, L16423 (turns [23], [24]) and `{ expr: RefExpr, env: RefEnv, continuation: Vec<RefFrame> }` at L35522 (turn [48]). `RefAuthority` has four declarations in three shapes (L11572 `ops: HashSet<Op>`; L19603 `operations: BTreeMap<Op, RefOperationAuthority>`; L20851 `operations: BTreeSet<Op>` plus four `Ref*` components; L35699 `operations: BTreeMap<RefOp, RefOperationAuthority>`), and the frozen `reference_derive` body at L11579–11583 reads `.ops` and calls `.intersection()`. Twelve `Ref*` type names are used in these declarations and declared nowhere: `RefExpr`, `RefOp`, `RefScope`, `RefConstraint`, `RefResources`, `RefLifetime`, `RefFunction`, `RefEvent`, `RefHeap`, `RefMessage`, `RefCapabilityContext`, `RefRecoveryFault`.
+- **Decision needed:** which `RefState` shape the differential observer compares — the production-typed form C-33 forbids, or the independent form whose `RefExpr` is undeclared — and whether it carries `outcome`; which `RefAuthority` shape `reference_derive` is written against, given that its frozen body only type-checks against the turn-[20] set form; whether the reference model's key type is the production `Op` or `RefOp`; and whether the twelve undeclared `Ref*` types are to be declared in `ror-reference` or struck in favour of production types (which C-33 forbids).
+- **Linked:** C-68, C-69, C-74, C-33, `term/` X-78, X-79, X-84, X-22, T-80, T-81.
+- **Blocking:** yes — R-REF-05's differential observer is the project's central verification instrument and has no fixed left-hand side until this is ruled.
+---
+
+### U-34 — Which turn-[31]/turn-[32] state structs govern — `run_state`, `members` and `scheduler`?
+- **Where:** R-ACTOR-01…R-ACTOR-07, R-PERSIST-04, R-CORE-08 (S-15, S-18); `term/` T-36, T-37, T-38, T-39, T-40.
+- **State of source:** `GlobalState` carries `scheduler: SchedulerState` at L24168 (turn [31]) and not at L25535 or L25862 (turn [32]). `ActorState` gains `run_state: RunState` at L25546 (turn [32]) while keeping `status: ActorStatus` at L25552, and the same turn's other declaration (L25871) has `status` only. `RunnableQueue` is `{ queue: VecDeque<ActorId> }` at L24275 (turn [31]) and adds `members: BTreeSet<ActorId>, // Enforces "at most once" invariant` at L25894 (turn [32]). `ActorState.mailbox` is `Mailbox` at L9438 (turn [17]), `VecDeque<MarshalledValue>` at L10360 (turn [18]) and `Mailbox` again at L10892.
+- **Decision needed:** whether `GlobalState` carries `scheduler` (and therefore whether `GlobalSnapshot.machine_state` persists scheduler state, which U-17's recovery question turns on); whether `ActorState` carries `run_state`, `status`, or both, and which one governs a blocked actor; whether `RunnableQueue` carries `members`, and if not how R-ACTOR-04's at-most-once invariant — mutation M012's target — is enforced; and whether `mailbox` is the abstract `Mailbox` or an inline `VecDeque<MarshalledValue>` (which U-30's payload question then decides the element type of).
+- **Linked:** C-73, C-65, C-66, U-17, `term/` X-83, X-75, X-76, X-23, T-37, T-38, T-40.
+- **Blocking:** yes — for the scheduler's milestone gate, for M012, and for any snapshot/recovery test.
+---
+
 ## Process notes
 
 1. Each resolution must be recorded as a **numbered frozen addendum** appended to the canonical spec (this document set), with a new requirement ID range, so that supersession is never silent (R-SCOPE-03, 00 §1).

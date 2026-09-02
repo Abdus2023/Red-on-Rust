@@ -584,6 +584,10 @@ Conflation makes the differential oracle tautological (oracle collapse, 15C.38) 
 - `Red-on-Rust.md` L6402 — `derive_op(⟨S,Q,R,T⟩, ⟨S_c,Q_c,R_c,T_c⟩) = ⟨S⊓S_c, Q⊓Q_c, R⊓R_c, T⊓T_c⟩`
 - `Red-on-Rust.md` L6098 — `derive(A,C) ⪯ A`
 - `Red-on-Rust.md` L6536 — `pub struct Constraint<S,Q,R,L>`
+- `Red-on-Rust.md` L6535 — `/// Constraint: distinct from Authority.` — the doc comment asserting a distinction its own declaration does not implement (X-77)
+- `Red-on-Rust.md` L6501 — `pub struct Authority<S, Q, R, L> { pub ops: HashMap<Op, OpAuthority<S,Q,R,L>> }` — a body character-for-character identical to L6536-L6538's (X-77)
+- `Red-on-Rust.md` L6686 — `pub struct Constraint { ops: OperationSet, scope: ScopeConstraint, params: ParamConstraint, resources: ResourceLimits, lifetime: Lifetime }` — the five-field permission-set shape that `Authority` carries at L4360, so the two names' shapes are exchanged (X-77)
+- `Red-on-Rust.md` L485 — `attenuation: Constraint` — `Constraint` used inside `struct Capability` in turn [2], nine turns before its first declaration
 
 ### Consequence of conflating them
 

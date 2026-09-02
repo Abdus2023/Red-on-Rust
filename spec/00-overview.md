@@ -44,9 +44,9 @@ Promotion is strictly evidence-gated: `SPECIFIED → IMPLEMENTED → TESTED → 
 | `TAG-NAME` | Source's own verification-obligation tags (e.g., `CEK-CALL-ARITY-PRECHECK`) | `08-verification-mapping.md` |
 | `ROR-NNN` | Source's first-sprint task IDs (ROR-001…) | `07-implementation-mapping.md` |
 | `M0NN` | Baseline mutation-registry IDs (M001…M018) | `08-verification-mapping.md` |
-| `T-NN` | Canonical terminology entry (T-01…T-78) | `../term/01-dictionary.md` |
+| `T-NN` | Canonical terminology entry (T-01…T-81) | `../term/01-dictionary.md` |
 | `N-NN` | Non-conflation law: two terms that must never be used for each other (N-01…N-31) | `../term/03-laws.md` |
-| `X-NN` | Terminology collision, cited to a frozen-source line (X-01…X-75) | `../term/02-collisions.md` |
+| `X-NN` | Terminology collision, cited to a frozen-source line (X-01…X-86) | `../term/02-collisions.md` |
 
 `T-`/`N-`/`X-` are **additive**: they were introduced by the terminology normalization pass and renumber nothing above. An `X-NN` entry is the terminology-layer counterpart of a `C-NN` entry — where an `X-` finding extends or corrects an existing `C-`/`U-`/`AMB-` record it says so in its *Previously registered as* field, and the earlier record is left in place. `term/_check.py` re-greps every `X-` citation against `Red-on-Rust.md` and fails on drift.
 

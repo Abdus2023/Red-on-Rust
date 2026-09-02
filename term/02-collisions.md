@@ -4,24 +4,24 @@
 
 # 02 — Terminology Collision Register
 
-**75 collisions.** Every terminology collision found in the frozen source and in the canonicalization layer is reported here; none is silently resolved. Severity: BLOCKING 4, MAJOR 51, MINOR 19, INFO 1. 72 are new findings not previously registered in `spec/06` or `req/03`; the remainder extend or correct an existing `C-`/`U-`/`AMB-` entry, which is named in **Previously registered as**.
+**86 collisions.** Every terminology collision found in the frozen source and in the canonicalization layer is reported here; none is silently resolved. Severity: BLOCKING 4, MAJOR 62, MINOR 19, INFO 1. 83 are new findings not previously registered in `spec/06` or `req/03`; the remainder extend or correct an existing `C-`/`U-`/`AMB-` entry, which is named in **Previously registered as**.
 
 A collision is filed when the source (or a document derived from it) uses one name for two incompatible things, two names for one thing without retracting either, a name for something never declared, or a citation for text that is not there. **Nothing is renamed to make a collision disappear.** The disposition states what the canonicalization layer does instead: record both, name the governing text, and escalate the decision where the source does not settle it.
 
 ## Kinds
 | Kind | Meaning | Count |
 |---|---|---|
+| `FIELD-SET` | same type name, different field sets or field names | 15 |
 | `SYMBOL-OVERLOAD` | one mathematical symbol, two or more denotations | 14 |
 | `TYPE-HOMONYM` | one name, two or more incompatible type declarations | 14 |
-| `FIELD-SET` | same type name, different field sets or field names | 10 |
 | `SCOPE-DRIFT` | a name's scope changed between frozen eras without retraction | 8 |
+| `DIVERGENT-SHAPE` | the same type name is declared repeatedly with materially different variant or field shapes | 7 |
 | `UNDECLARED-VARIANT` | an `Enum::Variant` path is used in the frozen source but appears in no declaration of that enum | 7 |
 | `ALIAS-DEFECT` | the canonicalization layer states an alias/definition the source does not support | 4 |
 | `PREDICATE-SIGNATURE` | one predicate name, several arities/argument orders | 4 |
 | `PROVENANCE-DEFECT` | a citation in the canonicalization layer does not point at the text it claims | 4 |
-| `DIVERGENT-SHAPE` | the same type name is declared repeatedly with materially different variant or field shapes | 2 |
+| `UNDEFINED-TYPE` | a name is used as a type but never declared | 3 |
 | `TYPE-ROLE-HOMONYM` | one name used as both a type and a predicate/symbol | 2 |
-| `UNDEFINED-TYPE` | a name is used as a type but never declared | 2 |
 | `METHOD-SIGNATURE` | one trait name, incompatible method names/returns | 1 |
 | `PHANTOM-IDENTIFIER` | a register names an identifier that occurs nowhere in the frozen source | 1 |
 | `STAGE-ORDER` | the same pipeline is written with different stage sequences | 1 |
@@ -54,7 +54,7 @@ A collision is filed when the source (or a document derived from it) uses one na
 | [X-22](#x-22) | `PendingEffect.id` vs `ActorStatus::Pending.effect_id`: two spellings of one field, and `continuation` vs `reservation` | FIELD-SET | **MAJOR** | 4 | — | YES |
 | [X-24](#x-24) | `ActorId` and `EffectId` are declared both as `pub type X = u64` and as `pub struct X(pub u64)` | TYPE-HOMONYM | **MAJOR** | 5 | — | YES |
 | [X-25](#x-25) | `CapRef` is declared as `CapRef(pub(crate) u64)` and as `CapRef { index: u32, generation: u32 }` | FIELD-SET | **MAJOR** | 2 | — | no |
-| [X-26](#x-26) | `Effect` is declared three times with three different field sets | FIELD-SET | **MAJOR** | 4 | — | no |
+| [X-26](#x-26) | `Effect` is declared ten times with five different field sets, and its capability reference disappears and returns under a new name | FIELD-SET | **MAJOR** | 4 | — | no |
 | [X-27](#x-27) | `EffectRequest` is declared three times; the frozen form drops the `cap: CapRef` field | FIELD-SET | **MAJOR** | 3 | — | no |
 | [X-28](#x-28) | `Block` is declared as `Block(pub Vec<Value>)` and as `Block { forms: Vec<Form> }` | FIELD-SET | **MAJOR** | 3 | — | YES |
 | [X-29](#x-29) | Names used as field types, stage names and AST nodes that are never declared | UNDEFINED-TYPE | **MAJOR** | 6 | U-02 | YES |
@@ -68,8 +68,9 @@ A collision is filed when the source (or a document derived from it) uses one na
 | [X-38](#x-38) | Capability denial carries NINE names across eras (C-08 reports four), host-policy denial two, and two variants have split payload types | TYPE-HOMONYM | **MAJOR** | 6 | C-08, U-08, U-14, AMB-08 | YES |
 | [X-39](#x-39) | spec/05 defines `Effect` with a `capability` field that no frozen declaration has | ALIAS-DEFECT | **MAJOR** | 3 | — | no |
 | [X-40](#x-40) | spec/05 and mod/02 treat `ValidatedPlan`, `CapabilityCheckedPlan` and `PlanIR` as aliases of `ExecutablePlan` | ALIAS-DEFECT | **MAJOR** | 5 | — | no |
+| [X-43](#x-43) | `ReplayHost` has six declarations in six field sets: the trace field carries three names and four element types | FIELD-SET | **MAJOR** | 3 | C-22 | no |
 | [X-45](#x-45) | Two incompatible `Value` domains share one name | TYPE-HOMONYM | **MAJOR** | 4 | C-03, C-45, U-09, AMB-21 | YES |
-| [X-47](#x-47) | `EventSequence` and `WalSequence` are separate newtypes with no stated relationship | TYPE-HOMONYM | **MAJOR** | 4 | U-16, AMB-14 | YES |
+| [X-47](#x-47) | `EventSequence` and `WalSequence` are separate newtypes with no stated relationship, and a third name `EffectSequence` is declared nowhere | TYPE-HOMONYM | **MAJOR** | 4 | U-16, AMB-14 | YES |
 | [X-52](#x-52) | 'FROZEN' is applied to four different objects, and the README applies it to a fifth | SCOPE-DRIFT | **MAJOR** | 6 | — | no |
 | [X-55](#x-55) | Turn [41]'s '(Frozen)' `Value` discriminant table lists 5 of 8 variants and contradicts turns [43]/[45] on `Capability` | FIELD-SET | **MAJOR** | 4 | C-02 | no |
 | [X-57](#x-57) | `Request` denotes an `Expr` variant, a redex form, a theorem predicate, an implementation phase and a struct stem | SYMBOL-OVERLOAD | **MAJOR** | 5 | AMB-13, C-01 | no |
@@ -82,17 +83,26 @@ A collision is filed when the source (or a document derived from it) uses one na
 | [X-69](#x-69) | Twelve `Fault::` variant paths are used in the frozen source and declared by no `Fault` enum | UNDECLARED-VARIANT | **MAJOR** | 5 | C-08, C-58, AMB-08, U-08, U-13 | YES |
 | [X-70](#x-70) | Theorem 2's proof and the property-test matrix both depend on `Expr::Delegate`, which no `enum Expr` declaration admits | UNDECLARED-VARIANT | **MAJOR** | 6 | C-60, X-29, AMB-11, C-16, U-02 | YES |
 | [X-71](#x-71) | `MachineEvent` is declared eight times and used with eight variant paths declared by none of them | UNDECLARED-VARIANT | **MAJOR** | 5 | U-28 | YES |
-| [X-72](#x-72) | `CanonicalError` is declared seven times in four shapes, with the same variant names at different arities | DIVERGENT-SHAPE | **MAJOR** | 5 | C-47, C-48, C-49, U-29, U-14 | YES |
+| [X-72](#x-72) | `CanonicalError` is declared seven times in four variant sets and five payload shapes, with the same variant names at different arities | DIVERGENT-SHAPE | **MAJOR** | 5 | C-47, C-48, C-49, U-29, U-14 | YES |
 | [X-73](#x-73) | `StepResult` is two disjoint enums — the CEK machine's and the actor scheduler's — sharing one name | TYPE-HOMONYM | **MAJOR** | 5 | C-63, X-23, U-26 | YES |
 | [X-74](#x-74) | `ActorStatus` is declared seven times in three shapes; X-21 records only two declarations | DIVERGENT-SHAPE | **MAJOR** | 6 | C-64, X-21, U-27 | YES |
+| [X-76](#x-76) | `MarshalledValue` is declared with a `Value` payload three times and a `Vec<u8>` payload twice, and both payloads have frozen API | DIVERGENT-SHAPE | **MAJOR** | 6 | C-15, U-02, X-65, X-50 | YES |
+| [X-77](#x-77) | `Authority` has seven declarations in six field sets and changes denotation, while `Constraint` is declared twice with `Authority`'s own two shapes | DIVERGENT-SHAPE | **MAJOR** | 7 | X-37, AMB-26, U-02, U-21, C-56 | YES |
+| [X-78](#x-78) | `RefAuthority` is declared four times in three shapes; the frozen `reference_derive` body reads a field name only the first declaration has | DIVERGENT-SHAPE | **MAJOR** | 6 | C-33, U-21, X-84 | YES |
+| [X-79](#x-79) | `RefState` is declared with the production machine's types in turns [23]-[24] and with `Ref*` types in turn [48], renaming `kont` and dropping `outcome` | FIELD-SET | **MAJOR** | 6 | C-33, X-22, X-84 | YES |
+| [X-80](#x-80) | `WalFrame` gains `payload_length: u32` in turn [47] and puts it inside the checksum's SHA-256 domain, so every checksum changes | FIELD-SET | **MAJOR** | 5 | X-31, X-50, C-47, U-24, X-84 | YES |
+| [X-82](#x-82) | `CapabilityKernel`'s arena changes value type and container, its `revocation_set` is dropped and re-typed, and `children` appears in one declaration only | DIVERGENT-SHAPE | **MAJOR** | 5 | X-37, X-25, AMB-26, U-02 | YES |
+| [X-83](#x-83) | The turn-[31] and turn-[32] state structs are not the same structs: `run_state` and `members` appear, `scheduler` disappears, and `mailbox` changes type within turn [18] | FIELD-SET | **MAJOR** | 8 | X-75, X-23, U-17, X-76 | YES |
+| [X-84](#x-84) | Thirty-one more type names are used in frozen field positions and declared nowhere — including the reference model's whole vocabulary | UNDEFINED-TYPE | **MAJOR** | 9 | X-29, X-30, X-75, U-13, U-16, U-21, C-33 | YES |
+| [X-85](#x-85) | `FunctionValue.env` is an `EnvironmentSnapshot` in one declaration and a live `Environment` in two; X-33 records the name, not the divergence | FIELD-SET | **MAJOR** | 6 | X-33, X-84, X-45, U-09, U-02 | YES |
+| [X-86](#x-86) | `Frame`'s eleven declarations carry five distinct variant sets, and the continuation's variant names change twice | DIVERGENT-SHAPE | **MAJOR** | 5 | X-37, AMB-26, X-35, X-57, U-02 | YES |
 | [X-11](#x-11) | The symbol `A` denotes Authority and, subscripted, an actor's state | SYMBOL-OVERLOAD | **MINOR** | 2 | — | no |
 | [X-14](#x-14) | The symbol `H` denotes the effect journal while calligraphic `ℋ` denotes the heap | SYMBOL-OVERLOAD | **MINOR** | 3 | — | no |
 | [X-15](#x-15) | The symbol `B` denotes the Budget and, in turn [1], a Block | SYMBOL-OVERLOAD | **MINOR** | 2 | — | no |
 | [X-23](#x-23) | `RunState::Faulted` vs `ActorStatus::Fault`: near-homonym variants of two distinct enums | TYPE-HOMONYM | **MINOR** | 3 | C-18, AMB-05 | no |
-| [X-37](#x-37) | `Authority` is declared seven times and `Frame` eleven times, with an elided `AuthorityNode` between them | TYPE-HOMONYM | **MINOR** | 5 | AMB-26, U-02 | YES |
+| [X-37](#x-37) | `Authority` is declared seven times in six field sets, `Frame` eleven times in five variant sets, and `AuthorityNode` three times | TYPE-HOMONYM | **MINOR** | 5 | AMB-26, U-02 | YES |
 | [X-41](#x-41) | spec/01 and mod/02 reproduce one of three pipeline orderings, in an order the frozen structs contradict | ALIAS-DEFECT | **MINOR** | 5 | — | no |
 | [X-42](#x-42) | `LogicalTime` is glossed in the source as 'a logical clock or deterministic timestamp' | SCOPE-DRIFT | **MINOR** | 2 | — | no |
-| [X-43](#x-43) | `ReplayHost`'s trace field is `recorded_receipts` in one frozen form and `trace` in the other | FIELD-SET | **MINOR** | 3 | C-22 | no |
 | [X-44](#x-44) | Three cost types and five cost functions: `Cost`, `EffectCost`, `ResourceUsage`, `CostModel`, `cost_C`/`cost_io`/`cost_res` | TYPE-HOMONYM | **MINOR** | 6 | AMB-23 | no |
 | [X-46](#x-46) | `GlobalState` vs `GlobalConfig` | TYPE-HOMONYM | **MINOR** | 1 | C-42 | no |
 | [X-48](#x-48) | 'Reference machine' (pre-15C) and 'reference model' (15C) denote different objects | SCOPE-DRIFT | **MINOR** | 2 | C-33 | no |
@@ -104,6 +114,7 @@ A collision is filed when the source (or a document derived from it) uses one na
 | [X-62](#x-62) | req/03 AMB-25 lists `PlannerState`, an identifier that does not occur in the source | PHANTOM-IDENTIFIER | **MINOR** | 5 | AMB-25 | no |
 | [X-63](#x-63) | C-09 and AMB-24 cite README line ranges that contain no status block | PROVENANCE-DEFECT | **MINOR** | 4 | C-09, AMB-24 | no |
 | [X-75](#x-75) | Residual used-but-undeclared variant paths across five more enums, and one variant silently dropped | UNDECLARED-VARIANT | **MINOR** | 6 | C-65, X-65, X-66, C-49, U-02, U-09 | YES |
+| [X-81](#x-81) | `EffectReceipt`'s first declaration has no `effect_digest`, the field every later receipt-integrity check reads | FIELD-SET | **MINOR** | 5 | X-43, C-22, U-06 | YES |
 | [X-53](#x-53) | Implementation status is 'READY' twice and 'IN PROGRESS' once in the source, and the README reverses the order | SCOPE-DRIFT | **INFO** | 3 | C-09, AMB-24 | no |
 
 ## Blocking
@@ -948,7 +959,7 @@ Both shapes recorded verbatim; neither renamed. The dictionary marks the single-
 
 ## X-26
 
-**`Effect` is declared three times with three different field sets**
+**`Effect` is declared ten times with five different field sets, and its capability reference disappears and returns under a new name**
 
 - **Kind:** `FIELD-SET` — same type name, different field sets or field names
 - **Severity:** MAJOR
@@ -965,6 +976,14 @@ Both shapes recorded verbatim; neither renamed. The dictionary marks the single-
 | `Red-on-Rust.md` L6545 | `pub cost: ResourceUsage, // Static cost of this specific effect` | turn [11]: the cost field's type is `ResourceUsage` |
 | `Red-on-Rust.md` L9297 | `pub struct Effect {` | turn [17] declaration — the frozen form |
 | `Red-on-Rust.md` L9301 | `pub cost: Cost,` | turn [17]: the cost field's type is `Cost` |
+| `Red-on-Rust.md` L3637 | `pub struct Effect {` | turn [7]: a FOURTH declaration — `params: Vec<u8>`, `resources`, no `cost` |
+| `Red-on-Rust.md` L3640 | `pub params: Vec<u8>,` | turn [7]: raw bytes, where turn [11] says `params: Params` |
+| `Red-on-Rust.md` L5025 | `pub struct Effect {` | turn [9]: identical to the turn-[7] form |
+| `Red-on-Rust.md` L21372 | `pub struct Effect {` | turn [29]: a FIFTH form — `capability`, `operation`, `params: Params`, `cost: EffectCost` |
+| `Red-on-Rust.md` L21373 | `pub capability: CapRef,` | turn [29]: the capability reference RETURNS, under a new field name |
+| `Red-on-Rust.md` L21374 | `pub operation: Op,` | turn [29]: `op` renamed `operation` |
+| `Red-on-Rust.md` L23272 | `pub struct Effect {` | turn [30]: the same fifth form |
+| `Red-on-Rust.md` L23276 | `pub params: Params, // Canonicalized, normalized parameters` | turn [30]: the comment fixes the reading |
 
 ### The collision
 
@@ -972,7 +991,7 @@ Three frozen-era declarations of `Effect` disagree on both fields and field type
 
 ### Why it matters
 
-`EffectDigest = SHA-256(canonical_bytes(effect))` is the semantic identity used to validate every receipt and every journal record. Which fields are in the hashed bytes decides what the digest commits to. Including `cap_ref` (turn [3]) binds the digest to a `CapRef`, so the same effect requested through a different capability would digest differently and replay would fail; excluding it (frozen) makes the digest a pure function of the effect description. The `ResourceUsage`/`Cost` rename additionally changes the hashed field's type name.
+`EffectDigest = SHA-256(canonical_bytes(effect))` is the semantic identity used to validate every receipt and every journal record. Which fields are in the hashed bytes decides what the digest commits to. Including `cap_ref` (turn [3]) binds the digest to a `CapRef`, so the same effect requested through a different capability would digest differently and replay would fail; excluding it (frozen) makes the digest a pure function of the effect description. The `ResourceUsage`/`Cost` rename additionally changes the hashed field's type name. A full sweep finds TEN declarations in FIVE field sets, not three in three. Two further sets sit between the ones recorded here: `{op, target, params: Vec<u8>, resources}` at L3637 (turn [7]) and L5025 (turn [9]) — raw parameter bytes and a `resources` field, with no `cost` at all; and `{capability: CapRef, operation: Op, target, params: Params, cost: EffectCost}` at L21372 (turn [29]), L23272 and L23748 (turn [30]). The turn-[29] form returns the capability reference that only the turn-[3] form had, under a new field name (`capability` for `cap_ref`), and renames `op` to `operation`. So `params` is `Vec<u8>` in turns [7] and [9] and `Params` from turn [11]; `cost` is `ResourceUsage` in turn [11], `Cost` in turns [17]-[18] and `EffectCost` from turn [29] (X-44).
 
 ### Disposition
 
@@ -1068,7 +1087,7 @@ Yes — freeze `Block`'s element type (`Value` or `Form`) and declare `Form` if 
 
 ### The collision
 
-`NormalizedAST`, `Form`, `GlobalEvent`, `CapabilitySummary`, `BudgetSummary` and the seven `Observed*` element types are all used in frozen declarations and none is declared anywhere in the source. `PlanIR` (X-30) is a seventh: it is used with variants but never declared as an enum. `Expr::Delegate` is an eighth, and the only AST-level case: it is named in the delegation proof table and a match sketch, but none of the five `pub enum Expr` declarations contains it — the same fact AMB-11 registers from the ambiguity side.
+`NormalizedAST`, `Form`, `GlobalEvent`, `CapabilitySummary`, `BudgetSummary` and the seven `Observed*` element types are all used in frozen declarations and none is declared anywhere in the source. `PlanIR` (X-30) is a seventh: it is used with variants but never declared as an enum. `Expr::Delegate` is an eighth, and the only AST-level case: it is named in the delegation proof table and a match sketch, but none of the five `pub enum Expr` declarations contains it — the same fact AMB-11 registers from the ambiguity side. The sweep of every struct and enum FIELD position (`python3 term/_structs.py --undeclared`) finds 69 type names used as field or variant-payload types with no declaration anywhere: the thirteen recorded here and in X-30, four `std`/external-crate names written unqualified, twenty-one named in some other existing entry or decision, and THIRTY-ONE recorded nowhere in the repository — among them the reference model's entire vocabulary (`RefExpr`, `RefOp`, `RefScope`, `RefConstraint`, `RefResources`, `RefLifetime`, `RefFunction`, `RefEvent`, `RefHeap`, `RefMessage`, `RefCapabilityContext`, `RefRecoveryFault`) and the authority layer's `AuthorityId`, `RevocationState` and `OsAuthority`. Those thirty-one are enumerated in X-84 rather than repeated here.
 
 ### Why it matters
 
@@ -1138,6 +1157,10 @@ Yes — declare `PlanIR` or state that `Expr` is the lowered representation. Blo
 | `Red-on-Rust.md` L28427 | `CommittedSnapshot + DurableLog + EffectJournal` | turn [36]: the same object called `DurableLog` in a boxed theorem |
 | `Red-on-Rust.md` L25539 | `pub event_log: EventLog,` | turn [32]: `EventLog` — the IN-MEMORY log, a different object |
 | `Red-on-Rust.md` L35099 | `pub struct WalFrame {` | turn [47]: the frozen durable framing type |
+| `Red-on-Rust.md` L1086 | `pub struct EventLog {` | turn [3]: the in-memory log's declaration |
+| `Red-on-Rust.md` L1088 | `events: Vec<TransitionEvent>,` | turn [3]: its element type is `TransitionEvent` |
+| `Red-on-Rust.md` L10905 | `pub struct EventLog {` | turn [18]: re-declared |
+| `Red-on-Rust.md` L10906 | `events: Vec<LogEntry>,` | turn [18]: element type is now `LogEntry` — a different declared type |
 
 ### The collision
 
@@ -1145,7 +1168,7 @@ One durable structure is named `WAL`, `Write-Ahead Log`, `L`, `DurableLog` and '
 
 ### Why it matters
 
-N-19 (`WAL ≠ EventLog`) is the durability law behind `HostInvoked(E) ⇒ DurableIssued(E)`. If `EventLog` is read as the WAL, an in-memory append satisfies the durability invariant and crash point T2 becomes survivable in a test while being fatal in production. The alias spread is what makes that misreading available: four of the five names are prose, and only `WalFrame`/`WalRecord` are typed.
+N-19 (`WAL ≠ EventLog`) is the durability law behind `HostInvoked(E) ⇒ DurableIssued(E)`. If `EventLog` is read as the WAL, an in-memory append satisfies the durability invariant and crash point T2 becomes survivable in a test while being fatal in production. The alias spread is what makes that misreading available: four of the five names are prose, and only `WalFrame`/`WalRecord` are typed. The log's ELEMENT type drifts with its names: `EventLog` is `{ events: Vec<TransitionEvent> }` at L1088 (turn [3]) and `{ events: Vec<LogEntry> }` at L10906 (turn [18]). Both element types are declared, so this is not an undefined-name problem (X-29, X-84) but a change of record type: `TransitionEvent` is the machine's transition record — whose variant `TransitionEvent::ActorSpawned` is used 37 lines before its own declaration (X-75) — while `LogEntry` is a name that appears nowhere else in the specification of the log's contents.
 
 ### Disposition
 
@@ -1446,6 +1469,41 @@ This is the alias-rule form of the conflation N-01/N-02/N-11/N-12 exist to preve
 
 The alias column is corrected: `ValidatedPlan` (T-04) and `CapabilityCheckedPlan` (T-05) are distinct TERMS with their own entries, not aliases; `PlanIR` (T-08) is an undeclared IR name, not an alias; `NormalizedAST` (T-07) likewise. The only genuine obsolete alias recorded is `Plan` (turn [2]). No identifier is renamed. mod/02's NON-NORMATIVE-CONTENT bullet is corrected to point at this finding.
 
+## X-43
+
+**`ReplayHost` has six declarations in six field sets: the trace field carries three names and four element types**
+
+- **Kind:** `FIELD-SET` — same type name, different field sets or field names
+- **Severity:** MAJOR
+- **Terms affected:** T-42 `ReplayHost`, T-19 `EffectReceipt`, T-20 `EffectId`
+- **Previously registered as:** `C-22`
+
+### Evidence (frozen source)
+
+| Line | Text at that line | What it denotes there |
+|---|---|---|
+| `Red-on-Rust.md` L24011 | `pub struct ReplayHost {` | turn [30]: the `HashMap` form |
+| `Red-on-Rust.md` L24012 | `pub recorded_receipts: HashMap<EffectId, EffectReceipt>,` | turn [30]: field `recorded_receipts`, keyed by id |
+| `Red-on-Rust.md` L34498 | `pub struct ReplayHost {` | turn [46]: the frozen ordered form |
+| `Red-on-Rust.md` L34499 | `trace: Vec<EffectReceipt>,` | turn [46]: field `trace`, ordered |
+| `Red-on-Rust.md` L1234 | `pub struct ReplayHost {` | turn [3]: a THIRD field — `cursor: usize` |
+| `Red-on-Rust.md` L1237 | `trace: Vec<Result<Value, HostFault>>,` | turn [3]: the trace holds RESULTS, not receipts |
+| `Red-on-Rust.md` L9783 | `pub struct ReplayHost {` | turn [17]: `trace: ReplayTrace` — a type declared nowhere (X-84) |
+| `Red-on-Rust.md` L10541 | `pub struct ReplayHost {` | turn [18]: `trace: VecDeque<EffectReceipt>` — a deque, and `cursor` gone |
+| `Red-on-Rust.md` L22339 | `pub struct ReplayHost {` | turn [29]: `receipts: ReceiptLog` — a THIRD field name, its type declared nowhere (X-84) |
+
+### The collision
+
+C-22 resolves the mechanism (unordered map → ordered trace) but the field NAME also changes, from `recorded_receipts: HashMap<EffectId, EffectReceipt>` to `trace: Vec<EffectReceipt>`. The rename is not cosmetic: a map keyed by `EffectId` makes id lookup the primitive operation, while a vector makes POSITION the primitive, which is what allows the digest check to detect a divergent program consuming receipts out of order. The sweep behind X-83/X-86 finds SIX declarations in SIX field sets, not two. Before the pair recorded here: `{cursor: usize, trace: Vec<Result<Value, HostFault>>}` at L1234 (turn [3]), where the trace holds RESULTS rather than receipts; `{trace: ReplayTrace}` at L9783 (turn [17]) and `{trace: VecDeque<EffectReceipt>}` at L10541 (turn [18]), both single-field and both without `cursor`; and `{receipts: ReceiptLog}` at L22339 (turn [29]), a third field name whose type is declared nowhere. The field is `trace` in four declarations and `receipts` / `recorded_receipts` in two; its element type is `Result<Value, HostFault>`, `ReplayTrace`, `EffectReceipt` (in a `VecDeque`, a `Vec`, and a `HashMap` keyed by `EffectId`) and `ReceiptLog`; and `cursor` is present in three declarations and absent from three. Severity is raised from MINOR: the map-versus-vector question recorded here is one instance of a six-way divergence in the replay host's only state.
+
+### Why it matters
+
+The ordered form's whole point is that the next receipt is a function of position, not of the requested id — 'a corrupted or divergent program could issue a different effect and simply consume the next recorded result' (L1390) is the failure the id-keyed form permits. Keeping the `recorded_receipts` name would carry the keyed-lookup mental model into an ordered implementation.
+
+### Disposition
+
+Both field names recorded verbatim; neither renamed. C-22 is linked as the mechanism resolution; this entry adds the field-name change and states why the ordered field's name matters to the security property.
+
 ## X-45
 
 **Two incompatible `Value` domains share one name**
@@ -1483,7 +1541,7 @@ Yes — U-09: name and relate the two value domains.
 
 ## X-47
 
-**`EventSequence` and `WalSequence` are separate newtypes with no stated relationship**
+**`EventSequence` and `WalSequence` are separate newtypes with no stated relationship, and a third name `EffectSequence` is declared nowhere**
 
 - **Kind:** `TYPE-HOMONYM` — one name, two or more incompatible type declarations
 - **Severity:** MAJOR
@@ -1499,10 +1557,13 @@ Yes — U-09: name and relate the two value domains.
 | `Red-on-Rust.md` L33868 | `pub struct WalSequence(pub u64);` | turn [46]: the durable WAL sequence |
 | `Red-on-Rust.md` L35119 | `pub struct WalSequence(pub u64);` | turn [47]: restated, 'strictly monotonic' |
 | `Red-on-Rust.md` L35133 | `SnapshotCommit { event_sequence: EventSequence, snapshot_version: SnapshotVersion, state_digest: StateDigest },` | turn [47]: a WAL record that carries an `EventSequence`, not a `WalSequence` |
+| `Red-on-Rust.md` L26301 | `pub struct GlobalSnapshot {` | turn [33]: the snapshot carries BOTH sequence fields |
+| `Red-on-Rust.md` L26305 | `pub last_effect_sequence: EffectSequence,` | turn [33]: `EffectSequence` — declared nowhere (X-84) |
+| `Red-on-Rust.md` L34126 | `pub last_effect_sequence: EffectSequence,` | turn [46]: the same undeclared name, thirteen turns later |
 
 ### The collision
 
-Two `u64` newtypes sequence the in-memory event log and the durable WAL, and the frozen `WalRecord::SnapshotCommit` carries an `EventSequence` INSIDE a record that has its own `WalSequence` in its frame. Whether one is a projection of the other, or they advance independently, is never stated.
+Two `u64` newtypes sequence the in-memory event log and the durable WAL, and the frozen `WalRecord::SnapshotCommit` carries an `EventSequence` INSIDE a record that has its own `WalSequence` in its frame. Whether one is a projection of the other, or they advance independently, is never stated. `GlobalSnapshot` carries a THIRD sequence name beside the two recorded here: `last_effect_sequence: EffectSequence` at L26305 (turn [33]) and again at L34126 (turn [46]), in the same struct as `last_event_sequence: EventSequence`. `EffectSequence` is declared nowhere in the source (X-84) and differs from the declared `EventSequence` by one letter, so the frozen snapshot type either names a third sequence domain — an effect sequence distinct from both the event sequence and the WAL sequence — or misspells the first. Nothing in the text says which, and a snapshot that records two sequence numbers whose relationship is unstated cannot be validated on recovery.
 
 ### Why it matters
 
@@ -1741,7 +1802,7 @@ No new decision; U-08/U-14 stand, restated against verified text.
 | `req/03-ambiguous.md`:68 | `that strike was itself wrong` | AMB-08's list, qualified in place rather than struck |
 | `req/03-ambiguous.md`:264 | `occurs nowhere in L1–42312` | AMB-34, rewritten, with the withdrawn claim quoted |
 | `spec/06-contradictions-ambiguities.md`:68 | ```Fault::StalePlan` occurs verbatim once, at L28373`` | C-54, rewritten from a phantom finding to a used-but-undeclared one |
-| `spec/06-contradictions-ambiguities.md`:81 | `rewritten** in this revision` | C-59..C-65 summary line, recording the retraction of the earlier claim |
+| `spec/06-contradictions-ambiguities.md`:92 | `rewritten** in this revision` | C-59..C-65 summary line, recording the retraction of the earlier claim |
 
 ### The collision
 
@@ -2054,7 +2115,7 @@ Yes — `spec/09` U-28: is the vocabulary the union of all eight declarations or
 
 ## X-72
 
-**`CanonicalError` is declared seven times in four shapes, with the same variant names at different arities**
+**`CanonicalError` is declared seven times in four variant sets and five payload shapes, with the same variant names at different arities**
 
 - **Kind:** `DIVERGENT-SHAPE` — the same type name is declared repeatedly with materially different variant or field shapes
 - **Severity:** MAJOR
@@ -2076,6 +2137,9 @@ Yes — `spec/09` U-28: is the vocabulary the union of all eight declarations or
 | `Red-on-Rust.md` L30670 | `InvalidBoolValue { found: u8 }` | turn [41]: only in this shape |
 | `Red-on-Rust.md` L34994 | `pub enum CanonicalError {` | turn [47]: shape (iv), head elided |
 | `Red-on-Rust.md` L34996 | `DuplicateMapKey` | turn [47]: “NEW: Enforces strict injectivity” |
+| `Red-on-Rust.md` L32086 | `LengthMismatch { expected: usize, found: usize },` | turn [43]: shape (iii)'s `expected: u32` is `usize` here |
+| `Red-on-Rust.md` L32962 | `LengthMismatch { expected: usize, found: usize },` | turn [45]: `usize` again |
+| `Red-on-Rust.md` L33302 | `LengthMismatch { expected: usize, found: usize },` | turn [45]: `usize` a third time |
 
 ### Evidence (canonicalization layer)
 
@@ -2087,7 +2151,7 @@ Yes — `spec/09` U-28: is the vocabulary the union of all eight declarations or
 
 ### The collision
 
-`CanonicalError` has SEVEN declarations (L29188, L29968, L30661, L32083, L32959, L33299, L34994) in four materially different shapes. Shape (i) L29188 has five unit variants. Shape (ii) L29968 has seven and respells two of them — `Utf8Error` where the others say `InvalidUtf8`, `PayloadTooShort` where the others say `UnexpectedEof` — and adds `LengthOverflow`, which shape (i) lacks entirely. Shape (iii) L30661 turns six of the same names into payload-bearing struct variants (`InvalidVersion { expected: u8, found: u8 }`, `InvalidTypeTag { expected: u8, found: u8 }`, `LengthMismatch { expected: u32, found: usize }`, `TrailingBytes { count: usize }`, `InvalidDiscriminant { found: u8 }`, `InvalidBoolValue { found: u8 }`). Shape (iv) L34994 elides its head as `// ... previous variants` and adds `DuplicateMapKey`.
+`CanonicalError` has SEVEN declarations (L29188, L29968, L30661, L32083, L32959, L33299, L34994) in four materially different shapes. Shape (i) L29188 has five unit variants. Shape (ii) L29968 has seven and respells two of them — `Utf8Error` where the others say `InvalidUtf8`, `PayloadTooShort` where the others say `UnexpectedEof` — and adds `LengthOverflow`, which shape (i) lacks entirely. Shape (iii) L30661 turns six of the same names into payload-bearing struct variants (`InvalidVersion { expected: u8, found: u8 }`, `InvalidTypeTag { expected: u8, found: u8 }`, `LengthMismatch { expected: u32, found: usize }`, `TrailingBytes { count: usize }`, `InvalidDiscriminant { found: u8 }`, `InvalidBoolValue { found: u8 }`). Shape (iv) L34994 elides its head as `// ... previous variants` and adds `DuplicateMapKey`. The field-set sweep behind X-83/X-86 separates one further distinction inside shape (iii): `LengthMismatch` carries `expected: u32` at L30664 (turn [41]) and `expected: usize` at L32086 (turn [43]), L32962 and L33302 (turn [45]) — four variant SETS but five payload shapes. The width that changes is the one `LengthOverflow` exists to police, so the turn-[41] and turn-[43] decoders disagree about what counts as an impossible length; the shape (iii) description above quotes the `u32` form and does not otherwise distinguish L30661 from L32083/L32959/L33299.
 
 ### Why it matters
 
@@ -2194,6 +2258,507 @@ REPORTED, not resolved, with X-21 kept intact: X-21's `Running`/`Active` finding
 ### Decision needed
 
 Yes — `spec/09` U-27: which shape governs, and where shape (iii)'s continuation lives — the actor table, the WAL, or a `ContinuationFrame`.
+
+## X-76
+
+**`MarshalledValue` is declared with a `Value` payload three times and a `Vec<u8>` payload twice, and both payloads have frozen API**
+
+- **Kind:** `DIVERGENT-SHAPE` — the same type name is declared repeatedly with materially different variant or field shapes
+- **Severity:** MAJOR
+- **Terms affected:** T-79 `MarshalledValue`, T-39 `Mailbox`, T-31 `Value`, T-37 `ActorState`, T-62 `CanonicalEnvelope`, T-73 `MarshalFault`
+- **Previously registered as:** `C-15`, `U-02`, `X-65`, `X-50`
+
+### Evidence (frozen source)
+
+| Line | Text at that line | What it denotes there |
+|---|---|---|
+| `Red-on-Rust.md` L9925 | `pub struct MarshalledValue(Value);` | turn [17]: the boundary carries an in-memory value |
+| `Red-on-Rust.md` L10828 | `pub struct MarshalledValue(Value);` | turn [18]: same payload |
+| `Red-on-Rust.md` L10831 | `pub(crate) fn new(v: Value) -> Self { Self(v) }` | turn [18]: frozen constructor — takes a `Value` |
+| `Red-on-Rust.md` L10832 | `pub fn into_inner(self) -> Value { self.0 }` | turn [18]: frozen accessor — returns a `Value`; impossible over a byte payload |
+| `Red-on-Rust.md` L24765 | `pub struct MarshalledValue(Value);` | turn [31]: the `Value` payload survives into the scheduler era |
+| `Red-on-Rust.md` L25683 | `pub struct MarshalledValue(pub Vec<u8>); // Canonical serialized bytes` | turn [32]: payload becomes bytes, and is declared PUBLIC |
+| `Red-on-Rust.md` L25685 | `pub fn marshal_value(v: &Value) -> Result<MarshalledValue, MarshalFault>` | turn [32]: frozen signature |
+| `Red-on-Rust.md` L25690 | `Ok(MarshalledValue(canonical_serialize(v)))` | turn [32]: constructed from canonical bytes, not from a value |
+| `Red-on-Rust.md` L25980 | `// The MarshalledValue is an opaque, canonical byte representation.` | turn [32]: 'opaque' — the payload at L25683 is `pub` |
+| `Red-on-Rust.md` L25981 | `pub struct MarshalledValue(Vec<u8>);` | turn [32]: bytes again, this time private |
+
+### Evidence (canonicalization layer)
+
+| File:line | Text at that line | Note |
+|---|---|---|
+| `spec/06-contradictions-ambiguities.md`:80 | ``\| C-66 \| `MarshalledValue`'s payload is `Value``` | C-66, the contradictions-register row for this finding |
+| `spec/09-unresolved-decisions.md`:160 | ``### U-30 — Which payload does `MarshalledValue` carry`` | U-30, the decision this finding needs |
+| `term/00-overview.md`:175 | ``\| `term/_terms.py T-79…T-81, N-28` \|`` | the §6 row recording T-79's creation |
+| `README.md`:68 | ``(`X-01`…`X-86`, of which 4 are BLOCKING)`` | the README's collision-register count, updated by this pass |
+
+### The collision
+
+The type that crosses the actor-isolation boundary is declared five times with two incompatible payloads: `MarshalledValue(Value)` at L9925 (turn [17]), L10828 (turn [18]) and L24765 (turn [31]); `MarshalledValue(pub Vec<u8>)` at L25683 and `MarshalledValue(Vec<u8>)` at L25981 (both turn [32]). Each payload carries frozen API that the other cannot satisfy: the `Value` form has `new(v: Value)` (L10831) and `into_inner(self) -> Value` (L10832); the byte form is built by `MarshalledValue(canonical_serialize(v))` (L25690). Visibility also disagrees — L25683 makes the payload `pub` while L25980, three lines above the identical declaration at L25981, calls the type 'opaque'. No supersession note connects the eras.
+
+### Why it matters
+
+`MarshalledValue` is the element type of `Mailbox` (T-39) and the payload of `ActorState.mailbox`, so this decides whether inter-actor communication transports values or canonical bytes — and the two answers have different security content. If the payload is a `Value`, the capability scan `contains_capability` (L25687) runs on the object being sent; if it is bytes, the scan runs on a value that is then re-serialized, and R-MARSHAL-01's 'no CapRef inside a marshalled value' is a claim about a decoding step the spec never freezes. `into_inner() -> Value` is also the accessor an actor would use to read a delivered message: over bytes it does not type-check, so the frozen API of turn [18] and the frozen payload of turn [32] cannot both be implemented. T-39's note records that 'no canonical byte encoding is frozen for Mailbox (C-15, U-02)' — the turn-[32] declarations assert one, which is a further reason this needs a ruling rather than a silent reading.
+
+### Disposition
+
+REPORTED; nothing renamed and neither payload struck. Filed as T-79 with all five declarations and both APIs protected verbatim (`Value`, `Vec<u8>`, `pub Vec<u8>`, `new`, `into_inner`, `marshal_value`, `canonical_serialize`, `contains_capability`), so a ruling can pick a payload without any earlier text being rewritten. T-39's gloss ('canonical bytes transport') is left in place and cross-referenced from T-79's note rather than edited, because it is itself evidence of the turn-[32] reading.
+
+### Decision needed
+
+Which payload is `MarshalledValue`'s — `Value` (turns [17]-[31], with `new`/`into_inner`) or `Vec<u8>` (turn [32], with `canonical_serialize`)? And is the payload `pub` (L25683) or private/'opaque' (L25980-L25981)?
+
+## X-77
+
+**`Authority` has seven declarations in six field sets and changes denotation, while `Constraint` is declared twice with `Authority`'s own two shapes**
+
+- **Kind:** `DIVERGENT-SHAPE` — the same type name is declared repeatedly with materially different variant or field shapes
+- **Severity:** MAJOR
+- **Terms affected:** T-10 `Authority`, T-12 `Constraint`, T-11 `AuthorityNode`, T-13 `CapabilityKernel`, T-09 `CapRef`, T-15 `DelegatedCapability`, T-81 `RefAuthority`
+- **Previously registered as:** `X-37`, `AMB-26`, `U-02`, `U-21`, `C-56`
+
+### Evidence (frozen source)
+
+| Line | Text at that line | What it denotes there |
+|---|---|---|
+| `Red-on-Rust.md` L488 | `struct Authority {` | turn [2]: a revocation NODE — parent, state, rights |
+| `Red-on-Rust.md` L489 | `parent: Option<AuthorityId>,` | turn [2]: `AuthorityId` is declared nowhere (X-84) |
+| `Red-on-Rust.md` L490 | `state: RevocationState,` | turn [2]: `RevocationState` is declared nowhere (X-84) |
+| `Red-on-Rust.md` L491 | `rights: Rights,` | turn [2]: `Rights` is declared nowhere (X-84) |
+| `Red-on-Rust.md` L485 | `attenuation: Constraint,` | turn [2]: `Constraint` used nine turns before its first declaration |
+| `Red-on-Rust.md` L918 | `pub(crate) struct Authority {` | turn [3]: the node again, `parent` re-typed to `Option<CapRef>` |
+| `Red-on-Rust.md` L3591 | `pub struct Authority {` | turn [7]: a PERMISSION SET — ops, scope, params, resources, lifetime |
+| `Red-on-Rust.md` L4360 | `pub struct Authority {` | turn [8]: the same five fields with abstract component types (`OperationSet`, `Scope`, `ParamConstraint`) |
+| `Red-on-Rust.md` L4979 | `pub struct Authority {` | turn [9]: back to the concrete `HashSet` component types |
+| `Red-on-Rust.md` L5368 | `pub struct Authority {` | turn [9]: a MERGED form — five fields plus `id` and `parent` |
+| `Red-on-Rust.md` L5370 | `pub ops: HashSet<Operation>,` | turn [9]: `Operation`, not `Op`; declared nowhere (X-84) |
+| `Red-on-Rust.md` L6501 | `pub struct Authority<S, Q, R, L> {` | turn [11]: a MAP form — one field, `ops: HashMap<Op, OpAuthority<S,Q,R,L>>` |
+| `Red-on-Rust.md` L6535 | `/// Constraint: distinct from Authority. Represents a narrowing request.` | turn [11]: the doc comment |
+| `Red-on-Rust.md` L6536 | `pub struct Constraint<S, Q, R, L> {` | turn [11]: whose body is character-for-character `Authority`'s at L6501-L6503 |
+| `Red-on-Rust.md` L6686 | `pub struct Constraint {` | turn [11]: a second `Constraint`, five fields — the shape `Authority` has at L4360 |
+| `Red-on-Rust.md` L6688 | `pub scope: ScopeConstraint,` | turn [11]: `ScopeConstraint`, where `Authority` says `Scope`; declared nowhere (X-84) |
+| `Red-on-Rust.md` L3649 | `pub(crate) struct RuntimeAuthority {` | turn [7]: the NODE under a second name — authority, live, parent |
+| `Red-on-Rust.md` L9702 | `pub(crate) struct AuthorityNode {` | turn [17]: the NODE under a third name — the same three fields plus `generation` |
+
+### Evidence (canonicalization layer)
+
+| File:line | Text at that line | Note |
+|---|---|---|
+| `spec/06-contradictions-ambiguities.md`:81 | ``\| C-67 \| `Authority` is declared seven times in six field sets`` | C-67 |
+| `spec/09-unresolved-decisions.md`:168 | ``### U-31 — Which field set is `Authority`'s`` | U-31 |
+| `term/00-overview.md`:175 | ``\| `term/_terms.py T-79…T-81, N-28` \|`` | the §6 row recording N-28's four new evidence sites |
+| `term/00-overview.md`:174 | ``\| `term/_terms.py X-26, X-37, X-43, X-46, X-47, X-72` \|`` | the §6 row recording X-37's correction, which this entry extends |
+
+### The collision
+
+`Authority` is declared seven times (L488, L918, L3591, L4360, L4979, L5368, L6501) in SIX distinct field sets, and its denotation changes: in turns [2] and [3] it is a node of the revocation tree (`parent`, `state`, `rights`); from turn [7] it is a set of permissions (`ops`, `scope`, `params`, `resources`, `lifetime`), spelled with concrete `HashSet` types at L3591/L4979, with abstract component types at L4360, and merged with the node's `id`/`parent` at L5368; at L6501 it becomes a one-field map from `Op` to `OpAuthority`. Its component type names drift with it — `Op`/`Operation`, `Predicate`/`ParamConstraint`/`ParamPredicate`, `Resources`/`ResourceLimits`, `HashSet<Target>`/`Scope`. `Constraint` is declared twice in the SAME turn: at L6536 with a body character-for-character identical to `Authority`'s at L6501, under a doc comment reading 'Constraint: distinct from Authority'; and at L6686 with the five-field permission-set shape that `Authority` carries at L4360. The two names' shapes are therefore exchanged. Separately, the revocation node has three names across eras — `Authority` (turns [2], [3]), `RuntimeAuthority` (turns [7], [9]) and `AuthorityNode` (turn [17]) — the last two being identical but for `AuthorityNode`'s extra `generation` field.
+
+### Why it matters
+
+N-28 requires `Constraint ≠ Authority` and the request's required distinctions include `CapRef ≠ Authority`; but at L6501/L6536 the two are the same struct, so `derive(A, C)` (L6519) is a map-meet between structurally identical types and nothing in the frozen declarations prevents a 'constraint' from being used as a grant — precisely the amplification that `CAP-DERIVE-NO-AMPLIFICATION` and mutation M006 exist to kill. The denotation change is worse than a rename: a reader who takes `Authority` from turn [2] and `Authority` from turn [11] to be one type will conclude that a permission set has a revocation state and a parent, or that a node has an operation set. X-37 records the seven declarations but does not compare their field sets, and states that `AuthorityNode` is declared once with its fields elided — L9702 declares it with four fields, and L39373/L39940 are two further, elided declarations.
+
+### Disposition
+
+REPORTED; no field, type or name renamed. T-10 (`Authority`) and T-12 (`Constraint`) keep their canonical readings and gain pointers to this entry; all six `Authority` field sets and both `Constraint` field sets are recorded verbatim in T-10's/T-12's `protected` lists where they are not already. `RuntimeAuthority` is added to T-11 (`AuthorityNode`) as a protected earlier name rather than being treated as a separate type. N-28 gains the L6501/L6535/L6686 evidence so the law and the declarations that contradict it sit in the same view.
+
+### Decision needed
+
+Which field set is `Authority`'s and which is `Constraint`'s? The turn-[11] declarations give both names the same body and then give `Constraint` the shape `Authority` had at turn [8]. Also: is the revocation node `Authority`, `RuntimeAuthority` or `AuthorityNode`, and does it carry `generation`?
+
+## X-78
+
+**`RefAuthority` is declared four times in three shapes; the frozen `reference_derive` body reads a field name only the first declaration has**
+
+- **Kind:** `DIVERGENT-SHAPE` — the same type name is declared repeatedly with materially different variant or field shapes
+- **Severity:** MAJOR
+- **Terms affected:** T-81 `RefAuthority`, T-10 `Authority`, T-12 `Constraint`, T-58 `ReferenceModel`, T-80 `RefState`, T-15 `DelegatedCapability`
+- **Previously registered as:** `C-33`, `U-21`, `X-84`
+
+### Evidence (frozen source)
+
+| Line | Text at that line | What it denotes there |
+|---|---|---|
+| `Red-on-Rust.md` L11572 | `pub struct RefAuthority {` | turn [20]: first declaration |
+| `Red-on-Rust.md` L11573 | `pub ops: HashSet<Op>,` | turn [20]: the field is `ops`, a set of the PRODUCTION `Op` |
+| `Red-on-Rust.md` L11575 | `// ... other fields using naive representations` | turn [20]: the body is elided — the first shape is incomplete as written |
+| `Red-on-Rust.md` L11578 | `pub fn reference_derive(parent: &RefAuthority, constraint: &RefConstraint) -> RefAuthority` | turn [20]: frozen signature; `RefConstraint` is declared nowhere (X-84) |
+| `Red-on-Rust.md` L11580 | `ops: parent.ops.intersection(&constraint.ops).cloned().collect(),` | turn [20]: frozen body — reads `.ops` on both arguments, and needs SETS to call `intersection` |
+| `Red-on-Rust.md` L11581 | `scope: parent.scope.intersection(&constraint.scope).cloned().collect(),` | turn [20]: same, for `scope` |
+| `Red-on-Rust.md` L19603 | `pub struct RefAuthority {` | turn [27]: second declaration |
+| `Red-on-Rust.md` L19604 | `pub operations: BTreeMap<Op, RefOperationAuthority>,` | turn [27]: field renamed `ops` -> `operations`; container becomes a MAP, so `intersection` no longer applies |
+| `Red-on-Rust.md` L20851 | `pub struct RefAuthority {` | turn [28]: third declaration |
+| `Red-on-Rust.md` L20852 | `pub operations: BTreeSet<Op>,` | turn [28]: a SET again, but named `operations`, with four `Ref*` component fields alongside |
+| `Red-on-Rust.md` L35699 | `pub struct RefAuthority {` | turn [48]: fourth declaration |
+| `Red-on-Rust.md` L35700 | `pub operations: BTreeMap<RefOp, RefOperationAuthority>,` | turn [48]: key type changes `Op` -> `RefOp`, which is declared nowhere (X-84) |
+| `Red-on-Rust.md` L35703 | `pub struct RefOperationAuthority {` | turn [48]: re-declared, identical to L19608 |
+
+### Evidence (canonicalization layer)
+
+| File:line | Text at that line | Note |
+|---|---|---|
+| `spec/06-contradictions-ambiguities.md`:82 | ``\| C-68 \| `RefAuthority` is declared four times in three shapes`` | C-68 |
+| `spec/09-unresolved-decisions.md`:184 | `### U-33 — Which reference-model declarations govern` | U-33 |
+| `term/00-overview.md`:173 | ``\| `term/_structs.py` \| **new checker**`` | the §6 row for the checker that produced the counts |
+
+### The collision
+
+The reference model's authority type has four declarations and three non-elided field sets: `{ ops: HashSet<Op>, scope: HashSet<Target>, /* ... other fields */ }` (L11572, turn [20], body elided); `{ operations: BTreeMap<Op, RefOperationAuthority> }` (L19603, turn [27]); `{ operations: BTreeSet<Op>, scope: RefScope, params: RefConstraint, resources: RefResources, lifetime: RefLifetime }` (L20851, turn [28]); and `{ operations: BTreeMap<RefOp, RefOperationAuthority> }` (L35699, turn [48]). The field is `ops` once and `operations` three times; the container is a `HashSet`, a `BTreeMap`, a `BTreeSet` and a `BTreeMap`; and the key type is the production `Op` in turns [20] and [27]-[28] and the undeclared `RefOp` in turn [48]. Four of the five component types (`RefScope`, `RefConstraint`, `RefResources`, `RefLifetime`) are declared nowhere. The frozen `reference_derive` body (L11579-L11583) reads `parent.ops`, `constraint.ops` and `parent.scope`, and calls `.intersection()` on them — a field name that only the turn-[20] declaration has and a set operation that the two map-shaped declarations cannot support.
+
+### Why it matters
+
+R-REF-03 requires the reference `derive` to equal the production `derive`, and the reference model is the differential oracle for the whole capability algebra; but its authority type has no fixed shape, its narrowing function is frozen against a field name that three of four declarations do not have, and its component vocabulary is undeclared. An implementer cannot write `reference_derive` from this text without choosing a shape, and whichever is chosen determines whether the oracle compares sets (turn [20]/[28]) or per-operation authority maps (turn [27]/[48]) — two different notions of attenuation. The turn-[28] shape is also the only one that mirrors the production `Authority`'s five components, which is what C-33's independence rule forbids it to reuse directly.
+
+### Disposition
+
+REPORTED; nothing renamed. Filed as T-81 with all four declarations, both field spellings (`ops`, `operations`), all four container forms, the frozen `reference_derive` signature and body, and the five undeclared component types protected verbatim. The undeclared names are also listed in X-84 so that one ruling can cover the reference model's whole vocabulary.
+
+### Decision needed
+
+Which `RefAuthority` shape is the oracle's — a set of operations (turns [20], [28]) or a map to `RefOperationAuthority` (turns [27], [48]) — and is its key the production `Op` or the undeclared `RefOp`? `reference_derive`'s frozen body only type-checks against the first.
+
+## X-79
+
+**`RefState` is declared with the production machine's types in turns [23]-[24] and with `Ref*` types in turn [48], renaming `kont` and dropping `outcome`**
+
+- **Kind:** `FIELD-SET` — same type name, different field sets or field names
+- **Severity:** MAJOR
+- **Terms affected:** T-80 `RefState`, T-58 `ReferenceModel`, T-30 `Expr`, T-32 `EvalState`, T-33 `Frame`, T-81 `RefAuthority`
+- **Previously registered as:** `C-33`, `X-22`, `X-84`
+
+### Evidence (frozen source)
+
+| Line | Text at that line | What it denotes there |
+|---|---|---|
+| `Red-on-Rust.md` L14728 | `pub struct RefState {` | turn [23]: first declaration |
+| `Red-on-Rust.md` L14729 | `pub expr: Expr,` | turn [23]: the PRODUCTION AST (T-30) |
+| `Red-on-Rust.md` L14730 | `pub env: Environment,` | turn [23]: the production environment |
+| `Red-on-Rust.md` L14731 | `pub kont: Vec<Frame>,` | turn [23]: the CEK spelling `kont`, holding the PRODUCTION frame (T-33) |
+| `Red-on-Rust.md` L14732 | `pub outcome: RefOutcome,` | turn [23]: a fourth field |
+| `Red-on-Rust.md` L15985 | `pub struct RefState {` | turn [24]: re-declared identically |
+| `Red-on-Rust.md` L16423 | `pub struct RefState {` | turn [24]: re-declared identically again |
+| `Red-on-Rust.md` L35522 | `pub struct RefState {` | turn [48]: the independent form |
+| `Red-on-Rust.md` L35523 | `pub expr: RefExpr,` | turn [48]: `RefExpr` — declared nowhere, though `RefFrame` uses it in twelve places (X-84) |
+| `Red-on-Rust.md` L35524 | `pub env: RefEnv,` | turn [48]: `RefEnv` — declared once |
+| `Red-on-Rust.md` L35525 | `pub continuation: Vec<RefFrame>,` | turn [48]: `kont` renamed, and the frame type is the reference model's own |
+| `Red-on-Rust.md` L35541 | `pub enum RefFrame {` | turn [48]: declared, and every one of its variants carries `RefExpr`, `RefEnv`, `RefOp` or `RefConstraint` payloads |
+
+### Evidence (canonicalization layer)
+
+| File:line | Text at that line | Note |
+|---|---|---|
+| `spec/06-contradictions-ambiguities.md`:83 | ``\| C-69 \| `RefState` is declared with the production machine's types`` | C-69 |
+| `spec/09-unresolved-decisions.md`:184 | `### U-33 — Which reference-model declarations govern` | U-33 |
+
+### The collision
+
+The reference machine's state has four declarations in two field sets. Turns [23] and [24] (L14728, L15985, L16423) all declare `{ expr: Expr, env: Environment, kont: Vec<Frame>, outcome: RefOutcome }` — built entirely from PRODUCTION types. Turn [48] (L35522) declares `{ expr: RefExpr, env: RefEnv, continuation: Vec<RefFrame> }`: the field `kont` is renamed `continuation`, the field `outcome` is dropped, and every type is replaced by the reference model's own. `RefExpr`, the type of the new form's central field, is declared nowhere in the source, although the declared `RefFrame` enum (L35541) uses it in twelve variant payloads.
+
+### Why it matters
+
+C-33 records the rule that the reference model must not depend on any production crate, and turn [54] restates it; the turns-[23]/[24] `RefState` violates it on its face, since `Expr`, `Environment` and `Frame` are the production machine's types. The turn-[48] form satisfies the rule but is the one whose vocabulary is undeclared, so the oracle's state cannot be constructed from the frozen text. `outcome` matters separately: it is what the reference machine reports, and R-REF-05's differential comparison has to compare something — with `outcome` absent from the governing shape, the comparison's left-hand side is only a configuration, not a result. The `kont`/`continuation` split is the same field-name divergence X-22 records on the production side, here carrying a type change as well.
+
+### Disposition
+
+REPORTED; neither spelling renamed and `outcome` not struck. Filed as T-80 with all four declarations, both field names (`kont`, `continuation`), all six type names (`Expr`, `Environment`, `Vec<Frame>`, `RefExpr`, `RefEnv`, `Vec<RefFrame>`) and the dropped `outcome` protected verbatim. `RefExpr` is listed in X-84's undeclared family.
+
+### Decision needed
+
+Which `RefState` governs the differential oracle — the production-typed form of turns [23]-[24] (which C-33 forbids) or the independent turn-[48] form (whose `RefExpr` is undeclared)? And does the reference state carry `outcome`, or is the comparison made on configurations alone?
+
+## X-80
+
+**`WalFrame` gains `payload_length: u32` in turn [47] and puts it inside the checksum's SHA-256 domain, so every checksum changes**
+
+- **Kind:** `FIELD-SET` — same type name, different field sets or field names
+- **Severity:** MAJOR
+- **Terms affected:** T-46 `WalFrame`, T-45 `WAL`, T-47 `WalRecord`, T-49 `EventLog`, T-62 `CanonicalEnvelope`
+- **Previously registered as:** `X-31`, `X-50`, `C-47`, `U-24`, `X-84`
+
+### Evidence (frozen source)
+
+| Line | Text at that line | What it denotes there |
+|---|---|---|
+| `Red-on-Rust.md` L34237 | `pub struct WalFrame {` | turn [46]: four fields — sequence, kind, payload, checksum |
+| `Red-on-Rust.md` L34241 | `pub checksum: [u8; 32],` | turn [46]: the checksum's input domain is not stated here |
+| `Red-on-Rust.md` L35099 | `pub struct WalFrame {` | turn [47]: five fields |
+| `Red-on-Rust.md` L35100 | `pub sequence: WalSequence,      // u64, strictly monotonic` | turn [47]: width fixed in a comment |
+| `Red-on-Rust.md` L35101 | `pub kind: WalRecordKind,        // u8, explicit enum discriminant` | turn [47]: `WalRecordKind` is declared nowhere (X-84) |
+| `Red-on-Rust.md` L35102 | `pub payload_length: u32,        // Big-endian, checked` | turn [47]: the new field, big-endian |
+| `Red-on-Rust.md` L35104 | `pub checksum: [u8; 32],         // SHA-256(sequence \|\| kind \|\| payload_length \|\| payload)` | turn [47]: the checksum domain now includes `payload_length` |
+| `Red-on-Rust.md` L35109 | `The persistence parser must reject: truncated headers, truncated payloads, impossible` | turn [47]: the rejection rule that presumes a length field the turn-[46] frame does not have |
+
+### Evidence (canonicalization layer)
+
+| File:line | Text at that line | Note |
+|---|---|---|
+| `spec/06-contradictions-ambiguities.md`:84 | ``\| C-70 \| `WalFrame` gains `payload_length: u32``` | C-70 |
+| `spec/09-unresolved-decisions.md`:176 | ``### U-32 — Does the durable `WalFrame` carry `payload_length``` | U-32 |
+
+### The collision
+
+The durable frame is declared twice with different field sets: `{ sequence, kind, payload, checksum }` at L34237 (turn [46]) and `{ sequence, kind, payload_length, payload, checksum }` at L35099 (turn [47]). The added field is not inert — L35104 fixes the checksum as `SHA-256(sequence || kind || payload_length || payload)`, so the two declarations compute different digests over the same record. The added field is also declared `u32` and 'Big-endian' (L35102), which is a third appearance of the endianness/width question C-47 and X-50 raise for the canonical envelope, and the turn-[47] parser rule at L35109 ('must reject: truncated headers, truncated payloads, impossible lengths') presumes a length field the turn-[46] frame does not carry. `WalFrame.kind`'s type, `WalRecordKind`, is declared nowhere, so the frame's discriminant has no variant list at either turn.
+
+### Why it matters
+
+The WAL is the recovery substrate: R-PERSIST-01/R-PERSIST-02 and the replay path read these bytes, and a checksum computed over a different concatenation than the one written makes every previously written record unverifiable. This is not a cosmetic field addition — it silently changes the digest of every frame, which is exactly the class of change R-SCOPE-03 says must never pass without a report. The big-endian `u32` also interacts with X-50: if the envelope layer is little-endian and the frame header is big-endian, a single implementation must contain both, and nothing in the frozen text says where the boundary falls. Without `WalRecordKind`'s variants, the 'impossible lengths' and 'truncated headers' rejections cannot be enumerated either.
+
+### Disposition
+
+REPORTED; neither field set rewritten and the checksum formula quoted verbatim. T-46 (`WalFrame`) gains both shapes and the checksum-domain string in its `protected` list, and `WalRecordKind` is recorded in X-84 as an undeclared field type. The endianness question is left with X-50/C-47 rather than restated as a new finding.
+
+### Decision needed
+
+Does the durable frame carry `payload_length`, and is the checksum `SHA-256(sequence || kind || payload_length || payload)` (L35104) or a digest over the turn-[46] four-field concatenation? Also: is the header big-endian while the envelope is little-endian (X-50), and what are `WalRecordKind`'s variants?
+
+## X-82
+
+**`CapabilityKernel`'s arena changes value type and container, its `revocation_set` is dropped and re-typed, and `children` appears in one declaration only**
+
+- **Kind:** `DIVERGENT-SHAPE` — the same type name is declared repeatedly with materially different variant or field shapes
+- **Severity:** MAJOR
+- **Terms affected:** T-13 `CapabilityKernel`, T-11 `AuthorityNode`, T-10 `Authority`, T-09 `CapRef`, T-14 `CapabilityContext`
+- **Previously registered as:** `X-37`, `X-25`, `AMB-26`, `U-02`
+
+### Evidence (frozen source)
+
+| Line | Text at that line | What it denotes there |
+|---|---|---|
+| `Red-on-Rust.md` L925 | `pub(crate) struct CapabilityKernel {` | turn [3]: first declaration |
+| `Red-on-Rust.md` L927 | `arena: slotmap::SlotMap<slotmap::DefaultKey, Authority>,` | turn [3]: the arena holds `Authority` — which in turn [3] is a revocation NODE (X-77) |
+| `Red-on-Rust.md` L928 | `revocation_set: HashSet<slotmap::DefaultKey>,` | turn [3]: keyed by the arena's slot key |
+| `Red-on-Rust.md` L3656 | `pub(crate) struct CapabilityKernel {` | turn [7]: one field only |
+| `Red-on-Rust.md` L3657 | `arena: slotmap::SlotMap<slotmap::DefaultKey, RuntimeAuthority>,` | turn [7]: value type becomes `RuntimeAuthority`; `revocation_set` is GONE |
+| `Red-on-Rust.md` L5044 | `pub(crate) struct CapabilityKernel {` | turn [9]: still one field, still `RuntimeAuthority` |
+| `Red-on-Rust.md` L5429 | `pub struct CapabilityKernel {` | turn [9]: `revocation_set` returns and `children` appears |
+| `Red-on-Rust.md` L5430 | `arena: SlotMap<DefaultKey, Authority>,` | turn [9]: value type back to `Authority`, now a permission set (X-77) |
+| `Red-on-Rust.md` L5432 | `children: HashMap<DefaultKey, Vec<DefaultKey>>, // Parent -> Children` | turn [9]: the lineage index, in no other declaration |
+| `Red-on-Rust.md` L6694 | `pub struct CapabilityKernel {` | turn [11]: `children` gone again |
+| `Red-on-Rust.md` L6695 | `// Private arena mapping CapRef to Authority + lineage metadata` | turn [11]: lineage is now a COMMENT, not a field |
+| `Red-on-Rust.md` L6696 | `arena: GenerationalArena<AuthorityNode>,` | turn [11]: container changes to `GenerationalArena`, value type to `AuthorityNode` |
+| `Red-on-Rust.md` L6697 | `revocation_set: HashSet<CapRef>, // Or epoch-based generation tracking` | turn [11]: re-typed from a slot key to a `CapRef`, and the comment leaves the mechanism OPEN |
+
+### Evidence (canonicalization layer)
+
+| File:line | Text at that line | Note |
+|---|---|---|
+| `spec/06-contradictions-ambiguities.md`:86 | ``\| C-72 \| `CapabilityKernel`'s arena changes value type and container`` | C-72 |
+| `spec/09-unresolved-decisions.md`:168 | ``### U-31 — Which field set is `Authority`'s`` | U-31, which also rules on the kernel's arena |
+
+### The collision
+
+The kernel is declared five times in four field sets. The arena's value type is `Authority` (L927, turn [3]), `RuntimeAuthority` (L3657/L5044, turns [7] and [9]), `Authority` again (L5430, turn [9]) and `AuthorityNode` (L6696, turn [11]) — three names for the node whose relationship is X-77's, and two of them change denotation between turns. Its container is `slotmap::SlotMap` in four declarations and `GenerationalArena` in the fifth. `revocation_set` is present at L928, absent from the turn-[7] and turn-[9] single-field declarations, present again at L5431, and present at L6697 with a different element type (`HashSet<CapRef>` instead of `HashSet<DefaultKey>`) and a comment — 'Or epoch-based generation tracking' — that leaves the mechanism undecided in the source itself. `children: HashMap<DefaultKey, Vec<DefaultKey>>` appears only at L5432; by L6695 lineage has been demoted to a comment.
+
+### Why it matters
+
+The kernel is the trust root (R-KERN-01 to R-KERN-03) and the object whose arena the ABA-safety argument depends on: `revocation_set` keyed by a bare slot key cannot distinguish a recycled index from a live capability, which is the whole reason `CapRef` carries a `generation` (X-25) and the reason L6697's `HashSet<CapRef>` is a materially different design. The two forms are not equivalent, and the frozen text offers both. Dropping `revocation_set` in turns [7] and [9] also removes the only place revocation state lives, while dropping `children` in turn [11] removes the only field that could implement cascading revocation — L6695's comment asserts 'lineage metadata' that no field of that declaration carries. An in-source 'Or epoch-based generation tracking' is an undecided decision recorded nowhere else in the registers.
+
+### Disposition
+
+REPORTED; no field renamed, no container chosen. T-13 (`CapabilityKernel`) gains all four field sets, both `revocation_set` element types and the `children` field in its `protected` list; `RuntimeAuthority` is protected under T-11 (`AuthorityNode`) per X-77. The undecided 'Or epoch-based' comment is carried in this entry's sites so it can be ruled on with U-02/X-25 rather than discovered again at implementation time.
+
+### Decision needed
+
+What does the kernel's arena hold — `Authority`, `RuntimeAuthority` or `AuthorityNode` — in which container (`SlotMap` or `GenerationalArena`)? Is `revocation_set` keyed by slot key or by `CapRef`, is it present at all in the turns-[7]/[9] form, and is revocation tracked by set or 'epoch-based generation tracking' (L6697)? Does `children` exist?
+
+## X-83
+
+**The turn-[31] and turn-[32] state structs are not the same structs: `run_state` and `members` appear, `scheduler` disappears, and `mailbox` changes type within turn [18]**
+
+- **Kind:** `FIELD-SET` — same type name, different field sets or field names
+- **Severity:** MAJOR
+- **Terms affected:** T-37 `ActorState`, T-38 `GlobalState`, T-40 `RunnableQueue`, T-39 `Mailbox`, T-36 `RunState`, T-35 `ActorStatus`, T-79 `MarshalledValue`, T-48 `Snapshot`
+- **Previously registered as:** `X-75`, `X-23`, `U-17`, `X-76`
+
+### Evidence (frozen source)
+
+| Line | Text at that line | What it denotes there |
+|---|---|---|
+| `Red-on-Rust.md` L24156 | `pub struct GlobalState {` | turn [31]: seven fields |
+| `Red-on-Rust.md` L24168 | `pub scheduler: SchedulerState,` | turn [31]: the scheduler is part of the machine state |
+| `Red-on-Rust.md` L25535 | `pub struct GlobalState {` | turn [32]: six fields — `scheduler` is GONE |
+| `Red-on-Rust.md` L25862 | `pub struct GlobalState {` | turn [32]: six fields again |
+| `Red-on-Rust.md` L24197 | `pub struct ActorState {` | turn [31]: seven fields, `status` but no `run_state` |
+| `Red-on-Rust.md` L25544 | `pub struct ActorState {` | turn [32]: EIGHT fields — `run_state` added, `status` kept |
+| `Red-on-Rust.md` L25546 | `pub run_state: RunState,` | turn [32]: the added field |
+| `Red-on-Rust.md` L25552 | `pub status: ActorStatus, // Running, Pending, Blocked, Halted, Fault` | turn [32]: the pre-existing field, retained alongside |
+| `Red-on-Rust.md` L25871 | `pub struct ActorState {` | turn [32]: the same turn's other declaration — seven fields, no `run_state` |
+| `Red-on-Rust.md` L24274 | `pub struct RunnableQueue {` | turn [31]: one field |
+| `Red-on-Rust.md` L24275 | `queue: VecDeque<ActorId>,` | turn [31]: a bare FIFO — nothing here can enforce at-most-once membership |
+| `Red-on-Rust.md` L25892 | `pub struct RunnableQueue {` | turn [32]: two fields |
+| `Red-on-Rust.md` L25894 | `members: BTreeSet<ActorId>, // Enforces "at most once" invariant` | turn [32]: the field R-ACTOR-04 and mutation M012 depend on |
+| `Red-on-Rust.md` L9438 | `pub struct ActorState {` | turn [17]: `mailbox: Mailbox` |
+| `Red-on-Rust.md` L10360 | `pub struct ActorState {` | turn [18]: `mailbox: VecDeque<MarshalledValue>` — the abstract type replaced inline |
+| `Red-on-Rust.md` L10892 | `pub struct ActorState {` | turn [18]: `mailbox: Mailbox` again, in the SAME turn |
+
+### Evidence (canonicalization layer)
+
+| File:line | Text at that line | Note |
+|---|---|---|
+| `spec/06-contradictions-ambiguities.md`:87 | `\| C-73 \| The turn-[31] and turn-[32] state structs are not the same structs` | C-73 |
+| `spec/09-unresolved-decisions.md`:192 | `### U-34 — Which turn-[31]/turn-[32] state structs govern` | U-34 |
+
+### The collision
+
+Four field-set divergences sit in the scheduler/state layer, three of them between the adjacent turns [31] and [32]. (a) `GlobalState` carries `scheduler: SchedulerState` at L24168 (turn [31]) and does not at L25535 or L25862 (turn [32]). (b) `ActorState` gains `run_state: RunState` at L25546 (turn [32]) while KEEPING `status: ActorStatus` at L25552, so that one declaration carries both status fields; the same turn's other declaration (L25871) has only `status`. (c) `RunnableQueue` is `{ queue: VecDeque<ActorId> }` at L24274 (turn [31]) and `{ queue, members: BTreeSet<ActorId> }` at L25892 (turn [32]), where the comment on `members` reads 'Enforces "at most once" invariant'. (d) One turn earlier in kind: `ActorState.mailbox` is `Mailbox` at L9438 (turn [17]), `VecDeque<MarshalledValue>` at L10360 (turn [18]) and `Mailbox` again at L10892 — the same turn disagreeing with itself.
+
+### Why it matters
+
+Each divergence lands on an obligation rather than on prose. R-ACTOR-04 requires that 'one actor appears in the runnable queue at most once' and mutation M012 ('duplicate runnable queue entry') exists to kill an implementation that gets it wrong — but the turn-[31] `RunnableQueue` has no membership index, so at-most-once is unenforceable in that shape, and U-17 already asks whether the queue is snapshotted or reconstructed on recovery. Dropping `scheduler` from `GlobalState` removes scheduler state from the object that `GlobalSnapshot.machine_state` persists (L26303), which changes what recovery can restore. Carrying `run_state` and `status` in one `ActorState` gives two sources of truth for whether an actor is blocked — the exact overlap X-23 records between `RunState::Faulted` and `ActorStatus::Fault` — while the same turn's other declaration has one. And `mailbox: VecDeque<MarshalledValue>` inlines the type X-76 shows is itself declared two ways, so the mailbox's element type is doubly undecided.
+
+### Disposition
+
+REPORTED as one grouped entry so a single ruling can settle the turn-[31]/[32] state layer; no field added to or removed from any declaration. T-37 (`ActorState`), T-38 (`GlobalState`), T-40 (`RunnableQueue`) and T-39 (`Mailbox`) each gain the divergent field lists in their `protected` entries with this entry cited. `RunState::NotRunnable`'s disappearance between L24299 and L25526 is X-75's and is not restated here.
+
+### Decision needed
+
+Does `GlobalState` carry `scheduler: SchedulerState`? Does `ActorState` carry `run_state`, `status`, or both? Does `RunnableQueue` carry `members` (and if not, how is R-ACTOR-04's at-most-once enforced)? Is `ActorState.mailbox` a `Mailbox` or an inline `VecDeque<MarshalledValue>`?
+
+## X-84
+
+**Thirty-one more type names are used in frozen field positions and declared nowhere — including the reference model's whole vocabulary**
+
+- **Kind:** `UNDEFINED-TYPE` — a name is used as a type but never declared
+- **Severity:** MAJOR
+- **Terms affected:** T-80 `RefState`, T-81 `RefAuthority`, T-10 `Authority`, T-11 `AuthorityNode`, T-46 `WalFrame`, T-47 `WalRecord`, T-42 `ReplayHost`, T-58 `ReferenceModel`, T-12 `Constraint`
+- **Previously registered as:** `X-29`, `X-30`, `X-75`, `U-13`, `U-16`, `U-21`, `C-33`
+
+### Evidence (frozen source)
+
+| Line | Text at that line | What it denotes there |
+|---|---|---|
+| `Red-on-Rust.md` L35523 | `pub expr: RefExpr,` | turn [48]: `RefState`'s central field type — undeclared, and used in twelve `RefFrame` variant payloads |
+| `Red-on-Rust.md` L35541 | `pub enum RefFrame {` | turn [48]: declared, and built from `RefExpr`, `RefOp`, `RefConstraint`, `RefFunction`, `RefCapId` |
+| `Red-on-Rust.md` L35700 | `pub operations: BTreeMap<RefOp, RefOperationAuthority>,` | turn [48]: `RefOp` undeclared (X-78) |
+| `Red-on-Rust.md` L19608 | `pub struct RefOperationAuthority {` | turn [27]: declared — but its four field types `RefScope`, `RefConstraint`, `RefResources`, `RefLifetime` are not |
+| `Red-on-Rust.md` L35903 | `pub run_state: RefRunState,` | turn [48]: with `RefCapabilityContext`, `RefHeap`, `VecDeque<RefMessage>` beside it |
+| `Red-on-Rust.md` L36042 | `pub event_log: Vec<RefEvent>,` | turn [48]: `RefEvent` undeclared |
+| `Red-on-Rust.md` L36098 | `RefRecoveryFault` | turn [48]: undeclared |
+| `Red-on-Rust.md` L36135 | `pub trace: Vec<RefReceipt>,` | turn [48]: `RefReceipt` undeclared |
+| `Red-on-Rust.md` L484 | `authority: AuthorityId,` | turn [2]: `Capability`'s own field type — undeclared |
+| `Red-on-Rust.md` L488 | `struct Authority {` | turn [2]: whose `RevocationState` and `Rights` are undeclared too (X-77) |
+| `Red-on-Rust.md` L1191 | `pub struct LiveHost {` | turn [3]: `FileSystemBackend`, `NetworkBackend` and `OsAuthority` — all three undeclared |
+| `Red-on-Rust.md` L34237 | `pub struct WalFrame {` | turn [46]: `WalRecordKind`, the frame's discriminant type, is undeclared (X-80) |
+| `Red-on-Rust.md` L26301 | `pub struct GlobalSnapshot {` | turn [33]: `last_effect_sequence: EffectSequence` — undeclared, beside `last_event_sequence: EventSequence`, which IS declared (X-47) |
+| `Red-on-Rust.md` L4361 | `pub ops: OperationSet,` | turn [8]: `OperationSet` undeclared, and reused at L6687 by `Constraint` |
+| `Red-on-Rust.md` L5730 | `ScopeConstraint` | turn [10]: with `OpConstraint` — both undeclared |
+| `Red-on-Rust.md` L9784 | `trace: ReplayTrace,` | turn [17]: `ReplayTrace` undeclared (X-43) |
+| `Red-on-Rust.md` L22340 | `receipts: ReceiptLog,` | turn [29]: `ReceiptLog` undeclared (X-43) |
+| `Red-on-Rust.md` L3540 | `AddrPattern` | turn [6]: with `PathPattern` — the target pattern types, undeclared |
+| `Red-on-Rust.md` L5381 | `CommandPattern` | turn [9]: with `GlobPattern`, `IpRange`, `PortSet` — the scope pattern types, undeclared |
+| `Red-on-Rust.md` L12917 | `SendRequest` | turn [21]: with `SpawnRequest` — undeclared, and used in three declarations each |
+
+### Evidence (canonicalization layer)
+
+| File:line | Text at that line | Note |
+|---|---|---|
+| `spec/06-contradictions-ambiguities.md`:88 | `\| C-74 \| Thirty-one more type names are used in frozen field positions` | C-74 |
+| `spec/09-unresolved-decisions.md`:184 | `### U-33 — Which reference-model declarations govern` | U-33, which rules on the twelve `Ref*` names |
+| `term/00-overview.md`:213 | `python3 term/_structs.py --undeclared # field types declared nowhere: 69 names` | the §8 command that re-derives this entry's counts |
+
+### The collision
+
+A field-position sweep of every struct and enum declaration in the source (272 struct declarations, 108 enum declarations) finds 69 type names used as field or variant-payload types that are declared nowhere. Thirteen are already recorded (X-29's `NormalizedAST`, `Form`, `GlobalEvent`, `CapabilitySummary`, `BudgetSummary` and the seven `Observed*` element types; X-30's `PlanIR`), four are `std` or external-crate types written unqualified (`SlotMap`, `DefaultKey`, `PathBuf`, `SocketAddr`), and twenty-one more are named in an existing entry or decision (`Rights`, `Operation`, `WalRecordKind`, `EffectSet`, `CapSet`, `ResourceBounds`, `ResourceUsage`, `EnvironmentSnapshot`, `Machine`, `ActorRef`, `TargetExpr`, `BudgetAllocationSpec`, `SendRequest`'s siblings, `PlannerMetadata`, `ProposalDigest`, `FuncRef`, `EffectSignature`, `EffectError`, `HostPolicyError`, `RecoveryFault`, `RefReceipt`/`RefRunState`). The remaining THIRTY-ONE are recorded nowhere in the repository: the reference model's twelve (`RefExpr`, `RefOp`, `RefScope`, `RefConstraint`, `RefResources`, `RefLifetime`, `RefFunction`, `RefEvent`, `RefHeap`, `RefMessage`, `RefCapabilityContext`, `RefRecoveryFault`), the authority layer's three (`AuthorityId`, `RevocationState`, `OsAuthority`), the algebra's three (`OperationSet`, `ScopeConstraint`, `OpConstraint`), the host's four (`FileSystemBackend`, `NetworkBackend`, `ReplayTrace`, `ReceiptLog`), the pattern types' six (`AddrPattern`, `PathPattern`, `CommandPattern`, `GlobPattern`, `IpRange`, `PortSet`), `EffectSequence`, and the two actor-request types (`SendRequest`, `SpawnRequest`).
+
+### Why it matters
+
+These are not decorative names: they are the types of fields in frozen declarations, so each one is a hole in a structure the spec requires an implementation to build. The reference-model cluster is the worst, because R-REF-05's differential observer is the project's central verification instrument and C-33 forbids it from borrowing production types — the twelve `Ref*` names ARE its vocabulary, and none is declared, so the oracle is specified in a language the source never defines (X-78, X-79). `AuthorityId`, `RevocationState` and `Rights` are the field types of the turn-[2] `Authority` and of `Capability` itself, so the capability's own definition rests on three undefined types. `WalRecordKind` is the discriminant of the durable frame, whose variants the turn-[47] parser rules need in order to reject bad records (X-80). `EffectSequence` differs from the declared `EventSequence` by one letter and sits beside it in the same struct (X-47), so a reader cannot tell whether it is a typo or a third sequence domain.
+
+### Disposition
+
+REPORTED as an extension of X-29 rather than as thirty-one separate entries; nothing renamed and no type invented to fill a hole. The reference-model names are protected verbatim under T-80/T-81; `AuthorityId`, `RevocationState`, `Rights` and `OsAuthority` under T-10/T-11; `WalRecordKind` under T-46; `EffectSequence` under T-47; `ReplayTrace` and `ReceiptLog` under T-42. The counts in this entry are re-derivable with `python3 term/_structs.py --undeclared`, which is the checker that produced them.
+
+### Decision needed
+
+Are the thirty-one names to be declared (and by whom — the reference model's twelve belong to `ror-reference`), or are they placeholders for production types the reference model is forbidden to reuse (C-33)? `EffectSequence` in particular needs a ruling: a third sequence domain, or a misspelling of `EventSequence`?
+
+## X-85
+
+**`FunctionValue.env` is an `EnvironmentSnapshot` in one declaration and a live `Environment` in two; X-33 records the name, not the divergence**
+
+- **Kind:** `FIELD-SET` — same type name, different field sets or field names
+- **Severity:** MAJOR
+- **Terms affected:** T-31 `Value`, T-30 `Expr`, T-32 `EvalState`, T-33 `Frame`, T-58 `ReferenceModel`, T-48 `Snapshot`
+- **Previously registered as:** `X-33`, `X-84`, `X-45`, `U-09`, `U-02`
+
+### Evidence (frozen source)
+
+| Line | Text at that line | What it denotes there |
+|---|---|---|
+| `Red-on-Rust.md` L12354 | `pub struct FunctionValue {` | turn [21]: first declaration |
+| `Red-on-Rust.md` L12357 | `pub env: EnvironmentSnapshot,` | turn [21]: a SNAPSHOT of the defining environment — and a type declared nowhere (X-84) |
+| `Red-on-Rust.md` L13984 | `pub struct FunctionValue {` | turn [22]: second declaration |
+| `Red-on-Rust.md` L13987 | `pub env: Environment, // Immutable snapshot for reference interpreter` | turn [22]: the LIVE type name, with a comment that asserts the SNAPSHOT reading |
+| `Red-on-Rust.md` L14370 | `pub struct FunctionValue {` | turn [22]: third declaration |
+| `Red-on-Rust.md` L14373 | `pub env: Environment, // Captured lexical environment` | turn [22]: 'captured lexical environment' — the snapshot reading again, under the live type name |
+
+### Evidence (canonicalization layer)
+
+| File:line | Text at that line | Note |
+|---|---|---|
+| `spec/06-contradictions-ambiguities.md`:89 | ``\| C-75 \| `FunctionValue.env` is an `EnvironmentSnapshot` in one declaration`` | C-75 |
+
+### The collision
+
+The closure value is declared three times with two different types for its captured environment: `env: EnvironmentSnapshot` at L12357 (turn [21]) and `env: Environment` at L13987 and L14373 (both turn [22]). `Environment` is declared four times in the source; `EnvironmentSnapshot` is declared nowhere. The other two fields (`params: Vec<Symbol>`, `body: Box<Expr>`) are identical in all three declarations, so this is a one-field divergence with two readings — and the two turn-[22] comments both assert the snapshot reading under the live type name: 'Immutable snapshot for reference interpreter' (L13987) and 'Captured lexical environment' (L14373). X-33 records `EnvironmentSnapshot` as a homonym of `Snapshot`, used once and never defined; it does not record that the same field has a second, DECLARED type in the two later declarations, which is the fact filed here.
+
+### Why it matters
+
+This is not a naming quibble: a snapshot and a live environment are different semantic objects. Capturing a snapshot gives lexical scoping and makes a closure's behaviour independent of later mutation of the defining scope; capturing the live environment gives dynamic visibility of those mutations. The two readings produce different traces for the same program, so the choice is observable by the differential oracle and by replay determinism (R-CALC-02/R-CALC-03, and the CEK rules that push and pop `Env` on a call). It is also unimplementable as written in the turn-[21] form, since `EnvironmentSnapshot` has no declaration (X-33, X-84) — an implementer must either invent it or substitute `Environment`, which silently decides the semantics the spec left open. The turn-[22] comments point the other way: they describe `Environment` as an immutable snapshot and a captured lexical environment, so the source's prose intends capture-by-snapshot while its type names say otherwise. Recovery depends on the answer too: X-33 notes that `FunctionValue` must be encodable in snapshots for closures to survive recovery, and a live environment cannot be encoded independently of the actor that owns it.
+
+### Disposition
+
+REPORTED; neither type renamed and no `EnvironmentSnapshot` declaration invented. T-31's neighbours are untouched: the two spellings are protected under this entry and cited from the `Value::Function` payload, whose frozen form carries the closure. `EnvironmentSnapshot` is listed in X-84's undeclared set.
+
+### Decision needed
+
+Does a `FunctionValue` capture a snapshot of its defining environment or the live environment? The type names say both (L12357 `EnvironmentSnapshot`; L13987 and L14373 `Environment`) while both turn-[22] comments say 'snapshot'. If a snapshot, `EnvironmentSnapshot` needs a declaration and a stated relationship to `Environment`; if live, L12357's type name and the two comments need a ruling that they are synonyms.
+
+## X-86
+
+**`Frame`'s eleven declarations carry five distinct variant sets, and the continuation's variant names change twice**
+
+- **Kind:** `DIVERGENT-SHAPE` — the same type name is declared repeatedly with materially different variant or field shapes
+- **Severity:** MAJOR
+- **Terms affected:** T-33 `Frame`, T-32 `EvalState`, T-30 `Expr`, T-80 `RefState`, T-17 `EffectRequest`
+- **Previously registered as:** `X-37`, `AMB-26`, `X-35`, `X-57`, `U-02`
+
+### Evidence (frozen source)
+
+| Line | Text at that line | What it denotes there |
+|---|---|---|
+| `Red-on-Rust.md` L12453 | `pub enum Frame {` | turn [21]: nine variants — LetValue, Seq, If, CallFunction, CallArgument, Attenuate, RequestCapability, SendTarget, SendValue |
+| `Red-on-Rust.md` L14047 | `pub enum Frame {` | turn [22]: the same nine names, different payloads |
+| `Red-on-Rust.md` L14430 | `pub enum Frame {` | turn [22]: the same nine names, payloads differing again |
+| `Red-on-Rust.md` L16943 | `pub enum Frame {` | turn [25]: FIVE variants — Attenuate and all three request/send frames are gone |
+| `Red-on-Rust.md` L18650 | `pub enum Frame {` | turn [26]: the same five |
+| `Red-on-Rust.md` L19429 | `pub enum Frame {` | turn [27]: SIX — Attenuate returns, the request frames do not |
+| `Red-on-Rust.md` L20307 | `pub enum Frame {` | turn [28]: a one-variant excerpt (`Attenuate`), body elided |
+| `Red-on-Rust.md` L21181 | `pub enum Frame {` | turn [29]: a three-variant excerpt — RequestCapability, RequestTarget, RequestArgument |
+| `Red-on-Rust.md` L23339 | `pub enum Frame {` | turn [30]: the same three, elided |
+| `Red-on-Rust.md` L23830 | `pub enum Frame {` | turn [30]: the same three again |
+
+### Evidence (canonicalization layer)
+
+| File:line | Text at that line | Note |
+|---|---|---|
+| `spec/06-contradictions-ambiguities.md`:90 | ``\| C-76 \| `Frame`'s eleven declarations carry five distinct variant sets`` | C-76 |
+| `term/00-overview.md`:212 | `python3 term/_structs.py --enums      # every enum variant set: 11 names with >1` | the §8 command that re-derives the variant sets |
+
+### The collision
+
+The continuation frame enum is declared eleven times (L12453, L14047, L14430, L16943, L18650, L19429, L20307, L20713, L21181, L23339, L23830) in five distinct non-elided variant sets: nine variants at L12453 (turn [21]); the same nine names with different payloads at L14047 and again at L14430 (turn [22], so three sets among nine-variant declarations); five variants at L16943 and L18650 (turns [25], [26]); six at L19429 (turn [27]); and three at L23339/L23830 (turn [30]), with L20307/L20713 (turn [28]) and L21181 (turn [29]) as one- and three-variant excerpts whose bodies are elided. The request frames change name as well as presence: `SendTarget`/`SendValue` in turn [21], `RequestCapability` in turns [21]-[22], and `RequestTarget`/`RequestArgument` from turn [29] — while `Attenuate` disappears in turn [25] and returns in turn [27]. AMB-26 records the eleven declarations; the variant sets are not enumerated anywhere.
+
+### Why it matters
+
+`Frame` is the continuation of the CEK machine (T-33, R-CEK-03) and the element type of `EvalState.continuation`, so its variant set determines which reduction rules can be resumed at all. A five-variant frame cannot resume an effect request; a three-variant frame cannot resume a `Let`, a `Seq` or a call. Since the machine's transitions are frozen per turn and the frames they push are named in those transitions, the divergence is not cosmetic: two turns' machines have incompatible continuations, and no supersession note says which governs. The same enum is the type of `RefState.kont` in turns [23]-[24] (X-79), so the reference machine inherits whichever set is chosen. X-35 already records that `Expr::Request` has two field sets; this is the continuation side of the same drift.
+
+### Disposition
+
+REPORTED; no variant renamed, none struck, and the excerpts at L20307/L20713/L21181 are recorded as elided rather than counted as full declarations. T-33 (`Frame`) gains the five variant sets and all eleven declaration lines in its `protected` list and note, and X-37's claim that `Frame` is declared eleven times is confirmed by the checker that produced this entry (`python3 term/_structs.py --enums`).
+
+### Decision needed
+
+Which `Frame` variant set governs — the nine-variant form of turns [21]-[22], the five/six-variant forms of turns [25]-[27], or the three-variant form of turn [30]? And are the request frames `SendTarget`/`SendValue`, `RequestCapability`, or `RequestTarget`/`RequestArgument`?
 
 ## X-11
 
@@ -2314,7 +2879,7 @@ All three names recorded exactly as spelled; none renamed and none unified. The 
 
 ## X-37
 
-**`Authority` is declared seven times and `Frame` eleven times, with an elided `AuthorityNode` between them**
+**`Authority` is declared seven times in six field sets, `Frame` eleven times in five variant sets, and `AuthorityNode` three times**
 
 - **Kind:** `TYPE-HOMONYM` — one name, two or more incompatible type declarations
 - **Severity:** MINOR
@@ -2332,6 +2897,13 @@ All three names recorded exactly as spelled; none renamed and none unified. The 
 | `Red-on-Rust.md` L12453 | `pub enum Frame {` | turn [21]: first of eleven `Frame` declarations |
 | `Red-on-Rust.md` L23830 | `pub enum Frame {` | turn [30]: the frozen-era `Frame` declaration |
 | `Red-on-Rust.md` L39373 | `pub(crate) struct AuthorityNode { ... }` | turn [58]: fields ELIDED |
+| `Red-on-Rust.md` L9702 | `pub(crate) struct AuthorityNode {` | turn [17]: `AuthorityNode` WITH four fields — not elided |
+| `Red-on-Rust.md` L9705 | `generation: u32,` | turn [17]: the field `RuntimeAuthority` (L3649, L5037) lacks |
+| `Red-on-Rust.md` L39940 | `pub struct AuthorityNode { ... }` | turn [58]: elided, and `pub` — the form the prose below forbids |
+| `Red-on-Rust.md` L39945 | `must NOT be public.` | turn [58]: the rule the L39940 code block contradicts |
+| `Red-on-Rust.md` L4360 | `pub struct Authority {` | turn [8]: a declaration this entry's count of seven includes but whose site is not listed |
+| `Red-on-Rust.md` L4979 | `pub struct Authority {` | turn [9]: the same shape as L3591, restated |
+| `Red-on-Rust.md` L5368 | `pub struct Authority {` | turn [9]: the merged form — five fields plus `id` and `parent` |
 
 ### The collision
 
@@ -2339,7 +2911,7 @@ The authority type is declared seven times across turns [2]-[11] (v0.1 → v0.2 
 
 ### Why it matters
 
-A closed variant set is a requirement, not a preference: R-CEK-03 freezes the frame set, and eleven declarations give eleven candidate sets. The differential comparator observes faults and continuations, so two implementations choosing different declarations among the eleven would diverge without either being wrong. `AuthorityNode`'s elided fields mean the kernel's private state has no frozen shape at all, which U-02 needs in order to freeze a canonical encoding.
+A closed variant set is a requirement, not a preference: R-CEK-03 freezes the frame set, and eleven declarations give eleven candidate sets. The differential comparator observes faults and continuations, so two implementations choosing different declarations among the eleven would diverge without either being wrong. `AuthorityNode`'s elided fields mean the kernel's private state has no frozen shape at all, which U-02 needs in order to freeze a canonical encoding. Two corrections and one extension, from the declaration sweep now re-derivable with `python3 term/_structs.py`. (a) `AuthorityNode` is declared THREE times, not once, and is not always elided: L9702 (turn [17]) gives it four fields — `authority: Authority`, `parent: Option<CapRef>`, `generation: u32`, `live: bool` — i.e. exactly `RuntimeAuthority` (L3649, L5037) plus `generation`, which makes three names for the kernel's arena entry (X-77, X-82); L39373 and L39940 (both turn [58]) are the elided pair, and L39940 shows `pub struct AuthorityNode { ... }` immediately above the prose 'must NOT be public' (L39945), so that code block exhibits the forbidden form. (b) The seven `Authority` declarations are L488, L918, L3591, L4360, L4979, L5368 and L6501 — this entry's site list names four of them — and they carry SIX distinct field sets, filed as X-77. (c) The eleven `Frame` declarations carry FIVE distinct non-elided variant sets, filed as X-86. The counts recorded here are confirmed by the checker; the divergences behind them are filed separately rather than restated in this entry.
 
 ### Disposition
 
@@ -2412,36 +2984,6 @@ The frozen type is `LogicalTime(pub u64)` and the frozen symbol is `t`, but the 
 
 The glosses are recorded as forbidden PROSE substitutes (they are not identifiers, so nothing is renamed): canonical prose is 'logical time' or `LogicalTime`. The source sentence is quoted verbatim wherever it is cited, with its provenance, so the glosses remain traceable.
 
-## X-43
-
-**`ReplayHost`'s trace field is `recorded_receipts` in one frozen form and `trace` in the other**
-
-- **Kind:** `FIELD-SET` — same type name, different field sets or field names
-- **Severity:** MINOR
-- **Terms affected:** T-42 `ReplayHost`, T-19 `EffectReceipt`, T-20 `EffectId`
-- **Previously registered as:** `C-22`
-
-### Evidence (frozen source)
-
-| Line | Text at that line | What it denotes there |
-|---|---|---|
-| `Red-on-Rust.md` L24011 | `pub struct ReplayHost {` | turn [30]: the `HashMap` form |
-| `Red-on-Rust.md` L24012 | `pub recorded_receipts: HashMap<EffectId, EffectReceipt>,` | turn [30]: field `recorded_receipts`, keyed by id |
-| `Red-on-Rust.md` L34498 | `pub struct ReplayHost {` | turn [46]: the frozen ordered form |
-| `Red-on-Rust.md` L34499 | `trace: Vec<EffectReceipt>,` | turn [46]: field `trace`, ordered |
-
-### The collision
-
-C-22 resolves the mechanism (unordered map → ordered trace) but the field NAME also changes, from `recorded_receipts: HashMap<EffectId, EffectReceipt>` to `trace: Vec<EffectReceipt>`. The rename is not cosmetic: a map keyed by `EffectId` makes id lookup the primitive operation, while a vector makes POSITION the primitive, which is what allows the digest check to detect a divergent program consuming receipts out of order.
-
-### Why it matters
-
-The ordered form's whole point is that the next receipt is a function of position, not of the requested id — 'a corrupted or divergent program could issue a different effect and simply consume the next recorded result' (L1390) is the failure the id-keyed form permits. Keeping the `recorded_receipts` name would carry the keyed-lookup mental model into an ordered implementation.
-
-### Disposition
-
-Both field names recorded verbatim; neither renamed. C-22 is linked as the mechanism resolution; this entry adds the field-name change and states why the ordered field's name matters to the security property.
-
 ## X-44
 
 **Three cost types and five cost functions: `Cost`, `EffectCost`, `ResourceUsage`, `CostModel`, `cost_C`/`cost_io`/`cost_res`**
@@ -2492,6 +3034,10 @@ All names recorded; none renamed. The dictionary separates them by role: `Cost` 
 | `Red-on-Rust.md` L11061 | `fn step_request(actor: &mut ActorState, machine: &mut GlobalConfig, expr: Expr)` | turn [18]: the Rust name `GlobalConfig` |
 | `Red-on-Rust.md` L24156 | `pub struct GlobalState {` | turn [31]: the frozen Rust name `GlobalState` |
 | `Red-on-Rust.md` L10128 | ``**`GlobalConfig`, `ActorState`, `Budget`, `CapabilityKernel`, `Effect`, `EventLog``` | turn [18]: `GlobalConfig` listed as a first-milestone artifact |
+| `Red-on-Rust.md` L9496 | `pub actors: ActorTable,` | turn [17]: `GlobalConfig` holds an `ActorTable` |
+| `Red-on-Rust.md` L10376 | `pub actors: std::collections::HashMap<ActorId, ActorState>,` | turn [18]: the abstraction is inlined as a `HashMap` |
+| `Red-on-Rust.md` L10930 | `pub actors: ActorTable,` | turn [18]: and returns to `ActorTable` in the SAME turn |
+| `Red-on-Rust.md` L24157 | `pub actors: BTreeMap<ActorId, ActorState>,` | turn [31]: `GlobalState` uses a THIRD container for the same map |
 
 ### The collision
 
@@ -2499,7 +3045,7 @@ The global machine record is `GlobalConfig` in the v0.3/turn-[15]-[18] era and `
 
 ### Why it matters
 
-Resolved, but it is retained here because the superseded name appears in a milestone artifact list (L10128) that an implementer follows for M0, and because `GlobalConfig`'s shape is the 6-component v0.3 configuration (X-18) rather than the frozen `GlobalState` shape — so the name change carries a shape change that C-42 does not mention.
+Resolved, but it is retained here because the superseded name appears in a milestone artifact list (L10128) that an implementer follows for M0, and because `GlobalConfig`'s shape is the 6-component v0.3 configuration (X-18) rather than the frozen `GlobalState` shape — so the name change carries a shape change that C-42 does not mention. The two names also disagree with themselves about the actor table's type: `GlobalConfig.actors` is `ActorTable` at L9496 (turn [17]), `std::collections::HashMap<ActorId, ActorState>` at L10376 (turn [18]) and `ActorTable` again at L10930 — the same turn as the inlined form. Turn [31] then gives `GlobalState.actors: BTreeMap<ActorId, ActorState>` (L24157), a THIRD container for the same map, so the actor table is an abstraction, a `HashMap` and a `BTreeMap` in three places. Which container governs decides iteration order, and therefore the determinism that the scheduler's FIFO rule (R-ACTOR-04) and X-83's `members` field both assume.
 
 ### Disposition
 
@@ -2832,6 +3378,51 @@ REPORTED as one grouped finding so a single ruling can close it; nothing renamed
 ### Decision needed
 
 Only in part: `NotRunnable`'s removal and `Null` versus `Unit` need a ruling; the rest follow from the X-69/X-70/X-72 rulings.
+
+## X-81
+
+**`EffectReceipt`'s first declaration has no `effect_digest`, the field every later receipt-integrity check reads**
+
+- **Kind:** `FIELD-SET` — same type name, different field sets or field names
+- **Severity:** MINOR
+- **Terms affected:** T-19 `EffectReceipt`, T-18 `EffectIssued`, T-20 `EffectId`, T-42 `ReplayHost`, T-70 `Fault`
+- **Previously registered as:** `X-43`, `C-22`, `U-06`
+
+### Evidence (frozen source)
+
+| Line | Text at that line | What it denotes there |
+|---|---|---|
+| `Red-on-Rust.md` L1454 | `pub struct EffectReceipt {` | turn [4]: two fields — `id`, `result` |
+| `Red-on-Rust.md` L9375 | `pub struct EffectReceipt {` | turn [17]: three fields — `id`, `effect_digest`, `result` |
+| `Red-on-Rust.md` L10329 | `pub struct EffectReceipt {` | turn [18]: three fields |
+| `Red-on-Rust.md` L10813 | `pub struct EffectReceipt {` | turn [18]: three fields again |
+| `Red-on-Rust.md` L22140 | `pub struct EffectReceipt {` | turn [29]: three fields |
+| `Red-on-Rust.md` L23299 | `pub struct EffectReceipt {` | turn [30]: three fields |
+| `Red-on-Rust.md` L23775 | `pub struct EffectReceipt {` | turn [30]: three fields again |
+| `Red-on-Rust.md` L23814 | `ReplayCorruption, // ID or Digest mismatch` | turn [30]: the fault that presumes a digest on the receipt |
+| `Red-on-Rust.md` L23815 | `InvalidReceipt,` | turn [30]: and the fault for a receipt that does not match its effect |
+
+### Evidence (canonicalization layer)
+
+| File:line | Text at that line | Note |
+|---|---|---|
+| `spec/06-contradictions-ambiguities.md`:85 | ``\| C-71 \| `EffectReceipt`'s first declaration has no `effect_digest``` | C-71 |
+
+### The collision
+
+`EffectReceipt` is declared seven times in two field sets: `{ id: EffectId, result: Result<Value, HostFault> }` at L1454 (turn [4]) and `{ id: EffectId, effect_digest: EffectDigest, result: Result<Value, HostFault> }` at L9375 (turn [17]) and at all five later declarations (L10329, L10813, L22140, L23299, L23775). The turn-[4] form omits `effect_digest`, the field that binds a receipt to the effect it completes, and no supersession note connects the two.
+
+### Why it matters
+
+`EffectReceipt` is one of the request's required terms and the object the replay host supplies in place of real effects (R-HOST-03, R-EFFECT-06). Replay integrity is stated in terms of the digest: turn [30]'s `Fault` declares `ReplayCorruption` with the comment 'ID or Digest mismatch' (L23814) and `InvalidReceipt` (L23815) beside it, and X-43 records that the ordered-trace form of `ReplayHost` exists precisely so a digest check can catch receipts consumed out of order. A receipt without a digest cannot be checked against its effect at all, so the turn-[4] shape makes the replay host's central guarantee unrepresentable. The severity is MINOR only because six of seven declarations agree and the direction of travel is unambiguous; it is still a field-set divergence in a required term, and the two shapes are not interchangeable in a signature.
+
+### Disposition
+
+REPORTED; `effect_digest` neither added to nor struck from the turn-[4] text. T-19 (`EffectReceipt`) keeps the three-field form as canonical and gains both shapes plus `effect_digest` in its `protected` list, with this entry cited.
+
+### Decision needed
+
+Only formally: does the turn-[4] two-field `EffectReceipt` survive as an earlier shape, or is `effect_digest` part of the receipt from the start? Every integrity check in the frozen text assumes it is.
 
 ## X-53
 

@@ -258,6 +258,161 @@ unresolved = [
  ("U-22","Static effect-set inference (J2) not present in frozen pipeline","PRE-MILESTONE","S-06","R-COMPILE-03"),
 ]
 
+# ---------------------------------------------------------------------------
+# Rows the terminology-normalization passes added to the registers are DERIVED
+# from spec/06 and spec/09 instead of being hand-listed above, so this index
+# cannot fall behind them again: it had.  spec/00-overview.md calls 10-index.json
+# "the authoritative cross-index of sections, requirements, findings, unresolved
+# items, and status", yet it stopped at C-45 and U-22 while the registers ran to
+# C-76 and U-34 -- 31 findings and 12 decisions invisible to any machine reader.
+#
+# The curated tuples above are left exactly as authored: they carry hand-graded
+# values a mechanical read cannot reproduce ("MAJOR (historical)" folded to
+# MAJOR, C-09's "info-superseded", C-35's "U-22 (gap)").  Everything after them
+# is parsed from the registers, and the completeness gate below fails the build
+# if any register row is missing from the index -- so the next pass cannot
+# silently reopen the gap.
+# ---------------------------------------------------------------------------
+import os, re
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_S06 = os.path.join(_HERE, "06-contradictions-ambiguities.md")
+_S09 = os.path.join(_HERE, "09-unresolved-decisions.md")
+
+# C-39 is a pointer row that duplicates C-25 (spec/06's own summary line says
+# so).  The index keeps one entry per finding, so it is excluded by name here
+# rather than dropped silently.
+INDEX_EXCLUSIONS = {"C-39": "pointer row duplicating C-25"}
+
+_SEVERITIES = ("BLOCKING", "MAJOR", "MINOR", "INFO")
+
+
+def _read(path):
+    with open(path, encoding="utf-8") as f:
+        return f.read()
+
+
+def _cells(line):
+    """Split a markdown table row on UNescaped pipes only (`\|` is a literal)."""
+    return [c.strip() for c in re.split(r"(?<!\\)\|", line)][1:-1]
+
+
+def _flat(text):
+    return re.sub(r"\s+", " ", text.replace("`", "").replace("*", "")).strip()
+
+
+def _status(cell):
+    low = _flat(cell).lower()
+    if "open" in low:
+        return "open"
+    if "resolved-by-later-text" in low:
+        return "resolved-by-later-text"
+    if "superseded" in low:
+        return "info-superseded"
+    if low.startswith("info"):
+        return "info"
+    return low or "open"
+
+
+def _resolved_into(cell):
+    refs = re.findall(r"\b(U-\d{2})\b", cell)
+    if "`term/`" in cell or "term/" in cell:
+        refs += ["term/" + x for x in re.findall(r"\b(X-\d{2})\b", cell)]
+    return ";".join(dict.fromkeys(refs)) or "U-none"
+
+
+def _line_ranges(cell):
+    """Source line refs only: a cite that names another document (`spec/01` L25,
+    README L22-28) is not a Red-on-Rust.md line, and provenance.file says it is."""
+    cell = re.sub(r"`(?:spec|req|term|mod)(?:/[^`]*)?`\s*L?\d+(?:\s*[\u2013-]\s*\d+)?", " ", cell)
+    cell = re.sub(r"`[^`]*\.md`\s*L?\d+(?:\s*[\u2013-]\s*\d+)?", " ", cell)
+    cell = re.sub(r"\bREADME\b[^;)]*", " ", cell)
+    out = []
+    for m in re.finditer(r"L(\d+)(?:\s*[\u2013-]\s*(\d+))?", cell):
+        out.append(m.group(1) + ("-" + m.group(2) if m.group(2) else ""))
+    return ";".join(dict.fromkeys(out))
+
+
+def _expand(text, kind):
+    """Collect ids of one family, expanding `A-01\u2026A-04` style ranges."""
+    if kind == "S":
+        pat = r"S-(\d{2})"
+    else:
+        pat = r"R-([A-Z]+)-(\d{2})"
+    out = []
+    for m in re.finditer(r"(%s)(?:\s*[\u2026-]\s*(%s))?" % (pat, pat), text):
+        first, second = m.group(1), m.group(len(m.groups()) // 2 + 1)
+        out.append(first)
+        if second and second != first:
+            if kind == "S":
+                lo, hi = int(first[2:]), int(second[2:])
+                out += ["S-%02d" % n for n in range(lo + 1, hi + 1)]
+            else:
+                area = first.split("-")[1]
+                lo, hi = int(first.split("-")[2]), int(second.split("-")[2])
+                out += ["R-%s-%02d" % (area, n) for n in range(lo + 1, hi + 1)]
+    return list(dict.fromkeys(out))
+
+
+def derive_findings(curated):
+    rows = []
+    for line in _read(_S06).split("\n"):
+        m = re.match(r"^\| (C-\d{2}) \|", line)
+        if not m or m.group(1) in curated or m.group(1) in INDEX_EXCLUSIONS:
+            continue
+        cells = _cells(line)
+        assert len(cells) == 6, "%s: expected 6 cells, got %d" % (m.group(1), len(cells))
+        cid, title, sev, src, status, _desc = cells
+        base = next((x for x in _SEVERITIES if x in sev.upper()), _flat(sev))
+        rows.append((cid, _flat(title), base, _status(status),
+                     _resolved_into(status), _line_ranges(src)))
+    return rows
+
+
+def derive_unresolved(curated):
+    req_section = {r[0]: r[1] for r in requirements}
+    rows = []
+    for block in re.split(r"^### ", _read(_S09), flags=re.M)[1:]:
+        head, _, body = block.partition("\n")
+        m = re.match(r"(U-\d{2})\s*\u2014\s*(.+)$", head.strip())
+        if not m or m.group(1) in curated:
+            continue
+        where = re.search(r"^- \*\*Where:\*\*(.*)$", body, re.M)
+        gate = re.search(r"^- \*\*Blocking:\*\*\s*(\w+)", body, re.M)
+        w = where.group(1) if where else ""
+        blocking = "BLOCKING" if (gate and gate.group(1).lower().startswith("y")) else "PRE-MILESTONE"
+        reqs = _expand(w, "R")
+        secs = _expand(w, "S")
+        if not secs:
+            # a Where bullet that names requirements but no section (U-25) still
+            # belongs somewhere: take the sections those requirements live in.
+            secs = list(dict.fromkeys(req_section[r] for r in reqs if r in req_section))
+        rows.append((m.group(1), _flat(m.group(2)), blocking, ";".join(secs), ";".join(reqs)))
+    return rows
+
+
+findings += derive_findings({f[0] for f in findings})
+unresolved += derive_unresolved({u[0] for u in unresolved})
+
+
+def assert_index_complete():
+    """Every register row must be indexed, or excluded by name."""
+    have_c = {f[0] for f in findings}
+    have_u = {u[0] for u in unresolved}
+    miss_c = [c for c in re.findall(r"^\| (C-\d{2}) \|", _read(_S06), re.M)
+              if c not in have_c and c not in INDEX_EXCLUSIONS]
+    miss_u = [u for u in re.findall(r"^### (U-\d{2}) ", _read(_S09), re.M) if u not in have_u]
+    stale = sorted(have_c - set(re.findall(r"^\| (C-\d{2}) \|", _read(_S06), re.M)))
+    if miss_c or miss_u or stale:
+        raise SystemExit(
+            "spec/10-index.json would not match the registers:\n"
+            "  findings in spec/06 but not indexed : %s\n"
+            "  decisions in spec/09 but not indexed: %s\n"
+            "  indexed findings with no spec/06 row  : %s" % (miss_c, miss_u, stale))
+
+
+assert_index_complete()
+
 mutations = [
  ("M001","reverse argument evaluation",["R-CEK-05"]),
  ("M002","skip arity precheck",["R-CEK-05"]),
@@ -392,8 +547,8 @@ index = {
     "id_schemes": {
       "S-NN": "specification section (24)",
       "R-AREA-NN": "normative requirement/obligation (148)",
-      "C-NN": "contradiction/ambiguity finding (44; 45 rows incl. pointer C-39)",
-      "U-NN": "unresolved item requiring explicit decision (16)",
+      "C-NN": f"contradiction/ambiguity finding ({len(findings)} indexed; {len(findings)+len(INDEX_EXCLUSIONS)} rows in spec/06, incl. pointer C-39 which duplicates C-25)",
+      "U-NN": f"unresolved item requiring explicit decision ({len(unresolved)})",
       "M-NN": "milestone M0-M11",
       "TAG": "source verification-obligation tags (17)",
       "M0NN": "baseline mutation registry (18)",
@@ -405,10 +560,10 @@ index = {
       "03-obligation-matrix.md": "all requirements with stable IDs, status, provenance",
       "04-dependency-graph.md": "section/object/verification dependency graphs + DOT",
       "05-terminology.md": "glossary, normalization rules, under-specified terms",
-      "06-contradictions-ambiguities.md": "findings C-01..C-45 with severity and status",
+      "06-contradictions-ambiguities.md": f"findings C-01..C-{max(f[0] for f in findings)[2:]} with severity and status",
       "07-implementation-mapping.md": "obligations -> crates/modules; actual repo state; milestone crosswalk",
       "08-verification-mapping.md": "obligations -> tags/tests/evidence; claim ladder per theorem",
-      "09-unresolved-decisions.md": "items U-NN requiring explicit architectural decisions",
+      "09-unresolved-decisions.md": f"items U-01..U-{max(u[0] for u in unresolved)[2:]} requiring explicit architectural decisions",
       "10-index.json": "this file (machine-readable index)"
     }
   },
@@ -486,8 +641,10 @@ for r,s,t,p,st,deps,impl,ver,rel in requirements:
 for (c,t,sev,st,res,p) in findings:
     pass
 for (u,t,b,s,a) in unresolved:
-    for part in a.split(";"):
+    for part in (x for x in a.split(";") if x):
         assert part in req_ids, f"bad req {part} in {u}"
+    for part in (x for x in s.split(";") if x):
+        assert part in sec_ids, f"bad section {part} in {u}"
 for (tg,o,m) in tags:
     for part in o:
         assert part in req_ids, f"bad req {part} in tag {tg}"

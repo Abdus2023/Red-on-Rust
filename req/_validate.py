@@ -293,13 +293,39 @@ def main() -> int:
     # added C-46...C-53 and U-23...U-25, and its fault-taxonomy audit then added
     # C-54...C-58 (X-64...X-68) and re-graded C-08 from MINOR to MAJOR, and the
     # declaration sweep that followed added C-59...C-65 (X-69...X-75), U-26...U-29, and rewrote
-    # C-54 -- which it had first filed on a false premise, now withdrawn.  The
-    # expectations are updated here explicitly rather than left to fail, so that
-    # the growth of the registers is a recorded change and not silent drift.
-    if len(c_ids) != 65:
-        err(f"expected 65 C- rows in spec/06, found {len(c_ids)}")
-    if len(u_ids) != 23:
-        err(f"expected 23 U- headings in spec/09, found {len(u_ids)}")
+    # C-54 -- which it had first filed on a false premise, now withdrawn.  The struct-field and
+    # enum-variant sweeps then added C-66...C-76 (X-76...X-86) and U-30...U-34, one C- row per
+    # new X- entry.  The expectations are updated here explicitly rather than
+    # left to fail, so that the growth of the registers is a recorded change and
+    # not silent drift.
+    if len(c_ids) != 76:
+        err(f"expected 76 C- rows in spec/06, found {len(c_ids)}")
+    if len(u_ids) != 28:
+        err(f"expected 28 U- headings in spec/09, found {len(u_ids)}")
+
+    # 7d. markdown table integrity.  A literal `|` inside a cell -- a set
+    # builder `{ (o,v) | o in O }`, a closure body `unwrap_or_else(|| ...)`, a
+    # quoted property-test matrix row, a grammar's `A | B | C` alternatives, a
+    # wire layout `a || b || c` -- splits that row into extra columns and
+    # silently corrupts the rendered register.  Every row must have the header's
+    # cell count, counting only UNescaped separators; the fix is always to write
+    # `\|`, which is the convention spec/06 C-47 already uses.
+    for path in sorted(A.REPO_ROOT.glob("*/[0-9]*.md")) + [A.REPO_ROOT / "README.md"]:
+        header = None
+        for n, line in enumerate(path.read_text(encoding="utf-8").split("\n"), 1):
+            if not line.startswith("|"):
+                header = None
+                continue
+            cells = len(_re.split(r"(?<!\\)\|", line)) - 2
+            if _re.match(r"^\|[\s:|-]+\|$", line):
+                header = cells
+                continue
+            if header is None:
+                header = cells
+                continue
+            if cells != header:
+                err(f"{path.relative_to(A.REPO_ROOT)}:{n}: table row has {cells} cells but its header "
+                    f"has {header} -- an unescaped `|` inside a cell? write it as `\\|`")
     for path in sorted(A.REQ_DIR.glob("*.md")):
         body = path.read_text(encoding="utf-8")
         for m in _re.finditer(r"\b(C-\d{2}|U-\d{2})\b", body):
@@ -403,6 +429,7 @@ def main() -> int:
             "every backticked identifier in STATEMENT or INVARIANTS occurs in a cited range",
             "frozen anchors re-grepped against the source",
             "part-file header counts match parsed records",
+            "markdown tables structurally intact (no unescaped `|` inside a cell)",
         ],
     }
     out = A.REQ_DIR / "registry.json"

@@ -32,8 +32,8 @@
     "id_schemes": {
       "S-NN": "specification section (24)",
       "R-AREA-NN": "normative requirement/obligation (148)",
-      "C-NN": "contradiction/ambiguity finding (44; 45 rows incl. pointer C-39)",
-      "U-NN": "unresolved item requiring explicit decision (16)",
+      "C-NN": "contradiction/ambiguity finding (75 indexed; 76 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
+      "U-NN": "unresolved item requiring explicit decision (28)",
       "M-NN": "milestone M0-M11",
       "TAG": "source verification-obligation tags (17)",
       "M0NN": "baseline mutation registry (18)",
@@ -45,10 +45,10 @@
       "03-obligation-matrix.md": "all requirements with stable IDs, status, provenance",
       "04-dependency-graph.md": "section/object/verification dependency graphs + DOT",
       "05-terminology.md": "glossary, normalization rules, under-specified terms",
-      "06-contradictions-ambiguities.md": "findings C-01..C-45 with severity and status",
+      "06-contradictions-ambiguities.md": "findings C-01..C-76 with severity and status",
       "07-implementation-mapping.md": "obligations -> crates/modules; actual repo state; milestone crosswalk",
       "08-verification-mapping.md": "obligations -> tags/tests/evidence; claim ladder per theorem",
-      "09-unresolved-decisions.md": "items U-NN requiring explicit architectural decisions",
+      "09-unresolved-decisions.md": "items U-01..U-34 requiring explicit architectural decisions",
       "10-index.json": "this file (machine-readable index)"
     }
   },
@@ -4445,6 +4445,664 @@
           "33155-33265"
         ]
       }
+    },
+    {
+      "id": "C-46",
+      "title": "ValidatedPlan is a declared stage type and the predicate of the central theorem",
+      "severity": "BLOCKING",
+      "status": "open",
+      "resolved_into": "term/X-01",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "865",
+          "41337-41351",
+          "27491-27509"
+        ]
+      }
+    },
+    {
+      "id": "C-47",
+      "title": "The canonical envelope is specified twice with different field names, tag width and endianness",
+      "severity": "BLOCKING",
+      "status": "open",
+      "resolved_into": "term/X-50",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "28298",
+          "38147-38150",
+          "33816"
+        ]
+      }
+    },
+    {
+      "id": "C-48",
+      "title": "TAG_BOOL/TAG_INTEGER/TAG_STRING/TAG_SYMBOL name two disjoint tag namespaces with different values",
+      "severity": "BLOCKING",
+      "status": "open",
+      "resolved_into": "term/X-54",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "29952-29958",
+          "32364-32371",
+          "33171-33173",
+          "33591-33594"
+        ]
+      }
+    },
+    {
+      "id": "C-49",
+      "title": "Turn [41]'s \"(Frozen)\" Value discriminant table lists 5 of 8 variants and contradicts turns [43]/[45] on Capability",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "29927-29934",
+          "29965",
+          "32369",
+          "33172",
+          "33593"
+        ]
+      }
+    },
+    {
+      "id": "C-50",
+      "title": "pub enum Fault is declared seven times and HostPolicyDenied carries two different payload types",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "term/X-58",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "10882",
+          "17788",
+          "18125",
+          "22415",
+          "23319",
+          "23806",
+          "26865",
+          "22436",
+          "23811",
+          "23323",
+          "10885",
+          "10480"
+        ]
+      }
+    },
+    {
+      "id": "C-51",
+      "title": "Request denotes an Expr variant, a redex form, a theorem predicate, an implementation phase and a struct stem",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "term/X-57",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "12183",
+          "14039",
+          "14422",
+          "7374",
+          "7255-7256",
+          "7430-7431",
+          "15927",
+          "20270",
+          "1447",
+          "23129",
+          "35128"
+        ]
+      }
+    },
+    {
+      "id": "C-52",
+      "title": "Three defects in this repository's own glossary and module text (not in the frozen source)",
+      "severity": "MAJOR",
+      "status": "corrected-in-place (provenance recorded)",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "14",
+          "1-42312",
+          "62",
+          "45-46"
+        ]
+      }
+    },
+    {
+      "id": "C-53",
+      "title": "Five provenance defects in the canonicalization layer: citations that do not point at the text they claim",
+      "severity": "MAJOR",
+      "status": "corrected-in-place (provenance recorded)",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1995",
+          "7363",
+          "7435",
+          "23784",
+          "1-42312",
+          "732",
+          "729",
+          "35281"
+        ]
+      }
+    },
+    {
+      "id": "C-54",
+      "title": "Fault::StalePlan is used by the frozen source at L28373 but is a variant of none of the seven Fault declarations",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "term/X-64",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "28373",
+          "27236",
+          "10882",
+          "17788",
+          "18125",
+          "22415",
+          "23319",
+          "23806",
+          "26865",
+          "23807"
+        ]
+      }
+    },
+    {
+      "id": "C-55",
+      "title": "MarshalFault is declared twice with completely disjoint variant sets and no stated supersession",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "term/X-65",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "10846-10849",
+          "25983-25986",
+          "26871"
+        ]
+      }
+    },
+    {
+      "id": "C-56",
+      "title": "CapabilityError::Invalid is used as the derive fallback but never declared; the declared sibling is used for the same fallback in the same turn",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "term/X-66",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "20408-20413",
+          "20451",
+          "20835"
+        ]
+      }
+    },
+    {
+      "id": "C-57",
+      "title": "HostFault is declared once with two variants while eight undeclared variant paths are used, six of them on the frozen replay path",
+      "severity": "BLOCKING",
+      "status": "open",
+      "resolved_into": "term/X-67",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "10820-10823",
+          "1203",
+          "1208",
+          "1214",
+          "1210",
+          "1216",
+          "1245",
+          "24020",
+          "25496",
+          "25838",
+          "34519",
+          "35225",
+          "25500",
+          "25841",
+          "34522",
+          "34528",
+          "35226",
+          "35227",
+          "10546",
+          "10550",
+          "10553",
+          "23813"
+        ]
+      }
+    },
+    {
+      "id": "C-58",
+      "title": "HostFault and Revoked denote faults in the v1 grammar and a type / a nested variant from turns [18] and [28]; IsolationBreach is misclassified as a denial name",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "term/X-68",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1949",
+          "10820",
+          "23813",
+          "20409",
+          "2024",
+          "7223",
+          "8766"
+        ]
+      }
+    },
+    {
+      "id": "C-59",
+      "title": "Twelve Fault:: variant paths are used in the frozen source and declared by no Fault enum",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-08;term/X-69",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "941",
+          "944",
+          "3671",
+          "5059",
+          "1018",
+          "6704-6706",
+          "937",
+          "3667",
+          "3683",
+          "5055",
+          "5071",
+          "10446-10447",
+          "10466-10467",
+          "20389",
+          "20538",
+          "20790",
+          "25714",
+          "26017",
+          "28373",
+          "10882",
+          "17788",
+          "18125",
+          "22415",
+          "23319",
+          "23806",
+          "26865"
+        ]
+      }
+    },
+    {
+      "id": "C-60",
+      "title": "Theorem 2's proof and the property-test matrix both depend on Expr::Delegate, which no enum Expr declaration admits",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-02;term/X-70",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "26056-26058",
+          "26078",
+          "25989-25992",
+          "12145-12200",
+          "14030",
+          "14413",
+          "20295",
+          "20702"
+        ]
+      }
+    },
+    {
+      "id": "C-61",
+      "title": "MachineEvent is declared eight times and used with eight variant paths declared by none of them",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-28;term/X-71",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "14697",
+          "15958",
+          "17588",
+          "18104",
+          "18631",
+          "20318",
+          "20724",
+          "22002",
+          "22003",
+          "21483",
+          "23380",
+          "21536",
+          "23398",
+          "21645",
+          "23426",
+          "25740",
+          "26038",
+          "25668",
+          "25966",
+          "25728",
+          "26027"
+        ]
+      }
+    },
+    {
+      "id": "C-62",
+      "title": "CanonicalError is declared seven times in four shapes, with the same variant names at different arities",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-29;term/X-72",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "29188",
+          "29968",
+          "30661",
+          "32083",
+          "32959",
+          "33299",
+          "34994"
+        ]
+      }
+    },
+    {
+      "id": "C-63",
+      "title": "StepResult is two disjoint enums — the CEK machine's and the actor scheduler's — sharing one name",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-26;term/X-73",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1006-1010",
+          "9586-9592",
+          "10397",
+          "10947"
+        ]
+      }
+    },
+    {
+      "id": "C-64",
+      "title": "ActorStatus is declared seven times in three shapes, not twice as X-21 records",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-27;term/X-74",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "9411",
+          "10346",
+          "10866",
+          "21234",
+          "23306",
+          "23793"
+        ]
+      }
+    },
+    {
+      "id": "C-65",
+      "title": "Residual used-but-undeclared variant paths across five more enums, and one variant silently dropped",
+      "severity": "MINOR",
+      "status": "open",
+      "resolved_into": "U-02;U-08;U-09;term/X-75",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1027",
+          "12283",
+          "25995",
+          "26000",
+          "25694",
+          "985-989",
+          "1031",
+          "1035",
+          "1282",
+          "1055",
+          "1092",
+          "24300",
+          "25526"
+        ]
+      }
+    },
+    {
+      "id": "C-66",
+      "title": "MarshalledValue's payload is Value in three declarations and Vec<u8> in two, and each payload has frozen API the other cannot satisfy",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-30;term/X-76",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "9925",
+          "10828",
+          "10831",
+          "10832",
+          "24765",
+          "25683",
+          "25690",
+          "25981",
+          "25980"
+        ]
+      }
+    },
+    {
+      "id": "C-67",
+      "title": "Authority is declared seven times in six field sets and changes denotation, while Constraint is declared twice with Authority's own two shapes",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-31;term/X-77",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "488",
+          "918",
+          "3591",
+          "4360",
+          "4979",
+          "5368",
+          "6501",
+          "6536",
+          "6535",
+          "6686"
+        ]
+      }
+    },
+    {
+      "id": "C-68",
+      "title": "RefAuthority is declared four times in three shapes, and the frozen reference_derive body reads a field name only the first declaration has",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-33;term/X-78",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "11572",
+          "11575",
+          "19603",
+          "20851",
+          "35699",
+          "11579-11583"
+        ]
+      }
+    },
+    {
+      "id": "C-69",
+      "title": "RefState is declared with the production machine's types in turns [23]–[24] and with Ref types in turn [48], renaming kont and dropping outcome",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-33;term/X-79",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "14728",
+          "15985",
+          "16423",
+          "35522",
+          "35541"
+        ]
+      }
+    },
+    {
+      "id": "C-70",
+      "title": "WalFrame gains payload_length: u32 in turn [47] and puts it inside the checksum's SHA-256 domain, so every digest changes",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-32;term/X-80",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "34237-34242",
+          "35099-35105",
+          "35109"
+        ]
+      }
+    },
+    {
+      "id": "C-71",
+      "title": "EffectReceipt's first declaration has no effect_digest, the field every later receipt-integrity check reads",
+      "severity": "MINOR",
+      "status": "open",
+      "resolved_into": "term/X-81",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1454",
+          "9375",
+          "10329",
+          "10813",
+          "22140",
+          "23299",
+          "23775",
+          "23814",
+          "23815"
+        ]
+      }
+    },
+    {
+      "id": "C-72",
+      "title": "CapabilityKernel's arena changes value type and container, its revocation_set is dropped and re-typed, and children appears in one declaration only",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-31;term/X-82",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "925-928",
+          "3656-3657",
+          "5044",
+          "5429-5432",
+          "6694-6697",
+          "6695"
+        ]
+      }
+    },
+    {
+      "id": "C-73",
+      "title": "The turn-[31] and turn-[32] state structs are not the same structs: run_state and members appear, scheduler disappears, and mailbox changes type inside turn [18]",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-34;term/X-83",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "24156",
+          "24168",
+          "25535",
+          "25862",
+          "24197",
+          "25544",
+          "25546",
+          "25552",
+          "25871",
+          "24274-24275",
+          "25892-25894",
+          "9438",
+          "10360",
+          "10892"
+        ]
+      }
+    },
+    {
+      "id": "C-74",
+      "title": "Thirty-one more type names are used in frozen field positions and declared nowhere, including the reference model's whole vocabulary",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-33;term/X-84",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "35523",
+          "35541",
+          "35700",
+          "19609-19612",
+          "20853-20856",
+          "35704-35707",
+          "35448",
+          "36042",
+          "35901-35908",
+          "36098",
+          "484",
+          "489",
+          "490",
+          "920",
+          "1195",
+          "4361",
+          "6687",
+          "5730",
+          "6688",
+          "1192-1193",
+          "9784",
+          "22340",
+          "3540",
+          "4928",
+          "5381",
+          "26305",
+          "34126",
+          "12917",
+          "14148",
+          "14522"
+        ]
+      }
+    },
+    {
+      "id": "C-75",
+      "title": "FunctionValue.env is an EnvironmentSnapshot in one declaration and a live Environment in two, and both turn-[22] comments assert the snapshot reading",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "term/X-85",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "12354-12357",
+          "13984-13987",
+          "14370-14373"
+        ]
+      }
+    },
+    {
+      "id": "C-76",
+      "title": "Frame's eleven declarations carry five distinct variant sets, and the continuation's request frames are named three ways",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "term/X-86",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "12453",
+          "14047",
+          "14430",
+          "16943",
+          "18650",
+          "19429",
+          "20307",
+          "20713",
+          "21181",
+          "23339",
+          "23830"
+        ]
+      }
     }
   ],
   "unresolved": [
@@ -4609,6 +5267,151 @@
       "section": "S-06",
       "affects": [
         "R-COMPILE-03"
+      ]
+    },
+    {
+      "id": "U-23",
+      "title": "Is ValidatedPlan a type, a predicate, or both?",
+      "blocking": "BLOCKING",
+      "section": "S-06;S-22",
+      "affects": [
+        "R-CORE-02"
+      ]
+    },
+    {
+      "id": "U-24",
+      "title": "Which canonical envelope is frozen?",
+      "blocking": "BLOCKING",
+      "section": "S-17",
+      "affects": [
+        "R-CANON-01",
+        "R-CANON-02",
+        "R-CANON-03",
+        "R-CANON-04",
+        "R-CANON-05",
+        "R-CANON-06",
+        "R-CANON-07",
+        "R-CANON-08",
+        "R-PERSIST-05"
+      ]
+    },
+    {
+      "id": "U-25",
+      "title": "Two tag namespaces share the TAG_ prefix; which constants may an implementation import?",
+      "blocking": "BLOCKING",
+      "section": "S-17",
+      "affects": [
+        "R-CANON-03",
+        "R-CANON-04"
+      ]
+    },
+    {
+      "id": "U-26",
+      "title": "Which layer owns the name StepResult?",
+      "blocking": "BLOCKING",
+      "section": "S-07;S-15",
+      "affects": [
+        "R-CEK-01",
+        "R-ACTOR-04"
+      ]
+    },
+    {
+      "id": "U-27",
+      "title": "Which ActorStatus shape governs, and where does shape (iii)'s continuation live?",
+      "blocking": "BLOCKING",
+      "section": "S-15",
+      "affects": [
+        "R-ACTOR-02",
+        "R-ACTOR-04"
+      ]
+    },
+    {
+      "id": "U-28",
+      "title": "Which MachineEvent names govern, and are the eight undeclared paths declared or struck?",
+      "blocking": "BLOCKING",
+      "section": "S-02;S-15;S-20",
+      "affects": [
+        "R-CORE-08",
+        "R-ACTOR-07",
+        "R-REF-05"
+      ]
+    },
+    {
+      "id": "U-29",
+      "title": "Which CanonicalError shape governs, and do the unit variants survive?",
+      "blocking": "BLOCKING",
+      "section": "S-17",
+      "affects": [
+        "R-CANON-01",
+        "R-CANON-02"
+      ]
+    },
+    {
+      "id": "U-30",
+      "title": "Which payload does MarshalledValue carry — Value or canonical Vec<u8>?",
+      "blocking": "BLOCKING",
+      "section": "S-15;S-16;S-17",
+      "affects": [
+        "R-MARSHAL-01",
+        "R-MARSHAL-02",
+        "R-MARSHAL-03",
+        "R-ACTOR-03"
+      ]
+    },
+    {
+      "id": "U-31",
+      "title": "Which field set is Authority's, which is Constraint's, and what holds the kernel's arena?",
+      "blocking": "BLOCKING",
+      "section": "S-09;S-10",
+      "affects": [
+        "R-CAP-01",
+        "R-CAP-02",
+        "R-CAP-03",
+        "R-CAP-04",
+        "R-KERN-01",
+        "R-KERN-02",
+        "R-KERN-03"
+      ]
+    },
+    {
+      "id": "U-32",
+      "title": "Does the durable WalFrame carry payload_length, and what is its checksum's input domain?",
+      "blocking": "BLOCKING",
+      "section": "S-18",
+      "affects": [
+        "R-PERSIST-01",
+        "R-PERSIST-02"
+      ]
+    },
+    {
+      "id": "U-33",
+      "title": "Which reference-model declarations govern, and are its undeclared types declared or struck?",
+      "blocking": "BLOCKING",
+      "section": "S-20",
+      "affects": [
+        "R-REF-01",
+        "R-REF-02",
+        "R-REF-03",
+        "R-REF-04",
+        "R-REF-05",
+        "R-REF-06"
+      ]
+    },
+    {
+      "id": "U-34",
+      "title": "Which turn-[31]/turn-[32] state structs govern — run_state, members and scheduler?",
+      "blocking": "BLOCKING",
+      "section": "S-15;S-18",
+      "affects": [
+        "R-ACTOR-01",
+        "R-ACTOR-02",
+        "R-ACTOR-03",
+        "R-ACTOR-04",
+        "R-ACTOR-05",
+        "R-ACTOR-06",
+        "R-ACTOR-07",
+        "R-PERSIST-04",
+        "R-CORE-08"
       ]
     }
   ],

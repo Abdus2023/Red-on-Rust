@@ -4,7 +4,7 @@
 
 # 01 — Canonical Terminology Dictionary
 
-78 canonical terms. Each entry states the seven fields the normalization request requires — **CANONICAL_TERM**, **FORBIDDEN_VARIANTS**, **DEFINITION**, **TYPE**, **OWNER**, **FIRST_DEFINITION**, **DEPENDENTS** — plus the frozen shape, any superseded declarations, the obligations that use the term, and the collisions it participates in.
+81 canonical terms. Each entry states the seven fields the normalization request requires — **CANONICAL_TERM**, **FORBIDDEN_VARIANTS**, **DEFINITION**, **TYPE**, **OWNER**, **FIRST_DEFINITION**, **DEPENDENTS** — plus the frozen shape, any superseded declarations, the obligations that use the term, and the collisions it participates in.
 
 **Hard constraint honoured throughout:** no API, type, mathematical symbol or protocol field is renamed anywhere in this dictionary. Where the frozen source uses two names for one thing, or one name for two things, both are recorded verbatim and the conflict is filed in `02-collisions.md`; the canonical term is the one an author must *use*, never a new identifier to *introduce*. Names the source froze are listed under **PROTECTED (do not rename)**.
 
@@ -19,18 +19,18 @@
 | [T-06](#t-06-executableplan) | `ExecutablePlan` ★ | RUST-STRUCT | PLAN-PIPELINE | MOD-02 | `L869` | 8 |
 | [T-07](#t-07-normalizedast) | `NormalizedAST` | UNDECLARED-TYPE | PLAN-PIPELINE | MOD-02 | `L864` | 4 |
 | [T-08](#t-08-planir) | `PlanIR` | UNDECLARED-TYPE | PLAN-PIPELINE | MOD-02 | `L865` | 9 |
-| [T-09](#t-09-capref) | `CapRef` ★ | RUST-STRUCT | AUTHORITY | MOD-03 | `L915` | 8 |
-| [T-10](#t-10-authority) | `Authority` ★ | MATH-SYMBOL | AUTHORITY | MOD-03 | `L488` | 13 |
-| [T-11](#t-11-authoritynode) | `AuthorityNode` | RUST-STRUCT | AUTHORITY | MOD-03 | `L39373` | 1 |
-| [T-12](#t-12-constraint) | `Constraint` | RUST-STRUCT | AUTHORITY | MOD-03 | `L6536` | 4 |
-| [T-13](#t-13-capabilitykernel) | `CapabilityKernel` | COMPONENT | AUTHORITY | MOD-03 | `L6680` | 6 |
-| [T-14](#t-14-capabilitycontext) | `CapabilityContext` | RUST-STRUCT | AUTHORITY | MOD-06 | `L25548` | 2 |
-| [T-15](#t-15-delegatedcapability) | `DelegatedCapability` | RUST-VARIANT | AUTHORITY | MOD-06 | `L25989` | 2 |
+| [T-09](#t-09-capref) | `CapRef` ★ | RUST-STRUCT | AUTHORITY | MOD-03 | `L915` | 10 |
+| [T-10](#t-10-authority) | `Authority` ★ | MATH-SYMBOL | AUTHORITY | MOD-03 | `L488` | 17 |
+| [T-11](#t-11-authoritynode) | `AuthorityNode` | RUST-STRUCT | AUTHORITY | MOD-03 | `L39373` | 4 |
+| [T-12](#t-12-constraint) | `Constraint` | RUST-STRUCT | AUTHORITY | MOD-03 | `L6536` | 7 |
+| [T-13](#t-13-capabilitykernel) | `CapabilityKernel` | COMPONENT | AUTHORITY | MOD-03 | `L6680` | 8 |
+| [T-14](#t-14-capabilitycontext) | `CapabilityContext` | RUST-STRUCT | AUTHORITY | MOD-06 | `L25548` | 3 |
+| [T-15](#t-15-delegatedcapability) | `DelegatedCapability` | RUST-VARIANT | AUTHORITY | MOD-06 | `L25989` | 4 |
 | [T-16](#t-16-effect) | `Effect` ★ | RUST-STRUCT | EFFECT | MOD-08 | `L1166` | 9 |
-| [T-17](#t-17-effectrequest) | `EffectRequest` ★ | RUST-STRUCT | EFFECT | MOD-08 | `L1447` | 6 |
-| [T-18](#t-18-effectissued) | `EffectIssued` ★ | STATE-VS-RECORD | EFFECT | MOD-11 | `L1377` | 4 |
-| [T-19](#t-19-effectreceipt) | `EffectReceipt` ★ | RUST-STRUCT | EFFECT | MOD-08 | `L1454` | 3 |
-| [T-20](#t-20-effectid) | `EffectId` ★ | RUST-NEWTYPE | EFFECT | MOD-08 | `L9128` | 5 |
+| [T-17](#t-17-effectrequest) | `EffectRequest` ★ | RUST-STRUCT | EFFECT | MOD-08 | `L1447` | 7 |
+| [T-18](#t-18-effectissued) | `EffectIssued` ★ | STATE-VS-RECORD | EFFECT | MOD-11 | `L1377` | 5 |
+| [T-19](#t-19-effectreceipt) | `EffectReceipt` ★ | RUST-STRUCT | EFFECT | MOD-08 | `L1454` | 4 |
+| [T-20](#t-20-effectid) | `EffectId` ★ | RUST-NEWTYPE | EFFECT | MOD-08 | `L9128` | 6 |
 | [T-21](#t-21-effectdigest) | `EffectDigest` | RUST-NEWTYPE | EFFECT | MOD-08 | `L9343` | 4 |
 | [T-22](#t-22-effectcost) | `EffectCost` | RUST-STRUCT | EFFECT | MOD-08 | `L21390` | 2 |
 | [T-23](#t-23-effectjournal) | `EffectJournal` ★ | CONCEPT | PERSISTENCE | MOD-11 | `L26134` | 3 |
@@ -40,26 +40,26 @@
 | [T-27](#t-27-deadline) | `Deadline` | RUST-NEWTYPE | RESOURCE | MOD-04 | `L6748` | 3 |
 | [T-28](#t-28-logicaltime) | `LogicalTime` ★ | RUST-NEWTYPE | RESOURCE | MOD-04 | `L6437` | 1 |
 | [T-29](#t-29-costmodel) | `CostModel` | RUST-TRAIT | RESOURCE | MOD-04 | `L10168` | 2 |
-| [T-30](#t-30-expr) | `Expr` | RUST-ENUM | MACHINE | MOD-01 | `L12145` | 5 |
-| [T-31](#t-31-value) | `Value` | RUST-ENUM | MACHINE | MOD-01 | `L12283` | 9 |
-| [T-32](#t-32-evalstate) | `EvalState` | RUST-STRUCT | MACHINE | MOD-05 | `L12655` | 5 |
-| [T-33](#t-33-frame) | `Frame` | RUST-ENUM | MACHINE | MOD-05 | `L12453` | 2 |
+| [T-30](#t-30-expr) | `Expr` | RUST-ENUM | MACHINE | MOD-01 | `L12145` | 8 |
+| [T-31](#t-31-value) | `Value` | RUST-ENUM | MACHINE | MOD-01 | `L12283` | 11 |
+| [T-32](#t-32-evalstate) | `EvalState` | RUST-STRUCT | MACHINE | MOD-05 | `L12655` | 8 |
+| [T-33](#t-33-frame) | `Frame` | RUST-ENUM | MACHINE | MOD-05 | `L12453` | 5 |
 | [T-34](#t-34-actorid) | `ActorId` ★ | RUST-NEWTYPE | CONCURRENCY | MOD-06 | `L9127` | 1 |
-| [T-35](#t-35-actorstatus) | `ActorStatus` ★ | RUST-ENUM | CONCURRENCY | MOD-06 | `L9411` | 9 |
-| [T-36](#t-36-runstate) | `RunState` | RUST-ENUM | SCHEDULING | MOD-07 | `L24299` | 5 |
-| [T-37](#t-37-actorstate) | `ActorState` | RUST-STRUCT | CONCURRENCY | MOD-06 | `L8111` | 4 |
-| [T-38](#t-38-globalstate) | `GlobalState` | RUST-STRUCT | MACHINE | MOD-05 | `L24156` | 2 |
-| [T-39](#t-39-mailbox) | `Mailbox` | CONCEPT | CONCURRENCY | MOD-06 | `L8666` | 1 |
-| [T-40](#t-40-runnablequeue) | `RunnableQueue` | CONCEPT | SCHEDULING | MOD-07 | `L25538` | 0 |
+| [T-35](#t-35-actorstatus) | `ActorStatus` ★ | RUST-ENUM | CONCURRENCY | MOD-06 | `L9411` | 10 |
+| [T-36](#t-36-runstate) | `RunState` | RUST-ENUM | SCHEDULING | MOD-07 | `L24299` | 6 |
+| [T-37](#t-37-actorstate) | `ActorState` | RUST-STRUCT | CONCURRENCY | MOD-06 | `L8111` | 6 |
+| [T-38](#t-38-globalstate) | `GlobalState` | RUST-STRUCT | MACHINE | MOD-05 | `L24156` | 3 |
+| [T-39](#t-39-mailbox) | `Mailbox` | CONCEPT | CONCURRENCY | MOD-06 | `L8666` | 3 |
+| [T-40](#t-40-runnablequeue) | `RunnableQueue` | CONCEPT | SCHEDULING | MOD-07 | `L25538` | 1 |
 | [T-41](#t-41-hostpolicy) | `HostPolicy` ★ | RUST-TRAIT | HOST | MOD-09 | `L10163` | 5 |
-| [T-42](#t-42-replayhost) | `ReplayHost` ★ | RUST-STRUCT | HOST | MOD-09 | `L1234` | 2 |
+| [T-42](#t-42-replayhost) | `ReplayHost` ★ | RUST-STRUCT | HOST | MOD-09 | `L1234` | 4 |
 | [T-43](#t-43-livehost) | `LiveHost` | RUST-STRUCT | HOST | MOD-09 | `L1191` | 0 |
 | [T-44](#t-44-hostexecutor) | `HostExecutor` | RUST-TRAIT | HOST | MOD-09 | `L1187` | 1 |
-| [T-45](#t-45-wal) | `WAL` ★ | CONCEPT | PERSISTENCE | MOD-11 | `L27716` | 10 |
-| [T-46](#t-46-walframe) | `WalFrame` | RUST-STRUCT | PERSISTENCE | MOD-11 | `L34237` | 3 |
-| [T-47](#t-47-walrecord) | `WalRecord` | RUST-ENUM | PERSISTENCE | MOD-11 | `L27724` | 9 |
-| [T-48](#t-48-snapshot) | `Snapshot` ★ | CONCEPT | PERSISTENCE | MOD-11 | `L26132` | 4 |
-| [T-49](#t-49-eventlog) | `EventLog` | RUST-STRUCT | PERSISTENCE | MOD-11 | `L1086` | 3 |
+| [T-45](#t-45-wal) | `WAL` ★ | CONCEPT | PERSISTENCE | MOD-11 | `L27716` | 11 |
+| [T-46](#t-46-walframe) | `WalFrame` | RUST-STRUCT | PERSISTENCE | MOD-11 | `L34237` | 5 |
+| [T-47](#t-47-walrecord) | `WalRecord` | RUST-ENUM | PERSISTENCE | MOD-11 | `L27724` | 11 |
+| [T-48](#t-48-snapshot) | `Snapshot` ★ | CONCEPT | PERSISTENCE | MOD-11 | `L26132` | 6 |
+| [T-49](#t-49-eventlog) | `EventLog` | RUST-STRUCT | PERSISTENCE | MOD-11 | `L1086` | 4 |
 | [T-50](#t-50-indeterminate) | `Indeterminate` | STATE | RECOVERY | MOD-12 | `L26576` | 0 |
 | [T-51](#t-51-reconciliationoutcome) | `ReconciliationOutcome` | RUST-ENUM | RECOVERY | MOD-12 | `L26244` | 1 |
 | [T-52](#t-52-recoveryfault) | `RecoveryFault` | RUST-STRUCT | RECOVERY | MOD-12 | `L26506` | 5 |
@@ -68,11 +68,11 @@
 | [T-55](#t-55-planneraccepted) | `PlannerAccepted` | RUST-STRUCT | AGENT | MOD-13 | `L27411` | 1 |
 | [T-56](#t-56-llmoutput) | `LLMOutput` | MATH-SYMBOL | AGENT | MOD-13 | `L27253` | 1 |
 | [T-57](#t-57-observation-differential) | `Observation (differential)` ★ | RUST-STRUCT | VERIFICATION | MOD-15 | `L36170` | 2 |
-| [T-58](#t-58-referencemodel) | `ReferenceModel` | COMPONENT | VERIFICATION | MOD-14 | `L11436` | 3 |
+| [T-58](#t-58-referencemodel) | `ReferenceModel` | COMPONENT | VERIFICATION | MOD-14 | `L11436` | 7 |
 | [T-59](#t-59-firstdivergence) | `FirstDivergence` | CONCEPT | VERIFICATION | MOD-15 | `L36655` | 0 |
 | [T-60](#t-60-mutation) | `Mutation` | CONCEPT | VERIFICATION | MOD-16 | `L37187` | 1 |
 | [T-61](#t-61-mutationkillrate) | `MutationKillRate` | MATH-PREDICATE | VERIFICATION | MOD-16 | `L38506` | 0 |
-| [T-62](#t-62-canonicalenvelope) | `CanonicalEnvelope` | PROTOCOL-FORMAT | PERSISTENCE | MOD-10 | `L28298` | 8 |
+| [T-62](#t-62-canonicalenvelope) | `CanonicalEnvelope` | PROTOCOL-FORMAT | PERSISTENCE | MOD-10 | `L28298` | 10 |
 | [T-63](#t-63-canonicalpayload) | `CanonicalPayload` | RUST-TRAIT | PERSISTENCE | MOD-10 | `L27685` | 6 |
 | [T-64](#t-64-specification) | `Specification` | CONCEPT | CLAIM | MOD-17 | `L38936` | 4 |
 | [T-65](#t-65-implementation) | `Implementation` | CONCEPT | CLAIM | MOD-17 | `L38939` | 4 |
@@ -80,15 +80,18 @@
 | [T-67](#t-67-proof) | `Proof` | CONCEPT | CLAIM | MOD-17 | `L28263` | 1 |
 | [T-68](#t-68-evidencestatus) | `EvidenceStatus` | CLAIM-STATUS | CLAIM | MOD-17 | `spec/00-overview.md:L25` | 3 |
 | [T-69](#t-69-frozen) | `Frozen` | CONCEPT | CLAIM | MOD-17 | `L38935` | 2 |
-| [T-70](#t-70-fault) | `Fault` | RUST-ENUM | MACHINE | MOD-01 | `L1009` | 12 |
+| [T-70](#t-70-fault) | `Fault` | RUST-ENUM | MACHINE | MOD-01 | `L1009` | 13 |
 | [T-71](#t-71-globalfault) | `GlobalFault` | RUST-ENUM | MACHINE | MOD-05 | `L25576` | 1 |
 | [T-72](#t-72-capabilityerror) | `CapabilityError` | RUST-ENUM | AUTHORITY | MOD-03 | `L9736` | 4 |
-| [T-73](#t-73-marshalfault) | `MarshalFault` | RUST-ENUM | CONCURRENCY | MOD-06 | `L10846` | 2 |
+| [T-73](#t-73-marshalfault) | `MarshalFault` | RUST-ENUM | CONCURRENCY | MOD-06 | `L10846` | 3 |
 | [T-74](#t-74-hostfault) | `HostFault` | RUST-ENUM | HOST | MOD-09 | `L10820` | 4 |
 | [T-75](#t-75-machineevent) | `MachineEvent` | RUST-ENUM | MACHINE | MOD-05 | `L14697` | 1 |
 | [T-76](#t-76-canonicalerror) | `CanonicalError` | RUST-ENUM | PERSISTENCE | MOD-10 | `L29188` | 2 |
 | [T-77](#t-77-stepresult) | `StepResult` | RUST-ENUM | MACHINE | MOD-05 | `L1006` | 2 |
 | [T-78](#t-78-controlframe) | `ControlFrame` | RUST-ENUM | MACHINE | MOD-05 | `L985` | 1 |
+| [T-79](#t-79-marshalledvalue) | `MarshalledValue` | RUST-NEWTYPE | CONCURRENCY | MOD-06 | `L9925` | 2 |
+| [T-80](#t-80-refstate) | `RefState` | RUST-STRUCT | VERIFICATION | MOD-14 | `L14728` | 4 |
+| [T-81](#t-81-refauthority) | `RefAuthority` | RUST-STRUCT | AUTHORITY | MOD-14 | `L11572` | 4 |
 
 ★ = one of the 26 terms the normalization request explicitly requires.
 
@@ -329,7 +332,7 @@ Owning module: **MOD-03**.
     - `pub struct CapRef(pub(crate) u64);   // L915, L3646, L5034, L5949`
 - **OBLIGATIONS:** `R-CAP-01`, `R-CAP-05`, `R-KERN-03`, `R-MARSHAL-01`, `R-CORE-07`
 - **SECTIONS:** `S-09`, `S-10`, `S-16`
-- **COLLISIONS:** [X-05](02-collisions.md#x-05), [X-25](02-collisions.md#x-25), [X-26](02-collisions.md#x-26), [X-27](02-collisions.md#x-27), [X-36](02-collisions.md#x-36), [X-38](02-collisions.md#x-38), [X-59](02-collisions.md#x-59), [X-66](02-collisions.md#x-66)
+- **COLLISIONS:** [X-05](02-collisions.md#x-05), [X-25](02-collisions.md#x-25), [X-26](02-collisions.md#x-26), [X-27](02-collisions.md#x-27), [X-36](02-collisions.md#x-36), [X-38](02-collisions.md#x-38), [X-59](02-collisions.md#x-59), [X-66](02-collisions.md#x-66), [X-77](02-collisions.md#x-77), [X-82](02-collisions.md#x-82)
 - **LAWS:** [N-03](03-laws.md#n-03)
 - **NOTE:** The single-`u64` form cannot express generational reuse safety and is superseded by the frozen `{index, generation}` form (X-25). N-03 (`CapRef ≠ Authority`) is the load-bearing distinction of the trust model.
 
@@ -368,7 +371,7 @@ Owning module: **MOD-03**.
 A = { (o, A_o) | o ∈ O_granted }   // L6378, turn [11]`
 - **OBLIGATIONS:** `R-CAP-01`, `R-CAP-02`, `R-CAP-03`, `R-CORE-04`, `R-KERN-03`
 - **SECTIONS:** `S-09`, `S-10`
-- **COLLISIONS:** [X-05](02-collisions.md#x-05), [X-08](02-collisions.md#x-08), [X-09](02-collisions.md#x-09), [X-10](02-collisions.md#x-10), [X-11](02-collisions.md#x-11), [X-13](02-collisions.md#x-13), [X-17](02-collisions.md#x-17), [X-25](02-collisions.md#x-25), [X-36](02-collisions.md#x-36), [X-37](02-collisions.md#x-37), [X-38](02-collisions.md#x-38), [X-59](02-collisions.md#x-59), [X-70](02-collisions.md#x-70)
+- **COLLISIONS:** [X-05](02-collisions.md#x-05), [X-08](02-collisions.md#x-08), [X-09](02-collisions.md#x-09), [X-10](02-collisions.md#x-10), [X-11](02-collisions.md#x-11), [X-13](02-collisions.md#x-13), [X-17](02-collisions.md#x-17), [X-25](02-collisions.md#x-25), [X-36](02-collisions.md#x-36), [X-37](02-collisions.md#x-37), [X-38](02-collisions.md#x-38), [X-59](02-collisions.md#x-59), [X-70](02-collisions.md#x-70), [X-77](02-collisions.md#x-77), [X-78](02-collisions.md#x-78), [X-82](02-collisions.md#x-82), [X-84](02-collisions.md#x-84)
 - **LAWS:** [N-03](03-laws.md#n-03), [N-09](03-laws.md#n-09), [N-25](03-laws.md#n-25), [N-28](03-laws.md#n-28)
 - **NOTE:** The Rust sketch in the SAME turn parameterizes it as `Authority<S,Q,R,L>` with `lifetime: L` (L6497, L6501) while the frozen math writes `T` for that component (X-17). Both symbols are recorded; neither is renamed, because renaming a mathematical symbol would silently alter the frozen algebra. `Authority` is a concept/math object plus a generic Rust type; the kernel-private node is `AuthorityNode` (T-11).
 
@@ -388,7 +391,7 @@ A = { (o, A_o) | o ∈ O_granted }   // L6378, turn [11]`
     - `AuthorityNode` — frozen Rust type name (fields elided in source)
 - **OBLIGATIONS:** `R-KERN-03`, `R-TRUST-03`, `R-CAP-05`
 - **SECTIONS:** `S-10`
-- **COLLISIONS:** [X-37](02-collisions.md#x-37)
+- **COLLISIONS:** [X-37](02-collisions.md#x-37), [X-77](02-collisions.md#x-77), [X-82](02-collisions.md#x-82), [X-84](02-collisions.md#x-84)
 - **NOTE:** Structure never given (fields elided at L39373). AMB-26 records that `Authority`/`AuthorityNode`/`CapabilityKernel` are used interchangeably in places; this dictionary separates them: `Authority` is the grant (T-10), `AuthorityNode` the kernel-private holder, `CapabilityKernel` the component.
 
 ### T-12 — `Constraint`
@@ -412,7 +415,7 @@ A = { (o, A_o) | o ∈ O_granted }   // L6378, turn [11]`
     - `AdmissibleConstraint` — frozen trait name (status ambiguous, U-09/AMB-12)
 - **OBLIGATIONS:** `R-CAP-04`, `R-CAP-02`, `R-CORE-04`
 - **SECTIONS:** `S-09`
-- **COLLISIONS:** [X-08](02-collisions.md#x-08), [X-16](02-collisions.md#x-16), [X-17](02-collisions.md#x-17), [X-70](02-collisions.md#x-70)
+- **COLLISIONS:** [X-08](02-collisions.md#x-08), [X-16](02-collisions.md#x-16), [X-17](02-collisions.md#x-17), [X-70](02-collisions.md#x-70), [X-77](02-collisions.md#x-77), [X-78](02-collisions.md#x-78), [X-84](02-collisions.md#x-84)
 - **LAWS:** [N-28](03-laws.md#n-28), [N-29](03-laws.md#n-29)
 - **NOTE:** No canonical byte encoding exists for `Constraint` in the frozen 15A tag set, although `Expr::Attenuate` embeds one as an immediate (C-16, U-02).
 
@@ -434,7 +437,7 @@ A = { (o, A_o) | o ∈ O_granted }   // L6378, turn [11]`
     - `kernel.derive` — frozen operation name in the E-Attenuate rule (L8717)
 - **OBLIGATIONS:** `R-KERN-01`, `R-KERN-02`, `R-KERN-03`, `R-TRUST-03`
 - **SECTIONS:** `S-10`
-- **COLLISIONS:** [X-05](02-collisions.md#x-05), [X-36](02-collisions.md#x-36), [X-37](02-collisions.md#x-37), [X-55](02-collisions.md#x-55), [X-66](02-collisions.md#x-66), [X-70](02-collisions.md#x-70)
+- **COLLISIONS:** [X-05](02-collisions.md#x-05), [X-36](02-collisions.md#x-36), [X-37](02-collisions.md#x-37), [X-55](02-collisions.md#x-55), [X-66](02-collisions.md#x-66), [X-70](02-collisions.md#x-70), [X-77](02-collisions.md#x-77), [X-82](02-collisions.md#x-82)
 - **NOTE:** `kernel` is context-dependent in the source (capability kernel vs the CEK machine's core); the qualified name is canonical in prose. AMB-26 records the interchange.
 
 ### T-14 — `CapabilityContext`
@@ -456,7 +459,7 @@ A = { (o, A_o) | o ∈ O_granted }   // L6378, turn [11]`
     - `ρ` — the environment symbol — distinct from κ; never conflated
 - **OBLIGATIONS:** `R-ACTOR-01`, `R-ACTOR-02`, `R-PERSIST-04`
 - **SECTIONS:** `S-15`, `S-18`
-- **COLLISIONS:** [X-37](02-collisions.md#x-37), [X-57](02-collisions.md#x-57)
+- **COLLISIONS:** [X-37](02-collisions.md#x-37), [X-57](02-collisions.md#x-57), [X-82](02-collisions.md#x-82)
 - **NOTE:** No canonical byte encoding is frozen for `CapabilityContext` (C-15, U-02).
 
 ### T-15 — `DelegatedCapability`
@@ -480,7 +483,7 @@ A = { (o, A_o) | o ∈ O_granted }   // L6378, turn [11]`
     - `derive` — frozen algebra operation — NOT a synonym for either
 - **OBLIGATIONS:** `R-MARSHAL-01`, `R-MARSHAL-02`, `R-CORE-07`, `R-CAP-04`
 - **SECTIONS:** `S-16`
-- **COLLISIONS:** [X-29](02-collisions.md#x-29), [X-70](02-collisions.md#x-70)
+- **COLLISIONS:** [X-29](02-collisions.md#x-29), [X-70](02-collisions.md#x-70), [X-77](02-collisions.md#x-77), [X-78](02-collisions.md#x-78)
 - **LAWS:** [N-29](03-laws.md#n-29)
 - **NOTE:** spec/05 §1 separates `derive` (algebra op) / `attenuate` (machine operation) / `delegate` (cross-actor transfer); that separation is retained and made a law (N-12) because the source uses the three loosely.
 
@@ -509,6 +512,46 @@ A = { (o, A_o) | o ∈ O_granted }   // L6378, turn [11]`
 - **SECTIONS:** `S-07`, `S-09`
 - **COLLISIONS:** [X-38](02-collisions.md#x-38), [X-59](02-collisions.md#x-59), [X-66](02-collisions.md#x-66), [X-68](02-collisions.md#x-68)
 - **NOTE:** spec/05 L112 and U-08 both claim these variants are “not enumerated”; they are, at L20408–20413, behind an elision (X-59).
+
+### T-81 — `RefAuthority`
+
+- **CANONICAL_TERM:** `RefAuthority`
+- **TYPE:** RUST-STRUCT — a Rust `struct` declaration (nominal type)
+- **OWNER:** MOD-14 (`ror-reference`)
+- **DEFINITION:** The reference model's authority — the object `reference_derive` narrows and the authority against which the reference machine checks a capability request. Declared four times in three non-elided shapes: `{ ops: HashSet<Op>, scope: HashSet<Target>, /* ... other fields */ }` at L11572 (turn [20], body elided); `{ operations: BTreeMap<Op, RefOperationAuthority> }` at L19603 (turn [27]); `{ operations: BTreeSet<Op>, scope: RefScope, params: RefConstraint, resources: RefResources, lifetime: RefLifetime }` at L20851 (turn [28]); and `{ operations: BTreeMap<RefOp, RefOperationAuthority> }` at L35699 (turn [48]). The field is `ops` once and `operations` three times, the container is a `HashSet`, a `BTreeMap`, a `BTreeSet` and a `BTreeMap` again, and the key type changes from `Op` to `RefOp` between turns [27] and [48].
+- **FIRST_DEFINITION:** `L11572`, turn [20] — `pub struct RefAuthority {`
+- **FROZEN_AT:** `L35699`, turn [48] — `pub struct RefAuthority {`
+- **DEPENDENTS:** T-10 `Authority`, T-12 `Constraint`, T-15 `DelegatedCapability`, T-58 `ReferenceModel`, T-80 `RefState`
+- **FORBIDDEN_VARIANTS:**
+    - `reference authority` — unqualified prose
+    - `RefCap`
+    - `RefConstraint` — that is the NARROWING REQUEST — the argument of `reference_derive`, a different type
+    - `Authority` — that is T-10, the production authority
+- **PROTECTED (do not rename):**
+    - `RefAuthority` — frozen Rust struct name — four declarations (L11572, L19603, L20851, L35699)
+    - `ops` — frozen field name at L11573, and the field the frozen `reference_derive` body reads at L11580
+    - `operations` — the same field's other frozen name — L19604, L20852, L35700
+    - `scope` — frozen field at L11574 and L20853
+    - `params` — frozen field at L20854
+    - `resources` — frozen field at L20855
+    - `lifetime` — frozen field at L20856
+    - `reference_derive` — `fn reference_derive(parent: &RefAuthority, constraint: &RefConstraint) -> RefAuthority` — frozen at L11578
+    - `RefOperationAuthority` — the per-operation authority — declared twice (L19608, L35703), identically
+    - `Op` — the map/set key type at L19604 and L20852 — the PRODUCTION operation type
+    - `RefOp` — the key type at L35700 — declared nowhere (X-84)
+    - `RefScope` — component type at L19609/L20853/L35704 — declared nowhere (X-84)
+    - `RefConstraint` — component type at L19610/L20854/L35705 and `reference_derive`'s second argument — declared nowhere (X-84)
+    - `RefResources` — component type at L19611/L20855/L35706 — declared nowhere (X-84)
+    - `RefLifetime` — component type at L19612/L20856/L35707 — declared nowhere (X-84)
+- **FROZEN SHAPE:** `pub struct RefAuthority { ops: HashSet<Op>, scope: HashSet<Target>, /* ... */ }   // L11572
+pub struct RefAuthority { operations: BTreeMap<Op, RefOperationAuthority> }       // L19603
+pub struct RefAuthority { operations: BTreeSet<Op>, scope: RefScope, params: RefConstraint,
+                          resources: RefResources, lifetime: RefLifetime }        // L20851
+pub struct RefAuthority { operations: BTreeMap<RefOp, RefOperationAuthority> }     // L35699`
+- **OBLIGATIONS:** `R-REF-03`, `R-REF-05`, `R-CAP-02`, `R-CAP-04`
+- **SECTIONS:** `S-09`, `S-20`
+- **COLLISIONS:** [X-77](02-collisions.md#x-77), [X-78](02-collisions.md#x-78), [X-79](02-collisions.md#x-79), [X-84](02-collisions.md#x-84)
+- **NOTE:** The reference model is the differential oracle: if its authority type has three shapes and four of its five component types are undeclared, then R-REF-03 (`reference_derive` must equal the production `derive`) has no fixed left-hand side to compare against. The frozen `reference_derive` body reads `parent.ops` and `constraint.ops` — field names that only the turn-[20] declaration has.
 
 ---
 
@@ -582,7 +625,7 @@ Owning module: **MOD-08**.
     - `pub struct EffectRequest { id, effect, cap: CapRef }   // L9314, L10322, L10806`
 - **OBLIGATIONS:** `R-EFFECT-01`, `R-EFFECT-03`, `R-DUR-01`
 - **SECTIONS:** `S-12`, `S-13`
-- **COLLISIONS:** [X-04](02-collisions.md#x-04), [X-27](02-collisions.md#x-27), [X-35](02-collisions.md#x-35), [X-57](02-collisions.md#x-57), [X-73](02-collisions.md#x-73), [X-74](02-collisions.md#x-74)
+- **COLLISIONS:** [X-04](02-collisions.md#x-04), [X-27](02-collisions.md#x-27), [X-35](02-collisions.md#x-35), [X-57](02-collisions.md#x-57), [X-73](02-collisions.md#x-73), [X-74](02-collisions.md#x-74), [X-86](02-collisions.md#x-86)
 - **LAWS:** [N-04](03-laws.md#n-04), [N-13](03-laws.md#n-13)
 - **NOTE:** N-04 (`EffectRequest ≠ EffectIssued`) is a durability law, not a naming preference.
 
@@ -619,7 +662,7 @@ WalRecord::EffectIssued { id: EffectId, actor: ActorId, digest: EffectDigest }  
     - `ℒ ⊕ EffectIssued(E.id, c, E)   // L2254 (event-log entry carrying the CapRef)`
 - **OBLIGATIONS:** `R-DUR-01`, `R-DUR-02`, `R-DUR-03`, `R-EFFECT-03`, `R-CORE-06`
 - **SECTIONS:** `S-13`, `S-18`
-- **COLLISIONS:** [X-07](02-collisions.md#x-07), [X-24](02-collisions.md#x-24), [X-32](02-collisions.md#x-32), [X-57](02-collisions.md#x-57)
+- **COLLISIONS:** [X-07](02-collisions.md#x-07), [X-24](02-collisions.md#x-24), [X-32](02-collisions.md#x-32), [X-57](02-collisions.md#x-57), [X-81](02-collisions.md#x-81)
 - **LAWS:** [N-04](03-laws.md#n-04), [N-05](03-laws.md#n-05), [N-14](03-laws.md#n-14)
 - **NOTE:** The struct and the WAL variant are NOT the same payload: the variant omits `logical_time`, `issue_cost` and `reservation` and renames `effect_digest` to `digest`. Since escrow release on completion needs the reservation, the divergence is substantive (X-07) and is reported, not reconciled by renaming either field.
 
@@ -649,7 +692,7 @@ WalRecord::EffectIssued { id: EffectId, actor: ActorId, digest: EffectDigest }  
 - **FROZEN SHAPE:** `pub struct EffectReceipt { pub id: EffectId, pub effect_digest: EffectDigest, pub result: Result<Value, HostFault> }`
 - **OBLIGATIONS:** `R-EFFECT-06`, `R-HOST-03`, `R-DUR-03`
 - **SECTIONS:** `S-12`, `S-14`
-- **COLLISIONS:** [X-09](02-collisions.md#x-09), [X-43](02-collisions.md#x-43), [X-61](02-collisions.md#x-61)
+- **COLLISIONS:** [X-09](02-collisions.md#x-09), [X-43](02-collisions.md#x-43), [X-61](02-collisions.md#x-61), [X-81](02-collisions.md#x-81)
 - **LAWS:** [N-05](03-laws.md#n-05), [N-14](03-laws.md#n-14)
 - **NOTE:** `R` as the receipt symbol (L2021, L7381) collides with `R` = Reserved and `R` = the authority resource-limit component (X-09).
 
@@ -680,7 +723,7 @@ WalRecord::EffectIssued { id: EffectId, actor: ActorId, digest: EffectDigest }  
     - `pub type EffectId = u64;   // L9128 (turn [17], earlier in the same turn)`
 - **OBLIGATIONS:** `R-CALC-04`, `R-EFFECT-02`, `R-EFFECT-04`, `R-DUR-03`
 - **SECTIONS:** `S-07`, `S-12`
-- **COLLISIONS:** [X-07](02-collisions.md#x-07), [X-22](02-collisions.md#x-22), [X-24](02-collisions.md#x-24), [X-43](02-collisions.md#x-43), [X-61](02-collisions.md#x-61)
+- **COLLISIONS:** [X-07](02-collisions.md#x-07), [X-22](02-collisions.md#x-22), [X-24](02-collisions.md#x-24), [X-43](02-collisions.md#x-43), [X-61](02-collisions.md#x-61), [X-81](02-collisions.md#x-81)
 - **LAWS:** [N-23](03-laws.md#n-23)
 - **NOTE:** `pub type EffectId = u64` and `pub struct EffectId(pub u64)` both appear in turn [17] (L9128 and L9342). An alias cannot carry a distinct 15A tag, and 15A gives `EffectId` tag `0x41` distinct from `ActorId` `0x40`, so the newtype is the only form consistent with the frozen wire format (X-24). Both are recorded; neither is renamed.
 
@@ -953,7 +996,7 @@ Owning module: **MOD-05**.
 - **FROZEN SHAPE:** `pub enum Expr { Value(Value), Var(Symbol), Let{..}, Seq{..}, If{..}, Call{..}, Lambda{..}, Attenuate{..}, Request{..}, Spawn{..}, Send{..}, Receive }`
 - **OBLIGATIONS:** `R-CALC-02`, `R-CALC-03`, `R-COMPILE-01`
 - **SECTIONS:** `S-07`
-- **COLLISIONS:** [X-03](02-collisions.md#x-03), [X-30](02-collisions.md#x-30), [X-35](02-collisions.md#x-35), [X-39](02-collisions.md#x-39), [X-70](02-collisions.md#x-70)
+- **COLLISIONS:** [X-03](02-collisions.md#x-03), [X-30](02-collisions.md#x-30), [X-35](02-collisions.md#x-35), [X-39](02-collisions.md#x-39), [X-70](02-collisions.md#x-70), [X-79](02-collisions.md#x-79), [X-85](02-collisions.md#x-85), [X-86](02-collisions.md#x-86)
 - **NOTE:** `Expr::Request` has two frozen field sets: `{cap, args}` (L10420, turn [18]) and `{capability, operation, target, params}` (L12183, turn [21]) — X-35.
 
 ### T-31 — `Value`
@@ -973,12 +1016,12 @@ Owning module: **MOD-05**.
     - `Value::Capability` — frozen machine-domain variant carrying a `CapRef`
     - `Value::Function` — frozen machine-domain variant
     - `Value::Map` — frozen canonical-domain variant (absent from the machine domain)
-    - `FunctionValue` — frozen type `{params, body, env}`; `env: EnvironmentSnapshot` (X-33)
+    - `FunctionValue` — frozen type `{params, body, env}`; `env: EnvironmentSnapshot` (X-33) at L12357 but `env: Environment` at L13987/L14373 (X-85)
     - `Value::Null` — source-used spelling L1027 (turn [3]) — every declared `Value` set has `Unit`, not `Null` (X-75)
     - `Value::DelegatedCapability` — source-used path L25995/L26000 (turn [32]) — in no `Value` declaration; the declared capability variant is `Capability(Box<CapabilityToken>)` (X-70, X-75)
 - **OBLIGATIONS:** `R-CALC-01`, `R-CANON-04`, `R-MARSHAL-03`
 - **SECTIONS:** `S-07`, `S-17`
-- **COLLISIONS:** [X-28](02-collisions.md#x-28), [X-33](02-collisions.md#x-33), [X-45](02-collisions.md#x-45), [X-54](02-collisions.md#x-54), [X-55](02-collisions.md#x-55), [X-56](02-collisions.md#x-56), [X-70](02-collisions.md#x-70), [X-72](02-collisions.md#x-72), [X-75](02-collisions.md#x-75)
+- **COLLISIONS:** [X-28](02-collisions.md#x-28), [X-33](02-collisions.md#x-33), [X-45](02-collisions.md#x-45), [X-54](02-collisions.md#x-54), [X-55](02-collisions.md#x-55), [X-56](02-collisions.md#x-56), [X-70](02-collisions.md#x-70), [X-72](02-collisions.md#x-72), [X-75](02-collisions.md#x-75), [X-76](02-collisions.md#x-76), [X-85](02-collisions.md#x-85)
 - **NOTE:** Registered upstream as C-03, C-45, U-09, AMB-21. Restated here so the dictionary is complete.
 
 ### T-32 — `EvalState`
@@ -1002,7 +1045,7 @@ Owning module: **MOD-05**.
     - `CEK` — frozen name of the machine (Control/Environment/Continuation)
 - **OBLIGATIONS:** `R-CEK-01`, `R-CEK-02`, `R-ACTOR-02`
 - **SECTIONS:** `S-08`
-- **COLLISIONS:** [X-18](02-collisions.md#x-18), [X-21](02-collisions.md#x-21), [X-22](02-collisions.md#x-22), [X-57](02-collisions.md#x-57), [X-74](02-collisions.md#x-74)
+- **COLLISIONS:** [X-18](02-collisions.md#x-18), [X-21](02-collisions.md#x-21), [X-22](02-collisions.md#x-22), [X-57](02-collisions.md#x-57), [X-74](02-collisions.md#x-74), [X-79](02-collisions.md#x-79), [X-85](02-collisions.md#x-85), [X-86](02-collisions.md#x-86)
 - **NOTE:** No canonical byte encoding is frozen for `EvalState` (C-15, U-02).
 
 ### T-33 — `Frame`
@@ -1025,7 +1068,7 @@ Owning module: **MOD-05**.
     - `K` — frozen mathematical symbol for a continuation
 - **OBLIGATIONS:** `R-CEK-03`
 - **SECTIONS:** `S-08`
-- **COLLISIONS:** [X-33](02-collisions.md#x-33), [X-37](02-collisions.md#x-37)
+- **COLLISIONS:** [X-33](02-collisions.md#x-33), [X-37](02-collisions.md#x-37), [X-79](02-collisions.md#x-79), [X-85](02-collisions.md#x-85), [X-86](02-collisions.md#x-86)
 - **NOTE:** AMB-26 records the eleven `pub enum Frame` declarations and notes that no type named `EvalFrame` or `ContinuationFrame` exists in the source; those names are therefore forbidden as invented identifiers.
 
 ### T-38 — `GlobalState`
@@ -1055,7 +1098,7 @@ Owning module: **MOD-05**.
 - **FROZEN SHAPE:** `pub struct GlobalState { actors, logical_time, runnable, event_log, next_effect_id, next_actor_id }`
 - **OBLIGATIONS:** `R-ACTOR-02`, `R-PERSIST-04`, `R-CORE-08`
 - **SECTIONS:** `S-15`, `S-18`
-- **COLLISIONS:** [X-18](02-collisions.md#x-18), [X-46](02-collisions.md#x-46)
+- **COLLISIONS:** [X-18](02-collisions.md#x-18), [X-46](02-collisions.md#x-46), [X-83](02-collisions.md#x-83)
 - **NOTE:** No canonical byte encoding is frozen for `GlobalState` (C-15, U-02), yet R-PERSIST-04/05 require one.
 
 ### T-70 — `Fault`
@@ -1118,7 +1161,7 @@ Owning module: **MOD-05**.
     - `pub enum Fault { …, CapabilityDenied, MarshalFault(...), HostFault(...), … }   // L26865 (turn [33]) — actor-local set`
 - **OBLIGATIONS:** `R-CALC-06`, `R-ACTOR-02`, `R-ACTOR-04`
 - **SECTIONS:** `S-07`, `S-15`
-- **COLLISIONS:** [X-23](02-collisions.md#x-23), [X-38](02-collisions.md#x-38), [X-58](02-collisions.md#x-58), [X-59](02-collisions.md#x-59), [X-64](02-collisions.md#x-64), [X-65](02-collisions.md#x-65), [X-66](02-collisions.md#x-66), [X-67](02-collisions.md#x-67), [X-68](02-collisions.md#x-68), [X-69](02-collisions.md#x-69), [X-71](02-collisions.md#x-71), [X-73](02-collisions.md#x-73)
+- **COLLISIONS:** [X-23](02-collisions.md#x-23), [X-38](02-collisions.md#x-38), [X-58](02-collisions.md#x-58), [X-59](02-collisions.md#x-59), [X-64](02-collisions.md#x-64), [X-65](02-collisions.md#x-65), [X-66](02-collisions.md#x-66), [X-67](02-collisions.md#x-67), [X-68](02-collisions.md#x-68), [X-69](02-collisions.md#x-69), [X-71](02-collisions.md#x-71), [X-73](02-collisions.md#x-73), [X-81](02-collisions.md#x-81)
 - **NOTE:** Nine distinct names are used for capability denial across eras (`CapViolation`, `CapabilityViolation`, `Revoked`, `CapabilityRevoked`, `ScopeViolation`, `AuthorizationFailed`, `Fault::CapabilityError`, `Fault::Capability(CapabilityError)`, `CapabilityDenied`) — X-38. The set is never closed by the source; U-08/U-14 remain open on their merits.
 
 ### T-71 — `GlobalFault`
@@ -1322,7 +1365,7 @@ Owning module: **MOD-06**.
     - `pub enum ActorStatus { Running, Pending(PendingEffect), Blocked(Continuation), Halted(Value), Fault(Fault) }   // L9411 (turn [17])`
 - **OBLIGATIONS:** `R-ACTOR-02`, `R-ACTOR-04`, `R-CALC-06`
 - **SECTIONS:** `S-15`, `S-07`
-- **COLLISIONS:** [X-21](02-collisions.md#x-21), [X-22](02-collisions.md#x-22), [X-23](02-collisions.md#x-23), [X-38](02-collisions.md#x-38), [X-58](02-collisions.md#x-58), [X-65](02-collisions.md#x-65), [X-71](02-collisions.md#x-71), [X-73](02-collisions.md#x-73), [X-74](02-collisions.md#x-74)
+- **COLLISIONS:** [X-21](02-collisions.md#x-21), [X-22](02-collisions.md#x-22), [X-23](02-collisions.md#x-23), [X-38](02-collisions.md#x-38), [X-58](02-collisions.md#x-58), [X-65](02-collisions.md#x-65), [X-71](02-collisions.md#x-71), [X-73](02-collisions.md#x-73), [X-74](02-collisions.md#x-74), [X-83](02-collisions.md#x-83)
 - **LAWS:** [N-15](03-laws.md#n-15)
 - **NOTE:** SEVEN declarations in THREE shapes (X-74), not the two X-21 records. Shape (i) L9411/L10346 (turns [17]/[18]): `Pending(PendingEffect), Blocked(Continuation)` — the continuation inside `Blocked`. Shape (ii) L21234 (turn [29]): `Pending { effect: EffectRequest, continuation: Continuation, reservation: ReservedCapacity }, Blocked(Continuation)` — the continuation in BOTH variants. Shape (iii) L23306/L23793 (turn [30]): `Pending { effect: EffectRequest, reservation: ReservedCapacity }, Blocked` — the continuation in NEITHER, which is the form the frozen turn-[30] machine assumes when it keeps the continuation in `actor.eval.continuation` (T-37, T-32). X-21 covers the `Running`/`Active` naming split, X-74 the shape split and the seven-declaration count; C-18/AMB-05 cover `ActorStatus` vs `RunState`, not either split.
 
@@ -1353,7 +1396,7 @@ Owning module: **MOD-06**.
 - **FROZEN SHAPE:** `A_a = ⟨e, ρ, κ, ℋ, C, R, W, mailbox, status⟩   // L8666, turn [16]`
 - **OBLIGATIONS:** `R-ACTOR-01`, `R-ACTOR-02`, `R-ACTOR-03`, `R-PERSIST-04`
 - **SECTIONS:** `S-15`
-- **COLLISIONS:** [X-11](02-collisions.md#x-11), [X-14](02-collisions.md#x-14), [X-18](02-collisions.md#x-18), [X-74](02-collisions.md#x-74)
+- **COLLISIONS:** [X-11](02-collisions.md#x-11), [X-14](02-collisions.md#x-14), [X-18](02-collisions.md#x-18), [X-74](02-collisions.md#x-74), [X-76](02-collisions.md#x-76), [X-83](02-collisions.md#x-83)
 - **NOTE:** In `A_a`'s own definition the symbols `C` and `R` are the BUDGET components, while `A` elsewhere is AUTHORITY (X-11, X-08, X-09). The dictionary requires qualified prose: 'the actor state A_a' vs 'the authority A'.
 
 ### T-39 — `Mailbox`
@@ -1376,7 +1419,7 @@ Owning module: **MOD-06**.
     - `Deadlock` — frozen condition detected when all actors block (L25579)
 - **OBLIGATIONS:** `R-ACTOR-03`, `R-ACTOR-06`, `R-MARSHAL-01`, `R-MARSHAL-03`
 - **SECTIONS:** `S-15`, `S-16`
-- **COLLISIONS:** [X-45](02-collisions.md#x-45)
+- **COLLISIONS:** [X-45](02-collisions.md#x-45), [X-76](02-collisions.md#x-76), [X-83](02-collisions.md#x-83)
 - **LAWS:** [N-30](03-laws.md#n-30)
 - **NOTE:** No canonical byte encoding is frozen for `Mailbox` (C-15, U-02).
 
@@ -1404,8 +1447,40 @@ Owning module: **MOD-06**.
     - `pub enum MarshalFault { CapabilityNotTransferable, InvalidFormat }   // L10846 (turn [18])`
 - **OBLIGATIONS:** `R-MARSHAL-01`, `R-MARSHAL-02`
 - **SECTIONS:** `S-16`
-- **COLLISIONS:** [X-65](02-collisions.md#x-65), [X-75](02-collisions.md#x-75)
+- **COLLISIONS:** [X-65](02-collisions.md#x-65), [X-75](02-collisions.md#x-75), [X-76](02-collisions.md#x-76)
 - **NOTE:** Zero variants are shared between the two declarations (X-65).
+
+### T-79 — `MarshalledValue`
+
+- **CANONICAL_TERM:** `MarshalledValue`
+- **TYPE:** RUST-NEWTYPE — a Rust single-field tuple `struct` wrapper
+- **OWNER:** MOD-06 (`ror-runtime (transport); ror-core/15A (canonical bytes)`)
+- **DEFINITION:** The newtype that crosses the actor-isolation boundary: what a `Mailbox` holds and what `marshal_value` produces. Declared five times with two incompatible payloads — `MarshalledValue(Value)`, an in-memory value, at L9925 (turn [17]), L10828 (turn [18]) and L24765 (turn [31]); and `MarshalledValue(Vec<u8>)`, commented 'Canonical serialized bytes' at L25683 and 'an opaque, canonical byte representation' at L25980 (both turn [32]). The two payloads answer different questions: one says the boundary transports values, the other says it transports bytes, and each has frozen API attached that the other cannot satisfy.
+- **FIRST_DEFINITION:** `L9925`, turn [17] — `pub struct MarshalledValue(Value);`
+- **FROZEN_AT:** `L25683`, turn [32] — `pub struct MarshalledValue(pub Vec<u8>); // Canonical serialized bytes`
+- **DEPENDENTS:** T-39 `Mailbox`, T-37 `ActorState`, T-31 `Value`, T-62 `CanonicalEnvelope`, T-73 `MarshalFault`
+- **FORBIDDEN_VARIANTS:**
+    - `marshalled value` — unqualified prose
+    - `SerializedValue`
+    - `CanonicalBytes` — a description in the L25683 comment, not a declared name
+    - `MarshalResult` — that is the separate enum at L10836, not this newtype
+- **PROTECTED (do not rename):**
+    - `MarshalledValue` — frozen Rust newtype name — five declarations (L9925, L10828, L24765, L25683, L25981)
+    - `Value` — frozen payload of the turns-[17]/[18]/[31] declarations
+    - `Vec<u8>` — frozen payload of the turn-[32] declarations
+    - `pub Vec<u8>` — the turn-[32] payload is declared PUBLIC at L25683 while L25980 calls the type 'opaque'
+    - `new` — `pub(crate) fn new(v: Value) -> Self` — frozen at L10831, takes a `Value`
+    - `into_inner` — `pub fn into_inner(self) -> Value` — frozen at L10832, cannot exist over a `Vec<u8>` payload
+    - `marshal_value` — `fn marshal_value(v: &Value) -> Result<MarshalledValue, MarshalFault>` — frozen at L25685
+    - `canonical_serialize` — the constructor actually used at L25690: `MarshalledValue(canonical_serialize(v))`
+    - `contains_capability` — the pre-marshal capability scan at L25687
+- **FROZEN SHAPE:** `pub struct MarshalledValue(Value);                 // L9925, L10828, L24765
+pub struct MarshalledValue(pub Vec<u8>);           // L25683, 'Canonical serialized bytes'
+pub struct MarshalledValue(Vec<u8>);               // L25981, 'opaque, canonical byte representation'`
+- **OBLIGATIONS:** `R-MARSHAL-01`, `R-MARSHAL-02`, `R-MARSHAL-03`, `R-ACTOR-03`
+- **SECTIONS:** `S-15`, `S-16`, `S-17`
+- **COLLISIONS:** [X-76](02-collisions.md#x-76), [X-83](02-collisions.md#x-83)
+- **NOTE:** T-39 (`Mailbox`) already glosses this name in its `protected` list as 'frozen element type (canonical bytes transport)' — i.e. the dictionary had silently adopted the turn-[32] bytes reading while three earlier declarations, and the frozen `into_inner() -> Value`, say otherwise. Filed rather than resolved: neither payload is renamed (X-76).
 
 ---
 
@@ -1433,7 +1508,7 @@ Owning module: **MOD-07**.
     - `NotRunnable` — declared variant L24300 (turn [31]) — silently absent from the L25526 (turn [32]) re-declaration, no supersession note (X-75)
 - **OBLIGATIONS:** `R-ACTOR-02`, `R-ACTOR-04`, `R-ACTOR-07`
 - **SECTIONS:** `S-15`
-- **COLLISIONS:** [X-21](02-collisions.md#x-21), [X-23](02-collisions.md#x-23), [X-58](02-collisions.md#x-58), [X-73](02-collisions.md#x-73), [X-75](02-collisions.md#x-75)
+- **COLLISIONS:** [X-21](02-collisions.md#x-21), [X-23](02-collisions.md#x-23), [X-58](02-collisions.md#x-58), [X-73](02-collisions.md#x-73), [X-75](02-collisions.md#x-75), [X-83](02-collisions.md#x-83)
 - **LAWS:** [N-15](03-laws.md#n-15)
 - **NOTE:** Both enums are kept by the frozen text (C-18, INFO). The dictionary separates their ownership: ACTOR vs SCHEDULER.
 
@@ -1458,7 +1533,7 @@ Owning module: **MOD-07**.
     - `Scheduler` — frozen component name; trust-table row 'Deterministic interleaving' (C-37)
 - **OBLIGATIONS:** `R-ACTOR-04`, `R-ACTOR-07`, `R-CORE-08`
 - **SECTIONS:** `S-15`
-- **COLLISIONS:** —
+- **COLLISIONS:** [X-83](02-collisions.md#x-83)
 - **LAWS:** [N-30](03-laws.md#n-30)
 - **NOTE:** The snapshot is said to contain the runnable queue while recovery reconstructs it from actor states (C-26, U-17): which is authoritative on mismatch is undecided.
 
@@ -1527,7 +1602,7 @@ Owning module: **MOD-09**.
     - `pub struct ReplayHost { recorded_receipts: HashMap<EffectId, EffectReceipt>, cursor: usize }   // L24011 (turn [30]) — C-22`
 - **OBLIGATIONS:** `R-HOST-03`, `R-HOST-04`, `R-EFFECT-06`
 - **SECTIONS:** `S-14`
-- **COLLISIONS:** [X-43](02-collisions.md#x-43), [X-67](02-collisions.md#x-67)
+- **COLLISIONS:** [X-43](02-collisions.md#x-43), [X-67](02-collisions.md#x-67), [X-81](02-collisions.md#x-81), [X-84](02-collisions.md#x-84)
 - **LAWS:** [N-26](03-laws.md#n-26)
 - **NOTE:** C-22 resolves HashMap→ordered; X-43 records that the field name also changed (`recorded_receipts`→`trace`).
 
@@ -1669,7 +1744,7 @@ Owning module: **MOD-11**.
     - `WAL-SEQUENCE-CONTINUITY` — frozen verification-obligation tag
 - **OBLIGATIONS:** `R-PERSIST-01`, `R-PERSIST-02`, `R-PERSIST-03`, `R-DUR-01`, `R-CORE-06`
 - **SECTIONS:** `S-18`, `S-13`
-- **COLLISIONS:** [X-13](02-collisions.md#x-13), [X-14](02-collisions.md#x-14), [X-17](02-collisions.md#x-17), [X-31](02-collisions.md#x-31), [X-32](02-collisions.md#x-32), [X-47](02-collisions.md#x-47), [X-54](02-collisions.md#x-54), [X-57](02-collisions.md#x-57), [X-61](02-collisions.md#x-61), [X-71](02-collisions.md#x-71)
+- **COLLISIONS:** [X-13](02-collisions.md#x-13), [X-14](02-collisions.md#x-14), [X-17](02-collisions.md#x-17), [X-31](02-collisions.md#x-31), [X-32](02-collisions.md#x-32), [X-47](02-collisions.md#x-47), [X-54](02-collisions.md#x-54), [X-57](02-collisions.md#x-57), [X-61](02-collisions.md#x-61), [X-71](02-collisions.md#x-71), [X-80](02-collisions.md#x-80)
 - **LAWS:** [N-19](03-laws.md#n-19), [N-20](03-laws.md#n-20), [N-21](03-laws.md#n-21)
 - **NOTE:** Five names denote this one durable structure (`WAL`, `Write-Ahead Log`, `L`, `DurableLog`, 'append-only durable event log'), and a sixth (`EventLog`) denotes a DIFFERENT in-memory one. U-16/AMB-14 concern the `EventSequence`/`WalSequence` relationship; X-31 records the naming spread.
 
@@ -1697,7 +1772,7 @@ Owning module: **MOD-11**.
 - **FROZEN SHAPE:** `pub struct WalFrame { sequence, kind, payload_length, payload, checksum }`
 - **OBLIGATIONS:** `R-PERSIST-01`, `R-PERSIST-02`
 - **SECTIONS:** `S-18`
-- **COLLISIONS:** [X-31](02-collisions.md#x-31), [X-47](02-collisions.md#x-47), [X-50](02-collisions.md#x-50)
+- **COLLISIONS:** [X-31](02-collisions.md#x-31), [X-47](02-collisions.md#x-47), [X-50](02-collisions.md#x-50), [X-80](02-collisions.md#x-80), [X-84](02-collisions.md#x-84)
 - **NOTE:** `WalFrame.kind` is a `WalRecordKind` u8 discriminant, distinct from the 15A envelope `type_tag`.
 
 ### T-47 — `WalRecord`
@@ -1732,7 +1807,7 @@ Owning module: **MOD-11**.
     - `pub enum EffectJournalEntry { Prepared{..}, Issued{..}, Completed{..}, Reconciled{..} }   // L26222 (turn [33]) — unified into WalRecord by 15B (C-25)`
 - **OBLIGATIONS:** `R-PERSIST-03`, `R-DUR-02`, `R-DUR-03`, `R-DUR-04`
 - **SECTIONS:** `S-18`, `S-13`
-- **COLLISIONS:** [X-07](02-collisions.md#x-07), [X-24](02-collisions.md#x-24), [X-31](02-collisions.md#x-31), [X-32](02-collisions.md#x-32), [X-33](02-collisions.md#x-33), [X-47](02-collisions.md#x-47), [X-61](02-collisions.md#x-61), [X-71](02-collisions.md#x-71), [X-72](02-collisions.md#x-72)
+- **COLLISIONS:** [X-07](02-collisions.md#x-07), [X-24](02-collisions.md#x-24), [X-31](02-collisions.md#x-31), [X-32](02-collisions.md#x-32), [X-33](02-collisions.md#x-33), [X-47](02-collisions.md#x-47), [X-61](02-collisions.md#x-61), [X-71](02-collisions.md#x-71), [X-72](02-collisions.md#x-72), [X-80](02-collisions.md#x-80), [X-84](02-collisions.md#x-84)
 - **NOTE:** Variant names are `Effect`-prefixed here but unprefixed in the superseded `EffectJournalEntry`. Both spellings are frozen in their own era; neither is renamed (X-07).
 
 ### T-48 — `Snapshot`
@@ -1765,7 +1840,7 @@ Owning module: **MOD-11**.
 - **FROZEN SHAPE:** `pub struct GlobalSnapshot { version: SnapshotVersion, ... }   // L26301, L34122`
 - **OBLIGATIONS:** `R-PERSIST-04`, `R-PERSIST-05`, `R-PERSIST-06`, `R-RECOV-03`
 - **SECTIONS:** `S-18`, `S-19`
-- **COLLISIONS:** [X-10](02-collisions.md#x-10), [X-33](02-collisions.md#x-33), [X-45](02-collisions.md#x-45), [X-51](02-collisions.md#x-51)
+- **COLLISIONS:** [X-10](02-collisions.md#x-10), [X-33](02-collisions.md#x-33), [X-45](02-collisions.md#x-45), [X-51](02-collisions.md#x-51), [X-83](02-collisions.md#x-83), [X-85](02-collisions.md#x-85)
 - **LAWS:** [N-21](03-laws.md#n-21)
 - **NOTE:** `Snapshot` is a concept whose frozen type name is `GlobalSnapshot`; `EnvironmentSnapshot` shares the word and denotes something unrelated (X-33). The runnable queue's authority at recovery is undecided (U-17).
 
@@ -1792,7 +1867,7 @@ Owning module: **MOD-11**.
     - `𝓛` — the turn-[5]/[13] symbol for the log in the transition tuples (L2254)
 - **OBLIGATIONS:** `R-PERSIST-03`, `R-PERSIST-06`, `R-ACTOR-02`
 - **SECTIONS:** `S-18`
-- **COLLISIONS:** [X-13](02-collisions.md#x-13), [X-31](02-collisions.md#x-31), [X-47](02-collisions.md#x-47)
+- **COLLISIONS:** [X-13](02-collisions.md#x-13), [X-31](02-collisions.md#x-31), [X-47](02-collisions.md#x-47), [X-80](02-collisions.md#x-80)
 - **LAWS:** [N-19](03-laws.md#n-19)
 - **NOTE:** U-16/AMB-14: the relationship between `EventSequence` and `WalSequence` is never stated. spec/05 §4 records `EventLog` ≠ `WAL`; that separation is retained here as the canonical reading.
 
@@ -1830,7 +1905,7 @@ Owning module: **MOD-11**.
     - `[format_version: u8] [type_tag: u32 LE] [length: u32 LE] [payload]   // L28298 (turn [36])`
 - **OBLIGATIONS:** `R-CANON-01`, `R-CANON-02`, `R-CANON-03`, `R-CANON-04`, `R-CANON-06`
 - **SECTIONS:** `S-17`
-- **COLLISIONS:** [X-24](02-collisions.md#x-24), [X-45](02-collisions.md#x-45), [X-50](02-collisions.md#x-50), [X-51](02-collisions.md#x-51), [X-54](02-collisions.md#x-54), [X-55](02-collisions.md#x-55), [X-56](02-collisions.md#x-56), [X-72](02-collisions.md#x-72)
+- **COLLISIONS:** [X-24](02-collisions.md#x-24), [X-45](02-collisions.md#x-45), [X-50](02-collisions.md#x-50), [X-51](02-collisions.md#x-51), [X-54](02-collisions.md#x-54), [X-55](02-collisions.md#x-55), [X-56](02-collisions.md#x-56), [X-72](02-collisions.md#x-72), [X-76](02-collisions.md#x-76), [X-80](02-collisions.md#x-80)
 - **NOTE:** The superseded form differs in field NAME, tag WIDTH and ENDIANNESS. An encoder built from the `CanonicalSerialize` doc comment at L28298 would be wire-incompatible with the frozen format, breaking every digest (`EffectDigest`, `StateDigest`) and the WAL checksum. X-50; the frozen form governs, and the superseded text is retained verbatim.
 
 ### T-63 — `CanonicalPayload`
@@ -2158,7 +2233,7 @@ Owning module: **MOD-15**.
     - `MockKernel` — frozen test double (MOD-17)
 - **OBLIGATIONS:** `R-REF-01`, `R-REF-02`, `R-REF-03`, `R-REF-04`, `R-SCOPE-04`
 - **SECTIONS:** `S-20`
-- **COLLISIONS:** [X-06](02-collisions.md#x-06), [X-48](02-collisions.md#x-48), [X-60](02-collisions.md#x-60)
+- **COLLISIONS:** [X-06](02-collisions.md#x-06), [X-48](02-collisions.md#x-48), [X-60](02-collisions.md#x-60), [X-78](02-collisions.md#x-78), [X-79](02-collisions.md#x-79), [X-84](02-collisions.md#x-84), [X-85](02-collisions.md#x-85)
 - **LAWS:** [N-27](03-laws.md#n-27)
 - **NOTE:** The source also calls it 'the reference machine' (L10128, L15871, L16403) in the pre-15C era, where it meant the first boring milestone implementation — a DIFFERENT object from the 15C independent reference model. X-48.
 
@@ -2234,6 +2309,41 @@ Owning module: **MOD-15**.
 - **SECTIONS:** `S-21`
 - **COLLISIONS:** —
 - **NOTE:** C-32 fixes the scope as registered non-equivalent mutants.
+
+### T-80 — `RefState`
+
+- **CANONICAL_TERM:** `RefState`
+- **TYPE:** RUST-STRUCT — a Rust `struct` declaration (nominal type)
+- **OWNER:** MOD-14 (`ror-reference`)
+- **DEFINITION:** The reference machine's state — the left-hand side of the differential observer R-REF-05 and the object whose digest is compared against the production machine's. Declared four times in two shapes: `{ expr: Expr, env: Environment, kont: Vec<Frame>, outcome: RefOutcome }` at L14728 (turn [23]) and, identically, at L15985 and L16423 (turn [24]); and `{ expr: RefExpr, env: RefEnv, continuation: Vec<RefFrame> }` at L35522 (turn [48]). The turn-[48] form renames `kont` to `continuation`, drops `outcome` entirely, and replaces every production type with a `Ref*` type — the only one of the four that satisfies reference-model independence, and the one whose `RefExpr` is declared nowhere in the source.
+- **FIRST_DEFINITION:** `L14728`, turn [23] — `pub struct RefState {`
+- **FROZEN_AT:** `L35522`, turn [48] — `pub struct RefState {`
+- **DEPENDENTS:** T-58 `ReferenceModel`, T-30 `Expr`, T-32 `EvalState`, T-33 `Frame`, T-81 `RefAuthority`
+- **FORBIDDEN_VARIANTS:**
+    - `reference state` — unqualified prose
+    - `RefMachineState`
+    - `ActorState` — that is T-37, the production per-actor state
+    - `EvalState` — that is T-32, the production CEK state
+- **PROTECTED (do not rename):**
+    - `RefState` — frozen Rust struct name — four declarations (L14728, L15985, L16423, L35522)
+    - `expr` — frozen field name in all four declarations
+    - `Expr` — the field's type in the turns-[23]/[24] declarations — the PRODUCTION AST (T-30)
+    - `RefExpr` — the field's type at L35523 — declared nowhere (X-84)
+    - `env` — frozen field name in all four declarations
+    - `Environment` — the env type in the turns-[23]/[24] declarations
+    - `RefEnv` — the env type at L35524 — declared once
+    - `kont` — frozen field name at L14731/L15988/L16426 — the CEK spelling
+    - `continuation` — the same field's other frozen name, at L35525
+    - `Vec<Frame>` — the continuation's type in turns [23]/[24] — the PRODUCTION frame (T-33)
+    - `Vec<RefFrame>` — the continuation's type at L35525
+    - `outcome` — frozen field at L14732, absent from the turn-[48] declaration
+    - `RefOutcome` — the outcome's type — declared three times
+- **FROZEN SHAPE:** `pub struct RefState { expr: Expr, env: Environment, kont: Vec<Frame>, outcome: RefOutcome }        // L14728, L15985, L16423
+pub struct RefState { expr: RefExpr, env: RefEnv, continuation: Vec<RefFrame> }        // L35522`
+- **OBLIGATIONS:** `R-REF-01`, `R-REF-02`, `R-REF-05`
+- **SECTIONS:** `S-20`
+- **COLLISIONS:** [X-78](02-collisions.md#x-78), [X-79](02-collisions.md#x-79), [X-84](02-collisions.md#x-84), [X-86](02-collisions.md#x-86)
+- **NOTE:** The `kont`/`continuation` rename is the same field-name split X-22 records for the production side; here it also carries a type change, because the turn-[48] form is the only one written in the reference model's own vocabulary. Which form the differential oracle compares is undecided (X-79).
 
 ---
 
