@@ -1,6 +1,6 @@
 # Red-on-Rust Specification Audit — Authority, Trust-Boundary, and External-Effect Errors
 
-**Audit date:** 2026-09-02 (addendum A same date: SEC-016…019; addendum B same date: SEC-020…022)
+**Audit date:** 2026-09-02 (addendum A: SEC-016…019; addendum B: SEC-020…022; addendum C: SEC-023)
 **Audited artifact:** frozen specification set at commit `a013dff` (`Red-on-Rust.md`, 42,312 lines; canonical set `spec/`, `mod/`, `req/`, `term/`, `dep/`)
 **Audit class:** authority escalation, trust-boundary errors, external-effect gating — *exclusively*. No conformance, style, or performance findings.
 
@@ -27,7 +27,7 @@
 
 ## 2. Verdict summary
 
-**I1 and I2 do not hold at specification level.** The 16-step gate sequence itself is sound and well-ordered, but the *state surrounding* the gates contains twenty-two specification-level defects through which untrusted input or a partially-trusted host can reach an `ExternalEffect` (or destroy/forge the authority facts the gates depend on): 2 CRITICAL (complete authority-injection chains exist in conforming implementations), 5 HIGH, 3 MEDIUM-HIGH, 9 MEDIUM, 2 LOW/MEDIUM, 1 LOW.
+**I1 and I2 do not hold at specification level.** The 16-step gate sequence itself is sound and well-ordered, but the *state surrounding* the gates contains twenty-three specification-level defects through which untrusted input or a partially-trusted host can reach an `ExternalEffect` (or destroy/forge the authority facts the gates depend on): 3 CRITICAL (two complete authority-injection chains exist in conforming implementations; one silent deletion of operative security rules from the normative layer), 5 HIGH, 3 MEDIUM-HIGH, 9 MEDIUM, 2 LOW/MEDIUM, 1 LOW.
 
 | ID | Severity | One-line violation |
 |---|---|---|
@@ -53,6 +53,7 @@
 | SEC-020 | MEDIUM-HIGH | **Panic-discipline violations on trust-boundary commit paths** — `unwrap()`/`unreachable!()` after "safe due to checks" reasoning; a mid-transition panic breaks effect atomicity and manufactures `Indeterminate` history |
 | SEC-021 | MEDIUM | **Live-fault escrow stranding** — no disposition rule for escrow when a `Pending` actor faults without a crash or the host never answers; conservation holds, spendable budget shrinks monotonically |
 | SEC-022 | MEDIUM-HIGH | **The trust model is under-frozen where it matters most** — three authoritative boundary modules absent from the trust table (V-11), two divergent frozen tables, and the dependency layer *measures* SC-1/2/3 FAIL: planner recorded as security provider (V-03), production→planner runtime edge, and the R-DUR-02 durability hinge with no legal crate edge (V-10) |
+| SEC-023 | CRITICAL | **Normative-layer content rotation: `spec/01` obligation bodies systematically displaced from their stable IDs, and the normalization records self-certify each replacement as "Semantic Risk: None"** — no-amplification (CAP-05), the five-assertion denial short-circuit (EFFECT-04), the C-23 escrow fix (EFFECT-05), the 7-step issuance transaction (DUR-02), the receipt ID conjunct, recursive marshal rejection (MARSHAL-01), the amplification/teleportation theorems (ACTOR-08), escrow-survives-crash (DUR-05), and the authoritative host checks (HOST-01/02) are all absent from the canonical text that every module names as the normative home |
 
 Findings already registered in the repository's own registers (`C-…`, `U-…`, `AMB-…`, `X-…`) are marked; in every such case this audit's contribution is the **security consequence the register omits**, plus the required elevation of grade.
 
@@ -811,33 +812,87 @@ Structural/conformance path rather than a single runtime exploit: an implementat
 
 ---
 
+### SEC-023 — Normative-layer content rotation: the canonical specification no longer states the machine's operative security rules under their stable IDs
+
+**LOCATION**
+Primary (`spec/01-canonical-specification.md`, the layer every `mod/` file names as "Normative text home"):
+
+- L176–186 — **CAPABILITY block rotated by two positions**: R-CAP-04 ("constraint vs authority") carries the 5-conjunct `Authorized` predicate (which is R-CAP-06 everywhere else); R-CAP-05 ("derivation") carries ancestor-cascading revocation (R-CAP-07's content) — **the derivation law `derive(A,C) = per-op meet; derive(A,C) ≼ A` appears in no CAPABILITY body** (it survives only centrally, R-CORE-04 L28); R-CAP-06 ("canonical authorization predicate") carries lineage-forest bookkeeping; R-CAP-07 carries lifetime expiry only (one conjunct); R-CAP-08 ("algebra theorems") carries the Attenuate evaluation sequence, not the theorems.
+- L268–276 — **EFFECT block rotated**: R-EFFECT-04 ("short-circuit") carries receipt-*digest* validation (R-EFFECT-06's content) with **the ID conjunct absent** (digest-only, contra the frozen emphasis "a matching ID with a mismatching digest is not sufficient", L22166–22168); the five-assertion denial short-circuit (subsequent gates uncalled, `next_effect_id` unincremented, budget unchanged, event log unchanged, host never invoked — "the measurable definition of denial" per MOD-08) **appears in no body**; R-EFFECT-05 carries generic completion steps — **the C-23 escrow-affordability fix (`can_consume(issue.checked_add(complete_max))`, overflow ⇒ fault) is gone**; R-EFFECT-07 carries ReplayHost rules (HOST-03/05 content).
+- L278–296 — **DURABILITY block**: R-DUR-02 ("issuance transaction, strict order") body is "Durability guarantees MUST hold across process crashes, power failures, and kernel panics…" — the 7-step transaction (append `Prepared` → fsync → append `Issued` → fsync → `Pending` → host) **is gone** (stray blank lines follow the body, consistent with mechanical truncation); R-DUR-03's ID+digest causal-chain rule is replaced by a vague WAL-before-visibility sentence; R-DUR-05 ("escrow survives crash") body is the **WAL frame layout** (R-PERSIST-02 content) — the escrow rule is gone and the body does not match its own citation (L35210–35215 is the escrow text).
+- L298–300 — R-HOST-01 body is trait isolation (`HostAdapter`) — the **authoritative independent host check** (`¬HostPolicyOK(E) ⇒ ¬ExternalEffect(E)`, fail-early ⊂ authoritative) is gone; R-HOST-02 body is host-policy access control — **"host performs only issued effects"** (the `PanicHost`-tested precondition) is gone.
+- L326 — R-ACTOR-08 body is termination cleanup — the **amplification and teleportation theorems are gone** from the obligation named after them.
+- L330–338 — R-MARSHAL-01 body is canonical-bytes transport — **recursive/nested capability rejection is gone** (bare rejection survives only in R-CORE-07 and R-MARSHAL-02's plain form); R-MARSHAL-04 body introduces cyclic-heap/depth-limit content **citing L8695–8698, which is the `CapRef ∉ marshal(v)` rule** — body and citation disagree.
+- L98 — R-PLANNER-03 states the **equality** staleness predicate (the secure reading) while `spec/06` C-38 records the canonical resolution as the `<`-only form — the registers mis-describe the canonical text in both directions (see SEC-007).
+
+Secondary (`spec/normative-normalization-records.md` — the audit trail for the rewrites; entry lines: R-CAP-05 L600, R-CAP-06 L610, R-EFFECT-04 L825, R-EFFECT-05 L833, R-DUR-02 L875, R-ACTOR-08 L1043, R-MARSHAL-01 L1053):
+
+- Each record **quotes the correct original** and then "normalizes" into a *different* rule — e.g. R-CAP-05's Original is the meet/derivation law, its Normalized is revocation cascade; R-DUR-02's Original is the 7-step transaction, its Normalized is the crash platitude; R-MARSHAL-01's Original is recursive rejection, its Normalized is transport format — every such record self-certifies **"Semantic Risk: None"**.
+- The records' own governing rules (header) include "1. Preserve semantic strength… 8. Preserve negative guarantees. 9. **Preserve security invariants exactly.** 10. Preserve mathematical notation." — every rotated entry violates rules 1/8/9/10 while certifying compliance.
+
+Cross-layer contradiction (same obligation ID, three different bodies):
+
+| ID | `spec/01` body (normative home) | records' "Original" / `mod/`+`req/`+source | `spec/03` matrix + `spec/08` evidence map |
+|---|---|---|---|
+| R-CAP-05 | revocation cascade | derivation law `derive(A,C) ≼ A` | "derive ≼ A; CAP-DERIVE-NO-AMPLIFICATION, M006" (L70) |
+| R-CAP-06 | lineage forest | 5-conjunct `Authorized` predicate | "Canonical Authorized predicate (5 conjuncts); Track B mock-kernel" (L71) |
+| R-EFFECT-04 | receipt digest check | five-assertion denial short-circuit | short-circuit Track C evidence |
+| R-DUR-02 | generic durability | 7-step issuance transaction | crash harness T0–T4 |
+| R-MARSHAL-01 | transport format | recursive capability rejection | `MARSHAL-NO-RAW-CAPABILITY` |
+
+**VIOLATION**
+The repository's architecture single-homes normative text in `spec/01` ("Normative text remains single-homed in `spec/01`/`req/`" — README; every `mod/` file: "Normative text home: `spec/01` S-XX") and binds stable obligation IDs to verification tags, mutation targets, milestone gates, and crate homes through `spec/03`/`spec/08`. That ID→rule binding is now corrupt for at least ten security-operative obligations: the canonical bodies have been rotated onto adjacent content, and the dropped rules include the no-amplification law (locally), the measurable definition of denial, the escrow fix for the historical under-escrow vulnerability, the issuance transaction the crash matrix is defined against, half of receipt validation, the recursive qualifier that makes marshal rejection mean anything (SEC-018), and both host-boundary rules. Nothing detected it: the normalization pass self-certified "Semantic Risk: None" on every replacement, and no mechanical check compares `spec/01` bodies against the records, the matrix, or the source. The README's escape hatch ("where the canonicalized text and `Red-on-Rust.md` differ, the source governs") is unenforceable in practice: an implementer resolving R-CAP-05 through the cross-reference chain (`spec/08` tag → `spec/03` row → `spec/01` body) reads revocation text and receives no diff signal telling them to go read L6397.
+
+**ATTACK-PATH**
+Adversarial-conformance path (no runtime exploit needed — the defect *is* the attack surface): an implementation team builds to `spec/01` as their single normative source, exactly as the repository instructs. Their machine: computes `derive` without the meet law's guarantee (R-CAP-05's body is silent — they implement attenuation as replacement, a bug class M006 exists to catch, but they write the conformance tests from `spec/01` too, so their "R-CAP-05" tests check revocation and pass); validates receipts by digest only (R-EFFECT-04's body — substitution of a stale same-digest receipt is invisible); escrows `issue` but not `complete_max` (R-EFFECT-05's body never states the checked add — the historical C-23 under-escrow vulnerability re-enters through the front door); performs host invocation after an in-memory "issued" flag (R-DUR-02's body demands crash-durability, not ordering); marshals values with a top-level capability check only (R-MARSHAL-01's body mandates format validation, not recursive rejection). Every gap maps to a runtime attack chain already documented in SEC-001…SEC-018 — but here the attacker does not need to exploit the machine, because the specification the machine is certified against stopped containing the rules. Differential testing would eventually catch behavioral divergence against the reference model — but the reference implementers read the same rotated layer, and where both agree on the weakened rule the differential passes vacuously: the oracle-collapse failure MOD-14/MOD-16 exist to prevent, entering through the documentation layer instead.
+
+**EXPECTED-INVARIANT**
+- **ID→rule binding integrity**: for every obligation ID, the `spec/01` body, the normalization record's Normalized text, the `spec/03` matrix description, the `spec/08` evidence mapping, and the cited source lines must state the same rule. Any rewrite that changes *which* rule an ID denotes (not merely its modality) is a supersession event requiring its own record — the repo's own R-SCOPE-03 discipline applied to its normative layer.
+- Security rules may not be dropped from the canonical layer while surviving only inside audit-record quotations: presence in `spec/01` under the stable ID is what tags, mutants, and milestones resolve against.
+
+**REMEDIATION**
+1. Restore the ten-plus rotated bodies in `spec/01` from the records' own "Original" quotations (intact there) or from the cited source lines; re-run the normalization with content preservation actually enforced.
+2. Add the missing mechanical check — the repo already practices exactly this discipline elsewhere (`term/_check.py` re-greps 1008 citations; `dep/_graph.py` re-derives every edge): a `spec/_check.py` that, per obligation ID, asserts agreement on rule identity across `spec/01` body ↔ records' Original/Normalized ↔ `spec/03` row, failing on rotation.
+3. Re-adjudicate every "Semantic Risk: None" in the affected records; the fields are currently false.
+4. Reconcile C-38's description of the canonical staleness form with `spec/01` L98 (which already carries the secure equality form) — SEC-007's remediation should adopt `spec/01`'s text as canonical and fix the conformance suite.
+
+**VERIFICATION**
+- The new cross-layer consistency check demonstrably fails on the current tree (write it before restoring, so the failure is evidence), then runs green in CI.
+- Documentation-level mutation **M036**: "rotate one `spec/01` security body onto adjacent content" — the consistency check must kill it (guarding the normative layer the way M015/M016 guard the WAL).
+- Post-restoration spot-proof: `derive(A,C) ≼ A`, the five short-circuit assertions, `can_consume(issue + complete_max)`, the 7-step order, `receipt.id ∧ receipt.digest`, recursive marshal rejection, `HostInvoked ⇒ DurableIssued`, and both host-boundary rules each appear under their stable IDs in `spec/01`, greppably.
+
+---
+
 ## 4. Escalation-vector coverage matrix
 
 Requested search vectors vs. findings (● primary, ○ contributing):
 
-| Vector | SEC-001 | SEC-002 | SEC-003 | SEC-004 | SEC-005 | SEC-006 | SEC-007 | SEC-008 | SEC-009 | SEC-010 | SEC-011 | SEC-012 | SEC-013 | SEC-014 | SEC-015 | SEC-016 | SEC-017 | SEC-018 | SEC-019 | SEC-020 | SEC-021 | SEC-022 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| raw capability transfer | ● | ○ | ● | | ○ | | | ○ | ○ | | | | | | | | | ● | | | | |
-| capability copying | | ○ | | | | ● | | | | | | | | | | | | ○ | | | | |
-| serialization | | | ● | ○ | ○ | | | | ○ | | ● | | | | | | ● | ○ | ○ | | | |
-| deserialization | | ○ | ● | ● | ○ | | | | ○ | | ○ | | | | | | ● | | | | | |
-| actor spawning | | ○ | | | ○ | ● | | | | | | | ○ | ○ | | | | | ○ | ○ | | |
-| message passing | | | ● | | ● | | | | | | | ○ | | | | | | ● | ● | | | |
-| planner output | | ● | | | | | ● | ● | | | | | | | ● | | | | | | | ○ |
-| continuation state | ● | | | ○ | | | | | | | ● | | | | | | | ○ | | ○ | | |
-| persistence | | | ○ | ● | | | | | ● | | ● | | | | | | ○ | | ○ | ○ | ○ | ● |
-| replay | ● | | | | | | ○ | | ○ | ○ | ● | ● | | | | | ● | | | | | |
-| host APIs | ● | | | | | | | | | ● | | ○ | ● | | ○ | | | | | ○ | ● | |
-| FFI | | | | | | | | | | ○ | | | ● | | ○ | | | | | | | |
-| debugging interfaces | | ○ | | | | | | ○ | | | | ○ | | | ○ | | | | | | | |
-| reflection | | ○ | | | | | | ● | | | | | | | | | | ○ | | | | |
-| error paths | ○ | | | | ○ | | | | | ○ | ○ | ● | | ● | | | | | | ● | ○ | |
-| resource-boundary DoS | | | | | | ○ | | | | | | | | | | | | | ● | ○ | ● | |
-| trust-model/dependency integrity | | | | ○ | | | | | | | | | ○ | | ● | ○ | ○ | ○ | | | | ● |
+| Vector | SEC-001 | SEC-002 | SEC-003 | SEC-004 | SEC-005 | SEC-006 | SEC-007 | SEC-008 | SEC-009 | SEC-010 | SEC-011 | SEC-012 | SEC-013 | SEC-014 | SEC-015 | SEC-016 | SEC-017 | SEC-018 | SEC-019 | SEC-020 | SEC-021 | SEC-022 | SEC-023 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| raw capability transfer | ● | ○ | ● | | ○ | | | ○ | ○ | | | | | | | | | ● | | | | | ○ |
+| capability copying | | ○ | | | | ● | | | | | | | | | | | | ○ | | | | | ○ |
+| serialization | | | ● | ○ | ○ | | | | ○ | | ● | | | | | | ● | ○ | ○ | | | | ○ |
+| deserialization | | ○ | ● | ● | ○ | | | | ○ | | ○ | | | | | | ● | | | | | | |
+| actor spawning | | ○ | | | ○ | ● | | | | | | | ○ | ○ | | | | | ○ | ○ | | | |
+| message passing | | | ● | | ● | | | | | | | ○ | | | | | | ● | ● | | | | ○ |
+| planner output | | ● | | | | | ● | ● | | | | | | | ● | | | | | | | ○ | |
+| continuation state | ● | | | ○ | | | | | | | ● | | | | | | | ○ | | ○ | | | |
+| persistence | | | ○ | ● | | | | | ● | | ● | | | | | | ○ | | ○ | ○ | ○ | ● | ○ |
+| replay | ● | | | | | | ○ | | ○ | ○ | ● | ● | | | | | ● | | | | | | ○ |
+| host APIs | ● | | | | | | | | | ● | | ○ | ● | | ○ | | | | | ○ | ● | | ○ |
+| FFI | | | | | | | | | | ○ | | | ● | | ○ | | | | | | | | |
+| debugging interfaces | | ○ | | | | | | ○ | | | | ○ | | | ○ | | | | | | | | |
+| reflection | | ○ | | | | | | ● | | | | | | | | | | ○ | | | | | |
+| error paths | ○ | | | | ○ | | | | | ○ | ○ | ● | | ● | | | | | | ● | ○ | | |
+| resource-boundary DoS | | | | | | ○ | | | | | | | | | | | | | ● | ○ | ● | | |
+| trust-model/dependency integrity | | | | ○ | | | | | | | | | ○ | | ● | ○ | ○ | ○ | | | | ● | ○ |
+| normative-layer integrity (ID→rule binding) | | | | | ○ | | ○ | | | ○ | | ○ | | | | ○ | | ○ | ○ | | | | ● |
 
 No frozen `unsafe`, `extern "C"`, `transmute`, or native-callback-in-AST surface exists in the operative text — **verified positively**: the frozen source *prohibits* semantic feature flags including `feature = "unsafe-capabilities"` by name (L40408–40420), mandates `#![forbid(unsafe_code)]` as the default crate-level policy (L40453–40465), forbids host callbacks in the AST (L12134–12136), and `FunctionValue` is pure lambda data (L12354–12359). FFI risk concentrates entirely in the host executor process boundary (SEC-013) and crate graph (SEC-015).
 
-## 5. Mechanisms verified sound (no finding)
+## 5. Mechanisms verified sound (no finding — verified against the frozen source `Red-on-Rust.md` and the `mod/` layer)
+
+> **Caveat (SEC-023):** several of the rules below (gate ordering, short-circuit assertions, escrow fix, durable-before-host) are sound *where the frozen source states them* but were dropped or rotated out of `spec/01`, the designated normative home. "Verified sound" therefore means "sound in the frozen source and module layer," not "securely stated at every layer."
 
 - **16-step gate order & short-circuit** (L38022–38050; R-EFFECT-03/04): correct, frozen, mutation-covered (M010); no reordering/skip path found in operative text.
 - **Escrow accounting** (R-EFFECT-05, the C-23 fix): `can_consume(issue + complete_max)` with checked add — the historical under-escrow vulnerability is genuinely fixed in the canonical text.
@@ -851,12 +906,13 @@ No frozen `unsafe`, `extern "C"`, `transmute`, or native-callback-in-AST surface
 
 ## 6. Required actions, priority order
 
-1. **SEC-001, SEC-002** — freeze receipt-result admission and holder-possession binding. Until both are frozen, the central thesis `LLMOutput ∧ UntrustedInput ↛ ExternalEffect` is falsifiable by a conforming implementation, and every other guarantee is derivative.
-2. **SEC-016, SEC-018** — freeze one signature set for the central theorem's predicates (ValidatedRequest subsumption; `Authorized(holder,c,E,t)`), and define `contains_capability` including closure environments. An ill-formed invariant and an undefined boundary predicate make all other remediations unadjudicable.
-3. **SEC-003, SEC-004, SEC-022** — split data/kernel codecs; make the authority lattice durable and revalidated at recovery; complete and de-duplicate the trust table, re-home the planner security edges (V-03), and carry the R-DUR-02 crate edge (V-10) — the durability hinge must be structurally carriable.
-4. **SEC-005, SEC-006** — freeze the delegation surface and the spawn authority rule (strict attenuation or manifest).
-5. **SEC-007, SEC-008, SEC-017** — equality staleness; capability-opaque observations (define `CapabilitySummary`); single canonical grammar with in-source supersession of the LE text.
-6. **SEC-009…SEC-012, SEC-020** — storage authenticity decision; reconciliation protocol (incl. the declared `NotExecuted` variant); durable receipts; fault enumeration; panic-free machine paths with a declared internal-consistency fault (the repo's own BLOCKING grading of U-14/X-67 is endorsed and extended with the resume-vs-fault semantics requirement).
-7. **SEC-013, SEC-014, SEC-015, SEC-019, SEC-021** — isolation posture decision; `AdmissibleConstraint`; root-grant protocol and crate separation; mailbox/payload resource-admission rules; escrow disposition totality for live faults.
+1. **SEC-023** — restore the rotated obligation bodies in `spec/01` and add the cross-layer ID→rule consistency check. Until the normative layer states the rules again, *every other remediation is undraftable*: the frozen addenda this audit prescribes would be written against a layer that no longer contains the rules they amend. (The correct texts survive verbatim in the normalization records' "Original" quotations — restoration is mechanical.)
+2. **SEC-001, SEC-002** — freeze receipt-result admission and holder-possession binding. Until both are frozen, the central thesis `LLMOutput ∧ UntrustedInput ↛ ExternalEffect` is falsifiable by a conforming implementation, and every other guarantee is derivative.
+3. **SEC-016, SEC-018** — freeze one signature set for the central theorem's predicates (ValidatedRequest subsumption; `Authorized(holder,c,E,t)`), and define `contains_capability` including closure environments. An ill-formed invariant and an undefined boundary predicate make all other remediations unadjudicable.
+4. **SEC-003, SEC-004, SEC-022** — split data/kernel codecs; make the authority lattice durable and revalidated at recovery; complete and de-duplicate the trust table, re-home the planner security edges (V-03), and carry the R-DUR-02 crate edge (V-10) — the durability hinge must be structurally carriable.
+5. **SEC-005, SEC-006** — freeze the delegation surface and the spawn authority rule (strict attenuation or manifest).
+6. **SEC-007, SEC-008, SEC-017** — equality staleness (adopt `spec/01` L98's form; fix the `<`-only conformance text); capability-opaque observations (define `CapabilitySummary`); single canonical grammar with in-source supersession of the LE text.
+7. **SEC-009…SEC-012, SEC-020** — storage authenticity decision; reconciliation protocol (incl. the declared `NotExecuted` variant); durable receipts; fault enumeration; panic-free machine paths with a declared internal-consistency fault (the repo's own BLOCKING grading of U-14/X-67 is endorsed and extended with the resume-vs-fault semantics requirement).
+8. **SEC-013, SEC-014, SEC-015, SEC-019, SEC-021** — isolation posture decision; `AdmissibleConstraint`; root-grant protocol and crate separation; mailbox/payload resource-admission rules; escrow disposition totality for live faults.
 
-All remediations are specification-level (frozen-addendum) actions; per R-SCOPE-03, none may be resolved by implementation choice or test adjustment. Proposed new mutation-registry entries M019–M035 are additive per R-TEST-04.
+All remediations are specification-level (frozen-addendum) actions; per R-SCOPE-03, none may be resolved by implementation choice or test adjustment. Proposed new mutation-registry entries M019–M036 are additive per R-TEST-04.
