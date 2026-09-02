@@ -1,6 +1,6 @@
 # Red-on-Rust Specification Audit — Authority, Trust-Boundary, and External-Effect Errors
 
-**Audit date:** 2026-09-02
+**Audit date:** 2026-09-02 (addendum A same date: SEC-016…SEC-019)
 **Audited artifact:** frozen specification set at commit `a013dff` (`Red-on-Rust.md`, 42,312 lines; canonical set `spec/`, `mod/`, `req/`, `term/`, `dep/`)
 **Audit class:** authority escalation, trust-boundary errors, external-effect gating — *exclusively*. No conformance, style, or performance findings.
 
@@ -27,7 +27,7 @@
 
 ## 2. Verdict summary
 
-**I1 and I2 do not hold at specification level.** The 16-step gate sequence itself is sound and well-ordered, but the *state surrounding* the gates contains fifteen specification-level defects through which untrusted input or a partially-trusted host can reach an `ExternalEffect` (or destroy/forge the authority facts the gates depend on): 2 CRITICAL (complete authority-injection chains exist in conforming implementations), 3 HIGH, 1 MEDIUM-HIGH, 6 MEDIUM, 2 LOW/MEDIUM, 1 LOW.
+**I1 and I2 do not hold at specification level.** The 16-step gate sequence itself is sound and well-ordered, but the *state surrounding* the gates contains nineteen specification-level defects through which untrusted input or a partially-trusted host can reach an `ExternalEffect` (or destroy/forge the authority facts the gates depend on): 2 CRITICAL (complete authority-injection chains exist in conforming implementations), 5 HIGH, 1 MEDIUM-HIGH, 8 MEDIUM, 2 LOW/MEDIUM, 1 LOW.
 
 | ID | Severity | One-line violation |
 |---|---|---|
@@ -46,6 +46,10 @@
 | SEC-013 | LOW-MEDIUM | **Host/actor isolation is in-process and unfrozen** (isolation ladder never retired) — "Partial" host trust rests on Rust type safety alone |
 | SEC-014 | LOW-MEDIUM | **`AdmissibleConstraint` is an unresolved premise** of attenuation — attacker-controlled constraints from untrusted `Block`s |
 | SEC-015 | LOW | **Root-authority grant and supervisor channels unfrozen** — no protocol for who mints authority or bounds supervisor host access |
+| SEC-016 | HIGH | **I2's own predicates are ill-formed** — `ValidatedRequest(E)` vs `ValidatedPlan(P)` vs the `ValidatedPlan` struct (X-01/X-04); `Authorized` has six incompatible signatures (X-05) |
+| SEC-017 | MEDIUM | **Two complete canonical grammars (LE vs BE) coexist in frozen text** — digest identity of receipts/journal/replay is implementation-dependent for a wrong-grammar implementer (X-50/X-54) |
+| SEC-018 | HIGH | **`contains_capability` is invoked but never defined** — the R-CORE-07 boundary's sole mechanism has no frozen traversal domain; closure-environment smuggling is undetectable |
+| SEC-019 | MEDIUM | **Receiver-side resource asymmetry** — mailboxes unbounded, no recipient reservation at enqueue, no payload-size-proportional cost rule |
 
 Findings already registered in the repository's own registers (`C-…`, `U-…`, `AMB-…`, `X-…`) are marked; in every such case this audit's contribution is the **security consequence the register omits**, plus the required elevation of grade.
 
@@ -570,29 +574,158 @@ The kernel is declared "the only component that can construct" authority (R-KERN
 
 ---
 
+### SEC-016 — The central theorem's predicates are ill-formed: `ValidatedRequest`/`ValidatedPlan` and six `Authorized` signatures
+
+**LOCATION**
+- `Red-on-Rust.md` L23694 — frozen central theorem: `ExternalEffect(E) ⇒ ValidatedRequest(E) ∧ Authorized(E,κ,t) ∧ …` (**request-time** validation; the form used by this audit's mandate)
+- `Red-on-Rust.md` L41337–41351 (and README, and `spec/01` L24 R-CORE-02) — the same theorem with `ValidatedPlan(P)` (**plan-time** validation)
+- `Red-on-Rust.md` L865 — `pub struct ValidatedPlan { ir: PlanIR, effects: EffectSet }` — a compiler stage **type**; `term/` X-01 grades the predicate/type homonym **BLOCKING**
+- `Red-on-Rust.md` L2111 `Authorized(e, κ)`; L3293 `Authorized(E,κ)`; L4687 `Authorized(E)`; L5998/L6406 `Authorized(A,E,t)`; L8733 v0.3 `Authorized(κ(c), E, t)` — `term/` X-05 (MAJOR): "six incompatible signatures, including both orders in the governing invariant"
+- `term/02-collisions.md` rows X-01 (BLOCKING), X-04 (MAJOR), X-05 (MAJOR) — registered as *terminology* collisions; the **verification-contract** consequence is not drawn anywhere
+
+**VIOLATION**
+The machine's central security property — the conjunctive chain every implementer must satisfy and every verifier must adjudicate — is stated over predicates that are not well-defined: (a) the first conjunct is `ValidatedRequest(E)` in one frozen statement and `ValidatedPlan(P)` in two, with `ValidatedPlan` also denoting a compiler struct; (b) `Authorized` takes the effect first, the authority first, the actor's capability map, or nothing, across six frozen signatures — X-05 confirms "both orders in the governing invariant" itself. These are not cosmetic: the two first-conjunct forms denote **different checks at different times** (compile-time plan validation vs. request-time validation inside the 16 gates), and the `Authorized` argument-order difference is exactly the difference between SEC-002's global-arena reading (`Authorized(A,E,t)`: authority decides over any requester) and the v0.3 per-actor reading (`Authorized(κ(c),E,t)`: the *holder's* map must contain the capability). The specification's own correction discipline (R-SCOPE-03: STOP on ambiguity) applies to the security theorem itself.
+
+**ATTACK-PATH**
+Adversarial-standard path rather than a runtime exploit: an implementation asserts conformance to the README form (`ValidatedPlan(P)` — satisfied by compiling the Block through the pipeline) while an auditor tests the L23694 form (`ValidatedRequest(E)` — requiring per-request revalidation), or vice versa. With `Authorized(A,E,t)` as the operative predicate, the no-possession behavior in SEC-002 is *conformant*; with `Authorized(κ(c),E,t)` it is a violation. Differential adjudication (R-TEST-09's four-way classification) cannot resolve a divergence when the invariant being diverged over has six signatures — the weaker reading is always available to the implementation that wants it. The chain that I2 restates is the *verification contract for all eighteen other findings*; an ill-formed contract launders each of them into a "reference defect" or "spec ambiguity" adjudication instead of a security defect.
+
+**EXPECTED-INVARIANT**
+One frozen signature per predicate, with the stronger (security-preserving) reading selected: `ValidatedRequest(E)` (request-time, subsuming `ValidatedPlan(P)` of the plan that produced `E`), and `Authorized(holder, c, E, t) ⇔ c ∈ κ_holder ∧ Valid(c,t) ∧ Authorized(κ_holder(c), E, t)` (the SEC-002 remediation, formalized).
+
+**REMEDIATION**
+1. Freeze the canonical statement of the 7-conjunct chain with exact predicate signatures and the subsumption relation `ValidatedRequest(E) ⇒ ValidatedPlan(plan(E))` (or drop the plan conjunct as redundant).
+2. Resolve X-01 by renaming the compiler stage struct in a frozen addendum (the terminology pass's no-rename rule yields to a BLOCKING homonym on the security theorem), or by an explicit qualification convention (`ValidatedPlan_pred` vs `ValidatedPlan_struct`) adopted repository-wide.
+3. Resolve X-05 by declaring `Authorized` argument order once and correcting the other five statements with supersession notes (the repo's own quoted-not-deleted discipline).
+
+**VERIFICATION**
+- `term/_check.py`-style mechanical check extended to the theorem statements: every occurrence of `ValidatedRequest`/`ValidatedPlan`/`Authorized` in normative text must cite the canonical signature.
+- The differential fault matrix (SEC-012) must include chain-violation cases whose adjudication depends on the chosen signatures (e.g., forged-CapRef request compiles under plan-time reading, rejected under request-time reading — both implementations must reject after remediation).
+
+---
+
+### SEC-017 — Two complete canonical grammars (LE and BE) coexist in the frozen source; digest identity is implementation-dependent
+
+**LOCATION**
+- `Red-on-Rust.md` L28308, L28735 — "revised grammar": explicit widths, **Little-Endian** byte order for all multi-byte integers
+- `Red-on-Rust.md` L29830, L29905, L29909, L30542 — Phase 15A final: universal envelope `payload_length: u32 BE`, length prefixes `u32 BE`, `CapRef [index u32 BE][generation u32 BE]`
+- `term/02-collisions.md` X-50 (**BLOCKING**: "two field names, two tag widths and two endiannesses") and X-54 (**BLOCKING**: "`TAG_*` constants denote two disjoint tag namespaces"); `spec/06` C-02 marks the revised-grammar §1.3 tags stale — resolution direction known (15A BE governs), but both texts remain frozen without in-source supersession markers
+
+**VIOLATION**
+Canonical bytes are the machine's notion of **identity**: `EffectDigest = SHA-256(canonical_bytes(effect))` gates receipt admission (R-EFFECT-06), journal causality (R-DUR-03), replay validation (R-HOST-03), snapshot validity (R-PERSIST-05), and live-vs-replay equality (the differential oracle itself). The frozen source contains **two self-consistent, complete encodings** (LE vs BE, different tag widths and field names). An implementer who builds the revised grammar instead of 15A produces a machine that is internally correct, passes its own golden vectors, and computes digests that match nothing — every cross-implementation evidence artifact (differential equality, recovery differential `Canonical(Recover_P(D)) = Canonical(Recover_R(D))`, replay of recorded traces) is then vacuous or systematically false. The registers grade X-50/X-54 BLOCKING for milestone M1 (serialization) but never draw the consequence that **the integrity chains of MOD-08/09/11/12 all inherit the ambiguity**: a digest-mismatch rejection (`ReplayCorruption`) is only as trustworthy as the uniqueness of the byte grammar behind it.
+
+**ATTACK-PATH**
+Evidence-substitution path: a system assembled from components built against different grammars (reference model per the LE sketch, production per 15A — both "frozen-conformant" to a superficial reading) fails all differential runs; the pressure is then to "fix" the comparator (normalizing digests, comparing post-decode values) — which is precisely the comparator weakening R-REF-05 forbids ("never final-value-only") and MOD-17's prohibited-shortcut list targets. The weakened comparator then misses real receipt-substitution divergences (the SEC-001/011 attacks) because digest inequality has been reclassified as an encoding artifact.
+
+**EXPECTED-INVARIANT**
+- Exactly one canonical byte grammar may be frozen. All integrity predicates (`EffectDigest`, `StateDigest`, `ResultDigest`, WAL checksum inputs) must be defined over that grammar alone, and every earlier grammar text must carry an in-source supersession marker.
+- Cross-implementation digest equality must be meaningful *by construction* — that is the entire justification for canonical serialization (R-CANON-01: "canonical encoding defines semantic identity").
+
+**REMEDIATION**
+1. Mark the LE revised-grammar sections superseded **in the frozen source** (the registers already say it; the source doesn't), or issue the one-line addendum: "15A (u32 BE, envelope `version u8 / type_tag u8 / payload_length u32 BE`) is the sole canonical grammar."
+2. Resolve X-50/X-54 (field names `payload_length` vs `PayloadLength`; the two `TAG_*` namespaces) in the same addendum.
+3. Add a machine-checkable conformance rule: every digest/checksum computation site cites the grammar version; `vectors/canonical` golden vectors are asserted byte-exact in CI for *both* production and reference (they already share fixtures — make the assertion bidirectional).
+
+**VERIFICATION**
+- CI gate: decode-encode round-trip over the full golden vector set for production, reference, **and** the persistence layer's payload writer (15B reuses 15A bytes — R-PERSIST-01).
+- Negative test: LE-encoded variants of the golden vectors must be *rejected* by all three (guards against a mixed-grammar component).
+- Mutation **M031** "component uses the superseded LE grammar" — must kill (detectable by golden-vector mismatch).
+
+---
+
+### SEC-018 — `contains_capability` is a phantom: the marshalling boundary's sole mechanism is undefined, and closure environments can smuggle capabilities
+
+**LOCATION**
+- `Red-on-Rust.md` L25685–25691 — frozen `marshal_value`: `if contains_capability(v) { return Err(MarshalFault::CapabilityRequiresDelegation) }` — the **only** occurrence of `contains_capability` in the entire corpus; it is never defined, and no rule states its traversal domain
+- `Red-on-Rust.md` L12354–12359 — frozen `FunctionValue { params: Vec<Symbol>, body: Box<Expr>, env: EnvironmentSnapshot }` — closures carry a captured environment
+- `Red-on-Rust.md` L10860 — `pub type Environment = HashMap<String, Value>;` (a frozen-era declaration) — environments map names to **`Value`**, which includes `Value::Capability` (machine domain L12283–12310)
+- `Red-on-Rust.md` L26007–26030 — `unmarshal(marshalled, &mut actor.capabilities)` receive-side registration (the delegation path's only revalidation moment — likewise unspecified)
+- Registered nowhere: the term registry (T-73), collisions (X-65), and module files all discuss `MarshalFault` variants, but the **predicate's absence** is unregistered
+
+**VIOLATION**
+R-CORE-07 (`OrdinaryMarshal(Value::Capability) ⇒ Rejected`) and R-MARSHAL-01 ("recursively rejects capabilities — nested in lists, tuples, functions, any structure") reduce, in the operative code, to one call to an **undefined function**. Nothing frozen states whether `contains_capability` descends into: closure environments (`FunctionValue.env` — the one hiding place whose traversal is *not* obvious, since it is an `EnvironmentSnapshot`, not a `Value`), `Bytes` payloads (self-deserializing smuggled refs per SEC-003), `Map` values, `Tuple` elements, or delegation envelopes. The module text asserts "recursive, no exceptions in pure data" — but the *frozen source* never defines the recursion. This is the boundary that the entire actor-isolation story ("isolation" as *authority* safety, MOD-06 SECURITY-BOUNDARY) depends on, and it is one unresolved identifier wide.
+
+**ATTACK-PATH**
+1. Attacker actor holds capability `c` and defines `f = λx. …c…` — the closure's captured environment binds `c` (`Environment: HashMap<String, Value>`).
+2. `Send(target, Value::Function(f))`: `marshal_value` runs `contains_capability(v)`. An implementation whose predicate traverses only the top-level `Value` variants and the *direct* recursive value children (the natural reading — `EnvironmentSnapshot` is not a `Value`) finds no `Value::Capability` node: the closure crosses.
+3. Recipient applies the closure; the environment is re-instantiated in the recipient's heap with `c` bound; the recipient evaluates `Request(c, …)`.
+4. Gates 5–7 pass (global arena, no possession check — SEC-002): the recipient now exercises the sender's authority with **zero delegation events, zero marshaller faults, and an unchanged recipient `CapabilityContext`** — the Track-B/Track-C test assertions (`recipient context unchanged`) all *pass* while authority has moved. This defeats the amplification test's detection model exactly, because the capability is never *registered* — it lives in a closure environment.
+5. The same ambiguity governs `unmarshal`'s registration side: whether receive-side revalidation (SEC-005) even sees environment-borne capabilities is unspecified.
+
+**EXPECTED-INVARIANT**
+- `contains_capability` must be a frozen, total predicate with an explicitly closed traversal domain that **includes** `FunctionValue.env` (recursively), `Tuple`/`List`/`Map` structure at any depth, and delegation envelope contents — and excludes nothing except kernel-sealed delegation envelopes.
+- The invariant must be stated over *authority*, not over one value domain: `marshal(v) ⇒ ¬∃c. Reachable(env_of(v), c) ∧ c ∉ DelegatedEnvelopes(v)`.
+
+**REMEDIATION**
+1. Define `contains_capability` normatively in the marshalling section: traversal set, recursion depth (structural, unbounded), and behavior on `Bytes` (reject or opacify — `Bytes` are data, but see SEC-003 for the decode-side rule).
+2. Extend the definition to closure environments explicitly (the non-obvious case), and state that environments crossing actor boundaries must be capability-free or delegation-wrapped.
+3. Register the phantom in `term/` (it is a used-but-never-declared identifier — the declaration sweep's exact category, cf. X-29/X-30/X-64) so the repo's own mechanical checks catch drift.
+
+**VERIFICATION**
+- Mutation **M032** "`contains_capability` skips `FunctionValue.env`" — must kill (this is the load-bearing case).
+- Property: for every marshalled value `v` (generated over closures capturing arbitrary environments, nested ≥ 3 deep), `marshal(v) = Ok ⇒ ¬∃c reachable from v` — asserted by an oracle predicate independent of the implementation's own traversal.
+- Track B round-trip suite extended with closure-carrying values whose environments bind capabilities (must fault, never round-trip).
+- Differential: both implementations must fault byte-identically on the closure-smuggling corpus (guards against one implementation quietly traversing envs while the other doesn't — a divergence currently invisible to every frozen test).
+
+---
+
+### SEC-019 — Receiver-side resource asymmetry: unbounded mailboxes, no enqueue-time reservation, no payload-proportional cost rule
+
+**LOCATION**
+- `Red-on-Rust.md` L8780–8786 — v0.3 rule 10 E-Send: charges the **sender** `cost_C(send)` consumables only; no reservation against the **recipient's** `R = ⟨M,S⟩`, no mailbox admission check
+- `Red-on-Rust.md` L25702–25730 / L26007–26030 — frozen `execute_send`: `target.mailbox.push_back(enqueue)` unconditionally (bounded only by sender budget arithmetic nowhere in the function); `Mailbox`/`VecDeque<MarshalledValue>` — no capacity field anywhere in the corpus (searched: no mailbox bound/limit/max exists)
+- `Red-on-Rust.md` L10168+ — `CostModel` trait: operation→cost mapping is "a configurable semantic contract" (L2066: "the actual mapping from IR operations to budget dimensions is a policy decision"); **no frozen rule makes send cost proportional to payload size**, while machine `Value` includes `Bytes(Vec<u8>)` and `String(String)` of unbounded constructed size
+- `Red-on-Rust.md` L25573–25615 — spawn escrow is the only place reserved resources transfer; a spawned child that never `Receive`s retains its `M` reservation while its mailbox grows without charging it
+
+**VIOLATION**
+Budget conservation (`C_available + C_escrowed + C_consumed = C_initial`) is the machine's answer to resource exhaustion (MOD-04 SECURITY-BOUNDARY), but the frozen send transition debits only the sender's *consumables* and never checks or reserves the recipient's *memory* at enqueue time. Two asymmetries follow: (a) **whose resource is consumed** — mailbox bytes live in recipient state (snapshotted per R-PERSIST-04) but are paid for, if at all, by the sender's `I`/`F` units at a rate the unfrozen `CostModel` chooses; (b) **what a unit buys** — with no payload-proportional rule frozen, a configuration where one `send` unit buys an unbounded `Bytes` payload is conformant. The result is a budget-conserving machine whose *actual* memory footprint is unbounded relative to every frozen dimension — the resource-bounded thesis (R-SCOPE-01) holds in the algebra and fails in the heap.
+
+**ATTACK-PATH**
+1. Untrusted plan spawns (or compromises nothing — it *is* the attacker actor) with a modest `I` budget and constructs large `Bytes` payloads (constructed in-heap; no frozen rule bounds constructed value size against `M` either — same gap, construction side).
+2. It sends the payloads in a loop to a victim actor that is `Pending`/long-running and never dequeues (or to many zombie children it spawned and abandoned — children it deliberately never schedules meaningfully).
+3. Each send costs `cost_C(send)` (constant, sender-borne); each enqueue grows recipient-owned durable state (snapshot content includes mailboxes — R-PERSIST-04 — so the growth also inflates every snapshot/WAL cycle).
+4. Global memory grows without violating any frozen invariant: budget conservation holds on all three partitions; the victim's `M` reservation is never consulted; `Deadlock`/`BudgetExhausted` never fires. Availability collapse with a clean audit trail — and snapshot bloat amplifies it into a persistence DoS.
+
+**EXPECTED-INVARIANT**
+- Conservation must extend to the resource actually consumed: `Enqueue(v, a_target) ⇒ ReservedOK(size(v), M_target, M_max_target) ∧ SenderCharged(size(v))` — or an equivalent frozen rule that makes memory growth attributable and bounded at admission time.
+- Payload-proportional accounting: `cost_C(send) ≥ f(canonical_len(v))` for a frozen monotone `f` with `f` bounded away from 0 per byte (the `I` dimension exists for exactly this).
+
+**REMEDIATION**
+1. Freeze the send admission rule: enqueue requires available recipient mailbox capacity (checked, `ReservedCapacityExceeded` on denial — sender faults, sender pays), with capacity part of the recipient's `M` reservation.
+2. Freeze the payload-proportional term of `cost_C(send)` over canonical byte length (MOD-10 already defines `Canonical(v)`; reuse it — this also makes the cost deterministic and replay-stable).
+3. Symmetrically, bound *constructed* value size against the constructing actor's `M` (allocation is the same resource the reservation exists for).
+4. Fold into U-03/U-07's addendum (spawn/budget deltas) so one decision freezes the whole resource-admission surface.
+
+**VERIFICATION**
+- Property: for any reachable state, `Σ sizeof(mailbox(a)) ≤ Σ M_reserved(a)` — memory footprint bounded by reserved resources at every step (this fails today by construction).
+- Stress mode (MOD-15): sender-flood scenario — `100+` actors, zombie recipients, `Bytes` payloads; assert the machine faults (`ReservedCapacityExceeded`) rather than degrading; assert post-recovery snapshot size is bounded by the same invariant.
+- Mutation **M033** "enqueue without recipient capacity check" — must kill.
+
+---
+
 ## 4. Escalation-vector coverage matrix
 
 Requested search vectors vs. findings (● primary, ○ contributing):
 
-| Vector | SEC-001 | SEC-002 | SEC-003 | SEC-004 | SEC-005 | SEC-006 | SEC-007 | SEC-008 | SEC-009 | SEC-010 | SEC-011 | SEC-012 | SEC-013 | SEC-014 | SEC-015 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| raw capability transfer | ● | ○ | ● | | ○ | | | ○ | ○ | | | | | | |
-| capability copying | | ○ | | | | ● | | | | | | | | | |
-| serialization | | | ● | ○ | ○ | | | | ○ | | ● | | | | |
-| deserialization | | ○ | ● | ● | ○ | | | | ○ | | ○ | | | | |
-| actor spawning | | ○ | | | ○ | ● | | | | | | | ○ | ○ | |
-| message passing | | | ● | | ● | | | | | | | ○ | | | |
-| planner output | | ● | | | | | ● | ● | | | | | | ○ | ● |
-| continuation state | ● | | | ○ | | | | | | | ● | | | | |
-| persistence | | | ○ | ● | | | | | ● | | ● | | | | |
-| replay | ● | | | | | | ○ | | ○ | ○ | ● | ● | | | |
-| host APIs | ● | | | | | | | | | ● | | ○ | ● | | ○ |
-| FFI | | | | | | | | | | ○ | | | ● | | ○ |
-| debugging interfaces | | ○ | | | | | | ○ | | | | ○ | | | ○ |
-| reflection | | ○ | | | | | | ● | | | | | | | |
-| error paths | ○ | | | | ○ | | | | | ○ | ○ | ● | | ● | |
+| Vector | SEC-001 | SEC-002 | SEC-003 | SEC-004 | SEC-005 | SEC-006 | SEC-007 | SEC-008 | SEC-009 | SEC-010 | SEC-011 | SEC-012 | SEC-013 | SEC-014 | SEC-015 | SEC-016 | SEC-017 | SEC-018 | SEC-019 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| raw capability transfer | ● | ○ | ● | | ○ | | | ○ | ○ | | | | | | | | | ● | |
+| capability copying | | ○ | | | | ● | | | | | | | | | | | | ○ | |
+| serialization | | | ● | ○ | ○ | | | | ○ | | ● | | | | | | ● | ○ | ○ |
+| deserialization | | ○ | ● | ● | ○ | | | | ○ | | ○ | | | | | | ● | | |
+| actor spawning | | ○ | | | ○ | ● | | | | | | | ○ | ○ | | | | | ○ |
+| message passing | | | ● | | ● | | | | | | | ○ | | | | | | ● | ● |
+| planner output | | ● | | | | | ● | ● | | | | | | | ● | | | | |
+| continuation state | ● | | | ○ | | | | | | | ● | | | | | | | ○ | |
+| persistence | | | ○ | ● | | | | | ● | | ● | | | | | | ○ | | ○ |
+| replay | ● | | | | | | ○ | | ○ | ○ | ● | ● | | | | | ● | | |
+| host APIs | ● | | | | | | | | | ● | | ○ | ● | | ○ | | | | |
+| FFI | | | | | | | | | | ○ | | | ● | | ○ | | | | |
+| debugging interfaces | | ○ | | | | | | ○ | | | | ○ | | | ○ | | | | |
+| reflection | | ○ | | | | | | ● | | | | | | | | | | ○ | |
+| error paths | ○ | | | | ○ | | | | | ○ | ○ | ● | | ● | | | | | |
+| resource-boundary DoS | | | | | | ○ | | | | | | | | | | | | | ● |
 
-No frozen `unsafe`, `extern "C"`, `transmute`, or native-callback-in-AST surface exists in the operative text (host callbacks in AST are explicitly forbidden, L12135–12136; `FunctionValue` is pure lambda data, L12354–12359) — FFI risk concentrates entirely in the host executor process boundary (SEC-013) and crate graph (SEC-015).
+No frozen `unsafe`, `extern "C"`, `transmute`, or native-callback-in-AST surface exists in the operative text — **verified positively**: the frozen source *prohibits* semantic feature flags including `feature = "unsafe-capabilities"` by name (L40408–40420), mandates `#![forbid(unsafe_code)]` as the default crate-level policy (L40453–40465), forbids host callbacks in the AST (L12134–12136), and `FunctionValue` is pure lambda data (L12354–12359). FFI risk concentrates entirely in the host executor process boundary (SEC-013) and crate graph (SEC-015).
 
 ## 5. Mechanisms verified sound (no finding)
 
@@ -600,7 +733,7 @@ No frozen `unsafe`, `extern "C"`, `transmute`, or native-callback-in-AST surface
 - **Escrow accounting** (R-EFFECT-05, the C-23 fix): `can_consume(issue + complete_max)` with checked add — the historical under-escrow vulnerability is genuinely fixed in the canonical text.
 - **Durable-before-host** (R-DUR-01/02): ordering with two fsyncs is airtight *within* the machine path (see SEC-010/015 for the paths around it).
 - **Crash classification discipline** (R-DUR-04, T0–T6): never-infers-NotExecuted is consistently frozen.
-- **Canonical decoder hardening** (R-CANON-07/08): checked lengths, no attacker preallocation, bounded cursors, trailing-byte and duplicate-key rejection — hostile-input discipline is excellent (the finding in SEC-003 is about *what* is accepted, not how).
+- **Canonical decoder hardening** (R-CANON-07/08): checked lengths, no attacker preallocation, bounded cursors, trailing-byte and duplicate-key rejection — hostile-input discipline is excellent (the findings in SEC-003/SEC-017 concern *what* is accepted and *which* grammar governs, not how rigorously it is parsed).
 - **Compiler boundary structure** (R-COMPILE-01/05): constructor privacy + `Block ≠ ExecutablePlan` hold in the operative text (the static-analysis content gap is filed under SEC-002/U-22 rather than as a boundary break).
 - **Budget algebra** (checked arithmetic, partition conservation, no-partial-debit): no teleportation path found in the operative text (spawn-side policy gap filed as SEC-006/U-03).
 - **Scheduler determinism** (FIFO, at-most-once, non-schedulable states): no authority-relevant defect.
@@ -609,10 +742,11 @@ No frozen `unsafe`, `extern "C"`, `transmute`, or native-callback-in-AST surface
 ## 6. Required actions, priority order
 
 1. **SEC-001, SEC-002** — freeze receipt-result admission and holder-possession binding. Until both are frozen, the central thesis `LLMOutput ∧ UntrustedInput ↛ ExternalEffect` is falsifiable by a conforming implementation, and every other guarantee is derivative.
-2. **SEC-003, SEC-004** — split data/kernel codecs; make the authority lattice durable and revalidated at recovery.
-3. **SEC-005, SEC-006** — freeze the delegation surface and the spawn authority rule (strict attenuation or manifest).
-4. **SEC-007, SEC-008** — equality staleness; capability-opaque observations (define `CapabilitySummary`).
-5. **SEC-009…SEC-012** — storage authenticity decision; reconciliation protocol; durable receipts; fault enumeration (the repo's own BLOCKING grading of U-14/X-67 is endorsed and extended with the resume-vs-fault semantics requirement).
-6. **SEC-013…SEC-015** — isolation posture decision; `AdmissibleConstraint`; root-grant protocol and crate separation.
+2. **SEC-016, SEC-018** — freeze one signature set for the central theorem's predicates (ValidatedRequest subsumption; `Authorized(holder,c,E,t)`), and define `contains_capability` including closure environments. An ill-formed invariant and an undefined boundary predicate make all other remediations unadjudicable.
+3. **SEC-003, SEC-004** — split data/kernel codecs; make the authority lattice durable and revalidated at recovery.
+4. **SEC-005, SEC-006** — freeze the delegation surface and the spawn authority rule (strict attenuation or manifest).
+5. **SEC-007, SEC-008, SEC-017** — equality staleness; capability-opaque observations (define `CapabilitySummary`); single canonical grammar with in-source supersession of the LE text.
+6. **SEC-009…SEC-012** — storage authenticity decision; reconciliation protocol (incl. the declared `NotExecuted` variant); durable receipts; fault enumeration (the repo's own BLOCKING grading of U-14/X-67 is endorsed and extended with the resume-vs-fault semantics requirement).
+7. **SEC-013, SEC-014, SEC-015, SEC-019** — isolation posture decision; `AdmissibleConstraint`; root-grant protocol and crate separation; mailbox/payload resource-admission rules.
 
-All remediations are specification-level (frozen-addendum) actions; per R-SCOPE-03, none may be resolved by implementation choice or test adjustment. Proposed new mutation-registry entries M019–M030 are additive per R-TEST-04.
+All remediations are specification-level (frozen-addendum) actions; per R-SCOPE-03, none may be resolved by implementation choice or test adjustment. Proposed new mutation-registry entries M019–M033 are additive per R-TEST-04.
