@@ -402,7 +402,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-CANON-029
 - REQ-ID: REQ-CANON-029
 - CATEGORY: serialization
-- SOURCE: Red-on-Rust.md L32948–33265([45]/[45]); spec/01 S-17 R-CANON-08
+- SOURCE: Red-on-Rust.md L32948–33265([45]); spec/01 S-17 R-CANON-08
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: Nested decoding uses bounded cursors: `read_envelope_payload` returns only the payload slice, and payload decoding uses a fresh bounded cursor.
 - PRECONDITIONS: nested structures are decoded
@@ -1151,7 +1151,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-RECOV-022
 - REQ-ID: REQ-RECOV-022
 - CATEGORY: recovery
-- SOURCE: Red-on-Rust.md L34801–34812([46]); L35189–35208([47] §15B.7); spec/01 S-19 R-RECOV-01
+- SOURCE: Red-on-Rust.md L34801–34812([46]); L35189–35208([47] §15B.7); L28427([36] The Three Central Implications); spec/01 S-19 R-RECOV-01
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `CommittedSnapshot + ValidWAL + ValidEffectJournal + ReconciledEffects ⇒ UniqueRecoveredMachineState`.
 - PRECONDITIONS: all four inputs are valid and effects are reconciled

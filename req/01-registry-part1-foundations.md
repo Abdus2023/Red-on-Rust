@@ -1,6 +1,6 @@
 # Atomic Requirement Registry — Part 1: Foundations (S-01 … S-06)
 
-Areas: `SCOPE`, `CORE`, `TRUST`, `ARCH`, `PLANNER`, `COMPILE`. 79 atomic units.
+Areas: `SCOPE` (12), `CORE` (16), `TRUST` (9), `ARCH` (6), `PLANNER` (22), `COMPILE` (14) — 79 atomic units.
 Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records are `SPECIFIED`.
 
 ---
@@ -410,7 +410,7 @@ Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records a
 ### REQ-TRUST-001
 - REQ-ID: REQ-TRUST-001
 - CATEGORY: trust-model
-- SOURCE: Red-on-Rust.md L27611–27624([33]); L41823–41841([60]); spec/01 S-03 R-TRUST-01
+- SOURCE: Red-on-Rust.md L27611–27624([33]); L41823–41841([60]); L28425([36] The Three Central Implications); spec/01 S-03 R-TRUST-01
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: The LLM / planner is not trusted; its role is proposal generation only.
 - PRECONDITIONS: —
@@ -852,7 +852,7 @@ Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records a
 ### REQ-PLANNER-017
 - REQ-ID: REQ-PLANNER-017
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L27392–27414([33]); spec/01 S-05 R-PLANNER-04
+- SOURCE: Red-on-Rust.md L27392–27414([33]); L28426([36] The Three Central Implications); spec/01 S-05 R-PLANNER-04
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: The machine theorem is `InitialState + Plan + SchedulerTrace + HostTrace ⇒ UniqueMachineTrace`.
 - PRECONDITIONS: an accepted plan is fixed

@@ -32,6 +32,26 @@ NORMATIVE = re.compile(
     r"immutable|required|forbidden|prohibited|exactly|reject|only when|iff)\b"
 )
 BOXED = re.compile(r"\\boxed|\\Rightarrow|\\iff|\\preceq|\\forall")
+# Multi-line LaTeX: the opener (`\boxed{`) and connective lines (`\Rightarrow`,
+# `\iff`, …) of a display formula carry no requirement of their own - the
+# requirement is the formula's content.  Such a fragment counts as covered when
+# any line of the enclosing `\[ … \]` block is cited.
+FRAGMENT = re.compile(r"^\s*(\\boxed\{|\\Rightarrow|\\iff|\\preceq|\\forall|\\\]|\\\[)\s*$")
+
+
+def formula_blocks(lines: list[str]) -> dict[int, tuple[int, int]]:
+    """Map each line inside a `\[ … \]` display block to that block's span."""
+    spans: dict[int, tuple[int, int]] = {}
+    open_at = None
+    for i, line in enumerate(lines, start=1):
+        s = line.strip()
+        if open_at is None and s.startswith(r"\["):
+            open_at = i
+        elif open_at is not None and s.startswith(r"\]"):
+            for k in range(open_at, i + 1):
+                spans[k] = (open_at, i)
+            open_at = None
+    return spans
 NOISE = re.compile(r"^\s*(\||#|\*|`{3}|<|\\begin|\\end|\\mid|\\frac|\$\$|\)|\})")
 
 
@@ -45,9 +65,20 @@ def covered(lines: list[str]) -> list[bool]:
     return mask
 
 
+def is_covered_fragment(n: int, text: str, mask: list[bool], blocks: dict[int, tuple[int, int]]) -> bool:
+    """True for a bare LaTeX connective whose enclosing display block is cited."""
+    if not FRAGMENT.match(text):
+        return False
+    span = blocks.get(n)
+    if not span:
+        return False
+    return any(mask[k] for k in range(span[0], span[1] + 1))
+
+
 def all_turns(lines: list[str], mask: list[bool], full: bool) -> int:
     """Per-turn coverage over the whole 60-turn transcript."""
     starts = A.turn_starts(lines)
+    blocks = formula_blocks(lines)
     total_cand = total_uncited = 0
     rows = []
     for i, (turn, first) in enumerate(starts):
@@ -59,7 +90,7 @@ def all_turns(lines: list[str], mask: list[bool], full: bool) -> int:
                 continue
             if NORMATIVE.search(text) or BOXED.search(text):
                 cand.append(n)
-                if not mask[n]:
+                if not mask[n] and not is_covered_fragment(n, text, mask, blocks):
                     uncited.append(n)
         total_cand += len(cand)
         total_uncited += len(uncited)
@@ -81,6 +112,7 @@ def main() -> int:
     full = "--full" in sys.argv
     lines = A.read_source_lines()
     mask = covered(lines)
+    blocks = formula_blocks(lines)
     records = A.load_registry_records()
     print(f"records: {len(records)}   cited lines: {sum(mask)} / {A.SOURCE_MAX_LINE}")
     if "--all-turns" in sys.argv:
@@ -94,7 +126,7 @@ def main() -> int:
                 continue
             if NORMATIVE.search(text) or BOXED.search(text):
                 cand.append(n)
-                if not mask[n]:
+                if not mask[n] and not is_covered_fragment(n, text, mask, blocks):
                     uncited.append(n)
         total_cand += len(cand)
         total_uncited += len(uncited)

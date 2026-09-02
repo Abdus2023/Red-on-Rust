@@ -163,6 +163,7 @@ def main() -> int:
     seen: dict[str, str] = {}
     per_file: collections.Counter = collections.Counter()
     per_area: collections.Counter = collections.Counter()
+    per_file_area: collections.Counter = collections.Counter()
     area_max: dict[str, int] = {}
 
     for rec in records:
@@ -170,6 +171,7 @@ def main() -> int:
         per_file[rec["_file"]] += 1
         area = rid.split("-")[1]
         per_area[area] += 1
+        per_file_area[(rec["_file"], area)] += 1
         area_max[area] = max(area_max.get(area, 0), int(rid.split("-")[2]))
 
         # 1. fields
@@ -356,8 +358,12 @@ def main() -> int:
         header = path.read_text(encoding="utf-8")[:2000]
         declared = re.findall(r"`([A-Z]+)` \((\d+)\)", header)
         for area, n in declared:
-            if int(n) != per_area[area]:
-                err(f"{path.name}: header declares {area}={n}, parsed {per_area[area]}")
+            want = per_file_area[(path.name, area)]
+            if int(n) != want:
+                err(f"{path.name}: header declares {area}={n}, parsed {want} in this file")
+        for (fname, area), n in sorted(per_file_area.items()):
+            if fname == path.name and not any(a == area for a, _ in declared):
+                err(f"{path.name}: contains {n} {area} records but the header declares no `{area}` count")
         total = re.search(r"— (\d+) atomic units", header)
         declared_sum = sum(int(n) for _, n in declared)
         if total and int(total.group(1)) != declared_sum:

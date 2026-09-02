@@ -1,6 +1,6 @@
 # Atomic Requirement Registry — Part 2: Language and Machine Semantics (S-07 … S-10)
 
-Areas: `CALC` (20), `CEK` (22), `CAP` (24), `KERN` (9) — 75 atomic units.
+Areas: `CALC` (20), `CEK` (22), `CAP` (26), `KERN` (9) — 77 atomic units.
 Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at `Red-on-Rust.md` L8700–8800 (turn `[16]`), which `spec/03` does not carry as separate obligations; they are extracted here because they are normative source text, not inference.
 
 ---
@@ -774,7 +774,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-CAP-013
 - REQ-ID: REQ-CAP-013
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L6434–6445([11]); L6647–6656([11]); spec/01 S-09 R-CAP-07
+- SOURCE: Red-on-Rust.md L6434–6445([11]); L6647–6656([11]); L20042–20060([27] §17 revocation visible to attenuation); spec/01 S-09 R-CAP-07
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `Valid(c, t) ⇔ Live(c) ∧ t ∈ Lifetime(c) ∧ ∀a ∈ Ancestors(c). Live(a)`.
 - PRECONDITIONS: a capability reference is validated at logical time `t`
@@ -928,7 +928,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-CAP-024
 - REQ-ID: REQ-CAP-024
 - CATEGORY: capability-authority
-- SOURCE: Red-on-Rust.md L7858 ([15]), L8717 ([16]), L10068 ([17]), L10171([18]/[18]); spec/06 C-30; spec/09 U-09
+- SOURCE: Red-on-Rust.md L7858 ([15]), L8717 ([16]), L10068 ([17]), L10171([18]); spec/06 C-30; spec/09 U-09
 - NORMATIVE-LEVEL: AMBIGUOUS
 - STATEMENT: `AdmissibleConstraint` is used as a premise of the frozen v0.3 attenuation rules and appears in the `[18]` contract list, but no frozen text defines what makes a constraint admissible, and `spec/06` C-30 records it as orphaned. Its normative status and definition are unresolved.
 - PRECONDITIONS: attenuation requested
@@ -943,6 +943,33 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 
 ## S-10 Capability kernel
 
+### REQ-CAP-025
+- REQ-ID: REQ-CAP-025
+- CATEGORY: capability-kernel
+- SOURCE: Red-on-Rust.md L19484–19498([27] §7); L19655–19665([27] §15); spec/01 S-10 R-KERN-02
+- NORMATIVE-LEVEL: MUST NOT
+- STATEMENT: Capability derivation is atomic from the evaluator's perspective: `validate(parent)` / `derive(parent)` / `validate(child)` MUST NOT be exposed as three independently observable semantic operations.
+- PRECONDITIONS: any attenuation
+- POSTCONDITIONS: the evaluator observes one kernel call, not a sequence
+- INVARIANTS: —
+- DEPENDENCIES: REQ-KERN-002, REQ-CAP-012, REQ-CAP-013
+- SECURITY-IMPACT: critical (an observable intermediate state is a time-of-check/time-of-use window)
+- VERIFICATION-METHOD: mock-kernel exactly-one-call assertions; API-surface review
+- EVIDENCE-STATUS: SPECIFIED
+
+### REQ-CAP-026
+- REQ-ID: REQ-CAP-026
+- CATEGORY: capability-authority
+- SOURCE: Red-on-Rust.md L20027–20037([27] §16 Monotonicity); L6425–6432([11]); spec/01 S-09 R-CAP-08
+- NORMATIVE-LEVEL: MUST
+- STATEMENT: Derivation is monotone in the constraint: `C_1 ≼ C_2 ⇒ derive(A, C_1) ≼ derive(A, C_2)`.
+- PRECONDITIONS: two constraints over the same authority
+- POSTCONDITIONS: the narrower constraint yields the narrower derived authority
+- INVARIANTS: `C_1 ≼ C_2 ⇒ derive(A, C_1) ≼ derive(A, C_2)`
+- DEPENDENCIES: REQ-CAP-007, REQ-CAP-012, REQ-CORE-004
+- SECURITY-IMPACT: high (the source names this an explicit property-test target for the capability algebra)
+- VERIFICATION-METHOD: algebra property tests over constraint pairs
+- EVIDENCE-STATUS: SPECIFIED
 ### REQ-KERN-001
 - REQ-ID: REQ-KERN-001
 - CATEGORY: capability-kernel

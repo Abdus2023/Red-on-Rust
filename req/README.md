@@ -2,7 +2,7 @@
 
 Extraction of every normative requirement in the frozen Red-on-Rust specification into atomic requirement units.
 Source of record: `../Red-on-Rust.md` (42,312 lines, 60-turn design transcript). Canonicalization set: `../spec/00`…`../spec/10`.
-**Result: 495 atomic requirement records, all `EVIDENCE-STATUS: SPECIFIED`, covering 148/148 canonical obligations.**
+**Result: 541 atomic requirement records, all `EVIDENCE-STATUS: SPECIFIED`, covering 148/148 canonical obligations.**
 
 ## Files
 
@@ -10,15 +10,16 @@ Source of record: `../Red-on-Rust.md` (42,312 lines, 60-turn design transcript).
 |---|---|---|
 | `00-method.md` | Extraction rules, field semantics, evidence discipline, split/keep policy, provenance audit and corrections, validation log | — (method) |
 | `01-registry-part1-foundations.md` | 79 records — SCOPE 12, CORE 16, TRUST 9, ARCH 6, PLANNER 22, COMPILE 14 | **1. Atomic requirement registry** |
-| `01-registry-part2-semantics.md` | 75 records — CALC 20, CEK 22, CAP 24, KERN 9 | 1 |
+| `01-registry-part2-semantics.md` | 77 records — CALC 20, CEK 22, CAP 26, KERN 9 | 1 |
 | `01-registry-part3-resources-effects.md` | 72 records — BUDGET 32, EFFECT 40 | 1 |
 | `01-registry-part4-durability-concurrency.md` | 73 records — DUR 14, HOST 14, ACTOR 35, MARSHAL 10 | 1 |
 | `01-registry-part5-persistence.md` | 82 records — CANON 37, PERSIST 23, RECOV 22 | 1 |
 | `01-registry-part6-verification.md` | 48 records — REF 17, TEST 31 | 1 |
 | `01-registry-part7-engineering.md` | 66 records — REPO 19, ORDER 25, CLAIM 22 | 1 |
+| `01-registry-part8-reference-15C.md` | 44 records — REF 19, TEST 25 (Phase 15C reference model + differential harness, turn `[48]`) | 1 |
 | `02-compound-not-split.md` | 42 entries (CN-01…CN-42) covering 117 records kept whole, with the reason each cannot be split | **2. Compound requirements that could not safely be split** |
 | `03-ambiguous.md` | 28 open ambiguities (AMB-01…AMB-29, AMB-15 withdrawn), plus 4 contradictions the source itself settles | **3. Ambiguous requirements** |
-| `04-verification-undefined.md` | 8 records with an undefined verification method, 4 non-normative, 3 permissions, 79 review-only | **4. Requirements whose verification method is currently undefined** |
+| `04-verification-undefined.md` | 8 records with an undefined verification method, 4 non-normative, 4 permissions, 96 review-only | **4. Requirements whose verification method is currently undefined** |
 | `registry.json` | Machine-readable registry (generated) | 1 |
 | `_anchors.py`, `_validate.py` | Provenance constants and the checker | — (tooling) |
 | `_coverage.py` | Omission audit: normative-marker source lines that no record cites | — (tooling) |

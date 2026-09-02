@@ -164,6 +164,62 @@ Citations whose range was checked and found to contain the requirement's signatu
 
 `req/_validate.py` re-checks every `SOURCE` line range for bounds and re-runs the signature check for the anchors listed in `req/_anchors.py`, so the provenance claim is re-runnable rather than asserted.
 
+### 5.4 Phase 15C line map (turn `[48]`, L35272–37168)
+
+Phase 15C — the frozen specification of the independent reference model and the differential harness — is a single turn of 45 numbered sections. The turn-`[54]` master prompt restates these obligations compactly in §15–§22, which is where parts 6 and 7 cited them; only three of the 45 sections had any cited line before this pass, which extracted the primary text as `req/01-registry-part8-reference-15C.md` (44 records: REQ-REF-018…036, REQ-TEST-032…056).
+
+| 15C | Lines | Records citing it | Cited lines |
+|---|---|---|---|
+| 15C.2 Non-Goals | 35326–35346 | REQ-SCOPE-011, REQ-REF-004, REQ-REF-005, REQ-REF-007, REQ-REF-008, REQ-REF-009, REQ-REF-018 | 21 |
+| 15C.3 Independence Boundary | 35347–35439 | REQ-SCOPE-011, REQ-REF-004, REQ-REF-005 | 29 |
+| 15C.4 Reference Value Model | 35440–35483 | REQ-REF-019 | 44 |
+| 15C.5 Reference Environment | 35484–35513 | REQ-REF-020 | 30 |
+| 15C.6 Reference CEK Machine | 35514–35619 | REQ-REF-021 | 106 |
+| 15C.7 Reference CEK Transition Rules | 35620–35690 | REQ-REF-022 | 71 |
+| 15C.8 Reference Capability Algebra | 35691–35764 | REQ-REF-023 | 74 |
+| 15C.9 Reference Capability State | 35765–35800 | REQ-REF-024 | 36 |
+| 15C.10 Reference Budget Model | 35801–35847 | REQ-REF-025 | 47 |
+| 15C.11 Reference Effect Protocol | 35848–35892 | REQ-REF-026 | 45 |
+| 15C.12 Reference Actor Model | 35893–35926 | REQ-REF-027 | 34 |
+| 15C.13 Reference Scheduler | 35927–35972 | REQ-REF-028 | 46 |
+| 15C.14 Reference Send / Receive | 35973–36004 | REQ-REF-029 | 32 |
+| 15C.15 Reference Marshalling | 36005–36031 | REQ-REF-030 | 27 |
+| 15C.16 Reference Global State | 36032–36056 | REQ-REF-031 | 25 |
+| 15C.17 Reference Persistence Model | 36057–36107 | REQ-REF-032 | 51 |
+| 15C.18 Reference Crash Semantics | 36108–36125 | REQ-REF-033 | 18 |
+| 15C.19 Reference Host Model | 36126–36159 | REQ-REF-034 | 34 |
+| 15C.20 Reference Observations | 36160–36188 | REQ-REF-035 | 29 |
+| 15C.21 Canonical Actor Identity Mapping | 36189–36214 | REQ-REF-036 | 26 |
+| 15C.22 Differential Harness | 36215–36249 | REQ-TEST-032 | 35 |
+| 15C.23 Differential Comparison Levels | 36250–36310 | REQ-TEST-033 | 61 |
+| 15C.24 Trace Normalization | 36311–36358 | REQ-TEST-034 | 48 |
+| 15C.25 Negative Differential Testing | 36359–36399 | REQ-TEST-035 | 41 |
+| 15C.26 Short-Circuit Differential Tests | 36400–36440 | REQ-TEST-036 | 41 |
+| 15C.27 Reference Property Suite | 36441–36506 | REQ-ACTOR-011, REQ-TEST-037 | 66 |
+| 15C.28 Generated Program Grammar | 36507–36565 | REQ-TEST-038 | 59 |
+| 15C.29 Generator Strategy | 36566–36609 | REQ-TEST-039 | 44 |
+| 15C.30 Shrinking | 36610–36634 | REQ-TEST-040 | 25 |
+| 15C.31 Counterexample Format | 36635–36665 | REQ-TEST-041 | 31 |
+| 15C.32 First-Divergence Algorithm | 36666–36689 | REQ-TEST-042 | 24 |
+| 15C.33 Metamorphic Testing | 36690–36731 | REQ-TEST-043 | 42 |
+| 15C.34 Differential Persistence Testing | 36732–36780 | REQ-TEST-044 | 49 |
+| 15C.35 Reference Recovery Independence | 36781–36808 | REQ-TEST-045 | 28 |
+| 15C.36 Canonical Serialization Differential Boundary | 36809–36834 | REQ-TEST-046 | 26 |
+| 15C.37 Oracle Hierarchy | 36835–36860 | REQ-TEST-047 | 26 |
+| 15C.38 Anti-Oracle-Collapse Rules | 36861–36891 | REQ-TEST-048 | 31 |
+| 15C.39 Differential Test Execution Modes | 36892–36934 | REQ-TEST-049 | 43 |
+| 15C.40 Determinism Requirement | 36935–36976 | REQ-TEST-050 | 42 |
+| 15C.41 LLM Boundary Testing | 36977–36996 | REQ-TEST-051 | 20 |
+| 15C.42 Acceptance Criteria | 36997–37021 | REQ-TEST-052 | 25 |
+| 15C.43 Deliberate Fault-Injection Validation | 37022–37053 | REQ-TEST-053 | 32 |
+| 15C.44 Evidence Classification | 37054–37089 | REQ-TEST-054 | 36 |
+| 15C.45 Final Verification Theorem | 37090–37150 | REQ-TEST-055 | 61 |
+| 15C.46 Phase Boundary | 37151–37168 | REQ-TEST-056 | 18 |
+
+The turn is numbered 15C.2…15C.46 — there is no `# 15C.1` heading; L35272–35325 is an unnumbered preamble, of which L35281–35310 is cited by REQ-REF-001, REQ-REF-002 and REQ-REF-006. All 45 now carry at least one cited line. Measured against the 497-record registry, only three did: 15C.2 (21 of 21 lines, by REQ-SCOPE-011 and REQ-REF-004/005/007/008/009, whose range L35330–35375 straddles the 15C.2/15C.3 boundary), 15C.3 (29 of 93) and 15C.27 (1 of 66) — the other 42 had none. The "Cited lines" column counts distinct lines of the section inside some record's cited range, so overlapping citations are counted once per section.
+
+
+
 ## 6. Validation of this registry
 
 `req/_validate.py` (with `req/_anchors.py`) re-derives everything from the source rather than trusting this document:
@@ -179,12 +235,14 @@ Citations whose range was checked and found to contain the requirement's signatu
 | 7 | `DEPENDENCIES` and `CN-`/`AMB-`/`VU-` references resolve | yes — `REQ-REPO-999` and `AMB-27` (before it existed) were both reported |
 | 8 | Every backticked identifier in `STATEMENT`/`INVARIANTS` occurs inside a cited range | yes — `FrobnicatorId` was reported with its (absent) first occurrence |
 | 9 | Frozen anchors in `_anchors.py` re-grepped against the source | yes — three stale anchors were reported and corrected |
-| 10 | Part-file header counts match the parsed records | yes — an inflated header count was reported |
+| 10 | Part-file header counts match the records parsed **from that file** — per area, per declared total, and every area present in the file must be declared | yes — dropping `COMPILE` from the part-1 header reported `contains 14 COMPILE records but the header declares no COMPILE count`; declaring `REF (18)` in part 8 reported the mismatch against the 19 parsed |
 | 11 | Every `C-nn` / `U-nn` cross-reference exists in `spec/06` / `spec/09` (45 and 16 items respectively) | yes — a stale unresolved-decision reference was reported; this check is what exposed that four of the unresolved-decision ids cited earlier in this extraction do not exist in `spec/09` (which has exactly 16 items) and that several contradiction links pointed at the wrong finding |
 | 12 | The counts printed in `04-verification-undefined.md` §5 match the records (undefined, non-normative, permissions, review-only, other, total) | yes — it reported `reviewonly=79` against a registry count of 80 the moment four new records were added |
 
 `req/_coverage.py` runs the complementary omission audit: it inverts the citation map and reports normative-marker lines (`MUST`, `never`, `always`, `required`, boxed formulae, …) in the requirement-dense regions that **no** record cites. Its scope is deliberately limited to the three regions where requirements are stated as requirements — the turn-`[54]` master prompt (L37638–38968), the turn-`[58]` bootstrap pack (L40600–41273), and the closing turns `[59]`–`[60]` (L41274–42312); the earlier design turns are cited from the location where each requirement was frozen, not from every place it was discussed. First run found 15 uncited lines; all 15 proved to be second statements of requirements already extracted, so each was added as an additional citation rather than a new record — **74/74 normative-marker lines cited, 0 uncited**.
 
 Run with `--all-turns` the audit covers all 60 turns. The early and middle turns are design dialogue whose superseded drafts are deliberately not cited (the registry cites each requirement where it was frozen), so their uncited counts are expected; the frozen-content turns were triaged line by line and four requirements that the first pass had missed were recovered: the evaluator-input exclusion set (`Authority`/`Scope`/`Rights`/`Parent`/`Revocation state`, L13267–13281) as REQ-KERN-009; `Committed(D) ⇒ Canonical(D) ∧ IntegrityVerified(D)` (L33731–33738) as REQ-PERSIST-023; `CommittedSnapshot + ValidWAL + ValidEffectJournal + ReconciledEffects ⇒ UniqueRecoveredMachineState` (L34801–34812) as REQ-RECOV-022; and the reference interpreter's environment-copy permission (L12363–12367) as REQ-REF-017. The residue in those turns is LaTeX continuation lines (`\boxed{`, `\Rightarrow`), code comments, and commentary prose — no further requirement.
+
+Two further passes followed. The formula-fragment scan found two capability requirements the frozen turn `[27]` states and no record covered: derivation atomicity from the evaluator's perspective (L19484–19498) as REQ-CAP-025, and constraint monotonicity `C₁ ≼ C₂ ⇒ derive(A,C₁) ≼ derive(A,C₂)` (L20027–20037) as REQ-CAP-026. The per-section citation audit then found the largest single omission: Phase 15C (turn `[48]`), whose 45 numbered sections had 42 uncited in their entirety — the reference value model, environment, CEK machine, transition rules, capability algebra and store, budget model, effect protocol, actor, scheduler, send/receive, marshalling, global state, persistence, crash semantics and host (15C.4–15C.19), the normalized observation and canonical actor-identity mapping (15C.20–15C.21), and the whole harness half — comparison levels, trace normalization, negative differential testing, short-circuit stage markers, the reference property suite, grammar, generator, shrinking, counterexample format, first-divergence, metamorphic testing, differential persistence, recovery independence, the canonical boundary, oracle hierarchy, anti-oracle-collapse, execution modes, determinism, LLM boundary, acceptance criteria, fault-injection validation, evidence classification and the final theorem (15C.23–15C.46). These were extracted as `req/01-registry-part8-reference-15C.md` (44 records), taking the registry from 497 to **541**; measured by re-running the audit with and without the new part file, the uncited count fell from 549 to **515** of 736 candidate lines, and cited sections rose from 3/45 to 45/45. The remaining uncited lines are early-turn superseded drafts and LaTeX continuation lines; they are candidates for judgement, not a claim of completeness.
 
 This pass found and fixed, by that mechanism: three identifiers I had invented (`B_max`, `f_specific` as a literal token, `BudgetAllocationSpec::validate_and_escrow`), 83 `[turn]` labels that disagreed with the lines they annotated, 56 `SOURCE` fields with no turn marker at all, three stale anchors, and six statements whose wording did not match the source (`Value` tag constants, canonical map key type, hostile-allocation wording, `Expr::Delegate` line range, `EventSequence` shape, `ReconciliationOutcome` variants).
