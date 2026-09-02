@@ -71,7 +71,7 @@ ExternalEffect(E) ⇒ ValidatedPlan(P)
 
 1. **Read `01-canonical-specification.md`** for the cleaned normative text, organized by section with inline requirement IDs.
 2. **Track a requirement** via its `R-…` ID: definition in `01`, dependencies in `04`, implementation home in `07`, test/evidence mapping in `08`.
-3. **Check risk** via `06` (contradictions/ambiguities) and `09` (unresolved decisions). These are the items where implementation MUST stop and seek an explicit specification decision (per the frozen "STOP and report" rule, source L37680).
+3. **Check risk** via `06` (contradictions/ambiguities) and `09` (unresolved decisions). These are the items where implementation MUST stop and seek an explicit specification decision (per the frozen "STOP and report" rule, source L37690).
 4. **Machine processing** uses `10-index.json`, which is the authoritative cross-index of sections, requirements, findings, unresolved items, and status.
 
 ## 6. Normative conventions used in this document set
