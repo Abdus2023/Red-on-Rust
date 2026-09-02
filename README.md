@@ -32,6 +32,17 @@ The frozen source (`Red-on-Rust.md`) has been canonicalized into the document se
 - `spec/09-unresolved-decisions.md` — 16 items (`U-…`) requiring explicit architectural decisions
 - `spec/10-index.json` — machine-readable cross-index
 
+A second organization, `mod/`, splits the same specification into **17 semantic
+modules** (`MOD-01 CORE` … `MOD-17 VERIFICATION`) by architectural responsibility
+rather than document structure: one canonical owner per obligation, explicit
+cross-references for requirements that span components, and a marked-duplication
+register (`D-01`…`D-12`). Each module file carries SECTION-ID, TITLE, PURPOSE,
+NORMATIVE-CONTENT, NON-NORMATIVE-CONTENT, INPUTS, OUTPUTS, DEPENDENCIES, INVARIANTS,
+REQUIREMENTS, SECURITY-BOUNDARY, VERIFICATION-OBLIGATIONS, SOURCE-PROVENANCE, and
+CROSS-REFERENCES. Normative text remains single-homed in `spec/01`/`req/`;
+`mod/18-ownership-matrix.md` and `mod/19-index.json` are generated
+(`python3 mod/_build.py --write`; checked with `python3 mod/_build.py`).
+
 **Status discipline:** the repository currently contains no implementation, tests, or proofs; every obligation is therefore `SPECIFIED`, and no claim has been promoted beyond that level. Where the canonicalized text and `Red-on-Rust.md` differ, the source's latest frozen text governs.
 
 # Core Thesis

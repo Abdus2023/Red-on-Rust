@@ -1,0 +1,1337 @@
+{
+  "specification": "Red-on-Rust.md",
+  "organization": "17 semantic modules, split by architectural responsibility (not document length)",
+  "normative_text_home": "spec/01 (obligations), req/ (atomic records); mod/ registers ownership, no normative text is duplicated except as marked in `duplications`",
+  "module_count": 17,
+  "obligation_count": 148,
+  "record_count": 545,
+  "evidence_status_of_every_obligation": "SPECIFIED",
+  "modules": [
+    {
+      "id": "MOD-01",
+      "domain": "CORE",
+      "title": "Core semantics, central invariants, trust model",
+      "crate": "ror-core",
+      "file": "01-core.md",
+      "obligations": [
+        "R-ARCH-01",
+        "R-ARCH-02",
+        "R-ARCH-03",
+        "R-ARCH-04",
+        "R-CALC-01",
+        "R-CALC-02",
+        "R-CALC-03",
+        "R-CALC-04",
+        "R-CALC-05",
+        "R-CALC-06",
+        "R-CALC-07",
+        "R-CALC-08",
+        "R-CORE-01",
+        "R-CORE-02",
+        "R-CORE-03",
+        "R-CORE-04",
+        "R-CORE-05",
+        "R-CORE-06",
+        "R-CORE-07",
+        "R-CORE-08",
+        "R-CORE-09",
+        "R-CORE-10",
+        "R-SCOPE-01",
+        "R-SCOPE-02",
+        "R-TRUST-01",
+        "R-TRUST-02",
+        "R-TRUST-03"
+      ],
+      "obligation_count": 27,
+      "record_count": 58,
+      "record_ranges": [
+        "REQ-ARCH-001…006",
+        "REQ-CALC-001…020",
+        "REQ-CORE-001…016",
+        "REQ-SCOPE-001…007",
+        "REQ-TRUST-001…009"
+      ],
+      "cross_references": {
+        "R-SCOPE-01": [
+          "MOD-02",
+          "MOD-04",
+          "MOD-07",
+          "MOD-12"
+        ],
+        "R-SCOPE-02": [
+          "MOD-17"
+        ],
+        "R-CORE-01": [
+          "MOD-13",
+          "MOD-02",
+          "MOD-08"
+        ],
+        "R-CORE-02": [
+          "MOD-08",
+          "MOD-03",
+          "MOD-04",
+          "MOD-09",
+          "MOD-11"
+        ],
+        "R-CORE-03": [
+          "MOD-03",
+          "MOD-08"
+        ],
+        "R-CORE-04": [
+          "MOD-03",
+          "MOD-06"
+        ],
+        "R-CORE-05": [
+          "MOD-04",
+          "MOD-12",
+          "MOD-06"
+        ],
+        "R-CORE-06": [
+          "MOD-11",
+          "MOD-08",
+          "MOD-09"
+        ],
+        "R-CORE-07": [
+          "MOD-06",
+          "MOD-03"
+        ],
+        "R-CORE-08": [
+          "MOD-07",
+          "MOD-09",
+          "MOD-13"
+        ],
+        "R-CORE-09": [
+          "MOD-12",
+          "MOD-11",
+          "MOD-09"
+        ],
+        "R-CORE-10": [
+          "MOD-12",
+          "MOD-11"
+        ],
+        "R-TRUST-01": [
+          "MOD-17",
+          "MOD-09"
+        ],
+        "R-TRUST-02": [
+          "MOD-05",
+          "MOD-03",
+          "MOD-04",
+          "MOD-07",
+          "MOD-10",
+          "MOD-11",
+          "MOD-13"
+        ],
+        "R-TRUST-03": [
+          "MOD-03",
+          "MOD-05"
+        ],
+        "R-ARCH-01": [
+          "MOD-13",
+          "MOD-02",
+          "MOD-05",
+          "MOD-08",
+          "MOD-11",
+          "MOD-09"
+        ],
+        "R-ARCH-02": [
+          "MOD-14",
+          "MOD-15"
+        ],
+        "R-ARCH-03": [
+          "MOD-02",
+          "MOD-05"
+        ],
+        "R-ARCH-04": [
+          "MOD-17"
+        ],
+        "R-CALC-01": [
+          "MOD-05",
+          "MOD-10"
+        ],
+        "R-CALC-02": [
+          "MOD-02",
+          "MOD-05",
+          "MOD-06",
+          "MOD-17"
+        ],
+        "R-CALC-03": [
+          "MOD-02",
+          "MOD-05"
+        ],
+        "R-CALC-04": [
+          "MOD-08",
+          "MOD-10",
+          "MOD-09"
+        ],
+        "R-CALC-05": [
+          "MOD-08",
+          "MOD-04"
+        ],
+        "R-CALC-06": [
+          "MOD-15",
+          "MOD-12",
+          "MOD-17"
+        ],
+        "R-CALC-07": [
+          "MOD-09",
+          "MOD-12",
+          "MOD-17"
+        ],
+        "R-CALC-08": [
+          "MOD-05",
+          "MOD-06"
+        ]
+      },
+      "verification_tags": [],
+      "mutations_targeted": [],
+      "milestone_gates": [],
+      "open_items_affecting": [
+        "U-04",
+        "U-05",
+        "U-08",
+        "U-09",
+        "U-14",
+        "U-21"
+      ]
+    },
+    {
+      "id": "MOD-02",
+      "domain": "COMPILER",
+      "title": "Compilation boundary (Block to ExecutablePlan)",
+      "crate": "ror-compiler",
+      "file": "02-compiler.md",
+      "obligations": [
+        "R-COMPILE-01",
+        "R-COMPILE-02",
+        "R-COMPILE-03",
+        "R-COMPILE-04",
+        "R-COMPILE-05"
+      ],
+      "obligation_count": 5,
+      "record_count": 14,
+      "record_ranges": [
+        "REQ-COMPILE-001…014"
+      ],
+      "cross_references": {
+        "R-COMPILE-01": [
+          "MOD-05",
+          "MOD-13"
+        ],
+        "R-COMPILE-02": [
+          "MOD-17"
+        ],
+        "R-COMPILE-03": [
+          "MOD-04",
+          "MOD-03"
+        ],
+        "R-COMPILE-04": [
+          "MOD-13",
+          "MOD-03"
+        ],
+        "R-COMPILE-05": [
+          "MOD-17"
+        ]
+      },
+      "verification_tags": [],
+      "mutations_targeted": [],
+      "milestone_gates": [],
+      "open_items_affecting": [
+        "U-02",
+        "U-22"
+      ]
+    },
+    {
+      "id": "MOD-03",
+      "domain": "CAPABILITY",
+      "title": "Capability algebra and capability kernel",
+      "crate": "ror-kernel",
+      "file": "03-capability.md",
+      "obligations": [
+        "R-CAP-01",
+        "R-CAP-02",
+        "R-CAP-03",
+        "R-CAP-04",
+        "R-CAP-05",
+        "R-CAP-06",
+        "R-CAP-07",
+        "R-CAP-08",
+        "R-CAP-09",
+        "R-KERN-01",
+        "R-KERN-02",
+        "R-KERN-03"
+      ],
+      "obligation_count": 12,
+      "record_count": 35,
+      "record_ranges": [
+        "REQ-CAP-001…026",
+        "REQ-KERN-001…009"
+      ],
+      "cross_references": {
+        "R-CAP-05": [
+          "MOD-01",
+          "MOD-06"
+        ],
+        "R-CAP-06": [
+          "MOD-08",
+          "MOD-04",
+          "MOD-01"
+        ],
+        "R-CAP-07": [
+          "MOD-06"
+        ],
+        "R-CAP-09": [
+          "MOD-06",
+          "MOD-04",
+          "MOD-07"
+        ],
+        "R-KERN-01": [
+          "MOD-10",
+          "MOD-11",
+          "MOD-06"
+        ],
+        "R-KERN-02": [
+          "MOD-05",
+          "MOD-06"
+        ],
+        "R-KERN-03": [
+          "MOD-01",
+          "MOD-17"
+        ]
+      },
+      "verification_tags": [
+        "CAP-DERIVE-NO-AMPLIFICATION",
+        "CAP-REVOCATION-ANCESTOR"
+      ],
+      "mutations_targeted": [
+        "M004",
+        "M005",
+        "M006"
+      ],
+      "milestone_gates": [
+        "M4"
+      ],
+      "open_items_affecting": [
+        "U-09",
+        "U-21"
+      ]
+    },
+    {
+      "id": "MOD-04",
+      "domain": "BUDGET",
+      "title": "Budget algebra and resource accounting",
+      "crate": "ror-core (+ gates in ror-runtime / ror-kernel)",
+      "file": "04-budget.md",
+      "obligations": [
+        "R-BUDGET-01",
+        "R-BUDGET-02",
+        "R-BUDGET-03",
+        "R-BUDGET-04",
+        "R-BUDGET-05",
+        "R-BUDGET-06",
+        "R-BUDGET-07",
+        "R-BUDGET-08"
+      ],
+      "obligation_count": 8,
+      "record_count": 32,
+      "record_ranges": [
+        "REQ-BUDGET-001…032"
+      ],
+      "cross_references": {
+        "R-BUDGET-01": [
+          "MOD-03",
+          "MOD-17"
+        ],
+        "R-BUDGET-04": [
+          "MOD-03",
+          "MOD-08"
+        ],
+        "R-BUDGET-05": [
+          "MOD-01",
+          "MOD-06",
+          "MOD-08",
+          "MOD-12"
+        ],
+        "R-BUDGET-06": [
+          "MOD-07",
+          "MOD-09",
+          "MOD-17"
+        ],
+        "R-BUDGET-07": [
+          "MOD-02",
+          "MOD-08"
+        ],
+        "R-BUDGET-08": [
+          "MOD-08"
+        ]
+      },
+      "verification_tags": [
+        "BUDGET-CONSUMPTION-CONSERVATION"
+      ],
+      "mutations_targeted": [
+        "M007",
+        "M009"
+      ],
+      "milestone_gates": [],
+      "open_items_affecting": [
+        "U-01",
+        "U-03",
+        "U-07"
+      ]
+    },
+    {
+      "id": "MOD-05",
+      "domain": "EVALUATOR",
+      "title": "Explicit CEK evaluation machine",
+      "crate": "ror-runtime",
+      "file": "05-evaluator.md",
+      "obligations": [
+        "R-CEK-01",
+        "R-CEK-02",
+        "R-CEK-03",
+        "R-CEK-04",
+        "R-CEK-05",
+        "R-CEK-06",
+        "R-CEK-07"
+      ],
+      "obligation_count": 7,
+      "record_count": 24,
+      "record_ranges": [
+        "REQ-CEK-001…024"
+      ],
+      "cross_references": {
+        "R-CEK-01": [
+          "MOD-11",
+          "MOD-17"
+        ],
+        "R-CEK-03": [
+          "MOD-11"
+        ],
+        "R-CEK-05": [
+          "MOD-16"
+        ],
+        "R-CEK-07": [
+          "MOD-15"
+        ]
+      },
+      "verification_tags": [
+        "CEK-CALL-ARGS-LTR",
+        "CEK-CALL-ARITY-PRECHECK",
+        "CEK-CLOSURE-LEXICAL-CAPTURE"
+      ],
+      "mutations_targeted": [
+        "M001",
+        "M002",
+        "M003"
+      ],
+      "milestone_gates": [
+        "M2",
+        "M3"
+      ],
+      "open_items_affecting": [
+        "U-04"
+      ]
+    },
+    {
+      "id": "MOD-06",
+      "domain": "ACTOR",
+      "title": "Actor isolation, spawn, mailboxes, marshalling boundary",
+      "crate": "ror-runtime",
+      "file": "06-actor.md",
+      "obligations": [
+        "R-ACTOR-01",
+        "R-ACTOR-02",
+        "R-ACTOR-03",
+        "R-ACTOR-05",
+        "R-ACTOR-06",
+        "R-ACTOR-08",
+        "R-MARSHAL-01",
+        "R-MARSHAL-02",
+        "R-MARSHAL-03",
+        "R-MARSHAL-04"
+      ],
+      "obligation_count": 10,
+      "record_count": 37,
+      "record_ranges": [
+        "REQ-ACTOR-001…009",
+        "REQ-ACTOR-017…030",
+        "REQ-ACTOR-032…035",
+        "REQ-MARSHAL-001…010"
+      ],
+      "cross_references": {
+        "R-ACTOR-01": [
+          "MOD-03",
+          "MOD-11"
+        ],
+        "R-ACTOR-02": [
+          "MOD-07",
+          "MOD-04",
+          "MOD-11"
+        ],
+        "R-ACTOR-03": [
+          "MOD-11",
+          "MOD-01"
+        ],
+        "R-ACTOR-05": [
+          "MOD-03",
+          "MOD-04",
+          "MOD-02"
+        ],
+        "R-ACTOR-06": [
+          "MOD-07",
+          "MOD-04"
+        ],
+        "R-ACTOR-08": [
+          "MOD-01"
+        ],
+        "R-MARSHAL-01": [
+          "MOD-10",
+          "MOD-03",
+          "MOD-01"
+        ],
+        "R-MARSHAL-02": [
+          "MOD-03",
+          "MOD-02",
+          "MOD-10"
+        ],
+        "R-MARSHAL-03": [
+          "MOD-10"
+        ],
+        "R-MARSHAL-04": [
+          "MOD-10",
+          "MOD-03"
+        ]
+      },
+      "verification_tags": [
+        "MARSHAL-NO-RAW-CAPABILITY"
+      ],
+      "mutations_targeted": [
+        "M013"
+      ],
+      "milestone_gates": [
+        "M6"
+      ],
+      "open_items_affecting": [
+        "U-02",
+        "U-03",
+        "U-05"
+      ]
+    },
+    {
+      "id": "MOD-07",
+      "domain": "SCHEDULER",
+      "title": "Deterministic scheduling and wakeups",
+      "crate": "ror-runtime",
+      "file": "07-scheduler.md",
+      "obligations": [
+        "R-ACTOR-04",
+        "R-ACTOR-07"
+      ],
+      "obligation_count": 2,
+      "record_count": 8,
+      "record_ranges": [
+        "REQ-ACTOR-010…016",
+        "REQ-ACTOR-031"
+      ],
+      "cross_references": {
+        "R-ACTOR-04": [
+          "MOD-06",
+          "MOD-12",
+          "MOD-01"
+        ],
+        "R-ACTOR-07": [
+          "MOD-01",
+          "MOD-09",
+          "MOD-13"
+        ]
+      },
+      "verification_tags": [
+        "SCHED-BLOCKED-NOT-SCHEDULED",
+        "SCHED-FIFO"
+      ],
+      "mutations_targeted": [
+        "M011",
+        "M012"
+      ],
+      "milestone_gates": [
+        "M6"
+      ],
+      "open_items_affecting": [
+        "U-07",
+        "U-17"
+      ]
+    },
+    {
+      "id": "MOD-08",
+      "domain": "EFFECT",
+      "title": "Effect model and frozen request sequence",
+      "crate": "ror-runtime (+ durable steps via ror-persistence)",
+      "file": "08-effect.md",
+      "obligations": [
+        "R-EFFECT-01",
+        "R-EFFECT-02",
+        "R-EFFECT-03",
+        "R-EFFECT-04",
+        "R-EFFECT-05",
+        "R-EFFECT-06",
+        "R-EFFECT-07"
+      ],
+      "obligation_count": 7,
+      "record_count": 40,
+      "record_ranges": [
+        "REQ-EFFECT-001…040"
+      ],
+      "cross_references": {
+        "R-EFFECT-01": [
+          "MOD-05",
+          "MOD-09"
+        ],
+        "R-EFFECT-02": [
+          "MOD-03",
+          "MOD-04"
+        ],
+        "R-EFFECT-03": [
+          "MOD-03",
+          "MOD-04",
+          "MOD-11",
+          "MOD-07",
+          "MOD-09",
+          "MOD-01"
+        ],
+        "R-EFFECT-04": [
+          "MOD-03",
+          "MOD-04",
+          "MOD-11",
+          "MOD-09"
+        ],
+        "R-EFFECT-05": [
+          "MOD-04",
+          "MOD-11"
+        ],
+        "R-EFFECT-06": [
+          "MOD-09",
+          "MOD-10",
+          "MOD-11"
+        ],
+        "R-EFFECT-07": [
+          "MOD-04",
+          "MOD-11",
+          "MOD-05"
+        ]
+      },
+      "verification_tags": [
+        "EFFECT-RECEIPT-DIGEST-VALIDATION"
+      ],
+      "mutations_targeted": [
+        "M010",
+        "M017",
+        "M018"
+      ],
+      "milestone_gates": [
+        "M5"
+      ],
+      "open_items_affecting": [
+        "U-06"
+      ]
+    },
+    {
+      "id": "MOD-09",
+      "domain": "HOST",
+      "title": "Host boundary and replay",
+      "crate": "ror-host",
+      "file": "09-host.md",
+      "obligations": [
+        "R-HOST-01",
+        "R-HOST-02",
+        "R-HOST-03",
+        "R-HOST-04",
+        "R-HOST-05"
+      ],
+      "obligation_count": 5,
+      "record_count": 14,
+      "record_ranges": [
+        "REQ-HOST-001…014"
+      ],
+      "cross_references": {
+        "R-HOST-01": [
+          "MOD-08",
+          "MOD-01"
+        ],
+        "R-HOST-02": [
+          "MOD-08",
+          "MOD-11"
+        ],
+        "R-HOST-03": [
+          "MOD-11",
+          "MOD-10",
+          "MOD-12"
+        ],
+        "R-HOST-04": [
+          "MOD-12",
+          "MOD-15",
+          "MOD-13"
+        ],
+        "R-HOST-05": [
+          "MOD-15"
+        ]
+      },
+      "verification_tags": [],
+      "mutations_targeted": [],
+      "milestone_gates": [
+        "M5"
+      ],
+      "open_items_affecting": [
+        "U-06",
+        "U-07"
+      ]
+    },
+    {
+      "id": "MOD-10",
+      "domain": "SERIALIZATION",
+      "title": "Canonical serialization (15A)",
+      "crate": "ror-core (+ vectors/canonical)",
+      "file": "10-serialization.md",
+      "obligations": [
+        "R-CANON-01",
+        "R-CANON-02",
+        "R-CANON-03",
+        "R-CANON-04",
+        "R-CANON-05",
+        "R-CANON-06",
+        "R-CANON-07",
+        "R-CANON-08",
+        "R-CANON-09",
+        "R-CANON-10",
+        "R-CANON-11"
+      ],
+      "obligation_count": 11,
+      "record_count": 37,
+      "record_ranges": [
+        "REQ-CANON-001…037"
+      ],
+      "cross_references": {
+        "R-CANON-01": [
+          "MOD-11",
+          "MOD-06"
+        ],
+        "R-CANON-09": [
+          "MOD-08",
+          "MOD-11",
+          "MOD-09"
+        ],
+        "R-CANON-10": [
+          "MOD-15",
+          "MOD-17"
+        ],
+        "R-CANON-11": [
+          "MOD-17"
+        ]
+      },
+      "verification_tags": [],
+      "mutations_targeted": [
+        "M014"
+      ],
+      "milestone_gates": [
+        "M1"
+      ],
+      "open_items_affecting": [
+        "U-02",
+        "U-09",
+        "U-21"
+      ]
+    },
+    {
+      "id": "MOD-11",
+      "domain": "PERSISTENCE",
+      "title": "Durable WAL, snapshots, effect journal (15B)",
+      "crate": "ror-persistence",
+      "file": "11-persistence.md",
+      "obligations": [
+        "R-DUR-01",
+        "R-DUR-02",
+        "R-DUR-03",
+        "R-DUR-04",
+        "R-DUR-05",
+        "R-PERSIST-01",
+        "R-PERSIST-02",
+        "R-PERSIST-03",
+        "R-PERSIST-04",
+        "R-PERSIST-05",
+        "R-PERSIST-06"
+      ],
+      "obligation_count": 11,
+      "record_count": 37,
+      "record_ranges": [
+        "REQ-DUR-001…014",
+        "REQ-PERSIST-001…023"
+      ],
+      "cross_references": {
+        "R-PERSIST-01": [
+          "MOD-10"
+        ],
+        "R-PERSIST-02": [
+          "MOD-10",
+          "MOD-12"
+        ],
+        "R-PERSIST-03": [
+          "MOD-07",
+          "MOD-17"
+        ],
+        "R-PERSIST-04": [
+          "MOD-05",
+          "MOD-06",
+          "MOD-03",
+          "MOD-07",
+          "MOD-10"
+        ],
+        "R-PERSIST-05": [
+          "MOD-12",
+          "MOD-10"
+        ],
+        "R-PERSIST-06": [
+          "MOD-12"
+        ],
+        "R-DUR-01": [
+          "MOD-01",
+          "MOD-08",
+          "MOD-09"
+        ],
+        "R-DUR-02": [
+          "MOD-08",
+          "MOD-10"
+        ],
+        "R-DUR-03": [
+          "MOD-08",
+          "MOD-12"
+        ],
+        "R-DUR-04": [
+          "MOD-12",
+          "MOD-08"
+        ],
+        "R-DUR-05": [
+          "MOD-04",
+          "MOD-12"
+        ]
+      },
+      "verification_tags": [
+        "BUDGET-ESCROW-CONSERVATION",
+        "EFFECT-ISSUE-DURABLE-BEFORE-HOST",
+        "SNAPSHOT-COMMIT-INTEGRITY",
+        "WAL-GAP-REJECT",
+        "WAL-SEQUENCE-CONTINUITY"
+      ],
+      "mutations_targeted": [
+        "M008",
+        "M015",
+        "M016"
+      ],
+      "milestone_gates": [
+        "M5",
+        "M7"
+      ],
+      "open_items_affecting": [
+        "U-02",
+        "U-16",
+        "U-17"
+      ]
+    },
+    {
+      "id": "MOD-12",
+      "domain": "RECOVERY",
+      "title": "Crash recovery and effect classification",
+      "crate": "ror-persistence (+ ror-reference oracle)",
+      "file": "12-recovery.md",
+      "obligations": [
+        "R-RECOV-01",
+        "R-RECOV-02",
+        "R-RECOV-03",
+        "R-RECOV-04",
+        "R-RECOV-05",
+        "R-RECOV-06",
+        "R-RECOV-07"
+      ],
+      "obligation_count": 7,
+      "record_count": 22,
+      "record_ranges": [
+        "REQ-RECOV-001…022"
+      ],
+      "cross_references": {
+        "R-RECOV-01": [
+          "MOD-11",
+          "MOD-15"
+        ],
+        "R-RECOV-02": [
+          "MOD-11",
+          "MOD-17"
+        ],
+        "R-RECOV-03": [
+          "MOD-10",
+          "MOD-07",
+          "MOD-04"
+        ],
+        "R-RECOV-04": [
+          "MOD-14",
+          "MOD-17"
+        ],
+        "R-RECOV-05": [
+          "MOD-11",
+          "MOD-01"
+        ],
+        "R-RECOV-06": [
+          "MOD-04",
+          "MOD-11"
+        ],
+        "R-RECOV-07": [
+          "MOD-09",
+          "MOD-11",
+          "MOD-17"
+        ]
+      },
+      "verification_tags": [
+        "RECOVERY-ISSUED-INDETERMINATE"
+      ],
+      "mutations_targeted": [],
+      "milestone_gates": [
+        "M10",
+        "M7"
+      ],
+      "open_items_affecting": [
+        "U-06",
+        "U-15",
+        "U-17"
+      ]
+    },
+    {
+      "id": "MOD-13",
+      "domain": "AGENT",
+      "title": "LLM / planner boundary",
+      "crate": "ror-agent",
+      "file": "13-agent.md",
+      "obligations": [
+        "R-PLANNER-01",
+        "R-PLANNER-02",
+        "R-PLANNER-03",
+        "R-PLANNER-04",
+        "R-PLANNER-05"
+      ],
+      "obligation_count": 5,
+      "record_count": 23,
+      "record_ranges": [
+        "REQ-PLANNER-001…022",
+        "REQ-TEST-051"
+      ],
+      "cross_references": {
+        "R-PLANNER-01": [
+          "MOD-02",
+          "MOD-01"
+        ],
+        "R-PLANNER-02": [
+          "MOD-03",
+          "MOD-04",
+          "MOD-07",
+          "MOD-06",
+          "MOD-09",
+          "MOD-02",
+          "MOD-11"
+        ],
+        "R-PLANNER-03": [
+          "MOD-02",
+          "MOD-11"
+        ],
+        "R-PLANNER-04": [
+          "MOD-11",
+          "MOD-09",
+          "MOD-07"
+        ],
+        "R-PLANNER-05": [
+          "MOD-17",
+          "MOD-09",
+          "MOD-02"
+        ]
+      },
+      "verification_tags": [],
+      "mutations_targeted": [],
+      "milestone_gates": [],
+      "open_items_affecting": [
+        "U-13"
+      ]
+    },
+    {
+      "id": "MOD-14",
+      "domain": "REFERENCE",
+      "title": "Independent executable reference model",
+      "crate": "ror-reference",
+      "file": "14-reference.md",
+      "obligations": [
+        "R-REF-01",
+        "R-REF-02",
+        "R-REF-03",
+        "R-REF-04",
+        "R-SCOPE-04"
+      ],
+      "obligation_count": 5,
+      "record_count": 36,
+      "record_ranges": [
+        "REQ-REF-001…009",
+        "REQ-REF-017…034",
+        "REQ-SCOPE-011…012",
+        "REQ-TEST-032",
+        "REQ-TEST-045…048",
+        "REQ-TEST-052",
+        "REQ-TEST-056"
+      ],
+      "cross_references": {
+        "R-REF-01": [
+          "MOD-15",
+          "MOD-12",
+          "MOD-17"
+        ],
+        "R-REF-02": [
+          "MOD-05",
+          "MOD-03",
+          "MOD-04",
+          "MOD-07",
+          "MOD-10",
+          "MOD-11",
+          "MOD-09",
+          "MOD-17"
+        ],
+        "R-REF-03": [
+          "MOD-05",
+          "MOD-03",
+          "MOD-04",
+          "MOD-06",
+          "MOD-07",
+          "MOD-08",
+          "MOD-11",
+          "MOD-12"
+        ],
+        "R-REF-04": [
+          "MOD-17"
+        ],
+        "R-SCOPE-04": [
+          "MOD-15"
+        ]
+      },
+      "verification_tags": [],
+      "mutations_targeted": [],
+      "milestone_gates": [
+        "M2",
+        "M4",
+        "M8"
+      ],
+      "open_items_affecting": []
+    },
+    {
+      "id": "MOD-15",
+      "domain": "DIFFERENTIAL",
+      "title": "Differential harness: generation, comparison, shrinking",
+      "crate": "ror-differential",
+      "file": "15-differential.md",
+      "obligations": [
+        "R-REF-05",
+        "R-TEST-01",
+        "R-TEST-02",
+        "R-TEST-03",
+        "R-TEST-07"
+      ],
+      "obligation_count": 5,
+      "record_count": 33,
+      "record_ranges": [
+        "REQ-REF-010…013",
+        "REQ-REF-035…036",
+        "REQ-TEST-001…011",
+        "REQ-TEST-020…021",
+        "REQ-TEST-033…041",
+        "REQ-TEST-043",
+        "REQ-TEST-049…050",
+        "REQ-TEST-057…058"
+      ],
+      "cross_references": {
+        "R-REF-05": [
+          "MOD-14",
+          "MOD-17"
+        ],
+        "R-TEST-01": [
+          "MOD-17"
+        ],
+        "R-TEST-02": [
+          "MOD-17"
+        ],
+        "R-TEST-07": [
+          "MOD-16",
+          "MOD-17"
+        ]
+      },
+      "verification_tags": [],
+      "mutations_targeted": [],
+      "milestone_gates": [
+        "M2",
+        "M8"
+      ],
+      "open_items_affecting": []
+    },
+    {
+      "id": "MOD-16",
+      "domain": "MUTATION",
+      "title": "Mutation registry and kill-rate gate",
+      "crate": "mutations/registry.toml (+ ror-testkit)",
+      "file": "16-mutation.md",
+      "obligations": [
+        "R-TEST-04",
+        "R-TEST-05",
+        "R-TEST-06"
+      ],
+      "obligation_count": 3,
+      "record_count": 9,
+      "record_ranges": [
+        "REQ-TEST-012…019",
+        "REQ-TEST-053"
+      ],
+      "cross_references": {
+        "R-TEST-04": [
+          "MOD-05",
+          "MOD-03",
+          "MOD-04",
+          "MOD-11",
+          "MOD-08",
+          "MOD-07",
+          "MOD-06",
+          "MOD-10"
+        ],
+        "R-TEST-05": [
+          "MOD-17",
+          "MOD-15"
+        ],
+        "R-TEST-06": [
+          "MOD-17",
+          "MOD-15"
+        ]
+      },
+      "verification_tags": [],
+      "mutations_targeted": [],
+      "milestone_gates": [
+        "M9"
+      ],
+      "open_items_affecting": []
+    },
+    {
+      "id": "MOD-17",
+      "domain": "VERIFICATION",
+      "title": "Evidence discipline, test infrastructure, CI, claims, order",
+      "crate": "tests/ + scripts/",
+      "file": "17-verification.md",
+      "obligations": [
+        "R-CLAIM-01",
+        "R-CLAIM-02",
+        "R-CLAIM-03",
+        "R-CLAIM-04",
+        "R-ORDER-01",
+        "R-ORDER-02",
+        "R-ORDER-03",
+        "R-ORDER-04",
+        "R-ORDER-05",
+        "R-REF-06",
+        "R-REPO-01",
+        "R-REPO-02",
+        "R-REPO-03",
+        "R-SCOPE-03",
+        "R-TEST-08",
+        "R-TEST-09",
+        "R-TEST-10",
+        "R-TEST-11"
+      ],
+      "obligation_count": 18,
+      "record_count": 86,
+      "record_ranges": [
+        "REQ-CLAIM-001…022",
+        "REQ-ORDER-001…025",
+        "REQ-REF-014…016",
+        "REQ-REPO-001…019",
+        "REQ-SCOPE-008…010",
+        "REQ-TEST-022…031",
+        "REQ-TEST-042",
+        "REQ-TEST-044",
+        "REQ-TEST-054…055"
+      ],
+      "cross_references": {
+        "R-TEST-08": [
+          "MOD-12",
+          "MOD-11"
+        ],
+        "R-TEST-09": [
+          "MOD-15",
+          "MOD-01"
+        ],
+        "R-TEST-10": [
+          "MOD-16",
+          "MOD-15"
+        ],
+        "R-TEST-11": [
+          "MOD-15",
+          "MOD-16",
+          "MOD-12"
+        ],
+        "R-REF-06": [
+          "MOD-08",
+          "MOD-03",
+          "MOD-15"
+        ],
+        "R-SCOPE-03": [
+          "MOD-01"
+        ],
+        "R-REPO-02": [
+          "MOD-01",
+          "MOD-02",
+          "MOD-03",
+          "MOD-05",
+          "MOD-11",
+          "MOD-09",
+          "MOD-13",
+          "MOD-14",
+          "MOD-15",
+          "MOD-16"
+        ],
+        "R-ORDER-03": [
+          "MOD-02",
+          "MOD-03",
+          "MOD-06",
+          "MOD-11"
+        ]
+      },
+      "verification_tags": [],
+      "mutations_targeted": [],
+      "milestone_gates": [
+        "M0",
+        "M10",
+        "M11"
+      ],
+      "open_items_affecting": []
+    }
+  ],
+  "duplications": [
+    {
+      "id": "D-01",
+      "kind": "central",
+      "endpoints": [
+        "R-CORE-04",
+        "R-CAP-05"
+      ],
+      "canonical": "R-CAP-05",
+      "note": "No authority amplification stated centrally (README thesis) and in the algebra v0.2; algebraic statement is canonical."
+    },
+    {
+      "id": "D-02",
+      "kind": "central",
+      "endpoints": [
+        "R-CORE-05",
+        "R-BUDGET-05"
+      ],
+      "canonical": "R-BUDGET-05",
+      "note": "Budget partition conservation stated centrally and in the budget model; budget-model statement is canonical."
+    },
+    {
+      "id": "D-03",
+      "kind": "central",
+      "endpoints": [
+        "R-CORE-06",
+        "R-DUR-01"
+      ],
+      "canonical": "R-DUR-01",
+      "note": "HostInvoked => DurableIssued stated centrally and at the durability boundary; boundary statement is canonical."
+    },
+    {
+      "id": "D-04",
+      "kind": "central",
+      "endpoints": [
+        "R-CORE-07",
+        "R-MARSHAL-01"
+      ],
+      "canonical": "R-MARSHAL-01",
+      "note": "Raw-capability marshal rejection stated centrally and at the actor marshalling boundary; marshalling statement is canonical."
+    },
+    {
+      "id": "D-05",
+      "kind": "central",
+      "endpoints": [
+        "R-CORE-08",
+        "R-ACTOR-07"
+      ],
+      "canonical": "R-ACTOR-07",
+      "note": "Deterministic-concurrency theorem stated centrally and at Phase 13; Phase 13 theorem is canonical."
+    },
+    {
+      "id": "D-06",
+      "kind": "central",
+      "endpoints": [
+        "R-CORE-09",
+        "R-RECOV-02",
+        "R-RECOV-03"
+      ],
+      "canonical": "R-RECOV-02",
+      "note": "Qualified crash-recovery theorem stated centrally; the T0..T6 matrix + algorithm are the canonical operative form."
+    },
+    {
+      "id": "D-07",
+      "kind": "central",
+      "endpoints": [
+        "R-CORE-10",
+        "R-RECOV-05"
+      ],
+      "canonical": "R-RECOV-05",
+      "note": "No-silent-repair rule stated centrally and at recovery; recovery statement is canonical."
+    },
+    {
+      "id": "D-08",
+      "kind": "distribution",
+      "endpoints": [
+        "R-CORE-03",
+        "R-CAP-06",
+        "R-EFFECT-02"
+      ],
+      "canonical": "R-CAP-06",
+      "note": "No unauthorized effects: canonical predicate in the algebra, enforced by the gated transition form and gate 6."
+    },
+    {
+      "id": "D-09",
+      "kind": "central",
+      "endpoints": [
+        "R-TRUST-03",
+        "R-KERN-03"
+      ],
+      "canonical": "R-KERN-03",
+      "note": "No hidden authority stated as trust rule and as kernel visibility rule; kernel visibility statement is canonical."
+    },
+    {
+      "id": "D-10",
+      "kind": "verbatim",
+      "endpoints": [
+        "R-SCOPE-04",
+        "R-REF-02"
+      ],
+      "canonical": "R-REF-02",
+      "note": "Zero shared core logic stated in master prompt 1.2 and as the 15C.3 independence boundary; the boundary enumeration is canonical. Intra-module (both MOD-14)."
+    },
+    {
+      "id": "D-11",
+      "kind": "distribution",
+      "endpoints": [
+        "R-ARCH-03",
+        "R-COMPILE-01",
+        "R-COMPILE-05"
+      ],
+      "canonical": "R-COMPILE-01",
+      "note": "Block has no path into step(): architectural statement vs compiler constructor privacy; compiler statement is canonical."
+    },
+    {
+      "id": "D-12",
+      "kind": "refinement",
+      "endpoints": [
+        "R-CORE-02",
+        "R-EFFECT-03"
+      ],
+      "canonical": "R-EFFECT-03",
+      "note": "7-conjunct external-effect chain vs frozen 16-step request sequence (conjuncts realized by gates 5..16); the sequence is canonical."
+    }
+  ]
+}
