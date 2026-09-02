@@ -22,7 +22,12 @@ Checks (always, error = non-zero exit):
      CROSS-REFERENCES (schema: mod/00-overview.md §6).
   5. The REQUIREMENTS table of each module file lists exactly the obligations that
      module owns (row first cells `| R-…`), and no other module file lists them.
-  6. Generated files (when present) are up to date with the map (checked in --check
+  6. Every atomic record propagated to a module is named in that module's file
+     (REQ-… token present), and the file's own `N obligations / M records` summary
+     matches the computed partition.
+  7. Every open decision item mapped to a module (U_AFFECTED) is named in that
+     module's file (U-NN token present).
+  8. Generated files (when present) are up to date with the map (checked in --check
      mode by regenerating and comparing).
 """
 
@@ -121,7 +126,7 @@ def requirements_table_ids(text):
     return sorted(set(re.findall(r"^\| (R-[A-Z]+-\d+) \|", body, re.M)))
 
 
-def check_module_files(errors):
+def check_module_files(errors, req_owner=None):
     files = {}
     for mod_id, domain, title, crate, fname in O.MODULES:
         p = MOD / fname
@@ -148,6 +153,30 @@ def check_module_files(errors):
         # section id field content
         if f"`{mod_id}`" not in text.split("## SECTION-ID", 1)[1].split("## ", 1)[0]:
             errors.append(f"{fname}: SECTION-ID does not contain {mod_id}")
+        # 6. record coverage: the declared record block must equal the partition
+        if req_owner is not None:
+            owned_recs = {r for r, m in req_owner.items() if m == mod_id}
+            mm = re.search(r"Atomic registry records(.*?)\*\*(\d+) obligations? / (\d+) records?\.\*\*",
+                           text, re.S)
+            if not mm:
+                errors.append(f"{fname}: missing 'Atomic registry records … **N obligations / M records.**' block")
+            else:
+                declared = set()
+                for a, lo, hi in re.findall(r"REQ-([A-Z]+)-(\d{3})(?:…(\d{3}))?", mm.group(1)):
+                    declared |= {f"REQ-{a}-{n:03d}" for n in range(int(lo), int(hi or lo) + 1)}
+                if declared != owned_recs:
+                    errors.append(
+                        f"{fname}: record block mismatch: "
+                        f"missing={sorted(owned_recs - declared)[:5]} extra={sorted(declared - owned_recs)[:5]}")
+                n_o, n_r = int(mm.group(2)), int(mm.group(3))
+                if n_o != len(want) or n_r != len(owned_recs):
+                    errors.append(
+                        f"{fname}: summary says {n_o} obligations / {n_r} records; "
+                        f"partition gives {len(want)} / {len(owned_recs)}")
+        # 7. open items affecting this module are named
+        for u in sorted(u for u, ms in O.U_AFFECTED.items() if mod_id in ms):
+            if u not in text:
+                errors.append(f"{fname}: open item {u} not mentioned")
     # 3b. duplication marks symmetric
     for did, kind, endpoints, canonical, note in O.DUPLICATES:
         for rid in endpoints:
@@ -364,7 +393,7 @@ def main():
     records = parse_req_records()
     req_owner, req_errors = req_ownership(records)
     errors += req_errors
-    check_module_files(errors)
+    check_module_files(errors, req_owner)
     if len(records) != 545:
         errors.append(f"expected 545 records, found {len(records)}")
 

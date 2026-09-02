@@ -114,8 +114,7 @@ Canonical text: `spec/01` S-14. All 5 obligations `SPECIFIED`.
 | R-HOST-04 | Replay correspondence (machine replay valid; real-world per effect class) | L3947–3958, L26249–26262 | R-REF-01 recovery equivalence |
 | R-HOST-05 | Replay validates trace, not just final state | L38278–38302 | trace comparison |
 
-Atomic registry records under this module: REQ-HOST-001…014. **5 obligations / 14
-records.**
+Atomic registry records under this module: REQ-HOST-001…014. **5 obligations / 14 records.**
 
 ## SECURITY-BOUNDARY
 

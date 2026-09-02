@@ -142,8 +142,7 @@ Canonical text: `spec/01` S-17. All 11 obligations `SPECIFIED`.
 | R-CANON-10 | Injectivity: structural property + scoped evidence claim | L30592–30598, L35068 | round-trip + differential |
 | R-CANON-11 | Golden vectors as normative fixtures | L30599–30646, L31948–32010, L33266–33286 | M1 acceptance |
 
-Atomic registry records under this module: REQ-CANON-001…037. **11 obligations /
-37 records.**
+Atomic registry records under this module: REQ-CANON-001…037. **11 obligations / 37 records.**
 
 ## SECURITY-BOUNDARY
 

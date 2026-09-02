@@ -157,8 +157,7 @@ Canonical text: `spec/01` S-15/S-16. All 10 obligations `SPECIFIED`.
 Atomic registry records under this module: REQ-ACTOR-001…009, REQ-ACTOR-017…030,
 REQ-ACTOR-032…035; REQ-MARSHAL-001…010 (incl. explicitly placed REQ-ACTOR-024 v0.3
 E-Spawn — AMB-04 — and REQ-ACTOR-035 RunState/ActorStatus, cross-referenced to
-MOD-07; scheduler records REQ-ACTOR-010…016, REQ-ACTOR-031 belong to MOD-07).
-**10 obligations / 37 records.**
+MOD-07). **10 obligations / 37 records.**
 
 ## SECURITY-BOUNDARY
 
@@ -207,7 +206,8 @@ Owned here, binding elsewhere:
 - R-ACTOR-08 → MOD-01 (corollaries of R-CORE-04/05; not restatements — derivation
   chain only).
 
-Owned elsewhere, binding ACTOR: R-ACTOR-04/07 schedule these actors (MOD-07);
+Owned elsewhere, binding ACTOR: R-ACTOR-04/07 schedule these actors (MOD-07 — its
+atomic records are REQ-ACTOR-010…016 and REQ-ACTOR-031, kept there, not moved);
 R-CORE-07 (MOD-01 central restatement, D-04); R-EFFECT-03 step 15 sets `Pending`
 (MOD-08); R-RECOV-03 step 10 reconstructs the runnable queue (MOD-12); R-PERSIST-04
 snapshots carry actor state (MOD-11); R-PLANNER-02 (MOD-13: planner cannot allocate
