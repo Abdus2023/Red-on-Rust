@@ -530,7 +530,7 @@ Areas: `REF` (17), `TEST` (33) — 50 atomic units.
 ### REQ-TEST-021
 - REQ-ID: REQ-TEST-021
 - CATEGORY: test-infrastructure
-- SOURCE: Red-on-Rust.md L38580–38582([54] §21); spec/01 S-21 R-TEST-07
+- SOURCE: Red-on-Rust.md L38580–38582([54] §21); L37511([51] Differential Oracle Supremacy); spec/01 S-21 R-TEST-07
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: Coverage metrics are evidence and are never a substitute for the differential oracle.
 - PRECONDITIONS: any conformance claim

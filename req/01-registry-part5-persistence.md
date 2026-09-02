@@ -234,7 +234,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-CANON-017
 - REQ-ID: REQ-CANON-017
 - CATEGORY: serialization
-- SOURCE: Red-on-Rust.md L33200–33240([45]); L33167([45]); L33221–33238([45]); spec/01 S-17 R-CANON-06
+- SOURCE: Red-on-Rust.md L33200–33240([45]); L33167([45]); L33221–33238([45]); L28738([38] ascending key order); spec/01 S-17 R-CANON-06
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `Map = [count u32 BE][key₁][val₁]…`, with keys of type `Symbol` collected into a `BTreeMap<Symbol, Value>`, so decoded entries are in ascending `Symbol` order.
 - PRECONDITIONS: a map is encoded
@@ -290,7 +290,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-CANON-021
 - REQ-ID: REQ-CANON-021
 - CATEGORY: serialization
-- SOURCE: Red-on-Rust.md L32948–33049([45]); L30575–30586([41]); L30539–30544([41]); L33812–33816([46]); spec/01 S-17 R-CANON-07
+- SOURCE: Red-on-Rust.md L32948–33049([45]); L30575–30586([41]); L30539–30544([41]); L33812–33816([46]); L29913([41] strict parsing); L32020([43] strict parsing); spec/01 S-17 R-CANON-07
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `CanonicalDecode` enforces check (3): exact length — the payload is exactly `payload_length` bytes.
 - PRECONDITIONS: any decode
@@ -416,7 +416,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-CANON-030
 - REQ-ID: REQ-CANON-030
 - CATEGORY: serialization
-- SOURCE: Red-on-Rust.md L33266–33286([45] freeze); spec/01 S-17 R-CANON-08
+- SOURCE: Red-on-Rust.md L33266–33286([45] freeze); L31750([43] envelope never panics); spec/01 S-17 R-CANON-08
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: Envelope construction is fallible; the codec does not panic.
 - PRECONDITIONS: any encode/decode
@@ -546,7 +546,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-PERSIST-002
 - REQ-ID: REQ-PERSIST-002
 - CATEGORY: persistence
-- SOURCE: Red-on-Rust.md L33757–33790([46]); L35078–35087([47]); L38187–38201([54] §12); L34264([46] parser rejections); spec/01 S-18 R-PERSIST-01
+- SOURCE: Red-on-Rust.md L33757–33790([46]); L35078–35087([47]); L38187–38201([54] §12); L34264([46] parser rejections); L31635([42] no second format); L32022([43] Ready for 15B); spec/01 S-18 R-PERSIST-01
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: No secondary serialization: the payload of every persistence record is strictly the byte output of Phase 15A `CanonicalEncode`.
 - PRECONDITIONS: any record is written
@@ -700,7 +700,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-PERSIST-013
 - REQ-ID: REQ-PERSIST-013
 - CATEGORY: persistence
-- SOURCE: Red-on-Rust.md L33802–33830([46]); L35088–35110([47]); spec/01 S-18 R-PERSIST-02
+- SOURCE: Red-on-Rust.md L33802–33830([46]); L35088–35110([47]); L32020([43] strict parsing); spec/01 S-18 R-PERSIST-02
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: The WAL parser MUST reject trailing bytes.
 - PRECONDITIONS: bytes remain after the declared frame

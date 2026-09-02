@@ -1,11 +1,11 @@
 {
  "specification": "Red-on-Rust.md",
  "source_lines": 42312,
- "record_count": 543,
+ "record_count": 545,
  "evidence_status_of_every_record": "SPECIFIED",
  "per_file": {
   "01-registry-part1-foundations.md": 79,
-  "01-registry-part2-semantics.md": 77,
+  "01-registry-part2-semantics.md": 79,
   "01-registry-part3-resources-effects.md": 72,
   "01-registry-part4-durability-concurrency.md": 73,
   "01-registry-part5-persistence.md": 82,
@@ -21,7 +21,7 @@
   "PLANNER": 22,
   "COMPILE": 14,
   "CALC": 20,
-  "CEK": 22,
+  "CEK": 24,
   "CAP": 26,
   "KERN": 9,
   "BUDGET": 32,
@@ -40,7 +40,7 @@
   "CLAIM": 22
  },
  "normative_levels": {
-  "MUST": 366,
+  "MUST": 368,
   "IS": 50,
   "MUST NOT": 96,
   "MAY": 8,
@@ -1454,7 +1454,7 @@
   {
    "REQ-ID": "REQ-CEK-002",
    "CATEGORY": "machine-semantics",
-   "SOURCE": "Red-on-Rust.md L37840([54] §4); L38858([54] §28); L41503([60] restated [60]); spec/01 S-08 R-CEK-01",
+   "SOURCE": "Red-on-Rust.md L37840([54] §4); L38858([54] §28); L41503([60] restated [60]); L14314([22] No Recursive Evaluator Dependence); spec/01 S-08 R-CEK-01",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "The evaluator MUST NOT depend on recursive host-language calls for call-stack management; recursive evaluation is a prohibited shortcut.",
    "PRECONDITIONS": "any nested call",
@@ -1468,7 +1468,7 @@
   {
    "REQ-ID": "REQ-CEK-003",
    "CATEGORY": "machine-semantics",
-   "SOURCE": "Red-on-Rust.md L41484–41499([60]); L37838–37854([54] §4); L17846([25] continuation frames); L18009([25] continuation serialization); spec/01 S-08 R-CEK-01",
+   "SOURCE": "Red-on-Rust.md L41484–41499([60]); L37838–37854([54] §4); L17846([25] continuation frames); L18009([25] continuation serialization); L14318([22] Explicit Suspension); spec/01 S-08 R-CEK-01",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "Continuation state is explicit, serializable, replayable, and recoverable.",
    "PRECONDITIONS": "any continuation exists",
@@ -1608,7 +1608,7 @@
   {
    "REQ-ID": "REQ-CEK-013",
    "CATEGORY": "machine-semantics",
-   "SOURCE": "Red-on-Rust.md L37889–37906([54] §5); L16878–16905([25]); spec/01 S-08 R-CEK-05",
+   "SOURCE": "Red-on-Rust.md L37889–37906([54] §5); L16878–16905([25]); L14317([22] Deterministic Evaluation Order); spec/01 S-08 R-CEK-05",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "Calls evaluate strictly `function → argument 0 → argument 1 → … → argument N → apply`, i.e. left-to-right.",
    "PRECONDITIONS": "a `Call` term is evaluated",
@@ -2224,7 +2224,7 @@
   {
    "REQ-ID": "REQ-KERN-009",
    "CATEGORY": "capability-kernel",
-   "SOURCE": "Red-on-Rust.md L13267–13281([21] §17); L37931–37935([54] §6); spec/01 S-03 R-TRUST-03; spec/01 S-10 R-KERN-01",
+   "SOURCE": "Red-on-Rust.md L13267–13281([21] §17); L37931–37935([54] §6); L14316([22] Capability Opacity); spec/01 S-03 R-TRUST-03; spec/01 S-10 R-KERN-01",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "The evaluator never receives `Authority`, `Scope`, `Rights`, `Parent`, or `Revocation state`; only the opaque reference crosses the kernel/evaluator boundary.",
    "PRECONDITIONS": "any evaluator step",
@@ -2233,6 +2233,34 @@
    "DEPENDENCIES": "REQ-KERN-006, REQ-CALC-002, REQ-TRUST-009",
    "SECURITY-IMPACT": "critical (a capability carrying its own authority would be forgeable and amplifiable)",
    "VERIFICATION-METHOD": "evaluator input-domain review; type review of the kernel/evaluator boundary",
+   "EVIDENCE-STATUS": "SPECIFIED"
+  },
+  {
+   "REQ-ID": "REQ-CEK-023",
+   "CATEGORY": "machine-semantics",
+   "SOURCE": "Red-on-Rust.md L14313([22] Continuation Preservation); spec/01 S-08 R-CEK-06",
+   "NORMATIVE-LEVEL": "MUST",
+   "STATEMENT": "`continue_with_value` is the only path that pops a continuation frame; every `enter_*` function pushes exactly one frame or returns a terminal `EvalStep`, so no transition silently discards state.",
+   "PRECONDITIONS": "any evaluator transition",
+   "POSTCONDITIONS": "frame count changes only through `continue_with_value` (pop) or an `enter_*` push",
+   "INVARIANTS": "—",
+   "DEPENDENCIES": "REQ-CEK-019, REQ-CEK-007",
+   "SECURITY-IMPACT": "high",
+   "VERIFICATION-METHOD": "frame-discipline property test; `CEK-CONTINUATION-NO-LOSS` differential",
+   "EVIDENCE-STATUS": "SPECIFIED"
+  },
+  {
+   "REQ-ID": "REQ-CEK-024",
+   "CATEGORY": "machine-semantics",
+   "SOURCE": "Red-on-Rust.md L14315([22] No Direct Host Access); spec/01 S-08 R-CEK-01",
+   "NORMATIVE-LEVEL": "MUST",
+   "STATEMENT": "The `eval` module has zero dependencies on `std::fs`, `std::net` or equivalent host facilities; its only vocabulary for side effects is returning `EvalStep::RequestEffect`.",
+   "PRECONDITIONS": "—",
+   "POSTCONDITIONS": "no host facility is reachable from the evaluator; side effects exist only as machine requests",
+   "INVARIANTS": "—",
+   "DEPENDENCIES": "REQ-CORE-001, REQ-EFFECT-005, REQ-KERN-009",
+   "SECURITY-IMPACT": "critical",
+   "VERIFICATION-METHOD": "dependency review of the evaluator crate; `EVAL-NO-DIRECT-HOST-ACCESS` assertion",
    "EVIDENCE-STATUS": "SPECIFIED"
   },
   {
@@ -4492,7 +4520,7 @@
   {
    "REQ-ID": "REQ-CANON-017",
    "CATEGORY": "serialization",
-   "SOURCE": "Red-on-Rust.md L33200–33240([45]); L33167([45]); L33221–33238([45]); spec/01 S-17 R-CANON-06",
+   "SOURCE": "Red-on-Rust.md L33200–33240([45]); L33167([45]); L33221–33238([45]); L28738([38] ascending key order); spec/01 S-17 R-CANON-06",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`Map = [count u32 BE][key₁][val₁]…`, with keys of type `Symbol` collected into a `BTreeMap<Symbol, Value>`, so decoded entries are in ascending `Symbol` order.",
    "PRECONDITIONS": "a map is encoded",
@@ -4548,7 +4576,7 @@
   {
    "REQ-ID": "REQ-CANON-021",
    "CATEGORY": "serialization",
-   "SOURCE": "Red-on-Rust.md L32948–33049([45]); L30575–30586([41]); L30539–30544([41]); L33812–33816([46]); spec/01 S-17 R-CANON-07",
+   "SOURCE": "Red-on-Rust.md L32948–33049([45]); L30575–30586([41]); L30539–30544([41]); L33812–33816([46]); L29913([41] strict parsing); L32020([43] strict parsing); spec/01 S-17 R-CANON-07",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`CanonicalDecode` enforces check (3): exact length — the payload is exactly `payload_length` bytes.",
    "PRECONDITIONS": "any decode",
@@ -4674,7 +4702,7 @@
   {
    "REQ-ID": "REQ-CANON-030",
    "CATEGORY": "serialization",
-   "SOURCE": "Red-on-Rust.md L33266–33286([45] freeze); spec/01 S-17 R-CANON-08",
+   "SOURCE": "Red-on-Rust.md L33266–33286([45] freeze); L31750([43] envelope never panics); spec/01 S-17 R-CANON-08",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "Envelope construction is fallible; the codec does not panic.",
    "PRECONDITIONS": "any encode/decode",
@@ -4800,7 +4828,7 @@
   {
    "REQ-ID": "REQ-PERSIST-002",
    "CATEGORY": "persistence",
-   "SOURCE": "Red-on-Rust.md L33757–33790([46]); L35078–35087([47]); L38187–38201([54] §12); L34264([46] parser rejections); spec/01 S-18 R-PERSIST-01",
+   "SOURCE": "Red-on-Rust.md L33757–33790([46]); L35078–35087([47]); L38187–38201([54] §12); L34264([46] parser rejections); L31635([42] no second format); L32022([43] Ready for 15B); spec/01 S-18 R-PERSIST-01",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "No secondary serialization: the payload of every persistence record is strictly the byte output of Phase 15A `CanonicalEncode`.",
    "PRECONDITIONS": "any record is written",
@@ -4954,7 +4982,7 @@
   {
    "REQ-ID": "REQ-PERSIST-013",
    "CATEGORY": "persistence",
-   "SOURCE": "Red-on-Rust.md L33802–33830([46]); L35088–35110([47]); spec/01 S-18 R-PERSIST-02",
+   "SOURCE": "Red-on-Rust.md L33802–33830([46]); L35088–35110([47]); L32020([43] strict parsing); spec/01 S-18 R-PERSIST-02",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "The WAL parser MUST reject trailing bytes.",
    "PRECONDITIONS": "bytes remain after the declared frame",
@@ -5934,7 +5962,7 @@
   {
    "REQ-ID": "REQ-TEST-021",
    "CATEGORY": "test-infrastructure",
-   "SOURCE": "Red-on-Rust.md L38580–38582([54] §21); spec/01 S-21 R-TEST-07",
+   "SOURCE": "Red-on-Rust.md L38580–38582([54] §21); L37511([51] Differential Oracle Supremacy); spec/01 S-21 R-TEST-07",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "Coverage metrics are evidence and are never a substitute for the differential oracle.",
    "PRECONDITIONS": "any conformance claim",

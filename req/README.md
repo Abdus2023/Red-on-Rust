@@ -2,7 +2,7 @@
 
 Extraction of every normative requirement in the frozen Red-on-Rust specification into atomic requirement units.
 Source of record: `../Red-on-Rust.md` (42,312 lines, 60-turn design transcript). Canonicalization set: `../spec/00`…`../spec/10`.
-**Result: 543 atomic requirement records, all `EVIDENCE-STATUS: SPECIFIED`, covering 148/148 canonical obligations.**
+**Result: 545 atomic requirement records, all `EVIDENCE-STATUS: SPECIFIED`, covering 148/148 canonical obligations.**
 
 ## Files
 
@@ -10,7 +10,7 @@ Source of record: `../Red-on-Rust.md` (42,312 lines, 60-turn design transcript).
 |---|---|---|
 | `00-method.md` | Extraction rules, field semantics, evidence discipline, split/keep policy, provenance audit and corrections, validation log | — (method) |
 | `01-registry-part1-foundations.md` | 79 records — SCOPE 12, CORE 16, TRUST 9, ARCH 6, PLANNER 22, COMPILE 14 | **1. Atomic requirement registry** |
-| `01-registry-part2-semantics.md` | 77 records — CALC 20, CEK 22, CAP 26, KERN 9 | 1 |
+| `01-registry-part2-semantics.md` | 79 records — CALC 20, CEK 24, CAP 26, KERN 9 | 1 |
 | `01-registry-part3-resources-effects.md` | 72 records — BUDGET 32, EFFECT 40 | 1 |
 | `01-registry-part4-durability-concurrency.md` | 73 records — DUR 14, HOST 14, ACTOR 35, MARSHAL 10 | 1 |
 | `01-registry-part5-persistence.md` | 82 records — CANON 37, PERSIST 23, RECOV 22 | 1 |

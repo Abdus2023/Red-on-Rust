@@ -1,6 +1,6 @@
 # Atomic Requirement Registry — Part 2: Language and Machine Semantics (S-07 … S-10)
 
-Areas: `CALC` (20), `CEK` (22), `CAP` (26), `KERN` (9) — 77 atomic units.
+Areas: `CALC` (20), `CEK` (24), `CAP` (26), `KERN` (9) — 79 atomic units.
 Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at `Red-on-Rust.md` L8700–8800 (turn `[16]`), which `spec/03` does not carry as separate obligations; they are extracted here because they are normative source text, not inference.
 
 ---
@@ -308,7 +308,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-CEK-002
 - REQ-ID: REQ-CEK-002
 - CATEGORY: machine-semantics
-- SOURCE: Red-on-Rust.md L37840([54] §4); L38858([54] §28); L41503([60] restated [60]); spec/01 S-08 R-CEK-01
+- SOURCE: Red-on-Rust.md L37840([54] §4); L38858([54] §28); L41503([60] restated [60]); L14314([22] No Recursive Evaluator Dependence); spec/01 S-08 R-CEK-01
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: The evaluator MUST NOT depend on recursive host-language calls for call-stack management; recursive evaluation is a prohibited shortcut.
 - PRECONDITIONS: any nested call
@@ -322,7 +322,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-CEK-003
 - REQ-ID: REQ-CEK-003
 - CATEGORY: machine-semantics
-- SOURCE: Red-on-Rust.md L41484–41499([60]); L37838–37854([54] §4); L17846([25] continuation frames); L18009([25] continuation serialization); spec/01 S-08 R-CEK-01
+- SOURCE: Red-on-Rust.md L41484–41499([60]); L37838–37854([54] §4); L17846([25] continuation frames); L18009([25] continuation serialization); L14318([22] Explicit Suspension); spec/01 S-08 R-CEK-01
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: Continuation state is explicit, serializable, replayable, and recoverable.
 - PRECONDITIONS: any continuation exists
@@ -462,7 +462,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-CEK-013
 - REQ-ID: REQ-CEK-013
 - CATEGORY: machine-semantics
-- SOURCE: Red-on-Rust.md L37889–37906([54] §5); L16878–16905([25]); spec/01 S-08 R-CEK-05
+- SOURCE: Red-on-Rust.md L37889–37906([54] §5); L16878–16905([25]); L14317([22] Deterministic Evaluation Order); spec/01 S-08 R-CEK-05
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: Calls evaluate strictly `function → argument 0 → argument 1 → … → argument N → apply`, i.e. left-to-right.
 - PRECONDITIONS: a `Call` term is evaluated
@@ -1085,7 +1085,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-KERN-009
 - REQ-ID: REQ-KERN-009
 - CATEGORY: capability-kernel
-- SOURCE: Red-on-Rust.md L13267–13281([21] §17); L37931–37935([54] §6); spec/01 S-03 R-TRUST-03; spec/01 S-10 R-KERN-01
+- SOURCE: Red-on-Rust.md L13267–13281([21] §17); L37931–37935([54] §6); L14316([22] Capability Opacity); spec/01 S-03 R-TRUST-03; spec/01 S-10 R-KERN-01
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: The evaluator never receives `Authority`, `Scope`, `Rights`, `Parent`, or `Revocation state`; only the opaque reference crosses the kernel/evaluator boundary.
 - PRECONDITIONS: any evaluator step
@@ -1094,4 +1094,34 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 - DEPENDENCIES: REQ-KERN-006, REQ-CALC-002, REQ-TRUST-009
 - SECURITY-IMPACT: critical (a capability carrying its own authority would be forgeable and amplifiable)
 - VERIFICATION-METHOD: evaluator input-domain review; type review of the kernel/evaluator boundary
+- EVIDENCE-STATUS: SPECIFIED
+
+---
+
+### REQ-CEK-023
+- REQ-ID: REQ-CEK-023
+- CATEGORY: machine-semantics
+- SOURCE: Red-on-Rust.md L14313([22] Continuation Preservation); spec/01 S-08 R-CEK-06
+- NORMATIVE-LEVEL: MUST
+- STATEMENT: `continue_with_value` is the only path that pops a continuation frame; every `enter_*` function pushes exactly one frame or returns a terminal `EvalStep`, so no transition silently discards state.
+- PRECONDITIONS: any evaluator transition
+- POSTCONDITIONS: frame count changes only through `continue_with_value` (pop) or an `enter_*` push
+- INVARIANTS: —
+- DEPENDENCIES: REQ-CEK-019, REQ-CEK-007
+- SECURITY-IMPACT: high
+- VERIFICATION-METHOD: frame-discipline property test; `CEK-CONTINUATION-NO-LOSS` differential
+- EVIDENCE-STATUS: SPECIFIED
+
+### REQ-CEK-024
+- REQ-ID: REQ-CEK-024
+- CATEGORY: machine-semantics
+- SOURCE: Red-on-Rust.md L14315([22] No Direct Host Access); spec/01 S-08 R-CEK-01
+- NORMATIVE-LEVEL: MUST
+- STATEMENT: The `eval` module has zero dependencies on `std::fs`, `std::net` or equivalent host facilities; its only vocabulary for side effects is returning `EvalStep::RequestEffect`.
+- PRECONDITIONS: —
+- POSTCONDITIONS: no host facility is reachable from the evaluator; side effects exist only as machine requests
+- INVARIANTS: —
+- DEPENDENCIES: REQ-CORE-001, REQ-EFFECT-005, REQ-KERN-009
+- SECURITY-IMPACT: critical
+- VERIFICATION-METHOD: dependency review of the evaluator crate; `EVAL-NO-DIRECT-HOST-ACCESS` assertion
 - EVIDENCE-STATUS: SPECIFIED
