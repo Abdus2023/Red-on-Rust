@@ -338,7 +338,7 @@
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "`OrdinaryMarshal(Value::Capability) ⇒ Rejected`; raw capability references MUST NOT cross actor boundaries through ordinary messages.",
    "PRECONDITIONS": "`marshal(v)` encounters a capability anywhere in `v`",
-   "POSTCONDITIONS": "`Err(MarshalFault::CapabilityRequiresDelegation)`; recipient context unchanged",
+   "POSTCONDITIONS": "`Err(MarshalFault::CapabilityRequiresDelegation)`; recipient context unchanged — **note (X-65, C-55):** this cites the turn-[32] declaration (L25983: `CapabilityRequiresDelegation`, `SerializationError`). A second, disjoint `pub enum MarshalFault` exists at L10846 (turn [18]: `CapabilityNotTransferable`, `InvalidFormat`) with zero shared variants and no stated supersession, and the turn-[33] `Fault` carries `MarshalFault(...)` as an elided payload (L26871). Nothing is renamed here; the split is recorded and folded into U-14.",
    "INVARIANTS": "`CapRef ∉ marshal(v)`",
    "DEPENDENCIES": "REQ-MARSHAL-001, REQ-MARSHAL-005",
    "SECURITY-IMPACT": "critical",
@@ -1328,12 +1328,12 @@
   {
    "REQ-ID": "REQ-CALC-013",
    "CATEGORY": "calculus",
-   "SOURCE": "Red-on-Rust.md L23806–23819([30]); L27236([33]); spec/01 S-07 R-CALC-06",
+   "SOURCE": "Red-on-Rust.md L23806–23819([30]); L27236([33]); L20408–20413([28] `pub enum CapabilityError` — declared, contra the superseded INVARIANTS wording); L20451([28] `CapabilityError::InvalidConstraint`); L20835([28] `CapabilityError::Invalid`, undeclared); spec/01 S-07 R-CALC-06",
    "NORMATIVE-LEVEL": "IS",
    "STATEMENT": "The frozen fault taxonomy is `Fault::Capability(CapabilityError) | BudgetExhausted | DeadlineExceeded | HostPolicyDenied(HostPolicyError) | EffectCanonicalization(EffectError) | Host(HostFault) | ReplayCorruption | InvalidReceipt`, plus `StalePlan` at the planner boundary.",
    "PRECONDITIONS": "—",
    "POSTCONDITIONS": "—",
-   "INVARIANTS": "— (closed set; inner variants not enumerated in the source — see AMB-08)",
+   "INVARIANTS": "— (closed set; inner variants not enumerated in the source — see AMB-08) **Corrected in place (X-59, X-66, C-56):** the parenthetical to the left is kept as superseded and is false on both halves. The set is *not* closed — the frozen declaration at L23806 carries an explicit `// ... (previous faults)` elision at L23807 — and two of the four inner enums *are* declared: `CapabilityError` at L20408 (`Revoked`, `Expired`, `InvalidConstraint`, elided) and `HostFault` at L10820. Only `HostPolicyError` and `EffectError` have no declaration. `CapabilityError` additionally contradicts itself: L20451 uses the declared `InvalidConstraint` and L20835 the undeclared `Invalid` for the same `derive` fallback in the same turn.",
    "DEPENDENCIES": "U-08, U-14",
    "SECURITY-IMPACT": "high (fault names are compared by the differential observer)",
    "VERIFICATION-METHOD": "fault-coverage metric; differential fault comparison",
@@ -1344,9 +1344,9 @@
    "CATEGORY": "calculus",
    "SOURCE": "Red-on-Rust.md L27236([33]); L28373([36]); spec/01 S-07 R-CALC-06",
    "NORMATIVE-LEVEL": "MUST",
-   "STATEMENT": "`StalePlan` is a member of the fault taxonomy at the planner boundary.",
+   "STATEMENT": "`StalePlan` is a member of the fault taxonomy at the planner boundary. **Verified, correction reverted (X-64, C-54):** the statement is source-supported and stands as written — L28373 (turn [36]) states that a stale proposal “is rejected with `Fault::StalePlan`”, and this record's own SOURCE line already cited L28373. A previous revision of the terminology-normalization pass rewrote this line to say the statement was an extraction error; that rewrite was itself wrong and is reverted (R-SCOPE-03: the superseded wording is quoted, not deleted). The caveat that *does* stand is narrower: `StalePlan` is a variant of none of the seven `pub enum Fault` declarations, so it is a used-but-undeclared variant — one of twelve such `Fault::` paths (X-69) — and U-08 owns the variant set.",
    "PRECONDITIONS": "stale proposal rejected",
-   "POSTCONDITIONS": "`Fault::StalePlan` produced",
+   "POSTCONDITIONS": "`Fault::StalePlan` produced. **Withdrawal reverted (X-64, C-54):** a previous revision of this pass marked this postcondition withdrawn on the claim that “the string `Fault::StalePlan` occurs nowhere in L1–42312”. That claim is false — the string occurs verbatim at L28373 — so the postcondition is restored unchanged. What remains open is that no `enum Fault` declaration contains the variant (X-69), which is U-08's decision, not a defect in this record.",
    "INVARIANTS": "—",
    "DEPENDENCIES": "REQ-PLANNER-014, REQ-PLANNER-015",
    "SECURITY-IMPACT": "medium",
@@ -3574,7 +3574,7 @@
    "PRECONDITIONS": "replay validation fails or the trace ends early",
    "POSTCONDITIONS": "an explicit fault is produced; replay does not continue with fabricated results",
    "INVARIANTS": "—",
-   "DEPENDENCIES": "REQ-HOST-007; AMB-08 (`ReplayTraceExhausted` is not a variant of the frozen `Fault` enum)",
+   "DEPENDENCIES": "REQ-HOST-007; AMB-08 (`ReplayTraceExhausted` is not a variant of the frozen `Fault` enum) — **corrected in place (X-67, C-57, BLOCKING):** the note to the left is kept as superseded and attributes the gap to the wrong type. `ReplayTraceExhausted` is a `HostFault` path, and `pub enum HostFault` is declared exactly once (L10820, turn [18]) with two variants, `IoError(String)` and `PolicyViolation(String)`. Eight undeclared `HostFault::` paths are used — `UnboundCapability`, `ConcreteScopeViolation`, `Io`, `ReplayTraceExhausted` (6×), `ReplayCorruption` (6×), `TraceExhausted`, `ReplayIdMismatch`, `ReplayDigestMismatch` — and neither declared variant is ever used. Six of the uses, including this requirement's own evidence at L35225–35227, are on the frozen 15C.42 `ReplayHost`. See AMB-33, `term/` T-74.",
    "SECURITY-IMPACT": "critical",
    "VERIFICATION-METHOD": "replay fault tests",
    "EVIDENCE-STATUS": "SPECIFIED"
@@ -7692,6 +7692,7 @@
   "DEPENDENCIES / CN- / AMB- / VU- references resolve",
   "every backticked identifier in STATEMENT or INVARIANTS occurs in a cited range",
   "frozen anchors re-grepped against the source",
-  "part-file header counts match parsed records"
+  "part-file header counts match parsed records",
+  "markdown tables structurally intact (no unescaped `|` inside a cell)"
  ]
 }
