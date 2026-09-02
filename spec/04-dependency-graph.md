@@ -11,7 +11,8 @@ Three layers: **A. section dependencies** (specification structure), **B. semant
 > levels), `dep/03-cycles.md` (SCCs and the cycles needing architectural review),
 > `dep/04-cross-section-table.md` (module × kind and crate × kind tables),
 > `dep/05-violations.md` (independence checks, the findings register `V-…`, hidden
-> dependencies `HD-1`…`HD-6`, invalid directions, forward references),
+> dependencies `HD-1`…`HD-6`, invalid directions, forward references, and in §7 the
+> measured cost of each answer to the four findings that block a build order),
 > `dep/10-graph.json` (machine-readable). Regenerate with
 > `python3 dep/_graph.py --write`; check with `python3 dep/_graph.py`.
 >

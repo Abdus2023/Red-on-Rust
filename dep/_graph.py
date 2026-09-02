@@ -2068,6 +2068,19 @@ def gen_violations(ctx):
                     f"`{n}` {a} → {b}" for n, a, b in moved)
                     + f". Full order becomes: {', '.join(m['build_order'])}.")
         A("")
+    unpriced = [f for f in sorted(E.FINDINGS) if f not in E.RESOLUTIONS]
+    A("### 7.5 What is not priced here\n")
+    A(f"{len(unpriced)} of the {len(E.FINDINGS)} findings have no options above: "
+      + ", ".join(f"`{f}`" for f in unpriced)
+      + ". Most are tracking or provenance fixes — an untracked prohibition list, "
+      "an index that disagrees with `spec/07` §6, a mis-cited line — where the "
+      "graph looks the same whichever way they go, so there is nothing to "
+      "measure. `V-09` is the exception, and the omission is deliberate: it *is* "
+      "a graph decision, but its resolution splits `MOD-04` into a `ror-core` "
+      "algebra part and a `ror-runtime` gate part, which changes the node set "
+      "rather than the edges. This table models mutations of edges only; pricing "
+      "V-09 would mean inventing an 18-module graph that the rest of this "
+      "document set does not describe.\n")
     return "\n".join(L) + "\n"
 
 

@@ -392,3 +392,7 @@ V-01, V-03 and V-04 are the three findings that leave the module layer with no p
   - *Module edges that gain a crate realisation:* `MOD-02 -> MOD-05` (TYPE), `MOD-09 -> MOD-13` (RUNTIME), `MOD-11 -> MOD-05` (PERSISTENCE), `MOD-11 -> MOD-06` (PERSISTENCE), `MOD-11 -> MOD-07` (PERSISTENCE), `MOD-11 -> MOD-08` (PERSISTENCE), `MOD-11 -> MOD-13` (PERSISTENCE).
   - *Build order:* `ror-host` 8 → 7, `ror-agent` 7 → 8. Full order becomes: ror-core, ror-compiler, ror-kernel, ror-persistence, ror-reference, ror-runtime, ror-host, ror-agent, ror-testkit, ror-differential.
 
+### 7.5 What is not priced here
+
+7 of the 11 findings have no options above: `V-02`, `V-05`, `V-06`, `V-07`, `V-08`, `V-09`, `V-11`. Most are tracking or provenance fixes — an untracked prohibition list, an index that disagrees with `spec/07` §6, a mis-cited line — where the graph looks the same whichever way they go, so there is nothing to measure. `V-09` is the exception, and the omission is deliberate: it *is* a graph decision, but its resolution splits `MOD-04` into a `ror-core` algebra part and a `ror-runtime` gate part, which changes the node set rather than the edges. This table models mutations of edges only; pricing V-09 would mean inventing an 18-module graph that the rest of this document set does not describe.
+

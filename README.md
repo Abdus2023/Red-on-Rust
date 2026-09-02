@@ -51,7 +51,10 @@ RUNTIME_DEPENDENCY` and read as **`A -> B` = B depends on A**. It reports roots,
 strongly connected components, circular dependencies requiring architectural review,
 hidden dependencies (`HD-1`…`HD-6`), invalid dependency directions, requirements
 referenced before definition, and the violations of architectural independence
-(the findings register `V-…`). All seven files in `dep/` are generated: `dep/00-overview.md` …
+(the findings register `V-…`). For the four findings that block a build order it also
+measures what each possible answer would cost — crate DAG, hidden dependencies, build
+order — without applying any of them (`dep/05` §7). All seven files in `dep/` are
+generated: `dep/00-overview.md` …
 `dep/05-violations.md` plus `dep/10-graph.json`; regenerate with
 `python3 dep/_graph.py --write` and check with `python3 dep/_graph.py`.
 
