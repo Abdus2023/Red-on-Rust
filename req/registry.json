@@ -1,7 +1,7 @@
 {
  "specification": "Red-on-Rust.md",
  "source_lines": 42312,
- "record_count": 541,
+ "record_count": 542,
  "evidence_status_of_every_record": "SPECIFIED",
  "per_file": {
   "01-registry-part1-foundations.md": 79,
@@ -9,7 +9,7 @@
   "01-registry-part3-resources-effects.md": 72,
   "01-registry-part4-durability-concurrency.md": 73,
   "01-registry-part5-persistence.md": 82,
-  "01-registry-part6-verification.md": 48,
+  "01-registry-part6-verification.md": 49,
   "01-registry-part7-engineering.md": 66,
   "01-registry-part8-reference-15C.md": 44
  },
@@ -34,7 +34,7 @@
   "PERSIST": 23,
   "RECOV": 22,
   "REF": 36,
-  "TEST": 56,
+  "TEST": 57,
   "REPO": 19,
   "ORDER": 25,
   "CLAIM": 22
@@ -46,7 +46,7 @@
   "MAY": 8,
   "AMBIGUOUS": 8,
   "NON-NORMATIVE": 4,
-  "SHOULD": 10
+  "SHOULD": 11
  },
  "parent_obligations_total": 148,
  "parent_obligations_cited": 148,
@@ -348,12 +348,12 @@
   {
    "REQ-ID": "REQ-CORE-010",
    "CATEGORY": "security-invariant",
-   "SOURCE": "Red-on-Rust.md L25700–25710([32] §4); L42090–42098([60]); spec/01 S-02 R-CORE-07",
+   "SOURCE": "Red-on-Rust.md L25700–25710([32] §4); L42090–42098([60]); L25294–25302([31] §26 region); spec/01 S-02 R-CORE-07",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "Authority crosses actor boundaries only via explicit delegation.",
    "PRECONDITIONS": "authority must reach another actor",
    "POSTCONDITIONS": "transfer occurs only through the explicit delegation operation and the `DelegatedCapability` envelope",
-   "INVARIANTS": "`DelegatedAuthority ≼ ParentAuthority`",
+   "INVARIANTS": "`DelegatedAuthority ≼ ParentAuthority`; `Send(v) ∧ v contains no delegation ⇒ Authority_{receiver}' = Authority_{receiver}`",
    "DEPENDENCIES": "REQ-MARSHAL-003, REQ-MARSHAL-004",
    "SECURITY-IMPACT": "critical",
    "VERIFICATION-METHOD": "Track C delegation tests; amplification test",
@@ -404,7 +404,7 @@
   {
    "REQ-ID": "REQ-CORE-014",
    "CATEGORY": "security-invariant",
-   "SOURCE": "Red-on-Rust.md L27563–27569([33] §25); L38233–38248([54] §12); L42082–42088 ([60]); spec/01 S-02 R-CORE-09",
+   "SOURCE": "Red-on-Rust.md L27563–27569([33] §25); L38233–38248([54] §12); L42082–42088 ([60]); L26186–26196([33] §7 region); spec/01 S-02 R-CORE-09",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "The system MUST NOT infer \"not executed\" from a missing completion record.",
    "PRECONDITIONS": "`Issued` record exists with no durable `Completed`",
@@ -502,7 +502,7 @@
   {
    "REQ-ID": "REQ-TRUST-005",
    "CATEGORY": "trust-model",
-   "SOURCE": "Red-on-Rust.md L28178–28230([35]); spec/01 S-03 R-TRUST-02",
+   "SOURCE": "Red-on-Rust.md L28178–28230([35]); L27102([33] §18 region); spec/01 S-03 R-TRUST-02",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`LLM output ∉ TCB authority`. The TCB consists of the CEK machine, capability kernel, budget algebra, deterministic scheduler, canonical serializer, WAL/recovery state machine, and effect boundary.",
    "PRECONDITIONS": "—",
@@ -1958,7 +1958,7 @@
   {
    "REQ-ID": "REQ-CAP-016",
    "CATEGORY": "security-invariant",
-   "SOURCE": "Red-on-Rust.md L6422–6426([11] Theorem 1); L6657–6661([11]); spec/01 S-09 R-CAP-08",
+   "SOURCE": "Red-on-Rust.md L6422–6426([11] Theorem 1); L6657–6661([11]); L4472([8] security interpretation); spec/01 S-09 R-CAP-08",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "Theorem 1 (attenuation soundness): `derive(A,C) ≼ A`.",
    "PRECONDITIONS": "any derivation",
@@ -2112,7 +2112,7 @@
   {
    "REQ-ID": "REQ-KERN-001",
    "CATEGORY": "capability-kernel",
-   "SOURCE": "Red-on-Rust.md L10188–10196([18]); L9127–9133([17]); spec/01 S-10 R-KERN-01",
+   "SOURCE": "Red-on-Rust.md L10188–10196([18]); L9127–9133([17]); L5958([10] generation-safety property); spec/01 S-10 R-KERN-01",
    "NORMATIVE-LEVEL": "IS",
    "STATEMENT": "`CapRef { index: u32, generation: u32 }` is an opaque, generation-safe capability reference.",
    "PRECONDITIONS": "—",
@@ -2742,7 +2742,7 @@
   {
    "REQ-ID": "REQ-EFFECT-005",
    "CATEGORY": "effect-protocol",
-   "SOURCE": "Red-on-Rust.md L38024–38045([54] §8); L23857–23948([30] 14-gate form, superseded numbering); L11053–11090([18] 14-step form, superseded numbering); spec/01 S-12 R-EFFECT-03; see C-01",
+   "SOURCE": "Red-on-Rust.md L38024–38045([54] §8); L23857–23948([30] 14-gate form, superseded numbering); L11053–11090([18] 14-step form, superseded numbering); L21542([29] §22 region); L22472–22480([29] gate-order rationale); spec/01 S-12 R-EFFECT-03; see C-01",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "The evaluator MUST follow the 16-step request sequence exactly (1 evaluate capability; 2 evaluate target; 3 evaluate arguments left-to-right; 4 construct canonical Effect; 5 validate capability; 6 authorize exact effect; 7 capability ceiling; 8 runtime budget; 9 runtime reservation; 10 deadline; 11 host policy; 12 allocate EffectId; 13 commit issue budget/reservation; 14 durable issuance; 15 Pending; 16 host invocation). Any deviation is a bug. The sequence is immutable.",
    "PRECONDITIONS": "a `Request` reaches finalization",
@@ -3498,7 +3498,7 @@
   {
    "REQ-ID": "REQ-HOST-005",
    "CATEGORY": "host-boundary",
-   "SOURCE": "Red-on-Rust.md L38280–38296([54] §14); L24011–24020([30]); spec/01 S-14 R-HOST-03",
+   "SOURCE": "Red-on-Rust.md L38280–38296([54] §14); L24011–24020([30]); L22333([29] §24 ReplayHost); L23234([29]); spec/01 S-14 R-HOST-03",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "`ReplayHost` reconstructs recorded effects and NEVER touches the external world.",
    "PRECONDITIONS": "a replay run",
@@ -3792,7 +3792,7 @@
   {
    "REQ-ID": "REQ-ACTOR-012",
    "CATEGORY": "concurrency",
-   "SOURCE": "Red-on-Rust.md L25558–25615([32]); L37924–37937([54] §9); spec/01 S-15 R-ACTOR-04",
+   "SOURCE": "Red-on-Rust.md L25558–25615([32]); L37924–37937([54] §9); L24345–24361([31]); spec/01 S-15 R-ACTOR-04",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "Exactly one actor performs exactly one CEK transition per scheduler turn.",
    "PRECONDITIONS": "a scheduler turn",
@@ -5262,7 +5262,7 @@
   {
    "REQ-ID": "REQ-RECOV-012",
    "CATEGORY": "recovery",
-   "SOURCE": "Red-on-Rust.md L35196–35208([47]); L38866([54] §28); L34430–L34437([46] strict validation); spec/01 S-19 R-RECOV-05",
+   "SOURCE": "Red-on-Rust.md L35196–35208([47]); L38866([54] §28); L34430–L34437([46] strict validation); L26931([33] §12 region); spec/01 S-19 R-RECOV-05",
    "NORMATIVE-LEVEL": "MUST NOT",
    "STATEMENT": "The recovery engine MUST NEVER silently repair corruption — no dropping duplicate runnable actors, no fixing budget mismatches, no ignoring gaps, checksums, or causality violations.",
    "PRECONDITIONS": "corruption is detected",
@@ -5332,7 +5332,7 @@
   {
    "REQ-ID": "REQ-RECOV-017",
    "CATEGORY": "recovery",
-   "SOURCE": "Red-on-Rust.md L26249–26262([33]); L35111–35144([47]); L26592–26598([33]); spec/01 S-19 R-RECOV-07",
+   "SOURCE": "Red-on-Rust.md L26249–26262([33]); L35111–35144([47]); L26592–26598([33]); L26736([33] §9 EffectRecoveryClass); spec/01 S-19 R-RECOV-07",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "Reconciliation is the only path by which an `Indeterminate` effect becomes resolved; the system never auto-resolves to \"not executed\".",
    "PRECONDITIONS": "an effect is `Indeterminate`",
@@ -6083,6 +6083,20 @@
    "DEPENDENCIES": "REQ-TEST-030, REQ-CLAIM-017",
    "SECURITY-IMPACT": "medium (claim discipline)",
    "VERIFICATION-METHOD": "report review",
+   "EVIDENCE-STATUS": "SPECIFIED"
+  },
+  {
+   "REQ-ID": "REQ-TEST-057",
+   "CATEGORY": "test-infrastructure",
+   "SOURCE": "Red-on-Rust.md L25223–25275([31] §26 Phase 13 property suite); spec/01 S-21 R-TEST-07",
+   "NORMATIVE-LEVEL": "SHOULD",
+   "STATEMENT": "The minimum Phase 13 acceptance suite includes the 35 enumerated properties — Scheduler (one transition per actor turn; FIFO runnable order; actor appears at most once in queue; pending, blocked and halted actors are never scheduled; receipt wakeup is deterministic; scheduler trace reproduces exactly), Spawn (fresh deterministic `ActorId`; parent budget escrowed exactly once; failed spawn leaves parent unchanged; empty environment, fresh heap, empty mailbox; attenuated child capabilities; child enqueued exactly once), Send (target actor exists; value evaluated before enqueue; value marshalled exactly once; raw capability cannot be copied; FIFO arrival; sender does not mutate recipient state directly; blocked recipient becomes runnable exactly once), Receive (empty mailbox blocks; blocking preserves continuation; nonempty mailbox dequeues exactly one message; FIFO ordering preserved; unmarshal failure becomes a machine fault; successful receive resumes continuation exactly once), and Delegation (delegated capability derived through kernel; exactly one derivation; exact constraint forwarded; child capability no more powerful than parent; raw `CapRef` transfer impossible through ordinary marshalling; revoked parent cannot delegate).",
+   "PRECONDITIONS": "Phase 13 (actors) is implemented",
+   "POSTCONDITIONS": "every enumerated property has a passing test in the acceptance suite",
+   "INVARIANTS": "—",
+   "DEPENDENCIES": "REQ-ACTOR-010, REQ-ACTOR-011, REQ-ACTOR-012, REQ-ACTOR-032, REQ-ORDER-010",
+   "SECURITY-IMPACT": "high",
+   "VERIFICATION-METHOD": "acceptance suite with one named test per enumerated property (35)",
    "EVIDENCE-STATUS": "SPECIFIED"
   },
   {

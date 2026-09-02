@@ -1,6 +1,6 @@
 # Atomic Requirement Registry — Part 6: Reference Model and Test Infrastructure (S-20, S-21)
 
-Areas: `REF` (17), `TEST` (31) — 48 atomic units.
+Areas: `REF` (17), `TEST` (32) — 49 atomic units.
 
 ---
 
@@ -679,4 +679,20 @@ Areas: `REF` (17), `TEST` (31) — 48 atomic units.
 - DEPENDENCIES: REQ-TEST-030, REQ-CLAIM-017
 - SECURITY-IMPACT: medium (claim discipline)
 - VERIFICATION-METHOD: report review
+- EVIDENCE-STATUS: SPECIFIED
+
+---
+
+### REQ-TEST-057
+- REQ-ID: REQ-TEST-057
+- CATEGORY: test-infrastructure
+- SOURCE: Red-on-Rust.md L25223–25275([31] §26 Phase 13 property suite); spec/01 S-21 R-TEST-07
+- NORMATIVE-LEVEL: SHOULD
+- STATEMENT: The minimum Phase 13 acceptance suite includes the 35 enumerated properties — Scheduler (one transition per actor turn; FIFO runnable order; actor appears at most once in queue; pending, blocked and halted actors are never scheduled; receipt wakeup is deterministic; scheduler trace reproduces exactly), Spawn (fresh deterministic `ActorId`; parent budget escrowed exactly once; failed spawn leaves parent unchanged; empty environment, fresh heap, empty mailbox; attenuated child capabilities; child enqueued exactly once), Send (target actor exists; value evaluated before enqueue; value marshalled exactly once; raw capability cannot be copied; FIFO arrival; sender does not mutate recipient state directly; blocked recipient becomes runnable exactly once), Receive (empty mailbox blocks; blocking preserves continuation; nonempty mailbox dequeues exactly one message; FIFO ordering preserved; unmarshal failure becomes a machine fault; successful receive resumes continuation exactly once), and Delegation (delegated capability derived through kernel; exactly one derivation; exact constraint forwarded; child capability no more powerful than parent; raw `CapRef` transfer impossible through ordinary marshalling; revoked parent cannot delegate).
+- PRECONDITIONS: Phase 13 (actors) is implemented
+- POSTCONDITIONS: every enumerated property has a passing test in the acceptance suite
+- INVARIANTS: —
+- DEPENDENCIES: REQ-ACTOR-010, REQ-ACTOR-011, REQ-ACTOR-012, REQ-ACTOR-032, REQ-ORDER-010
+- SECURITY-IMPACT: high
+- VERIFICATION-METHOD: acceptance suite with one named test per enumerated property (35)
 - EVIDENCE-STATUS: SPECIFIED

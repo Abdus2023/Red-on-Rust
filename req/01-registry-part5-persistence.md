@@ -1011,7 +1011,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-RECOV-012
 - REQ-ID: REQ-RECOV-012
 - CATEGORY: recovery
-- SOURCE: Red-on-Rust.md L35196–35208([47]); L38866([54] §28); L34430–L34437([46] strict validation); spec/01 S-19 R-RECOV-05
+- SOURCE: Red-on-Rust.md L35196–35208([47]); L38866([54] §28); L34430–L34437([46] strict validation); L26931([33] §12 region); spec/01 S-19 R-RECOV-05
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: The recovery engine MUST NEVER silently repair corruption — no dropping duplicate runnable actors, no fixing budget mismatches, no ignoring gaps, checksums, or causality violations.
 - PRECONDITIONS: corruption is detected
@@ -1081,7 +1081,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-RECOV-017
 - REQ-ID: REQ-RECOV-017
 - CATEGORY: recovery
-- SOURCE: Red-on-Rust.md L26249–26262([33]); L35111–35144([47]); L26592–26598([33]); spec/01 S-19 R-RECOV-07
+- SOURCE: Red-on-Rust.md L26249–26262([33]); L35111–35144([47]); L26592–26598([33]); L26736([33] §9 EffectRecoveryClass); spec/01 S-19 R-RECOV-07
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: Reconciliation is the only path by which an `Indeterminate` effect becomes resolved; the system never auto-resolves to "not executed".
 - PRECONDITIONS: an effect is `Indeterminate`

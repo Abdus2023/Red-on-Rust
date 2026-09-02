@@ -308,12 +308,12 @@ Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records a
 ### REQ-CORE-010
 - REQ-ID: REQ-CORE-010
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L25700–25710([32] §4); L42090–42098([60]); spec/01 S-02 R-CORE-07
+- SOURCE: Red-on-Rust.md L25700–25710([32] §4); L42090–42098([60]); L25294–25302([31] §26 region); spec/01 S-02 R-CORE-07
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: Authority crosses actor boundaries only via explicit delegation.
 - PRECONDITIONS: authority must reach another actor
 - POSTCONDITIONS: transfer occurs only through the explicit delegation operation and the `DelegatedCapability` envelope
-- INVARIANTS: `DelegatedAuthority ≼ ParentAuthority`
+- INVARIANTS: `DelegatedAuthority ≼ ParentAuthority`; `Send(v) ∧ v contains no delegation ⇒ Authority_{receiver}' = Authority_{receiver}`
 - DEPENDENCIES: REQ-MARSHAL-003, REQ-MARSHAL-004
 - SECURITY-IMPACT: critical
 - VERIFICATION-METHOD: Track C delegation tests; amplification test
@@ -364,7 +364,7 @@ Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records a
 ### REQ-CORE-014
 - REQ-ID: REQ-CORE-014
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L27563–27569([33] §25); L38233–38248([54] §12); L42082–42088 ([60]); spec/01 S-02 R-CORE-09
+- SOURCE: Red-on-Rust.md L27563–27569([33] §25); L38233–38248([54] §12); L42082–42088 ([60]); L26186–26196([33] §7 region); spec/01 S-02 R-CORE-09
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: The system MUST NOT infer "not executed" from a missing completion record.
 - PRECONDITIONS: `Issued` record exists with no durable `Completed`
@@ -466,7 +466,7 @@ Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records a
 ### REQ-TRUST-005
 - REQ-ID: REQ-TRUST-005
 - CATEGORY: trust-model
-- SOURCE: Red-on-Rust.md L28178–28230([35]); spec/01 S-03 R-TRUST-02
+- SOURCE: Red-on-Rust.md L28178–28230([35]); L27102([33] §18 region); spec/01 S-03 R-TRUST-02
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `LLM output ∉ TCB authority`. The TCB consists of the CEK machine, capability kernel, budget algebra, deterministic scheduler, canonical serializer, WAL/recovery state machine, and effect boundary.
 - PRECONDITIONS: —

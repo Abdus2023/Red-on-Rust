@@ -265,7 +265,7 @@ Areas: `DUR` (14), `HOST` (14), `ACTOR` (35), `MARSHAL` (10) — 73 atomic units
 ### REQ-HOST-005
 - REQ-ID: REQ-HOST-005
 - CATEGORY: host-boundary
-- SOURCE: Red-on-Rust.md L38280–38296([54] §14); L24011–24020([30]); spec/01 S-14 R-HOST-03
+- SOURCE: Red-on-Rust.md L38280–38296([54] §14); L24011–24020([30]); L22333([29] §24 ReplayHost); L23234([29]); spec/01 S-14 R-HOST-03
 - NORMATIVE-LEVEL: MUST NOT
 - STATEMENT: `ReplayHost` reconstructs recorded effects and NEVER touches the external world.
 - PRECONDITIONS: a replay run
@@ -563,7 +563,7 @@ Areas: `DUR` (14), `HOST` (14), `ACTOR` (35), `MARSHAL` (10) — 73 atomic units
 ### REQ-ACTOR-012
 - REQ-ID: REQ-ACTOR-012
 - CATEGORY: concurrency
-- SOURCE: Red-on-Rust.md L25558–25615([32]); L37924–37937([54] §9); spec/01 S-15 R-ACTOR-04
+- SOURCE: Red-on-Rust.md L25558–25615([32]); L37924–37937([54] §9); L24345–24361([31]); spec/01 S-15 R-ACTOR-04
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: Exactly one actor performs exactly one CEK transition per scheduler turn.
 - PRECONDITIONS: a scheduler turn

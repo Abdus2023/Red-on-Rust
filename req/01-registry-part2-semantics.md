@@ -816,7 +816,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-CAP-016
 - REQ-ID: REQ-CAP-016
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L6422–6426([11] Theorem 1); L6657–6661([11]); spec/01 S-09 R-CAP-08
+- SOURCE: Red-on-Rust.md L6422–6426([11] Theorem 1); L6657–6661([11]); L4472([8] security interpretation); spec/01 S-09 R-CAP-08
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: Theorem 1 (attenuation soundness): `derive(A,C) ≼ A`.
 - PRECONDITIONS: any derivation
@@ -973,7 +973,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-KERN-001
 - REQ-ID: REQ-KERN-001
 - CATEGORY: capability-kernel
-- SOURCE: Red-on-Rust.md L10188–10196([18]); L9127–9133([17]); spec/01 S-10 R-KERN-01
+- SOURCE: Red-on-Rust.md L10188–10196([18]); L9127–9133([17]); L5958([10] generation-safety property); spec/01 S-10 R-KERN-01
 - NORMATIVE-LEVEL: IS
 - STATEMENT: `CapRef { index: u32, generation: u32 }` is an opaque, generation-safe capability reference.
 - PRECONDITIONS: —
