@@ -86,7 +86,7 @@ A repository-wide search of `req/*.md`, `spec/*.md` and `mod/*.md` for the line 
 
 - **severity:** MAJOR
 - **constraint:** LLM/planner components must never become security authorities
-- The trust-model obligations in MOD-01 depend on planner-boundary records: REQ-TRUST-001 -> REQ-PLANNER-003 ('the model MUST NOT allocate capabilities', SECURITY-IMPACT critical) and REQ-TRUST-001 -> REQ-PLANNER-010 ('… MUST NOT alter scheduler state'). In the typed graph these are SECURITY_DEPENDENCY edges whose PROVIDER is MOD-13 AGENT, i.e. the planner module is the depended-upon side of a security property. The properties are *prohibitions on* the planner, not authority *held by* it, and `spec/07` §3 puts enforcement at the machine boundary ('the check lives at the machine boundary, not in the LLM integration'), so the architecture is sound — but the dependency as recorded makes the planner a provider of security guarantees and would let an implementation discharge R-TRUST-01 inside `ror-agent`.
+- The trust-model obligations in MOD-01 depend on planner-boundary records: REQ-TRUST-001 -> REQ-PLANNER-003 ('the model MUST NOT allocate capabilities', SECURITY-IMPACT critical) and REQ-TRUST-001 -> REQ-PLANNER-010 ('… MUST NOT alter scheduler state'). In the typed graph these are SECURITY_DEPENDENCY edges whose PROVIDER is MOD-13 AGENT, i.e. the planner module is the depended-upon side of a security property. The properties are *prohibitions on* the planner, not authority *held by* it, and `spec/07` §3 puts enforcement at the machine boundary ('the check lives at the machine boundary, not in the LLM integration'), so the architecture is sound — but the dependency as recorded makes the planner a provider of security guarantees and would let an implementation discharge R-TRUST-01 inside `ror-agent`. It is also uncarriable: no crate edge `ror-agent -> ror-core` exists, so the edge appears in HD-1 too, and the same holds for the reverse planner edge `MOD-13 -> MOD-09`, which is SC-3's offender.
 - **decision required:** Re-home the enforcement obligation: state R-TRUST-01's operative form against MOD-03/MOD-06/MOD-08 and keep the planner records as prohibitions only (no inbound security edge).
 
 ### V-04 — The source's §13 'Dependency Graph' contradicts the frozen crate edge list on three edges
@@ -151,9 +151,9 @@ A repository-wide search of `req/*.md`, `spec/*.md` and `mod/*.md` for the line 
 
 A dependency is *hidden* when it is real in the specification but invisible in the graph an implementer would read (`spec/07` §6 crate list, `mod/18` §0 module table, `spec/10-index.json`).
 
-### HD-1 — Production couplings no frozen crate edge can carry (26)
+### HD-1 — Production couplings no frozen crate edge can carry (31)
 
-26 module edges between production modules have no crate realisation: the specification states the coupling, but `spec/07` §6 has no edge that could carry it. Each is either a specification-layer statement (fine) or a missing crate edge (a finding).
+31 module edges between production modules have no crate realisation: the specification states the coupling, but `spec/07` §6 has no edge that could carry it. Each is either a specification-layer statement (fine) or a missing crate edge (a finding).
 
 | Item | Detail |
 |---|---|
@@ -162,6 +162,7 @@ A dependency is *hidden* when it is real in the specification but invisible in t
 | `MOD-03 -> MOD-01` | SEMANTIC_DEPENDENCY — would need crate edge ror-kernel -> ror-core (absent); 13 req |
 | `MOD-03 -> MOD-02` | SEMANTIC_DEPENDENCY — would need crate edge ror-kernel -> ror-compiler (absent); prose+2 req |
 | `MOD-03 -> MOD-04` | TYPE_DEPENDENCY — would need crate edge ror-kernel -> ror-core (absent); crate-table+prose+2 req |
+| `MOD-03 -> MOD-13` | SECURITY_DEPENDENCY — would need crate edge ror-kernel -> ror-agent (absent); 2 req |
 | `MOD-05 -> MOD-01` | SEMANTIC_DEPENDENCY — would need crate edge ror-runtime -> ror-core (absent); 1 req |
 | `MOD-06 -> MOD-01` | SEMANTIC_DEPENDENCY — would need crate edge ror-runtime -> ror-core (absent); 8 req |
 | `MOD-06 -> MOD-04` | SEMANTIC_DEPENDENCY — would need crate edge ror-runtime -> ror-core (absent); 1 req |
@@ -174,6 +175,7 @@ A dependency is *hidden* when it is real in the specification but invisible in t
 | `MOD-08 -> MOD-12` | SEMANTIC_DEPENDENCY — would need crate edge ror-runtime -> ror-persistence (absent); 2 req |
 | `MOD-09 -> MOD-01` | SEMANTIC_DEPENDENCY — would need crate edge ror-host -> ror-core (absent); 5 req |
 | `MOD-09 -> MOD-08` | RUNTIME_DEPENDENCY — would need crate edge ror-host -> ror-runtime (absent); prose+2 req |
+| `MOD-09 -> MOD-13` | RUNTIME_DEPENDENCY — would need crate edge ror-host -> ror-agent (absent); prose+1 req |
 | `MOD-11 -> MOD-01` | SEMANTIC_DEPENDENCY — would need crate edge ror-persistence -> ror-core (absent); 9 req |
 | `MOD-11 -> MOD-04` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-core (absent); 1 req |
 | `MOD-11 -> MOD-05` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-runtime (absent); 1 req |
@@ -181,8 +183,11 @@ A dependency is *hidden* when it is real in the specification but invisible in t
 | `MOD-11 -> MOD-07` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-runtime (absent); 1 req |
 | `MOD-11 -> MOD-08` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-runtime (absent); crate-table+prose+8 req |
 | `MOD-11 -> MOD-09` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-host (absent); prose+1 req |
+| `MOD-11 -> MOD-13` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-agent (absent); prose+2 req |
 | `MOD-12 -> MOD-01` | SEMANTIC_DEPENDENCY — would need crate edge ror-persistence -> ror-core (absent); 14 req |
 | `MOD-12 -> MOD-04` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-core (absent); 1 req |
+| `MOD-13 -> MOD-01` | SECURITY_DEPENDENCY — would need crate edge ror-agent -> ror-core (absent); 14 req |
+| `MOD-13 -> MOD-09` | RUNTIME_DEPENDENCY — would need crate edge ror-agent -> ror-host (absent); prose |
 
 ### HD-2 — Intra-crate couplings the crate DAG cannot express (14)
 

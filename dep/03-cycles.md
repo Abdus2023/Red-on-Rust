@@ -188,8 +188,8 @@ The full typed graph has **1 non-trivial SCC covering all 17 modules**. That is 
 |---|---|---|---|---|
 | full typed graph | 137 | 1 (largest 17) | — | — |
 | implementation graph | 50 | 3 (largest 4) | MOD-14, MOD-16, MOD-17 | MOD-09, MOD-13, MOD-15, MOD-16, MOD-17 |
-| production modules only (all kinds) | 66 | 1 (largest 12) | — | — |
-| production, implementation edges | 40 | 3 (largest 4) | — | MOD-02, MOD-09 |
+| production modules only (all kinds) | 76 | 1 (largest 13) | — | — |
+| production, implementation edges | 45 | 3 (largest 4) | — | MOD-09, MOD-13 |
 | verification modules only | 10 | 1 (largest 4) | — | — |
 | full graph minus F-CORE-RESTATEMENT + F-EVIDENCE-LOOP (27 pairs deleted) | 83 | 1 (largest 13) | — | MOD-16, MOD-17 |
 | kind-filtered subgraph (NOT the implementability test) | 60 | 1 (largest 12) | MOD-10, MOD-14, MOD-15, MOD-16, MOD-17 | MOD-14, MOD-15, MOD-16, MOD-17 |

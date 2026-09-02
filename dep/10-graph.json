@@ -8258,7 +8258,7 @@
   {
    "id": "HD-1",
    "title": "Production couplings no frozen crate edge can carry",
-   "why": "26 module edges between production modules have no crate realisation: the specification states the coupling, but `spec/07` §6 has no edge that could carry it. Each is either a specification-layer statement (fine) or a missing crate edge (a finding).",
+   "why": "31 module edges between production modules have no crate realisation: the specification states the coupling, but `spec/07` §6 has no edge that could carry it. Each is either a specification-layer statement (fine) or a missing crate edge (a finding).",
    "items": [
     [
      "MOD-02",
@@ -8289,6 +8289,12 @@
      "MOD-04",
      "TYPE_DEPENDENCY",
      "would need crate edge ror-kernel -> ror-core (absent); crate-table+prose+2 req"
+    ],
+    [
+     "MOD-03",
+     "MOD-13",
+     "SECURITY_DEPENDENCY",
+     "would need crate edge ror-kernel -> ror-agent (absent); 2 req"
     ],
     [
      "MOD-05",
@@ -8363,6 +8369,12 @@
      "would need crate edge ror-host -> ror-runtime (absent); prose+2 req"
     ],
     [
+     "MOD-09",
+     "MOD-13",
+     "RUNTIME_DEPENDENCY",
+     "would need crate edge ror-host -> ror-agent (absent); prose+1 req"
+    ],
+    [
      "MOD-11",
      "MOD-01",
      "SEMANTIC_DEPENDENCY",
@@ -8405,6 +8417,12 @@
      "would need crate edge ror-persistence -> ror-host (absent); prose+1 req"
     ],
     [
+     "MOD-11",
+     "MOD-13",
+     "PERSISTENCE_DEPENDENCY",
+     "would need crate edge ror-persistence -> ror-agent (absent); prose+2 req"
+    ],
+    [
      "MOD-12",
      "MOD-01",
      "SEMANTIC_DEPENDENCY",
@@ -8415,6 +8433,18 @@
      "MOD-04",
      "PERSISTENCE_DEPENDENCY",
      "would need crate edge ror-persistence -> ror-core (absent); 1 req"
+    ],
+    [
+     "MOD-13",
+     "MOD-01",
+     "SECURITY_DEPENDENCY",
+     "would need crate edge ror-agent -> ror-core (absent); 14 req"
+    ],
+    [
+     "MOD-13",
+     "MOD-09",
+     "RUNTIME_DEPENDENCY",
+     "would need crate edge ror-agent -> ror-host (absent); prose"
     ]
    ]
   },
@@ -8769,7 +8799,7 @@
    "title": "Security dependencies whose provider is the LLM/planner module",
    "severity": "MAJOR",
    "constraint": "LLM/planner components must never become security authorities",
-   "body": "The trust-model obligations in MOD-01 depend on planner-boundary records: REQ-TRUST-001 -> REQ-PLANNER-003 ('the model MUST NOT allocate capabilities', SECURITY-IMPACT critical) and REQ-TRUST-001 -> REQ-PLANNER-010 ('… MUST NOT alter scheduler state'). In the typed graph these are SECURITY_DEPENDENCY edges whose PROVIDER is MOD-13 AGENT, i.e. the planner module is the depended-upon side of a security property. The properties are *prohibitions on* the planner, not authority *held by* it, and `spec/07` §3 puts enforcement at the machine boundary ('the check lives at the machine boundary, not in the LLM integration'), so the architecture is sound — but the dependency as recorded makes the planner a provider of security guarantees and would let an implementation discharge R-TRUST-01 inside `ror-agent`.",
+   "body": "The trust-model obligations in MOD-01 depend on planner-boundary records: REQ-TRUST-001 -> REQ-PLANNER-003 ('the model MUST NOT allocate capabilities', SECURITY-IMPACT critical) and REQ-TRUST-001 -> REQ-PLANNER-010 ('… MUST NOT alter scheduler state'). In the typed graph these are SECURITY_DEPENDENCY edges whose PROVIDER is MOD-13 AGENT, i.e. the planner module is the depended-upon side of a security property. The properties are *prohibitions on* the planner, not authority *held by* it, and `spec/07` §3 puts enforcement at the machine boundary ('the check lives at the machine boundary, not in the LLM integration'), so the architecture is sound — but the dependency as recorded makes the planner a provider of security guarantees and would let an implementation discharge R-TRUST-01 inside `ror-agent`. It is also uncarriable: no crate edge `ror-agent -> ror-core` exists, so the edge appears in HD-1 too, and the same holds for the reverse planner edge `MOD-13 -> MOD-09`, which is SC-3's offender.",
    "decision": "Re-home the enforcement obligation: state R-TRUST-01's operative form against MOD-03/MOD-06/MOD-08 and keep the planner records as prohibitions only (no inbound security edge)."
   },
   "V-04": {

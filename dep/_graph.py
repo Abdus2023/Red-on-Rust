@@ -1992,6 +1992,17 @@ def main():
             err(f"module edge {pair[0]} -> {pair[1]} has no justification")
         if e["visibility"] == "none":
             err(f"module edge {pair[0]} -> {pair[1]} has no visibility marker")
+    # 0. node-set definitions must agree with the crate roles
+    roles = dict(E.CRATE_NODES)
+    for mod, crate in crate_of_module().items():
+        role = roles.get(crate)
+        if role == "production" and mod not in E.PRODUCTION_NODES:
+            err(f"{mod} lives in production crate {crate} but is not in "
+                "PRODUCTION_NODES — its edges would be invisible to HD-1")
+        if role == "production" and mod in E.VERIFICATION_NODES:
+            err(f"{mod} is in VERIFICATION_NODES but lives in {crate}")
+        if role == "verification" and mod in E.PRODUCTION_NODES:
+            err(f"{mod} is in PRODUCTION_NODES but lives in {crate}")
     # 1. generic edge sanity
     for g in (crate_graph, mod_graph, section_graph, req_graph):
         for e in g.edges:

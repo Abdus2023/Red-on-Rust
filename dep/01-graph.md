@@ -328,7 +328,7 @@ _The consumer calls the provider during execution (a real call edge in the froze
 |---|---|---|
 | full typed graph | _none_ | _none_ |
 | implementation graph | `MOD-14 REFERENCE`, `MOD-16 MUTATION`, `MOD-17 VERIFICATION` | `MOD-09 HOST`, `MOD-13 AGENT`, `MOD-15 DIFFERENTIAL`, `MOD-16 MUTATION`, `MOD-17 VERIFICATION` |
-| production modules, implementation edges | _none_ | `MOD-02 COMPILER`, `MOD-09 HOST` |
+| production modules, implementation edges | _none_ | `MOD-09 HOST`, `MOD-13 AGENT` |
 
 `MOD-01` is a root of neither: it is the foundation every module depends on for types, but its own central-invariant restatements depend on the operative statements single-homed elsewhere (F-CORE-RESTATEMENT). `MOD-14` is a root of the implementation graph — the structural statement of reference independence (R-REF-02).
 

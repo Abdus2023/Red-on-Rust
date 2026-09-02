@@ -149,9 +149,13 @@ NON_AUTHORITY = {
 }
 PLANNER_NODES = {"MOD-13"}
 REFERENCE_NODES = {"MOD-14"}
+# Modules whose crate is a *production* crate (`CRATE_NODES` role 'production').
+# MOD-13 belongs here: `ror-agent` is a production crate even though the planner
+# is untrusted (R-TRUST-01) — untrusted is not the same as non-production, and
+# leaving it out hid three unrealisable edges from HD-1.
 PRODUCTION_NODES = {
     "MOD-01", "MOD-02", "MOD-03", "MOD-04", "MOD-05", "MOD-06", "MOD-07",
-    "MOD-08", "MOD-09", "MOD-10", "MOD-11", "MOD-12",
+    "MOD-08", "MOD-09", "MOD-10", "MOD-11", "MOD-12", "MOD-13",
 }
 VERIFICATION_NODES = {"MOD-14", "MOD-15", "MOD-16", "MOD-17"}
 
@@ -518,7 +522,10 @@ FINDINGS = {
             "('the check lives at the machine boundary, not in the LLM "
             "integration'), so the architecture is sound — but the dependency "
             "as recorded makes the planner a provider of security guarantees and "
-            "would let an implementation discharge R-TRUST-01 inside `ror-agent`."),
+            "would let an implementation discharge R-TRUST-01 inside `ror-agent`. "
+            "It is also uncarriable: no crate edge `ror-agent -> ror-core` exists, "
+            "so the edge appears in HD-1 too, and the same holds for the reverse "
+            "planner edge `MOD-13 -> MOD-09`, which is SC-3's offender."),
         decision="Re-home the enforcement obligation: state R-TRUST-01's "
                  "operative form against MOD-03/MOD-06/MOD-08 and keep the "
                  "planner records as prohibitions only (no inbound security edge).",
