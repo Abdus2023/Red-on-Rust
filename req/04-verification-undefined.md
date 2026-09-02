@@ -69,5 +69,5 @@ Recommendation (non-normative, not part of the extraction): the dependency/visib
 | §2 `NON-NORMATIVE` | 4 |
 | §3 `MAY` permission with no obligation | 4 |
 | §4 review-only | 96 |
-| All other records (executable method stated: conformance tag, mutation M0xx, milestone gate, crash matrix, golden vector, property test, or differential test) | 430 |
-| **Total registry records** | **542** |
+| All other records (executable method stated: conformance tag, mutation M0xx, milestone gate, crash matrix, golden vector, property test, or differential test) | 431 |
+| **Total registry records** | **543** |

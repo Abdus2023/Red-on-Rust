@@ -857,7 +857,7 @@ Areas: `DUR` (14), `HOST` (14), `ACTOR` (35), `MARSHAL` (10) — 73 atomic units
 ### REQ-ACTOR-033
 - REQ-ID: REQ-ACTOR-033
 - CATEGORY: security-invariant
-- SOURCE: Red-on-Rust.md L26062–26070([32] Theorem 3); spec/01 S-15 R-ACTOR-08
+- SOURCE: Red-on-Rust.md L26062–26070([32] Theorem 3); L26082–26090([32] The Teleportation Test); spec/01 S-15 R-ACTOR-08
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: No teleportation: `Σ_actors C_consumable + Σ_escrow C_escrow + Σ_issued C_issue = C_global_initial`.
 - PRECONDITIONS: any actor tree at any time

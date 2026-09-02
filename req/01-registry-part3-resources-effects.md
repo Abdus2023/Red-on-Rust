@@ -518,7 +518,7 @@ The v0.3 budget/transition text (`Red-on-Rust.md` L8643–9050, turn `[16]`) is 
 ### REQ-EFFECT-005
 - REQ-ID: REQ-EFFECT-005
 - CATEGORY: effect-protocol
-- SOURCE: Red-on-Rust.md L38024–38045([54] §8); L23857–23948([30] 14-gate form, superseded numbering); L11053–11090([18] 14-step form, superseded numbering); L21542([29] §22 region); L22472–22480([29] gate-order rationale); spec/01 S-12 R-EFFECT-03; see C-01
+- SOURCE: Red-on-Rust.md L38024–38045([54] §8); L23857–23948([30] 14-gate form, superseded numbering); L11053–11090([18] 14-step form, superseded numbering); L21542([29] §22 region); L22472–22480([29] gate-order rationale); L9670–9679([17] no alternate path); spec/01 S-12 R-EFFECT-03; see C-01
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: The evaluator MUST follow the 16-step request sequence exactly (1 evaluate capability; 2 evaluate target; 3 evaluate arguments left-to-right; 4 construct canonical Effect; 5 validate capability; 6 authorize exact effect; 7 capability ceiling; 8 runtime budget; 9 runtime reservation; 10 deadline; 11 host policy; 12 allocate EffectId; 13 commit issue budget/reservation; 14 durable issuance; 15 Pending; 16 host invocation). Any deviation is a bug. The sequence is immutable.
 - PRECONDITIONS: a `Request` reaches finalization

@@ -1,6 +1,6 @@
 # Atomic Requirement Registry — Part 6: Reference Model and Test Infrastructure (S-20, S-21)
 
-Areas: `REF` (17), `TEST` (32) — 49 atomic units.
+Areas: `REF` (17), `TEST` (33) — 50 atomic units.
 
 ---
 
@@ -695,4 +695,20 @@ Areas: `REF` (17), `TEST` (32) — 49 atomic units.
 - DEPENDENCIES: REQ-ACTOR-010, REQ-ACTOR-011, REQ-ACTOR-012, REQ-ACTOR-032, REQ-ORDER-010
 - SECURITY-IMPACT: high
 - VERIFICATION-METHOD: acceptance suite with one named test per enumerated property (35)
+- EVIDENCE-STATUS: SPECIFIED
+
+---
+
+### REQ-TEST-058
+- REQ-ID: REQ-TEST-058
+- CATEGORY: test-infrastructure
+- SOURCE: Red-on-Rust.md L25750–25757([32] §6 Phase 13 Verification Architecture); spec/01 S-21 R-TEST-07
+- NORMATIVE-LEVEL: MUST
+- STATEMENT: Phase 13 verification enforces four independent testing tracks: **Track A (Scheduler)** — a reference FIFO queue implementation proving that `ProductionScheduler` selects actors in the exact same order and that `Pending`/`Blocked` actors are never selected; **Track B (Marshalling)** — proving `unmarshal(marshal(v)) == v` for all pure values and strictly rejecting any value containing a `CapRef` with `MarshalFault::CapabilityRequiresDelegation`; **Track C (Delegation)** — using the Phase 11 reference algebra to prove that `delegate(A, C)` yields a capability `A'` where `A' ⪯ A`; **Track D (Global Differential)** — an independent single-threaded reference simulator stepping through `Spawn`, `Send`, `Receive` and `Attenuate` sequences, proving trace equivalence with the production `GlobalState`.
+- PRECONDITIONS: Phase 13 (actors) is implemented
+- POSTCONDITIONS: all four tracks pass; a divergence in any track is a differential failure
+- INVARIANTS: —
+- DEPENDENCIES: REQ-ACTOR-010, REQ-MARSHAL-008, REQ-MARSHAL-005, REQ-ACTOR-031, REQ-REF-004
+- SECURITY-IMPACT: high
+- VERIFICATION-METHOD: four-track differential suite — Track A selection-order assertion, Track B round-trip, Track C attenuation, Track D trace equivalence
 - EVIDENCE-STATUS: SPECIFIED

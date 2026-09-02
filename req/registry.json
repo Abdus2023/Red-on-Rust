@@ -1,7 +1,7 @@
 {
  "specification": "Red-on-Rust.md",
  "source_lines": 42312,
- "record_count": 542,
+ "record_count": 543,
  "evidence_status_of_every_record": "SPECIFIED",
  "per_file": {
   "01-registry-part1-foundations.md": 79,
@@ -9,7 +9,7 @@
   "01-registry-part3-resources-effects.md": 72,
   "01-registry-part4-durability-concurrency.md": 73,
   "01-registry-part5-persistence.md": 82,
-  "01-registry-part6-verification.md": 49,
+  "01-registry-part6-verification.md": 50,
   "01-registry-part7-engineering.md": 66,
   "01-registry-part8-reference-15C.md": 44
  },
@@ -34,13 +34,13 @@
   "PERSIST": 23,
   "RECOV": 22,
   "REF": 36,
-  "TEST": 57,
+  "TEST": 58,
   "REPO": 19,
   "ORDER": 25,
   "CLAIM": 22
  },
  "normative_levels": {
-  "MUST": 365,
+  "MUST": 366,
   "IS": 50,
   "MUST NOT": 96,
   "MAY": 8,
@@ -1468,7 +1468,7 @@
   {
    "REQ-ID": "REQ-CEK-003",
    "CATEGORY": "machine-semantics",
-   "SOURCE": "Red-on-Rust.md L41484–41499([60]); L37838–37854([54] §4); spec/01 S-08 R-CEK-01",
+   "SOURCE": "Red-on-Rust.md L41484–41499([60]); L37838–37854([54] §4); L17846([25] continuation frames); L18009([25] continuation serialization); spec/01 S-08 R-CEK-01",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "Continuation state is explicit, serializable, replayable, and recoverable.",
    "PRECONDITIONS": "any continuation exists",
@@ -2742,7 +2742,7 @@
   {
    "REQ-ID": "REQ-EFFECT-005",
    "CATEGORY": "effect-protocol",
-   "SOURCE": "Red-on-Rust.md L38024–38045([54] §8); L23857–23948([30] 14-gate form, superseded numbering); L11053–11090([18] 14-step form, superseded numbering); L21542([29] §22 region); L22472–22480([29] gate-order rationale); spec/01 S-12 R-EFFECT-03; see C-01",
+   "SOURCE": "Red-on-Rust.md L38024–38045([54] §8); L23857–23948([30] 14-gate form, superseded numbering); L11053–11090([18] 14-step form, superseded numbering); L21542([29] §22 region); L22472–22480([29] gate-order rationale); L9670–9679([17] no alternate path); spec/01 S-12 R-EFFECT-03; see C-01",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "The evaluator MUST follow the 16-step request sequence exactly (1 evaluate capability; 2 evaluate target; 3 evaluate arguments left-to-right; 4 construct canonical Effect; 5 validate capability; 6 authorize exact effect; 7 capability ceiling; 8 runtime budget; 9 runtime reservation; 10 deadline; 11 host policy; 12 allocate EffectId; 13 commit issue budget/reservation; 14 durable issuance; 15 Pending; 16 host invocation). Any deviation is a bug. The sequence is immutable.",
    "PRECONDITIONS": "a `Request` reaches finalization",
@@ -4086,7 +4086,7 @@
   {
    "REQ-ID": "REQ-ACTOR-033",
    "CATEGORY": "security-invariant",
-   "SOURCE": "Red-on-Rust.md L26062–26070([32] Theorem 3); spec/01 S-15 R-ACTOR-08",
+   "SOURCE": "Red-on-Rust.md L26062–26070([32] Theorem 3); L26082–26090([32] The Teleportation Test); spec/01 S-15 R-ACTOR-08",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "No teleportation: `Σ_actors C_consumable + Σ_escrow C_escrow + Σ_issued C_issue = C_global_initial`.",
    "PRECONDITIONS": "any actor tree at any time",
@@ -6097,6 +6097,20 @@
    "DEPENDENCIES": "REQ-ACTOR-010, REQ-ACTOR-011, REQ-ACTOR-012, REQ-ACTOR-032, REQ-ORDER-010",
    "SECURITY-IMPACT": "high",
    "VERIFICATION-METHOD": "acceptance suite with one named test per enumerated property (35)",
+   "EVIDENCE-STATUS": "SPECIFIED"
+  },
+  {
+   "REQ-ID": "REQ-TEST-058",
+   "CATEGORY": "test-infrastructure",
+   "SOURCE": "Red-on-Rust.md L25750–25757([32] §6 Phase 13 Verification Architecture); spec/01 S-21 R-TEST-07",
+   "NORMATIVE-LEVEL": "MUST",
+   "STATEMENT": "Phase 13 verification enforces four independent testing tracks: **Track A (Scheduler)** — a reference FIFO queue implementation proving that `ProductionScheduler` selects actors in the exact same order and that `Pending`/`Blocked` actors are never selected; **Track B (Marshalling)** — proving `unmarshal(marshal(v)) == v` for all pure values and strictly rejecting any value containing a `CapRef` with `MarshalFault::CapabilityRequiresDelegation`; **Track C (Delegation)** — using the Phase 11 reference algebra to prove that `delegate(A, C)` yields a capability `A'` where `A' ⪯ A`; **Track D (Global Differential)** — an independent single-threaded reference simulator stepping through `Spawn`, `Send`, `Receive` and `Attenuate` sequences, proving trace equivalence with the production `GlobalState`.",
+   "PRECONDITIONS": "Phase 13 (actors) is implemented",
+   "POSTCONDITIONS": "all four tracks pass; a divergence in any track is a differential failure",
+   "INVARIANTS": "—",
+   "DEPENDENCIES": "REQ-ACTOR-010, REQ-MARSHAL-008, REQ-MARSHAL-005, REQ-ACTOR-031, REQ-REF-004",
+   "SECURITY-IMPACT": "high",
+   "VERIFICATION-METHOD": "four-track differential suite — Track A selection-order assertion, Track B round-trip, Track C attenuation, Track D trace equivalence",
    "EVIDENCE-STATUS": "SPECIFIED"
   },
   {

@@ -322,7 +322,7 @@ Records marked **(v0.3 rules)** come from the frozen v0.3 transition-rule set at
 ### REQ-CEK-003
 - REQ-ID: REQ-CEK-003
 - CATEGORY: machine-semantics
-- SOURCE: Red-on-Rust.md L41484–41499([60]); L37838–37854([54] §4); spec/01 S-08 R-CEK-01
+- SOURCE: Red-on-Rust.md L41484–41499([60]); L37838–37854([54] §4); L17846([25] continuation frames); L18009([25] continuation serialization); spec/01 S-08 R-CEK-01
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: Continuation state is explicit, serializable, replayable, and recoverable.
 - PRECONDITIONS: any continuation exists
