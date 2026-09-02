@@ -2,6 +2,30 @@
 
 Three layers: **A. section dependencies** (specification structure), **B. semantic-object dependencies** (what must exist before what, per the frozen architecture), **C. verification dependencies** (what evidence depends on what).
 
+> **Machine-checked successor: `dep/`.** This file is hand-written and uses the
+> convention **`A -> B` = B depends on A** (the same convention as the DOT block
+> below; `mod/18`/`mod/19` use the opposite one — see `dep/05` V-06). The four-layer
+> typed graph derived from `spec/`, `mod/` and `req/` lives in `dep/`:
+> `dep/00-overview.md` (reading guide), `dep/01-graph.md` (graph: roots, leaves,
+> edges by kind), `dep/02-topological-order.md` (build orders and condensation
+> levels), `dep/03-cycles.md` (SCCs and the cycles needing architectural review),
+> `dep/04-cross-section-table.md` (module × kind and crate × kind tables),
+> `dep/05-violations.md` (independence checks, the findings register `V-…`, hidden
+> dependencies `HD-1`…`HD-6`, invalid directions, forward references),
+> `dep/10-graph.json` (machine-readable). Regenerate with
+> `python3 dep/_graph.py --write`; check with `python3 dep/_graph.py`.
+>
+> Three results bear on this file. (1) The §A section graph **is cyclic**: one SCC
+> covers 16 of the 24 sections, closing through the dashed edges
+> `S-22 -> S-07/S-10/S-18` and `S-21 -> S-23`; only `S-01`…`S-06` have a build
+> position (`dep/02` §4). (2) The §B cycle check is stated over frozen *objects*;
+> at the module level the same specification yields 41 mutual module pairs and 3
+> intra-crate implementation cycles, and the risk §B itself flags — `ror-core`
+> hosting `Expr`/`Value` *and* the canonical traits — is the SCC
+> `{MOD-01, MOD-04, MOD-10}` (`dep/03` §2.1). (3) The §A edge list is also
+> mirrored into `spec/10-index.json` `dependency_graph.section_edges` by
+> `spec/_build_index.py`, which is what the `dep/` section layer reads.
+
 ## A. Section dependency graph
 
 ```
