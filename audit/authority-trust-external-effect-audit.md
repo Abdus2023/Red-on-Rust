@@ -1,6 +1,6 @@
 # Red-on-Rust Specification Audit — Authority, Trust-Boundary, and External-Effect Errors
 
-**Audit date:** 2026-09-02 (addendum A same date: SEC-016…SEC-019)
+**Audit date:** 2026-09-02 (addendum A same date: SEC-016…019; addendum B same date: SEC-020…022)
 **Audited artifact:** frozen specification set at commit `a013dff` (`Red-on-Rust.md`, 42,312 lines; canonical set `spec/`, `mod/`, `req/`, `term/`, `dep/`)
 **Audit class:** authority escalation, trust-boundary errors, external-effect gating — *exclusively*. No conformance, style, or performance findings.
 
@@ -27,7 +27,7 @@
 
 ## 2. Verdict summary
 
-**I1 and I2 do not hold at specification level.** The 16-step gate sequence itself is sound and well-ordered, but the *state surrounding* the gates contains nineteen specification-level defects through which untrusted input or a partially-trusted host can reach an `ExternalEffect` (or destroy/forge the authority facts the gates depend on): 2 CRITICAL (complete authority-injection chains exist in conforming implementations), 5 HIGH, 1 MEDIUM-HIGH, 8 MEDIUM, 2 LOW/MEDIUM, 1 LOW.
+**I1 and I2 do not hold at specification level.** The 16-step gate sequence itself is sound and well-ordered, but the *state surrounding* the gates contains twenty-two specification-level defects through which untrusted input or a partially-trusted host can reach an `ExternalEffect` (or destroy/forge the authority facts the gates depend on): 2 CRITICAL (complete authority-injection chains exist in conforming implementations), 5 HIGH, 3 MEDIUM-HIGH, 9 MEDIUM, 2 LOW/MEDIUM, 1 LOW.
 
 | ID | Severity | One-line violation |
 |---|---|---|
@@ -50,6 +50,9 @@
 | SEC-017 | MEDIUM | **Two complete canonical grammars (LE vs BE) coexist in frozen text** — digest identity of receipts/journal/replay is implementation-dependent for a wrong-grammar implementer (X-50/X-54) |
 | SEC-018 | HIGH | **`contains_capability` is invoked but never defined** — the R-CORE-07 boundary's sole mechanism has no frozen traversal domain; closure-environment smuggling is undetectable |
 | SEC-019 | MEDIUM | **Receiver-side resource asymmetry** — mailboxes unbounded, no recipient reservation at enqueue, no payload-size-proportional cost rule |
+| SEC-020 | MEDIUM-HIGH | **Panic-discipline violations on trust-boundary commit paths** — `unwrap()`/`unreachable!()` after "safe due to checks" reasoning; a mid-transition panic breaks effect atomicity and manufactures `Indeterminate` history |
+| SEC-021 | MEDIUM | **Live-fault escrow stranding** — no disposition rule for escrow when a `Pending` actor faults without a crash or the host never answers; conservation holds, spendable budget shrinks monotonically |
+| SEC-022 | MEDIUM-HIGH | **The trust model is under-frozen where it matters most** — three authoritative boundary modules absent from the trust table (V-11), two divergent frozen tables, and the dependency layer *measures* SC-1/2/3 FAIL: planner recorded as security provider (V-03), production→planner runtime edge, and the R-DUR-02 durability hinge with no legal crate edge (V-10) |
 
 Findings already registered in the repository's own registers (`C-…`, `U-…`, `AMB-…`, `X-…`) are marked; in every such case this audit's contribution is the **security consequence the register omits**, plus the required elevation of grade.
 
@@ -702,28 +705,135 @@ Budget conservation (`C_available + C_escrowed + C_consumed = C_initial`) is the
 
 ---
 
+### SEC-020 — Panic-discipline violations on trust-boundary commit paths ("safe due to checks" unwraps)
+
+**LOCATION**
+- `Red-on-Rust.md` L10487–10490 — gate-10 commit: `actor.budget.consume(effect.cost.consumable, now).unwrap(); // Safe due to checks` and `actor.budget.reserve(effect.cost.reserved, MAX_RESERVED).unwrap();`
+- `Red-on-Rust.md` L23556–23563 — frozen `resume_from_receipt`: the `consume` is checked (faults on failure) but the very next line is `actor.budget.release(*expected_reservation).unwrap();` — mixed discipline in two adjacent lines of the receipt path; same pattern in the 14-gate-era version (L23957–24002)
+- `Red-on-Rust.md` L23863–23882 — frozen `finalize_request`: `actor.eval.continuation.pop().unwrap()` and `let Frame::RequestArgument { … } = frame else { unreachable!() }`
+- `Red-on-Rust.md` L10588 — `allocate_child_budget(parent_budget, child_budget, spawn_cost).unwrap()` (spawn commit path)
+- Contradicted norm: `mod/04` OUTPUTS — "`BudgetError` values (checked-arithmetic failures are data, **never panics**)"; R-BUDGET-02; MOD-01's frozen fault taxonomy (every failure is a machine-visible `Fault`, which is what makes differential fault comparison well-defined — SEC-012)
+- (Test-harness `panic!`/`unwrap` occurrences — L11194+, L14254, L15471 etc. — are excluded: they are doubles/asserts, not machine paths.)
+
+**VIOLATION**
+The specification's own discipline is total: budget failures are *data*, denial is a five-assertion side-effect-free fault (R-EFFECT-04), and every failure flows through the frozen taxonomy. Yet the frozen machine code panics at exactly the commit points where partial state exists: gate 10/13 (issue+reserve committed after checks), receipt completion (consume-then-release), spawn escrow, and request finalization (`unreachable!` on frame shape). Every unwrap is defended by a *reasoning* ("safe due to checks", "we already proved these can't fail") rather than by construction — and check/commit drift is precisely what maintenance, an M0nn mutation, or a recovery-side inconsistency (SEC-004's unrecoverable arena/budget state) induces. The failure mode of a broken invariant is then not a fault but a **panic mid-transition**, i.e., a crash with journal state that is neither the pre- nor the post-state of the transition.
+
+**ATTACK-PATH**
+1. Induce a check/commit drift (examples: `MAX_RESERVED` differing between the gate-9 check call site and the gate-13 commit call site after refactoring; reservation accounting corrupted by the SEC-004 recovery gap; a registered mutant of the M007/M009 family).
+2. Gate 8/9 checks pass; gate 13 `reserve(...)` panics — **after** `consume(issue)` already mutated the budget and after `next_effect_id` incremented.
+3. The process dies between the check side effects and the durable `EffectIssued` append; crash recovery classifies the half-committed effect per the T-matrix: a `EffectPrepared` already fsynced at step 14 makes the effect `Prepared ∧ ¬Issued ⇒ Discard` while the actor's snapshot budget state says "escrowed" — or `Issued` without the completion the actor actually performed, i.e., **`Indeterminate` for an effect that never reached the host**, or an invisible `Completed` for one that did.
+4. The panic has thus *manufactured false effect history* through the very recovery machinery that exists to prevent it (R-DUR-04), and it did so outside the fault taxonomy — invisible to differential fault comparison (SEC-012), which compares only declared faults.
+5. Secondary: panic on an attacker-influential path = crash oracle — untrusted plans influence which transitions run (deep argument lists, many pending actors), converting any latent drift into a remotely-schedulable crash.
+
+**EXPECTED-INVARIANT**
+- Totality of the fault surface on machine paths: every fallible operation in evaluator/kernel/budget/persistence transitions returns `Result`, and every failure maps to a declared `Fault` — no `unwrap`/`expect`/`unreachable!`/`panic!` in non-test machine code (the frozen `#![forbid(unsafe_code)]` policy at L40453 is the model: the same finality is needed for panics).
+- Transition atomicity: a transition either completes (all durable effects appended) or faults (R-EFFECT-04's five assertions) — there is no third "died in the middle" outcome inside the trusted boundary.
+
+**REMEDIATION**
+1. Replace all machine-path unwraps with checked calls mapping to a declared internal-consistency fault (add the U-08-chosen equivalent of `Fault::InternalInvariant` to the taxonomy; it must be observable and differentially comparable).
+2. Add the engineering rule: `clippy::unwrap_used`/`clippy::expect_used`/no `unreachable!` denied on non-test machine code; extend the frozen L40453 policy block with the panic clause.
+3. Restructure the commit sequence so the durable append precedes irreversible in-memory mutations where feasible (or make the commit journal-driven), removing the mid-transition window rather than only its panic failure mode.
+
+**VERIFICATION**
+- Fuzz/property: the generated corpus (MOD-15's three modes) plus corrupted-snapshot inputs under a panic-catching harness — zero panics from machine code; every input terminates in `{value, declared fault}`.
+- Mutation **M034** "release failure silently ignored (`unwrap` → `let _`)" — must kill (it recreates the M007/M009 family on the receipt path).
+- Crash-injection extension: inject a failure at each inter-check commit line; assert recovery's T-classification matches the *durable* prefix exactly (no classification that contradicts the journal).
+- Lint gate in CI: machine crates compile with the panic-forbidding lint set (R-REPO-03 structural enforcement).
+
+---
+
+### SEC-021 — Live-fault escrow stranding: no disposition for escrow when a `Pending` effect never completes outside a crash
+
+**LOCATION**
+- `Red-on-Rust.md` L23546–23552 / `spec/01` R-EFFECT-06 — receipt mismatch ⇒ `ReplayCorruption` fault with "reservation NOT released" (explicitly held)
+- `Red-on-Rust.md` L23574–23580 — host-*failure* receipts **do** complete accounting (escrow consumed as the cost of failure; C-23 comment L25486–25490: "If the host fails, the escrow is simply consumed") — so the covered case is "a receipt arrived with `Err`"
+- `Red-on-Rust.md` L35159–35176 / R-RECOV-02 — the T0–T6 matrix: escrow disposition rules exist **only** under crash recovery; R-RECOV-07 reconciliation is scoped to "interrupted effects" (post-crash)
+- `Red-on-Rust.md` L41823–41841 — trust table: live host is Partial and can "refuse, delay, or misbehave" — *never answering* is inside the host's declared behavior envelope
+- `Red-on-Rust.md` L26807–26817 — Supervisor responsibilities include "fatal-fault policy" — unfrozen (MOD-12: "reconciliation policy sketches are outside the frozen machine core")
+- Unregistered: no rule anywhere disposes of escrow for `{Issued, ¬Completed}` in a **live** machine whose actor has faulted, been halted by fatal-fault policy, or whose receipt never arrives
+
+**VIOLATION**
+The budget conservation law (`C_available + C_escrowed + C_consumed = C_initial`) is an *accounting* invariant — it is satisfied equally by escrow held forever. The frozen disposition rules cover exactly three exits: completion (receipt `Ok`/`Err`), crash-recovery reconciliation, and T1 discard of prepared-only transactions. Missing: the live, non-crashed machine in which (a) an actor faults while `Pending` (the mismatch fault holds the reservation by design; any actor-local fatal fault likewise leaves the effect open), (b) the supervisor's fatal-fault policy halts a pending actor, or (c) the partial-trust host simply never answers (its declared right). In all three, `complete_max` + reservation remain in the escrowed partition **permanently**, with no frozen rule that ever moves them. The spec's own trust model guarantees the premise (host misbehavior is in-envelope), so the strand is not exotic: it is the steady-state response to host misbehavior.
+
+**ATTACK-PATH**
+1. Untrusted plan issues effects to a host that selectively stops answering (a misbehaving-but-conformant Partial host — or one wedged on an OS-level hang).
+2. Each issued-never-answered effect strands `complete_max` + `reserve` in escrow; the actors sit `Pending` (unschedulable), also consuming concurrency slots (`S`).
+3. No crash occurs, so recovery/reconciliation never triggers; the supervisor's fatal-fault policy is unfrozen, and even a frozen one has no rule saying where the escrow goes.
+4. Repeat: `C_available` (and `S` slots) shrink monotonically while every frozen invariant — conservation, no-teleportation, all gates — holds verbatim. The machine becomes a progressive-availability-collapse system with a clean audit trail; at exhaustion it ends in `Deadlock` on an empty runnable queue with escrow full.
+5. In the mismatch-fault variant the trigger is a corrupted receipt (SEC-009/011 make those injectable), so the strand is attacker-reachable without any host misbehavior: one bad receipt ⇒ one effect's escrow stranded, one actor faulted — a *permanent* resource burn per injection.
+
+**EXPECTED-INVARIANT**
+- Escrow disposition totality: every unit entering the escrowed partition eventually leaves via exactly one frozen path: `Completed` (actual ≤ `complete_max` charged, remainder released) | host-failure consumption (C-23 rule) | durable `Reconciled` (SEC-010's protocol). "Held forever in a live machine" is not a disposition.
+- The liveness side of R-DUR-05: escrow *survives* crashes in order to be *reconciled* — survival without any reachable reconciliation path converts the durability invariant into a leak.
+
+**REMEDIATION**
+1. Freeze the escrow disposition table covering live faults: actor-fatal-fault with an open effect ⇒ the effect enters the same reconciliation protocol as post-crash `Indeterminate` (unifying SEC-010's protocol across live and crash paths); the supervisor fatal-fault policy must reference it.
+2. Add a logical-time bound: a `Pending` effect whose actor's deadline `W` expires (or a frozen per-effect logical timeout) transitions to `Indeterminate` + reconciliation — machine state only (logical time), preserving determinism (no wall clock, R-CAP-09).
+3. State the invariant: no reachable quiescent machine state contains escrow that no frozen rule can move (escrowed ⇒ ∃ enabled or pending disposition event).
+
+**VERIFICATION**
+- Long-session property: random plans + injected {host hangs, mismatch faults, fatal faults}; at quiescence assert `escrowed = 0 ∨ ∀ escrowed e: Reconciled(e) ∈ durable journal ∧ disposition admissible`.
+- Ledger liveness test: `C_available` shrinks only via `consumed` or durable `Reconciled` — never by strand (escrow drains monotonically once inputs stop).
+- Mutation **M035** "stranded escrow silently reclaimed to `available` without reconciliation" — must kill (the teleportation mirror-image: conserving the sum while laundering the strand).
+- Crash+live mixed harness: crash *after* a live strand; assert recovery does not lose the stranded escrow's reconciliation obligation (journal-driven, not snapshot-driven, disposition).
+
+---
+
+### SEC-022 — The trust model is under-frozen where it matters most (V-03/V-10/V-11; SC-1/2/3 measured FAIL)
+
+**LOCATION**
+- `dep/05-violations.md` §1.2 — measured checks: **SC-1 FAIL** and **SC-2 FAIL** (`MOD-13 -> MOD-01 [SECURITY_DEPENDENCY]` — the *planner* module is the recorded provider of security properties); **SC-3 FAIL** (`MOD-13 -> MOD-09 [RUNTIME_DEPENDENCY]` — a production component calls the planner at runtime)
+- `dep/05-violations.md` V-03 (MAJOR) — "the dependency as recorded … would let an implementation discharge R-TRUST-01 inside `ror-agent`"; 14 requirement edges; also uncarriable (no `ror-agent -> ror-core` crate edge → hidden dependency HD-1)
+- `dep/05-violations.md` V-10 (MAJOR) — (a) the step-14 durable-issuance call (the hinge of R-DUR-02, `HostInvoked ⇒ DurableIssued`) implies a `ror-runtime → ror-persistence` dependency **no crate list carries** — "the single most load-bearing cross-crate call in the design is the one the crate list omits"; (b) `MOD-03 -> MOD-04` implies `ror-core -> ror-kernel`, **forbidden outright** by the frozen edge list (L39821 §14)
+- `dep/05-violations.md` V-11 + `Red-on-Rust.md` L27613–27623 vs L41827–41841 — the trust table is frozen **twice with different rows** (11 vs 12; `Persistence` absent from the earlier), and **three authoritative boundary modules have no row at all**: MOD-06 (the marshalling/delegation boundary), MOD-08 (the effect gate sequence), MOD-10 (the canonical codec) — their trust status is inferred from obligations, not frozen in the table
+- Cross-reference: SEC-015 (this audit) — same defect at the crate/integration level
+
+**VIOLATION**
+This audit's governing axiom — the evaluator/runtime/kernel/host-policy boundary is authoritative — is pinned by R-TRUST-01's table. That table is the one artifact the whole trust story reduces to, and it is (a) duplicated inconsistently, (b) missing the three modules whose authority is *purest* (the codec that mints identity, the marshalling boundary that stops authority transfer, the gate sequence all external effects traverse), and (c) contradicted by the machine-checked dependency graph, which the repository's own audit reports as three measured FAILs — including the planner module recorded as a security *provider* (14 edges) and a production→planner runtime edge. The recorded graph is normative input to `dep/`'s build order and R-REPO-03 structural enforcement; as recorded, it licenses discharging trust obligations inside the one crate that faces the untrusted LLM. And the most security-load-bearing crate call in the design — the durable append that `HostInvoked ⇒ DurableIssued` hangs on — has no legal edge in the frozen crate DAG: the no-host-before-durability hinge is structurally *uncarriable as declared* (implementers must add the edge ad hoc or invert the call, direction undecided — V-10's own note).
+
+**ATTACK-PATH**
+Structural/conformance path rather than a single runtime exploit: an implementation (or a reviewer adjudicating a differential divergence) consults the frozen trust artifacts to decide what is authoritative. With the planner recorded as a security provider and `ror-agent` unconstrained by any crate edge to `ror-core`, planner-integration code that "helpfully" enforces the eight prohibitions *inside* `ror-agent` (filtering proposals, synthesizing `PlannerAccepted` records) is defensible as R-TRUST-01 discharge per the recorded graph — while the machine-side checks it duplicates drift (SEC-015's bypass scenario). Separately, a build where `ror-runtime` cannot legally call `ror-persistence` grows a local journal shim ("just an interface") to satisfy R-DUR-02 — a second, unreviewed durability implementation exactly where the causal effect chain lives. Each drift is invisible to MOD-17's dependency review because the reviewed graph is the deficient one.
+
+**EXPECTED-INVARIANT**
+- One trust table, complete over every module that enforces a security boundary (all of MOD-02…MOD-12), stated once.
+- The typed graph satisfies SC-1/2/3 by construction: no `SECURITY_DEPENDENCY` or `RUNTIME_DEPENDENCY` edge has the planner module as provider or the production side calling into it; prohibitions-on-the-planner are negative contracts homed at their enforcing modules (the correction V-03 itself prescribes).
+- The crate DAG carries the R-DUR-02 hinge edge (`ror-runtime → ror-persistence`) or freezes the inverted trait contract explicitly — the durability call may not be structurally orphaned.
+
+**REMEDIATION**
+1. Apply V-03's decision: re-home R-TRUST-01's operative enforcement to MOD-03/06/08; keep planner records as prohibitions with no inbound security edge; regenerate `dep/` (the repository's own machinery then passes SC-1/2/3).
+2. Apply V-10's decision on the persistence edge and V-09 (budget crate home); add trust-table rows for MOD-06/08/10 and supersede the 11-row table in-source (V-11).
+3. Fold SEC-015's crate-separation rule (no LLM-facing code in a crate with runtime/compiler/persistence handles) into R-REPO-03's structural review checklist, so the regenerated graph is checked against it, not just against edge direction.
+
+**VERIFICATION**
+- `python3 dep/_graph.py` (the repo's own checker) with SC-1/2/3 promoted from advisory §1.2 rows to **hard failures** — regeneration succeeds only when the planner edges are gone.
+- R-REPO-03 dependency review gains explicit assertions: `ror-agent` has no production handle edges; `ror-runtime → ror-persistence` exists (or the frozen inversion); the forbidden-edge list (L39807–39828) is checked mechanically against the actual `Cargo.toml` DAG (V-02 notes nothing currently tracks it).
+- Trust-table conformance: a generated check that every module owning a SECURITY-BOUNDARY section has a trust row (mechanizable from `mod/` files + the table).
+
+---
+
 ## 4. Escalation-vector coverage matrix
 
 Requested search vectors vs. findings (● primary, ○ contributing):
 
-| Vector | SEC-001 | SEC-002 | SEC-003 | SEC-004 | SEC-005 | SEC-006 | SEC-007 | SEC-008 | SEC-009 | SEC-010 | SEC-011 | SEC-012 | SEC-013 | SEC-014 | SEC-015 | SEC-016 | SEC-017 | SEC-018 | SEC-019 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| raw capability transfer | ● | ○ | ● | | ○ | | | ○ | ○ | | | | | | | | | ● | |
-| capability copying | | ○ | | | | ● | | | | | | | | | | | | ○ | |
-| serialization | | | ● | ○ | ○ | | | | ○ | | ● | | | | | | ● | ○ | ○ |
-| deserialization | | ○ | ● | ● | ○ | | | | ○ | | ○ | | | | | | ● | | |
-| actor spawning | | ○ | | | ○ | ● | | | | | | | ○ | ○ | | | | | ○ |
-| message passing | | | ● | | ● | | | | | | | ○ | | | | | | ● | ● |
-| planner output | | ● | | | | | ● | ● | | | | | | | ● | | | | |
-| continuation state | ● | | | ○ | | | | | | | ● | | | | | | | ○ | |
-| persistence | | | ○ | ● | | | | | ● | | ● | | | | | | ○ | | ○ |
-| replay | ● | | | | | | ○ | | ○ | ○ | ● | ● | | | | | ● | | |
-| host APIs | ● | | | | | | | | | ● | | ○ | ● | | ○ | | | | |
-| FFI | | | | | | | | | | ○ | | | ● | | ○ | | | | |
-| debugging interfaces | | ○ | | | | | | ○ | | | | ○ | | | ○ | | | | |
-| reflection | | ○ | | | | | | ● | | | | | | | | | | ○ | |
-| error paths | ○ | | | | ○ | | | | | ○ | ○ | ● | | ● | | | | | |
-| resource-boundary DoS | | | | | | ○ | | | | | | | | | | | | | ● |
+| Vector | SEC-001 | SEC-002 | SEC-003 | SEC-004 | SEC-005 | SEC-006 | SEC-007 | SEC-008 | SEC-009 | SEC-010 | SEC-011 | SEC-012 | SEC-013 | SEC-014 | SEC-015 | SEC-016 | SEC-017 | SEC-018 | SEC-019 | SEC-020 | SEC-021 | SEC-022 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| raw capability transfer | ● | ○ | ● | | ○ | | | ○ | ○ | | | | | | | | | ● | | | | |
+| capability copying | | ○ | | | | ● | | | | | | | | | | | | ○ | | | | |
+| serialization | | | ● | ○ | ○ | | | | ○ | | ● | | | | | | ● | ○ | ○ | | | |
+| deserialization | | ○ | ● | ● | ○ | | | | ○ | | ○ | | | | | | ● | | | | | |
+| actor spawning | | ○ | | | ○ | ● | | | | | | | ○ | ○ | | | | | ○ | ○ | | |
+| message passing | | | ● | | ● | | | | | | | ○ | | | | | | ● | ● | | | |
+| planner output | | ● | | | | | ● | ● | | | | | | | ● | | | | | | | ○ |
+| continuation state | ● | | | ○ | | | | | | | ● | | | | | | | ○ | | ○ | | |
+| persistence | | | ○ | ● | | | | | ● | | ● | | | | | | ○ | | ○ | ○ | ○ | ● |
+| replay | ● | | | | | | ○ | | ○ | ○ | ● | ● | | | | | ● | | | | | |
+| host APIs | ● | | | | | | | | | ● | | ○ | ● | | ○ | | | | | ○ | ● | |
+| FFI | | | | | | | | | | ○ | | | ● | | ○ | | | | | | | |
+| debugging interfaces | | ○ | | | | | | ○ | | | | ○ | | | ○ | | | | | | | |
+| reflection | | ○ | | | | | | ● | | | | | | | | | | ○ | | | | |
+| error paths | ○ | | | | ○ | | | | | ○ | ○ | ● | | ● | | | | | | ● | ○ | |
+| resource-boundary DoS | | | | | | ○ | | | | | | | | | | | | | ● | ○ | ● | |
+| trust-model/dependency integrity | | | | ○ | | | | | | | | | ○ | | ● | ○ | ○ | ○ | | | | ● |
 
 No frozen `unsafe`, `extern "C"`, `transmute`, or native-callback-in-AST surface exists in the operative text — **verified positively**: the frozen source *prohibits* semantic feature flags including `feature = "unsafe-capabilities"` by name (L40408–40420), mandates `#![forbid(unsafe_code)]` as the default crate-level policy (L40453–40465), forbids host callbacks in the AST (L12134–12136), and `FunctionValue` is pure lambda data (L12354–12359). FFI risk concentrates entirely in the host executor process boundary (SEC-013) and crate graph (SEC-015).
 
@@ -743,10 +853,10 @@ No frozen `unsafe`, `extern "C"`, `transmute`, or native-callback-in-AST surface
 
 1. **SEC-001, SEC-002** — freeze receipt-result admission and holder-possession binding. Until both are frozen, the central thesis `LLMOutput ∧ UntrustedInput ↛ ExternalEffect` is falsifiable by a conforming implementation, and every other guarantee is derivative.
 2. **SEC-016, SEC-018** — freeze one signature set for the central theorem's predicates (ValidatedRequest subsumption; `Authorized(holder,c,E,t)`), and define `contains_capability` including closure environments. An ill-formed invariant and an undefined boundary predicate make all other remediations unadjudicable.
-3. **SEC-003, SEC-004** — split data/kernel codecs; make the authority lattice durable and revalidated at recovery.
+3. **SEC-003, SEC-004, SEC-022** — split data/kernel codecs; make the authority lattice durable and revalidated at recovery; complete and de-duplicate the trust table, re-home the planner security edges (V-03), and carry the R-DUR-02 crate edge (V-10) — the durability hinge must be structurally carriable.
 4. **SEC-005, SEC-006** — freeze the delegation surface and the spawn authority rule (strict attenuation or manifest).
 5. **SEC-007, SEC-008, SEC-017** — equality staleness; capability-opaque observations (define `CapabilitySummary`); single canonical grammar with in-source supersession of the LE text.
-6. **SEC-009…SEC-012** — storage authenticity decision; reconciliation protocol (incl. the declared `NotExecuted` variant); durable receipts; fault enumeration (the repo's own BLOCKING grading of U-14/X-67 is endorsed and extended with the resume-vs-fault semantics requirement).
-7. **SEC-013, SEC-014, SEC-015, SEC-019** — isolation posture decision; `AdmissibleConstraint`; root-grant protocol and crate separation; mailbox/payload resource-admission rules.
+6. **SEC-009…SEC-012, SEC-020** — storage authenticity decision; reconciliation protocol (incl. the declared `NotExecuted` variant); durable receipts; fault enumeration; panic-free machine paths with a declared internal-consistency fault (the repo's own BLOCKING grading of U-14/X-67 is endorsed and extended with the resume-vs-fault semantics requirement).
+7. **SEC-013, SEC-014, SEC-015, SEC-019, SEC-021** — isolation posture decision; `AdmissibleConstraint`; root-grant protocol and crate separation; mailbox/payload resource-admission rules; escrow disposition totality for live faults.
 
-All remediations are specification-level (frozen-addendum) actions; per R-SCOPE-03, none may be resolved by implementation choice or test adjustment. Proposed new mutation-registry entries M019–M033 are additive per R-TEST-04.
+All remediations are specification-level (frozen-addendum) actions; per R-SCOPE-03, none may be resolved by implementation choice or test adjustment. Proposed new mutation-registry entries M019–M035 are additive per R-TEST-04.
