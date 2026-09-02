@@ -888,6 +888,51 @@ RESOLUTIONS = {
                       "crate edge is needed and no obligation is lost, because "
                       "the composition is a test-time concern."),
         ]),
+    "V-10": dict(
+        question="Which edges does `spec/07` §6 have to gain — the durability "
+                 "call, the `PlannerAccepted` recording, or both — and which way "
+                 "does the durability call run?",
+        options=[
+            dict(id="V-10a",
+                 label="The machine calls the journal",
+                 change=dict(add_crate_edges=[
+                     ("ror-persistence", "ror-runtime", "PERSISTENCE_DEPENDENCY")]),
+                 note="Adds `ror-persistence -> ror-runtime`, i.e. the runtime "
+                      "depends on the durable layer — what request step 14 does "
+                      "when it calls append/sync, and what R-DUR-02 / `spec/07` "
+                      "§3 make the hinge of the durability transaction: no "
+                      "effect before the journal is durable. §14 forbids "
+                      "neither direction here. One of the edges it carries, "
+                      "`MOD-11 -> MOD-08`, is already labelled a **crate** "
+                      "dependency by `mod/_ownership.MODULE_DEPS`."),
+            dict(id="V-10b",
+                 label="Journal-trait inversion",
+                 change=dict(add_crate_edges=[
+                     ("ror-runtime", "ror-persistence", "PERSISTENCE_DEPENDENCY")]),
+                 note="`ror-runtime` owns the journal trait and "
+                      "`ror-persistence` implements it, which flips the edge to "
+                      "`ror-runtime -> ror-persistence` — the direction §13's "
+                      "diagram draws. V-10's decision warns this must be "
+                      "checked against the build order; the reordering it "
+                      "causes is measured below rather than guessed."),
+            dict(id="V-10c",
+                 label="Add only the `PlannerAccepted` recording edge",
+                 change=dict(add_crate_edges=[
+                     ("ror-persistence", "ror-agent", "PERSISTENCE_DEPENDENCY")]),
+                 note="Adds `ror-persistence -> ror-agent` for the "
+                      "`PlannerAccepted` recording `mod/13-agent.md` declares "
+                      "(R-PLANNER-04, REQ-PLANNER-018). Independent of the "
+                      "durability direction, so it can be decided separately."),
+            dict(id="V-10d",
+                 label="For reference: every edge HD-3 lists, at once",
+                 change=dict(add_crate_edges=[
+                     (p, c, k) for p, c, k, _w in CRATE_MISSING_EDGES]),
+                 note="Not a single decision — it assumes V-01b and V-04a as "
+                      "well — but it is the row that answers `dep/01` §1.2's "
+                      "claim that the crate DAG absorbs all four missing edges "
+                      "without becoming cyclic, and check 7 tests exactly that "
+                      "on every run."),
+        ]),
 }
 
 # ---------------------------------------------------------------------------

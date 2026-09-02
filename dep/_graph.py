@@ -1744,7 +1744,7 @@ def _realisable_with(e, crate_of, pairs):
     return cp == cc or (cp, cc) in pairs
 
 
-def graph_metrics(mg, cg, crate_of, pairs):
+def graph_metrics(mg, cg, crate_of, pairs, base_pairs=None):
     """The numbers a decision turns on, computed from the graphs given.
 
     The implementation graph is defined exactly as `dep/02` §2.1 and `dep/03`
@@ -1766,6 +1766,11 @@ def graph_metrics(mg, cg, crate_of, pairs):
         impl_sccs=len([c for c in impl.sccs() if len(c) > 1]),
         mutual_full=len(mutual_pairs(mg)),
         mutual_impl=len(mutual_pairs(impl)),
+        build_order=cg.toposort()[0],
+        carries=[] if base_pairs is None else [
+            (e["provider"], e["consumer"], e["kind"]) for e in mg.edges
+            if _realisable_with(e, crate_of, pairs)
+            and not _realisable_with(e, crate_of, base_pairs)],
         sc_fail=[c for c, _t, o, _b in security_checks(mg) if o],
     )
 
@@ -1802,7 +1807,7 @@ def resolution_analysis(ctx):
                     e2["kind"] = rekind[key]
                 edges.append(e2)
             rows.append((opt, graph_metrics(Graph("module+option", mg.nodes, edges),
-                                            cg2, crate_of, pairs)))
+                                            cg2, crate_of, pairs, base_pairs)))
         out[fid] = dict(question=spec["question"], options=rows)
     return baseline, out
 
@@ -2029,7 +2034,7 @@ def gen_violations(ctx):
       f"{baseline['mutual_full']} mutual pairs, {baseline['mutual_impl']} of them "
       f"inside that implementation graph; security failures "
       f"{', '.join(baseline['sc_fail']) or 'none'}.\n")
-    for i, fid in enumerate(("V-01", "V-03", "V-04"), 1):
+    for i, fid in enumerate(("V-01", "V-03", "V-04", "V-10"), 1):
         spec = resolutions[fid]
         A(f"### 7.{i} {fid} — {E.FINDINGS[fid]['title']}\n")
         A(f"*{spec['question']}*\n")
@@ -2047,8 +2052,21 @@ def gen_violations(ctx):
               f"{delta(m['mutual_impl'], baseline['mutual_impl'])} | "
               f"{', '.join(m['sc_fail']) or 'none'} |")
         A("")
-        for opt, _m in spec["options"]:
+        for opt, m in spec["options"]:
             A(f"- **{opt['id']}** — {opt['note']}")
+            if m["carries"]:
+                A("  - *Module edges that gain a crate realisation:* "
+                  + ", ".join(f"`{p} -> {c}` ({k.replace('_DEPENDENCY', '')})"
+                              for p, c, k in m["carries"]) + ".")
+            base_order = baseline["build_order"]
+            if (m["acyclic"] and len(m["build_order"]) == len(base_order)
+                    and m["build_order"] != base_order):
+                moved = [(n, base_order.index(n) + 1, m["build_order"].index(n) + 1)
+                         for n in m["build_order"]
+                         if base_order.index(n) != m["build_order"].index(n)]
+                A(f"  - *Build order:* " + ", ".join(
+                    f"`{n}` {a} → {b}" for n, a, b in moved)
+                    + f". Full order becomes: {', '.join(m['build_order'])}.")
         A("")
     return "\n".join(L) + "\n"
 

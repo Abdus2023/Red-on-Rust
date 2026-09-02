@@ -334,6 +334,7 @@ V-01, V-03 and V-04 are the three findings that leave the module layer with no p
 
 - **V-01a** — No new crate edge: the runtime already depends on `ror-core`. The open part is the mechanism, not the direction — L39947-39950 §16 restricts construction to `pub(crate) fn finalize`, and `pub(crate)` is per-crate, so a `ror-core` home needs a seal Rust cannot express that way. As recorded the module edge stays `MOD-02 -> MOD-05`, which would then overstate who owns the type.
 - **V-01b** — Adds `ror-compiler -> ror-runtime`, i.e. the runtime names the compiler's type — the direction §13's diagram already draws. §14 L39826 forbids only the reverse (the compiler depending on the runtime), and L39831 permits adjusting the compiler/kernel direction where implementation mechanics require it, provided the compiler never receives authority to execute effects, which a type dependency does not grant.
+  - *Module edges that gain a crate realisation:* `MOD-02 -> MOD-05` (TYPE).
 
 ### 7.2 V-03 — Security dependencies whose provider is the LLM/planner module
 
@@ -361,7 +362,33 @@ V-01, V-03 and V-04 are the three findings that leave the module layer with no p
 | **V-04d** Neither crate owns it — the conformance suite composes the two | acyclic | 50 of 135 | 3 | 29 (-2) | 40 (-1) / 5 | SC-1, SC-2 |
 
 - **V-04a** — Carries `MOD-09 -> MOD-13` (R8-replay-composition) and leaves `MOD-13 -> MOD-09` uncarried.
+  - *Module edges that gain a crate realisation:* `MOD-09 -> MOD-13` (RUNTIME).
+  - *Build order:* `ror-host` 8 → 7, `ror-agent` 7 → 8. Full order becomes: ror-core, ror-compiler, ror-kernel, ror-persistence, ror-reference, ror-runtime, ror-host, ror-agent, ror-testkit, ror-differential.
 - **V-04b** — Carries `MOD-13 -> MOD-09` and leaves `MOD-09 -> MOD-13` uncarried.
+  - *Module edges that gain a crate realisation:* `MOD-13 -> MOD-09` (RUNTIME).
 - **V-04c** — Measured below rather than asserted: both directions typed RUNTIME is a crate-level 2-cycle, so this option is not available while the crate layer is required to be a DAG (check 7).
+  - *Module edges that gain a crate realisation:* `MOD-09 -> MOD-13` (RUNTIME), `MOD-13 -> MOD-09` (RUNTIME).
 - **V-04d** — F-HOST-AGENT's own verdict: `tests/` composes host and agent, and both prose declarations are withdrawn. No crate edge is needed and no obligation is lost, because the composition is a test-time concern.
+
+### 7.4 V-10 — `mod/_ownership.MODULE_DEPS` asserts crate-level edges that `spec/07` §6 does not carry — one of them in a forbidden direction
+
+*Which edges does `spec/07` §6 have to gain — the durability call, the `PlannerAccepted` recording, or both — and which way does the durability call run?*
+
+| Option | Crate DAG | Impl graph (edges a crate edge can carry) | Impl SCCs | HD-1 | Mutual pairs (full / impl) | SC failures |
+|---|---|---|---|---|---|---|
+| **V-10a** The machine calls the journal | acyclic | 54 (+4) of 137 | 3 | 27 (-4) | 41 / 5 | SC-1, SC-2, SC-3 |
+| **V-10b** Journal-trait inversion | acyclic | 54 (+4) of 137 | 3 | 27 (-4) | 41 / 5 | SC-1, SC-2, SC-3 |
+| **V-10c** Add only the `PlannerAccepted` recording edge | acyclic | 51 (+1) of 137 | 3 | 30 (-1) | 41 / 5 | SC-1, SC-2, SC-3 |
+| **V-10d** For reference: every edge HD-3 lists, at once | acyclic | 57 (+7) of 137 | 3 | 24 (-7) | 41 / 5 | SC-1, SC-2, SC-3 |
+
+- **V-10a** — Adds `ror-persistence -> ror-runtime`, i.e. the runtime depends on the durable layer — what request step 14 does when it calls append/sync, and what R-DUR-02 / `spec/07` §3 make the hinge of the durability transaction: no effect before the journal is durable. §14 forbids neither direction here. One of the edges it carries, `MOD-11 -> MOD-08`, is already labelled a **crate** dependency by `mod/_ownership.MODULE_DEPS`.
+  - *Module edges that gain a crate realisation:* `MOD-11 -> MOD-05` (PERSISTENCE), `MOD-11 -> MOD-06` (PERSISTENCE), `MOD-11 -> MOD-07` (PERSISTENCE), `MOD-11 -> MOD-08` (PERSISTENCE).
+- **V-10b** — `ror-runtime` owns the journal trait and `ror-persistence` implements it, which flips the edge to `ror-runtime -> ror-persistence` — the direction §13's diagram draws. V-10's decision warns this must be checked against the build order; the reordering it causes is measured below rather than guessed.
+  - *Module edges that gain a crate realisation:* `MOD-06 -> MOD-12` (TYPE), `MOD-07 -> MOD-12` (TYPE), `MOD-08 -> MOD-11` (SEMANTIC), `MOD-08 -> MOD-12` (SEMANTIC).
+  - *Build order:* `ror-reference` 5 → 4, `ror-runtime` 6 → 5, `ror-agent` 7 → 6, `ror-host` 8 → 7, `ror-persistence` 4 → 8. Full order becomes: ror-core, ror-compiler, ror-kernel, ror-reference, ror-runtime, ror-agent, ror-host, ror-persistence, ror-testkit, ror-differential.
+- **V-10c** — Adds `ror-persistence -> ror-agent` for the `PlannerAccepted` recording `mod/13-agent.md` declares (R-PLANNER-04, REQ-PLANNER-018). Independent of the durability direction, so it can be decided separately.
+  - *Module edges that gain a crate realisation:* `MOD-11 -> MOD-13` (PERSISTENCE).
+- **V-10d** — Not a single decision — it assumes V-01b and V-04a as well — but it is the row that answers `dep/01` §1.2's claim that the crate DAG absorbs all four missing edges without becoming cyclic, and check 7 tests exactly that on every run.
+  - *Module edges that gain a crate realisation:* `MOD-02 -> MOD-05` (TYPE), `MOD-09 -> MOD-13` (RUNTIME), `MOD-11 -> MOD-05` (PERSISTENCE), `MOD-11 -> MOD-06` (PERSISTENCE), `MOD-11 -> MOD-07` (PERSISTENCE), `MOD-11 -> MOD-08` (PERSISTENCE), `MOD-11 -> MOD-13` (PERSISTENCE).
+  - *Build order:* `ror-host` 8 → 7, `ror-agent` 7 → 8. Full order becomes: ror-core, ror-compiler, ror-kernel, ror-persistence, ror-reference, ror-runtime, ror-host, ror-agent, ror-testkit, ror-differential.
 
