@@ -79,7 +79,7 @@ Areas: `DUR` (14), `HOST` (14), `ACTOR` (35), `MARSHAL` (10) — 73 atomic units
 ### REQ-DUR-006
 - REQ-ID: REQ-DUR-006
 - CATEGORY: durability
-- SOURCE: Red-on-Rust.md L38209–38211([54] §12); L35111–35144([47]); spec/01 S-13 R-DUR-03
+- SOURCE: Red-on-Rust.md L38209–38211([54] §12); L35111–35144([47]); L26156–26170([33]); spec/01 S-13 R-DUR-03; spec/06 C-44
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: `Completed(E) ⇒ Issued(E)`.
 - PRECONDITIONS: a `Completed` record exists
@@ -535,7 +535,7 @@ Areas: `DUR` (14), `HOST` (14), `ACTOR` (35), `MARSHAL` (10) — 73 atomic units
 ### REQ-ACTOR-010
 - REQ-ID: REQ-ACTOR-010
 - CATEGORY: concurrency
-- SOURCE: Red-on-Rust.md L25558–25615([32]); L25886([32]); L38074–38084([54] §9); spec/01 S-15 R-ACTOR-04
+- SOURCE: Red-on-Rust.md L25558–25615([32]); L25886([32]); L38074–38084([54] §9); spec/01 S-15 R-ACTOR-04; spec/06 C-37
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: The scheduler is strictly FIFO.
 - PRECONDITIONS: the runnable queue is non-empty

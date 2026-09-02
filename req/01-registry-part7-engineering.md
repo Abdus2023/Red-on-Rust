@@ -279,7 +279,7 @@ Areas: `REPO` (19), `ORDER` (25), `CLAIM` (22) — 66 atomic units.
 ### REQ-ORDER-001
 - REQ-ID: REQ-ORDER-001
 - CATEGORY: process
-- SOURCE: Red-on-Rust.md L37800–37834([54] §3); L42108–42142([60]); spec/01 S-23 R-ORDER-01
+- SOURCE: Red-on-Rust.md L37800–37834([54] §3); L42108–42142([60]); spec/01 S-23 R-ORDER-01; spec/06 C-21
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: Implementation proceeds in dependency order: 01 core domain types → 02 canonical serialization → 03 compiler artifacts → 04 capability kernel → 05 budget algebra → 06 CEK evaluator → 07 lambda/call → 08 attenuation → 09 effects → 10 actors → 11 scheduler → 12 marshalling/delegation → 13 persistence → 14 crash recovery → 15 LLM boundary → 16 reference model → 17 differential harness → 18 mutation framework → 19 CI → 20 stress/security validation.
 - PRECONDITIONS: implementation planning

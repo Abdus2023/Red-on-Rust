@@ -714,7 +714,7 @@ Phase 15A is frozen down to byte level (`Red-on-Rust.md` L32936–33707, turn `[
 ### REQ-PERSIST-014
 - REQ-ID: REQ-PERSIST-014
 - CATEGORY: persistence
-- SOURCE: Red-on-Rust.md L35127–35144([47]); L33905–33930([46]); spec/01 S-18 R-PERSIST-03
+- SOURCE: Red-on-Rust.md L35127–35144([47]); L33905–33930([46]); L26146–26150([33] separate-journal form, superseded); spec/01 S-18 R-PERSIST-03; spec/06 C-25, C-39
 - NORMATIVE-LEVEL: IS
 - STATEMENT: `WalRecord ::= Event(EventEnvelope) | EffectPrepared { id, actor, digest } | EffectIssued { id, actor, digest } | EffectCompleted { id, digest, result_digest } | EffectReconciled { id, digest, outcome } | SnapshotCommit { event_sequence, snapshot_version, state_digest }`.
 - PRECONDITIONS: —

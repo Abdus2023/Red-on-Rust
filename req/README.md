@@ -17,7 +17,7 @@ Source of record: `../Red-on-Rust.md` (42,312 lines, 60-turn design transcript).
 | `01-registry-part6-verification.md` | 47 records — REF 16, TEST 31 | 1 |
 | `01-registry-part7-engineering.md` | 66 records — REPO 19, ORDER 25, CLAIM 22 | 1 |
 | `02-compound-not-split.md` | 42 entries (CN-01…CN-42) covering 117 records kept whole, with the reason each cannot be split | **2. Compound requirements that could not safely be split** |
-| `03-ambiguous.md` | 26 open ambiguities (AMB-01…AMB-27, AMB-15 withdrawn), plus 4 contradictions the source itself settles | **3. Ambiguous requirements** |
+| `03-ambiguous.md` | 28 open ambiguities (AMB-01…AMB-29, AMB-15 withdrawn), plus 4 contradictions the source itself settles | **3. Ambiguous requirements** |
 | `04-verification-undefined.md` | 8 records with an undefined verification method, 4 non-normative, 3 permissions, 79 review-only | **4. Requirements whose verification method is currently undefined** |
 | `registry.json` | Machine-readable registry (generated) | 1 |
 | `_anchors.py`, `_validate.py` | Provenance constants and the checker | — (tooling) |
@@ -40,4 +40,6 @@ python3 req/_validate.py           # 0 errors / 0 warnings on a clean tree
 python3 req/_validate.py --write   # regenerate req/registry.json
 ```
 
-The checker re-derives its facts from `Red-on-Rust.md` rather than trusting the documents: field order, ID uniqueness and numbering, normative and evidence vocabularies, line-range bounds, agreement between every cited range and the turn it claims, existence and full coverage of the 148 parent obligations, resolution of every cross-reference, occurrence of every backticked identifier inside a cited range, and the frozen line anchors. `00-method.md` §6 lists each check with the injected fault that demonstrated it fires.
+The checker re-derives its facts from `Red-on-Rust.md` and `spec/` rather than trusting the documents: field order, ID uniqueness and numbering, normative and evidence vocabularies, line-range bounds, agreement between every cited range and the turn it claims, existence and full coverage of the 148 parent obligations, resolution of every internal cross-reference, existence of every `C-nn`/`U-nn` reference in `spec/06`/`spec/09`, occurrence of every backticked identifier inside a cited range, and the frozen line anchors.
+
+**Cross-reference completeness:** all **45/45** contradictions in `spec/06` and all **16/16** unresolved decisions in `spec/09` are accounted for by a registry record or an ambiguity entry — none is silently dropped, and no reference points at an item that does not exist. `00-method.md` §6 lists each check with the injected fault that demonstrated it fires.

@@ -1047,7 +1047,7 @@
   {
    "REQ-ID": "REQ-COMPILE-007",
    "CATEGORY": "compilation",
-   "SOURCE": "Red-on-Rust.md L3874–3905([7] v2 form); L1953–1980([5] J1–J4, superseded form); spec/01 S-06 R-COMPILE-03",
+   "SOURCE": "Red-on-Rust.md L3874–3905([7] v2 form); L1953–1980([5] J1–J4, superseded form); L1953–1981([5] J1–J4 form, superseded); spec/01 S-06 R-COMPILE-03; spec/06 C-35",
    "NORMATIVE-LEVEL": "IS",
    "STATEMENT": "The combined static judgment `Γ; κ_static ⊢ e : τ ! F @ B` threads type, possible-effect set `F`, capability requirements, and a static budget upper bound `B`.",
    "PRECONDITIONS": "a term is type-checked",
@@ -2195,7 +2195,7 @@
   {
    "REQ-ID": "REQ-BUDGET-001",
    "CATEGORY": "budget",
-   "SOURCE": "Red-on-Rust.md L8683–8690([16] v0.3 frozen); L9172–9180([17]); L41537–41560([60]); spec/01 S-11 R-BUDGET-01",
+   "SOURCE": "Red-on-Rust.md L8683–8690([16] v0.3 frozen); L9172–9180([17]); L41537–41560([60]); spec/01 S-11 R-BUDGET-01; spec/06 C-06",
    "NORMATIVE-LEVEL": "IS",
    "STATEMENT": "Budget `B = ⟨C, R, W⟩`.",
    "PRECONDITIONS": "—",
@@ -2293,7 +2293,7 @@
   {
    "REQ-ID": "REQ-BUDGET-008",
    "CATEGORY": "budget",
-   "SOURCE": "Red-on-Rust.md L8834([16] v0.3 resolution 4); L8683–8690([16]) — **(v0.3 rules)**; spec/09 U-01; spec/06 C-06",
+   "SOURCE": "Red-on-Rust.md L8834([16] v0.3 resolution 4); L8683–8690([16]) — **(v0.3 rules)**; spec/09 U-01",
    "NORMATIVE-LEVEL": "AMBIGUOUS",
    "STATEMENT": "The v0.3 resolution states \"`D` is part of `C`. Host/scheduler transitions consume `ΔD`, giving it operational meaning\", but no frozen text fixes the `ΔD` values or `D`'s interaction with `t`/`W`. `U-01` records `D` as never given an operational meaning; the two readings differ.",
    "PRECONDITIONS": "a host or scheduler transition",
@@ -2601,7 +2601,7 @@
   {
    "REQ-ID": "REQ-BUDGET-030",
    "CATEGORY": "budget",
-   "SOURCE": "Red-on-Rust.md L7345–7352([13]); L7410–7419([13]); spec/01 S-11 R-BUDGET-08",
+   "SOURCE": "Red-on-Rust.md L7345–7352([13]); L7410–7419([13]); L7753–7760([15] self-retraction of `⟨0,0,0⟩`); spec/01 S-11 R-BUDGET-08; spec/06 C-28",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "If `¬BudgetOK` (any gate fails), the transition is replaced by `fault(BudgetExhausted)`.",
    "PRECONDITIONS": "a budget gate fails",
@@ -2629,7 +2629,7 @@
   {
    "REQ-ID": "REQ-BUDGET-032",
    "CATEGORY": "budget",
-   "SOURCE": "Red-on-Rust.md L8756([16] E-RequestDenied); L8835([16] resolution 5) — **(v0.3 rules)**",
+   "SOURCE": "Red-on-Rust.md L8756([16] E-RequestDenied); L8835([16] resolution 5) — **(v0.3 rules)**; L7351–7352([13] `⟨0,0,0⟩` draft), L7753–7760([15] self-retraction); spec/06 C-28",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "Fault transitions preserve `C` and `R`; no consumption occurs on failure.",
    "PRECONDITIONS": "any fault transition",
@@ -3273,7 +3273,7 @@
   {
    "REQ-ID": "REQ-DUR-006",
    "CATEGORY": "durability",
-   "SOURCE": "Red-on-Rust.md L38209–38211([54] §12); L35111–35144([47]); spec/01 S-13 R-DUR-03",
+   "SOURCE": "Red-on-Rust.md L38209–38211([54] §12); L35111–35144([47]); L26156–26170([33]); spec/01 S-13 R-DUR-03; spec/06 C-44",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "`Completed(E) ⇒ Issued(E)`.",
    "PRECONDITIONS": "a `Completed` record exists",
@@ -3721,7 +3721,7 @@
   {
    "REQ-ID": "REQ-ACTOR-010",
    "CATEGORY": "concurrency",
-   "SOURCE": "Red-on-Rust.md L25558–25615([32]); L25886([32]); L38074–38084([54] §9); spec/01 S-15 R-ACTOR-04",
+   "SOURCE": "Red-on-Rust.md L25558–25615([32]); L25886([32]); L38074–38084([54] §9); spec/01 S-15 R-ACTOR-04; spec/06 C-37",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "The scheduler is strictly FIFO.",
    "PRECONDITIONS": "the runnable queue is non-empty",
@@ -4925,7 +4925,7 @@
   {
    "REQ-ID": "REQ-PERSIST-014",
    "CATEGORY": "persistence",
-   "SOURCE": "Red-on-Rust.md L35127–35144([47]); L33905–33930([46]); spec/01 S-18 R-PERSIST-03",
+   "SOURCE": "Red-on-Rust.md L35127–35144([47]); L33905–33930([46]); L26146–26150([33] separate-journal form, superseded); spec/01 S-18 R-PERSIST-03; spec/06 C-25, C-39",
    "NORMATIVE-LEVEL": "IS",
    "STATEMENT": "`WalRecord ::= Event(EventEnvelope) | EffectPrepared { id, actor, digest } | EffectIssued { id, actor, digest } | EffectCompleted { id, digest, result_digest } | EffectReconciled { id, digest, outcome } | SnapshotCommit { event_sequence, snapshot_version, state_digest }`.",
    "PRECONDITIONS": "—",
@@ -5569,7 +5569,7 @@
   {
    "REQ-ID": "REQ-TEST-001",
    "CATEGORY": "test-infrastructure",
-   "SOURCE": "Red-on-Rust.md L38587–38624([54] §22 Exhaustive); spec/01 S-21 R-TEST-01",
+   "SOURCE": "Red-on-Rust.md L38587–38624([54] §22 Exhaustive); L37253([49] \"all valid/invalid programs up to depth 4\"); spec/01 S-21 R-TEST-01; spec/06 C-31",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "The exhaustive (small-state) mode enumerates bounded state with baseline `expression depth ≤ 4, actors ≤ 2, capabilities ≤ 2`, and runs on every commit.",
    "PRECONDITIONS": "CI on commit",
@@ -6269,7 +6269,7 @@
   {
    "REQ-ID": "REQ-ORDER-001",
    "CATEGORY": "process",
-   "SOURCE": "Red-on-Rust.md L37800–37834([54] §3); L42108–42142([60]); spec/01 S-23 R-ORDER-01",
+   "SOURCE": "Red-on-Rust.md L37800–37834([54] §3); L42108–42142([60]); spec/01 S-23 R-ORDER-01; spec/06 C-21",
    "NORMATIVE-LEVEL": "MUST",
    "STATEMENT": "Implementation proceeds in dependency order: 01 core domain types → 02 canonical serialization → 03 compiler artifacts → 04 capability kernel → 05 budget algebra → 06 CEK evaluator → 07 lambda/call → 08 attenuation → 09 effects → 10 actors → 11 scheduler → 12 marshalling/delegation → 13 persistence → 14 crash recovery → 15 LLM boundary → 16 reference model → 17 differential harness → 18 mutation framework → 19 CI → 20 stress/security validation.",
    "PRECONDITIONS": "implementation planning",

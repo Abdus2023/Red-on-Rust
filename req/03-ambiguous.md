@@ -21,7 +21,7 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Two readings:** (a) the S-17 `Value` codec is reused recursively for these structures; (b) a separate frozen encoding is added by addendum.
 - **Evidence:** L37610–37614; L33416 ("The same encoding principles apply to machine state, continuation frames, actor state, effect receipts, and WAL records" — a principle, not a format); L37480–37495 (differential observation normalizes rather than compares encodings).
 - **Affected records:** REQ-CEK-003, REQ-ACTOR-006, REQ-PERSIST-016, REQ-PERSIST-004, REQ-RECOV-010, REQ-CANON-035 (Track A).
-- **Linked:** U-02, C-19.
+- **Linked:** U-02, C-15 ("15A frozen tag set does not cover machine-state types").
 - **Blocking:** yes for Track A differential testing and for snapshot digest stability; no for Track B.
 
 ### AMB-03 — Spawn budget allocation policy
@@ -29,7 +29,7 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Two readings:** (a) the language supplies the split explicitly; (b) the scheduler applies a frozen split policy. Neither is given.
 - **Evidence:** L10158–10160; L25624 `execute_spawn` escrow steps; L25931 `Spawn { body, budget }` (a field exists but its origin is unstated).
 - **Affected records:** REQ-ACTOR-018 (`AMBIGUOUS`), REQ-BUDGET-024, REQ-BUDGET-030, REQ-ACTOR-017.
-- **Linked:** C-33, U-12, U-03, VU-03.
+- **Linked:** C-24 ("Spawn budget-split policy (A2) never closed"), U-03, VU-03.
 - **Blocking:** yes for conservation testing — the conservation *law* is testable (REQ-BUDGET-024); the allocation *function* is not.
 
 ### AMB-04 — `trust_level` in the spawn rule
@@ -37,7 +37,7 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Two readings:** (a) a per-spawn argument supplied by the program; (b) a static property of the spawn site. The term has no counterpart in the frozen `Spawn { body, budget }` or in the capability algebra.
 - **Evidence:** L8780; L25931; L25624 (no `trust_level` parameter).
 - **Affected records:** REQ-ACTOR-024 (`AMBIGUOUS`), REQ-ACTOR-020.
-- **Linked:** U-18.
+- **Linked:** C-36 ("`Spawn` isolation/trust parameter vs budget parameter"), C-04 ("`await` elimination and isolation-level `spawn`: not re-declared"), U-05 for the isolation ladder. No `spec/09` item covers `trust_level` itself — new finding of this extraction.
 - **Blocking:** yes for `E-Spawn` conformance.
 
 ### AMB-05 — `RunState` vs `ActorStatus`
@@ -45,7 +45,7 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Two readings:** (a) two coexisting enums with an implicit mapping; (b) one enum whose authoritative name and variant set are undecided. `Pending`↔`Active` correspondence is plausible but unstated.
 - **Evidence:** both passages; no mapping is given anywhere in L1–42312.
 - **Affected records:** REQ-ACTOR-035 (`AMBIGUOUS`), REQ-ACTOR-004, REQ-ACTOR-029, REQ-RECOV-017, REQ-PERSIST-016.
-- **Linked:** U-08, VU-04.
+- **Linked:** C-18 ("`RunState` vs `ActorStatus` double enum"), VU-04.
 - **Blocking:** yes for snapshot round-trip and for `SCHED-BLOCKED-NOT-SCHEDULED`.
 
 ### AMB-06 — Scope of the marshal round-trip law
@@ -53,7 +53,7 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Two readings:** (a) universally quantified over the whole `Value` domain including `Value::Capability`, in which case the law is vacuous or contradicted by the rejection rule; (b) quantified over the marshalable subset only, whose boundary is not enumerated.
 - **Evidence:** L10165–10167; L25685 `MarshalFault::CapabilityNotMarshalable` (a rejection exists, so the universal reading cannot hold).
 - **Affected records:** REQ-MARSHAL-008 (`AMBIGUOUS`), REQ-MARSHAL-001.
-- **Linked:** U-09, VU-05.
+- **Linked:** C-45 (which `spec/06` itself ties to U-09), VU-05.
 - **Blocking:** partially — the property is testable on any explicitly enumerated subset; the subset is not frozen.
 
 ### AMB-07 — `CapRef` "never serialized" vs the frozen `CapRef` tag
@@ -61,7 +61,7 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Two readings:** (a) the prohibition is about *message payloads and authority data* only; (b) the comment is stale relative to turn [50] and `CapRef` is serializable wherever the codec is applied.
 - **Evidence:** L12126–12131; L33185–33190; `Value::Capability(CapRef)` is a machine value (L12283–12294) and the codec covers all 11 variants (L33122–33183).
 - **Affected records:** REQ-CANON-014 (`AMBIGUOUS`), REQ-MARSHAL-001, REQ-CORE-009, REQ-ACTOR-032.
-- **Linked:** U-10.
+- **Linked:** C-14 ("CapRef 'never serialized' comment vs 15A CapRef encoding vs snapshot content").
 - **Blocking:** no for behavior (the marshal rejection is unambiguous); yes for any claim that `CapRef` never appears in bytes.
 
 ### AMB-08 — Fault taxonomy vs v0.3 fault names
@@ -69,7 +69,7 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Two readings:** (a) these names are aliases/legacy names for frozen variants (`CapabilityRevoked`/`CapabilityViolation` → `Fault::Capability(reason)`; `HostPolicyViolation` → `HostPolicyDenied`; `IsolationBreach` → a `Capability` reason); (b) they are additional variants, in which case the frozen enum is incomplete. The source never states either.
 - **Evidence:** L23806–23824; L8721; L8748–8757; L8766. Also `spec/06` C-01 (naming) and C-03 (classification).
 - **Affected records (10):** REQ-CALC-013, REQ-COMPILE-005, REQ-CAP-023, REQ-EFFECT-025, REQ-EFFECT-036, REQ-EFFECT-038, REQ-EFFECT-040, REQ-DUR-009, REQ-HOST-008, REQ-RECOV-013.
-- **Linked:** C-01, C-03, C-04, C-16, U-17.
+- **Linked:** C-08 ("Fault naming inconsistency for capability denial"), U-08 ("Fault taxonomy unification"), U-14 ("Error-variant enumeration", subset of U-08).
 - **Blocking:** yes — the differential observer compares fault *identity* (REQ-REF-010), so the vocabulary must be closed and agreed before Track A runs. This is the single most blocking ambiguity in the set.
 
 ### AMB-09 — Authority for the runnable queue at recovery
@@ -77,7 +77,7 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Two readings:** (a) the snapshot queue is discarded and the queue is rebuilt from the replayed event stream; (b) the snapshot queue is authoritative and step 10 merely orders it. Step 10 says "reconstruct", which fits (a); the snapshot content says the data is stored, which fits (b).
 - **Evidence:** L26301–26307; L35181–35193; L35323–35330.
 - **Affected records:** REQ-RECOV-018 (`AMBIGUOUS`), REQ-PERSIST-016, REQ-RECOV-017, REQ-ACTOR-011.
-- **Linked:** U-14, VU-09.
+- **Linked:** U-17 ("Runnable queue: snapshot field vs recovery reconstruction"), C-26, VU-09.
 - **Blocking:** yes for the crash matrix at T4/T5 (the expected runnable set differs between readings when a `Blocked` transition follows the snapshot).
 
 ### AMB-10 — Planner staleness predicate and `PlannerMetadata`
@@ -93,7 +93,8 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Two readings:** (a) `Delegate` is a 13th constructor and the turn-[21] list is incomplete; (b) the turn-[32] block is illustrative and delegation is not a language-level form. The source never reconciles them.
 - **Evidence:** L12145–12200 (frozen 12 constructors); L25989–25992 (`Expr::Delegate`); L8924 (marshal-time wrapper `Delegate(c, constraint, a_target)` — **three** arguments, not two); L9905–9912 and L10836–10842 (`MarshalResult::Delegated { value, capability }`); L2876 (`DelegatedCapabilityToken`); L24062 (prose "explicit `Delegate` operations").
 - **Affected records:** REQ-CALC-003, REQ-MARSHAL-003 (`AMBIGUOUS`).
-- **Linked:** U-20, C-13, C-16. **Correction to `spec/09` U-20:** its claim that the ⟨capability, constraint⟩ shape "is inference, not source text" is false — the shape is source text at L25989–25992. The real gap is the constructor's absence from the frozen AST and the disagreement between the two-argument AST form and the three-argument marshal wrapper.
+- **Linked:** C-16 ("`Constraint` appears in the AST but has no frozen data encoding", whose evidence column also records that the frozen `Expr` has no `Delegate` constructor), U-02 (part of).
+- **Correction to `spec/01` R-MARSHAL-02 (`spec/01` L334):** that row states the node appears "in the Phase 13 text (L25700, L25931; master prompt L37959)" and that "no frozen document defines its fields". L25700 does state it ("**Explicit Delegation** is handled as a separate, explicit AST node (`Expr::Delegate`)"); **L25931 is `fn execute_spawn(`** and **L37959 is a blank line inside §6**, so two of the three cites are wrong; and the fields *are* defined, at L25989–25992.
 - **Blocking:** no for the frozen surface (12 constructors remain the conformance baseline); yes before any delegation conformance can be claimed.
 
 ### AMB-12 — `AdmissibleConstraint` is undefined
@@ -109,7 +110,7 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Two readings:** (a) `F` is produced inside capability analysis; (b) inside resource analysis; (c) a seventh stage is implied.
 - **Evidence:** L37964–38021; L3874–3905.
 - **Affected records:** REQ-COMPILE-014 (`NON-NORMATIVE` observation), REQ-COMPILE-004, REQ-COMPILE-008.
-- **Linked:** U-22, C-14.
+- **Linked:** U-22 ("Static effect-set inference (J2) not present in the frozen pipeline"). No `spec/06` item covers it.
 - **Blocking:** no for conformance (the pipeline stages are what is verified); yes for compiler-internal review completeness.
 
 ### AMB-14 — `EventSequence` vs `WalSequence`
@@ -144,7 +145,7 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Statement:** process/VM/hardware isolation levels are mentioned as deployment options with no mapping to capability ceilings.
 - **Evidence:** L41406–41424 (orientation), L26301 (global state).
 - **Affected records:** REQ-ARCH-004, REQ-HOST-002.
-- **Linked:** U-05.
+- **Linked:** U-05, C-19 ("Isolation ladder (WASM/OS) dropped without retraction").
 - **Blocking:** no — no requirement depends on it.
 
 ### AMB-19 — Per-transition `δ_t` values
@@ -158,7 +159,7 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Statement:** `Read/Write/External` in the frozen effect protocol vs `Read/Write/Execute/External` elsewhere.
 - **Evidence:** L6380–6400; L38074–38107.
 - **Affected records:** REQ-EFFECT-002, REQ-EFFECT-017.
-- **Linked:** U-06, C-06.
+- **Linked:** U-06, C-05 ("Effect property values outside the declared domain").
 - **Blocking:** partially; see AMB-16.
 
 ### AMB-21 — Two incompatible `Value` domains share one name
@@ -173,14 +174,14 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Statement:** `Budget`, `BudgetAllocationSpec`, `BudgetAllocation`, and `B = ⟨C, R, W⟩` all appear.
 - **Evidence:** L10076–10100; L37929–37961.
 - **Affected records:** REQ-BUDGET-001, REQ-BUDGET-002, REQ-ACTOR-018.
-- **Linked:** C-05.
+- **Linked:** no `spec/06` item covers this naming set — new finding of this extraction.
 - **Blocking:** no.
 
 ### AMB-23 — `EffectCost` field order
 - **Statement:** `⟨cost_r, cost_c⟩` in one listing, `⟨cost_c, cost_r⟩` in another; the resource gate consumes `cost_R` and the computational gate consumes `cost_C`.
 - **Evidence:** L10062; L8833.
 - **Affected records:** REQ-CALC-010, REQ-BUDGET-014.
-- **Linked:** C-07.
+- **Linked:** C-23 ("`EffectCost` field evolution: `complete` → `complete_max`").
 - **Blocking:** no — the gate semantics are unambiguous; only the tuple's presentation order differs.
 
 ### AMB-24 — Project status contradiction
@@ -194,14 +195,14 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Statement:** `Plan`, `PlanProposal`, `PlanIR`, `ExecutablePlan`, `PlannerState` are used with overlapping meanings.
 - **Evidence:** L27175 (`PlanProposal`); L37964–38021 (`PlanIR`, `ExecutablePlan`).
 - **Affected records:** REQ-PLANNER-002, REQ-PLANNER-014, REQ-COMPILE-004.
-- **Linked:** C-12, C-11.
+- **Linked:** no `spec/06` item covers the planner-state naming set — new finding of this extraction.
 - **Blocking:** no.
 
 ### AMB-26 — Authority/frame naming
 - **Statement:** `Authority`/`AuthorityNode`/`CapabilityKernel` are used interchangeably, and `pub enum Frame` is declared **eleven** times (L12453, L14047, L14430, L16943, L18650, L19429, L20307, L20713, L21181, L23339, L23830) with `pub struct Continuation` alongside it (L12517).
 - **Evidence:** L39373 (`AuthorityNode`); the eleven `pub enum Frame` lines above; L12517 (`Continuation`). No type named `EvalFrame` or `ContinuationFrame` exists in the source.
 - **Affected records:** REQ-KERN-001, REQ-KERN-002, REQ-CEK-007.
-- **Linked:** C-06, C-08.
+- **Linked:** C-42 ("`GlobalState` vs `GlobalConfig` naming"), C-17 ("`invoke` vs `request` naming").
 - **Blocking:** no.
 
 ### AMB-27 — Two recovery step lists: 12 steps vs 19 steps
@@ -212,6 +213,22 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 - **Linked:** not recorded in `spec/06` — this is a new finding of this extraction.
 - **Blocking:** no for the 12-step conformance tests; yes for any claim that the recovery procedure is fully specified.
 
+### AMB-28 — `Constraint` has no frozen data encoding
+- **Statement:** `Expr::Attenuate { capability, constraint: Constraint, body }` embeds a `Constraint` as an immediate value rather than as an `Expr` (L12177–12181). The frozen 15A tag set (L33087–33265) has tags for `Value`, `Symbol`, `CapRef`, `ActorId`, and `EffectId` only — there is no tag for `Constraint`, and the capability algebra defines it semantically ("an operation-indexed narrowing request", L6395–6398) rather than structurally.
+- **Two readings:** (a) `Constraint` is encoded via a `Value`-shaped payload whose layout is yet to be frozen; (b) a new standalone tag is added by addendum.
+- **Consequence:** any snapshot, WAL record, or plan that must carry an attenuation constraint has no frozen encoding — this is the concrete instance of AMB-02 for the one AST immediate that is not an `Expr`.
+- **Affected records:** REQ-CAP-001, REQ-CAP-007, REQ-CANON-005, REQ-CEK-003, REQ-PERSIST-016.
+- **Linked:** C-16, U-02 (part of).
+- **Blocking:** yes for snapshot/WAL encoding of attenuation state.
+
+### AMB-29 — "The 15 Core Invariants" table lists ten
+- **Statement:** the property-test matrix is titled "The 15 Core Invariants" (L27904) but the table contains exactly ten rows (L27909–27918). The five unlisted invariants are never enumerated anywhere in L1–42312.
+- **Two readings:** (a) the title is a stale count and ten is the complete set; (b) five invariants were intended and never written down.
+- **What is *not* missing:** each of the ten listed invariants is extracted by name in this registry — 1 Authority Monotonicity (REQ-CORE-004, REQ-CAP-012), 2 No Authority Amplification (REQ-MARSHAL-001), 3 Budget Conservation (REQ-BUDGET-024), 4 Strict Left-to-Right Eval (REQ-CEK-014), 5 Arity Short-Circuit (REQ-CEK-013), 6 Causal Receipt Validation (REQ-EFFECT-027), 7 Deterministic Scheduling (REQ-ACTOR-010, REQ-ACTOR-031), 8 Crash Recovery Equivalence (REQ-RECOV-015), 9 Indeterminate Effect Handling (REQ-DUR-012, REQ-RECOV-005), 10 Stale Planner Rejection (REQ-PLANNER-013). No requirement was invented to reach fifteen (rule 2).
+- **Affected records:** REQ-TEST-005, REQ-TEST-007.
+- **Linked:** C-20.
+- **Blocking:** no for the ten; yes for any claim that the property-test matrix is complete as titled.
+
 ---
 
 ## §2 Contradictions with a frozen resolution (recorded, not treated as ambiguous)
@@ -219,15 +236,16 @@ Rules applied: extraction rule 9 (mark unresolved statements AMBIGUOUS rather th
 | ID | Superseded text | Frozen text | Resolution basis | Registry record |
 |---|---|---|---|---|
 | C-02 | §1.3 standalone primitive tags `0x10` bool, `0x11` int, `0x13` string | `Value` envelope discriminants `0x00`–`0x07`; standalone tags only for `Value/Symbol/CapRef/ActorId/EffectId` | Later turn [50] freezes the wire format; the tag sets are mutually exclusive | REQ-CANON-006 (`NON-NORMATIVE`), REQ-CANON-005, REQ-CANON-008 |
-| C-29 | "transparent crash recovery" unqualified | Recovery theorem with the three-part proviso | Turn [35] explicitly retracts the unqualified claim | REQ-CORE-013, REQ-RECOV-011 |
-| C-31 | Reference model may reuse production serialization | Reference model must not depend on any production crate | Turn [54] §19–§21 prohibition list | REQ-REF-004, REQ-CLAIM-012 |
-| C-32 | `derive` may widen under explicit escalation | `derive(A,C) ≼ A` with no escalation path | Monotonicity is a boxed security invariant in the frozen calculus | REQ-CORE-004, REQ-CAP-012 |
+| C-40 | "transparent crash recovery" unqualified | Recovery theorem with the three-part proviso | Turn [35] explicitly retracts the unqualified claim | REQ-CORE-013, REQ-RECOV-011 |
+| C-33 | Reference model may reuse production serialization | Reference model must not depend on any production crate | Turn [54] §19–§21 prohibition list | REQ-REF-004, REQ-CLAIM-012 |
+| — | `derive` may widen under explicit escalation | `derive(A,C) ≼ A` with no escalation path | Monotonicity is a boxed security invariant in the frozen calculus | REQ-CORE-004, REQ-CAP-012 |
 
 These four are contradictions the source itself settles by a later frozen statement; the registry records the superseded text as `NON-NORMATIVE` and the surviving text as its own requirement. They are **not** listed as AMBIGUOUS because no reading choice remains open.
 
 ## §3 Counts
 
-- Open ambiguities: **26** (AMB-01 … AMB-27, less the withdrawn AMB-15).
+- Open ambiguities: **28** (AMB-01 … AMB-29, less the withdrawn AMB-15).
 - Registry records carrying `NORMATIVE-LEVEL: AMBIGUOUS`: **8** — REQ-BUDGET-008 (AMB-01), REQ-ACTOR-018 (AMB-03), REQ-ACTOR-024 (AMB-04), REQ-ACTOR-035 (AMB-05), REQ-MARSHAL-008 (AMB-06), REQ-CANON-014 (AMB-07), REQ-CAP-024 (AMB-12), REQ-RECOV-018 (AMB-09).
 - Records whose verification method is `UNDEFINED` because of an open ambiguity: **8** — see `req/04-verification-undefined.md` §1.
+- Cross-reference completeness: all 45 `spec/06` contradictions and all 16 `spec/09` unresolved decisions are referenced by this document or by the registry; `req/_validate.py` fails the build if any referenced id does not exist in those files.
 - Verification-blocking ambiguities: AMB-01, AMB-02, AMB-03, AMB-04, AMB-05, AMB-08, AMB-09, AMB-10, AMB-12, AMB-19, AMB-21.

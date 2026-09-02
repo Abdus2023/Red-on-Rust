@@ -237,7 +237,7 @@ Areas: `REF` (16), `TEST` (31) — 47 atomic units.
 ### REQ-TEST-001
 - REQ-ID: REQ-TEST-001
 - CATEGORY: test-infrastructure
-- SOURCE: Red-on-Rust.md L38587–38624([54] §22 Exhaustive); spec/01 S-21 R-TEST-01
+- SOURCE: Red-on-Rust.md L38587–38624([54] §22 Exhaustive); L37253([49] "all valid/invalid programs up to depth 4"); spec/01 S-21 R-TEST-01; spec/06 C-31
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: The exhaustive (small-state) mode enumerates bounded state with baseline `expression depth ≤ 4, actors ≤ 2, capabilities ≤ 2`, and runs on every commit.
 - PRECONDITIONS: CI on commit

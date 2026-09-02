@@ -283,6 +283,23 @@ def main() -> int:
         if tok not in source_blob:
             err(f"CROSS_REFERENCE_TOKENS lists `{tok}`, absent from the source")
 
+    # 7c. every spec/06 C-nn and spec/09 U-nn cross-reference must exist
+    import re as _re
+    c_ids = set(_re.findall(r"^\| (C-\d{2}) \|", (A.REPO_ROOT / "spec" / "06-contradictions-ambiguities.md").read_text(encoding="utf-8"), _re.M))
+    u_ids = set(_re.findall(r"^### (U-\d{2}) ", (A.REPO_ROOT / "spec" / "09-unresolved-decisions.md").read_text(encoding="utf-8"), _re.M))
+    if len(c_ids) != 45:
+        err(f"expected 45 C- rows in spec/06, found {len(c_ids)}")
+    if len(u_ids) != 16:
+        err(f"expected 16 U- headings in spec/09, found {len(u_ids)}")
+    for path in sorted(A.REQ_DIR.glob("*.md")):
+        body = path.read_text(encoding="utf-8")
+        for m in _re.finditer(r"\b(C-\d{2}|U-\d{2})\b", body):
+            ref = m.group(1)
+            pool, doc = (c_ids, "spec/06") if ref.startswith("C-") else (u_ids, "spec/09")
+            if ref not in pool:
+                line_no = body[:m.start()].count("\n") + 1
+                err(f"{path.name}:{line_no}: references {ref}, which does not exist in {doc}")
+
     # 8. anchors
     for tok, ln in A.ANCHORS.items():
         if ln > len(lines) or tok not in lines[ln - 1]:

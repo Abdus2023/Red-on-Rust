@@ -10,7 +10,7 @@ The v0.3 budget/transition text (`Red-on-Rust.md` L8643–9050, turn `[16]`) is 
 ### REQ-BUDGET-001
 - REQ-ID: REQ-BUDGET-001
 - CATEGORY: budget
-- SOURCE: Red-on-Rust.md L8683–8690([16] v0.3 frozen); L9172–9180([17]); L41537–41560([60]); spec/01 S-11 R-BUDGET-01
+- SOURCE: Red-on-Rust.md L8683–8690([16] v0.3 frozen); L9172–9180([17]); L41537–41560([60]); spec/01 S-11 R-BUDGET-01; spec/06 C-06
 - NORMATIVE-LEVEL: IS
 - STATEMENT: Budget `B = ⟨C, R, W⟩`.
 - PRECONDITIONS: —
@@ -108,7 +108,7 @@ The v0.3 budget/transition text (`Red-on-Rust.md` L8643–9050, turn `[16]`) is 
 ### REQ-BUDGET-008
 - REQ-ID: REQ-BUDGET-008
 - CATEGORY: budget
-- SOURCE: Red-on-Rust.md L8834([16] v0.3 resolution 4); L8683–8690([16]) — **(v0.3 rules)**; spec/09 U-01; spec/06 C-06
+- SOURCE: Red-on-Rust.md L8834([16] v0.3 resolution 4); L8683–8690([16]) — **(v0.3 rules)**; spec/09 U-01
 - NORMATIVE-LEVEL: AMBIGUOUS
 - STATEMENT: The v0.3 resolution states "`D` is part of `C`. Host/scheduler transitions consume `ΔD`, giving it operational meaning", but no frozen text fixes the `ΔD` values or `D`'s interaction with `t`/`W`. `U-01` records `D` as never given an operational meaning; the two readings differ.
 - PRECONDITIONS: a host or scheduler transition
@@ -416,7 +416,7 @@ The v0.3 budget/transition text (`Red-on-Rust.md` L8643–9050, turn `[16]`) is 
 ### REQ-BUDGET-030
 - REQ-ID: REQ-BUDGET-030
 - CATEGORY: budget
-- SOURCE: Red-on-Rust.md L7345–7352([13]); L7410–7419([13]); spec/01 S-11 R-BUDGET-08
+- SOURCE: Red-on-Rust.md L7345–7352([13]); L7410–7419([13]); L7753–7760([15] self-retraction of `⟨0,0,0⟩`); spec/01 S-11 R-BUDGET-08; spec/06 C-28
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: If `¬BudgetOK` (any gate fails), the transition is replaced by `fault(BudgetExhausted)`.
 - PRECONDITIONS: a budget gate fails
@@ -444,7 +444,7 @@ The v0.3 budget/transition text (`Red-on-Rust.md` L8643–9050, turn `[16]`) is 
 ### REQ-BUDGET-032
 - REQ-ID: REQ-BUDGET-032
 - CATEGORY: budget
-- SOURCE: Red-on-Rust.md L8756([16] E-RequestDenied); L8835([16] resolution 5) — **(v0.3 rules)**
+- SOURCE: Red-on-Rust.md L8756([16] E-RequestDenied); L8835([16] resolution 5) — **(v0.3 rules)**; L7351–7352([13] `⟨0,0,0⟩` draft), L7753–7760([15] self-retraction); spec/06 C-28
 - NORMATIVE-LEVEL: MUST
 - STATEMENT: Fault transitions preserve `C` and `R`; no consumption occurs on failure.
 - PRECONDITIONS: any fault transition

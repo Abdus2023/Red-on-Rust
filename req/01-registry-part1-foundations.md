@@ -1024,7 +1024,7 @@ Field semantics: `req/00-method.md` §2. Evidence discipline: §3. All records a
 ### REQ-COMPILE-007
 - REQ-ID: REQ-COMPILE-007
 - CATEGORY: compilation
-- SOURCE: Red-on-Rust.md L3874–3905([7] v2 form); L1953–1980([5] J1–J4, superseded form); spec/01 S-06 R-COMPILE-03
+- SOURCE: Red-on-Rust.md L3874–3905([7] v2 form); L1953–1980([5] J1–J4, superseded form); L1953–1981([5] J1–J4 form, superseded); spec/01 S-06 R-COMPILE-03; spec/06 C-35
 - NORMATIVE-LEVEL: IS
 - STATEMENT: The combined static judgment `Γ; κ_static ⊢ e : τ ! F @ B` threads type, possible-effect set `F`, capability requirements, and a static budget upper bound `B`.
 - PRECONDITIONS: a term is type-checked
