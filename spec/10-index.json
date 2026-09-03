@@ -32,8 +32,8 @@
     "id_schemes": {
       "S-NN": "specification section (24)",
       "R-AREA-NN": "normative requirement/obligation (173; 148 source-transcribed + 25 post-audit frozen addenda)",
-      "C-NN": "contradiction/ambiguity finding (101 indexed; 102 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
-      "U-NN": "unresolved item requiring explicit decision (32)",
+      "C-NN": "contradiction/ambiguity finding (108 indexed; 109 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
+      "U-NN": "unresolved item requiring explicit decision (39)",
       "M-NN": "milestone M0-M11",
       "TAG": "source verification-obligation tags (19; 17 frozen-source + 2 post-audit addenda)",
       "M0NN": "baseline mutation registry (36; 18 baseline + 18 post-audit: M019–M036; M036 is registered and currently SURVIVING — see spec/08 §2 and U-38)",
@@ -45,10 +45,10 @@
       "03-obligation-matrix.md": "all requirements with stable IDs, status, provenance",
       "04-dependency-graph.md": "section/object/verification dependency graphs + DOT",
       "05-terminology.md": "glossary, normalization rules, under-specified terms",
-      "06-contradictions-ambiguities.md": "findings C-01..C-102 with severity and status",
+      "06-contradictions-ambiguities.md": "findings C-01..C-109 with severity and status",
       "07-implementation-mapping.md": "obligations -> crates/modules; actual repo state; milestone crosswalk",
       "08-verification-mapping.md": "obligations -> tags/tests/evidence; claim ladder per theorem",
-      "09-unresolved-decisions.md": "items U-01..U-38 requiring explicit architectural decisions",
+      "09-unresolved-decisions.md": "items U-01..U-45 requiring explicit architectural decisions",
       "10-index.json": "this file (machine-readable index)"
     }
   },
@@ -6132,6 +6132,102 @@
           "11438"
         ]
       }
+    },
+    {
+      "id": "C-103",
+      "title": "Two frozen \"16-step\" request protocols: the master-prompt order (construct s4, durable issuance s14, Pending s15, host s16) vs the turn-[21] order quoted by spec/01 R-EFFECT-01 (construct s13, host emission s15, durable Issued s16)",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-39",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38024-38045",
+          "12177-12194"
+        ]
+      }
+    },
+    {
+      "id": "C-104",
+      "title": "Step-10 deadline predicate discrepancy: t ≤ W (canonical registry row) vs t + δ_t(req) ≤ W (R-BUDGET-06, v0.3 E-Request) vs the [30] sketch's weaker now > w",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-40",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "38038",
+          "8698-8700",
+          "8740",
+          "23901-23905"
+        ]
+      }
+    },
+    {
+      "id": "C-105",
+      "title": "Durable issuance/effect records carry neither the effect nor its cost: escrow survival (R-DUR-05), T1 budget restoration (REQ-DUR-010), and T2–T4 reconciliation identity have no durable source of truth",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-41",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "8743",
+          "23863-23873"
+        ]
+      }
+    },
+    {
+      "id": "C-106",
+      "title": "Live journal/fsync failure at step 14 has no frozen semantics: undeclared fault, no rollback rule, R-EFFECT-04's five assertions impossible after steps 12–13, and no record kind makes R-CORE-12's journal-driven-commit alternative realizable",
+      "severity": "BLOCKING",
+      "status": "open",
+      "resolved_into": "U-42",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          ""
+        ]
+      }
+    },
+    {
+      "id": "C-107",
+      "title": "Snapshot cadence relative to the s12–s16 window is unfrozen: T0/T1 postconditions (\"no budget mutation\", \"budget restored\") can be false, and next_effect_id/continuation reconstruction depends on snapshot timing",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-43",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          ""
+        ]
+      }
+    },
+    {
+      "id": "C-108",
+      "title": "Orphaned \"frozen addendum\" R-BUDGET-10…14 in audit/resource-accounting-audit.md: cited by no normative layer, and its five-path escrow normal form diverges from R-BUDGET-09's three paths",
+      "severity": "MINOR",
+      "status": "corrected-in-place (provenance recorded)",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          ""
+        ]
+      }
+    },
+    {
+      "id": "C-109",
+      "title": "EffectCompleted has no frozen append–fsync–accounting–resume boundary: R-EFFECT-07 states an order, S-18 has no completion-sync step, and the T4/T5 crash boundary depends on it",
+      "severity": "MINOR",
+      "status": "open",
+      "resolved_into": "U-43",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "23949-24002"
+        ]
+      }
     }
   ],
   "unresolved": [
@@ -6487,6 +6583,85 @@
         "R-SCOPE-03",
         "R-CLAIM-02",
         "R-TEST-04"
+      ]
+    },
+    {
+      "id": "U-39",
+      "title": "The two 16-step request protocols: which one does S-12 publish?",
+      "blocking": "BLOCKING",
+      "section": "S-12;S-13",
+      "affects": [
+        "R-EFFECT-01",
+        "R-EFFECT-03",
+        "R-DUR-01"
+      ]
+    },
+    {
+      "id": "U-40",
+      "title": "Step-10 deadline predicate: t ≤ W or t + δ_t(req) ≤ W?",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-11;S-09",
+      "affects": [
+        "R-BUDGET-06",
+        "R-CAP-09"
+      ]
+    },
+    {
+      "id": "U-41",
+      "title": "Durable record payload for issuance: what makes DurableIssued and escrow survivable?",
+      "blocking": "BLOCKING",
+      "section": "S-13;S-18;S-14;S-05",
+      "affects": [
+        "R-DUR-01",
+        "R-PERSIST-03",
+        "R-HOST-06",
+        "R-PLANNER-07"
+      ]
+    },
+    {
+      "id": "U-42",
+      "title": "Live journal/fsync failure at step 14: declared fault, rollback, or journal-driven commit?",
+      "blocking": "BLOCKING",
+      "section": "S-13;S-12;S-02;S-18;S-07",
+      "affects": [
+        "R-DUR-02",
+        "R-EFFECT-04",
+        "R-CORE-12",
+        "R-PERSIST-03",
+        "R-CALC-06",
+        "R-CORE-13"
+      ]
+    },
+    {
+      "id": "U-43",
+      "title": "Persistence boundaries around the effect transaction: snapshot cadence, ID-counter restoration, completion sync",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-18;S-19;S-12",
+      "affects": [
+        "R-PERSIST-04",
+        "R-RECOV-02",
+        "R-EFFECT-07"
+      ]
+    },
+    {
+      "id": "U-44",
+      "title": "Request-frame verification tags: add REQUEST-ARGS-LTR and REQUEST-NON-CAP-SHORT-CIRCUIT to the frozen tag set?",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-21",
+      "affects": [
+        "R-TEST-07"
+      ]
+    },
+    {
+      "id": "U-45",
+      "title": "Adopt R-BUDGET-10…14 (resource-accounting audit addendum), and reconcile its escrow paths with R-BUDGET-09?",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-11;S-02;S-13;S-19",
+      "affects": [
+        "R-BUDGET-01",
+        "R-CORE-05",
+        "R-DUR-05",
+        "R-RECOV-06"
       ]
     }
   ],

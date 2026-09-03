@@ -120,7 +120,10 @@ def _last_c_row(root: Path) -> str:
 
 def m_add_c_row(root: Path) -> bool:
     """A new finding row appended to spec/06 and nowhere else."""
-    row = ("| C-103 | Injected mutation row: a finding added to the register and "
+    # Fixture IDs must stay ahead of the live register (C-103...C-109 were taken
+    # by the request-pipeline audit on 2026-09-03; a collision would turn this
+    # into a duplicate row and mute the very pin the mutation exercises).
+    row = ("| C-110 | Injected mutation row: a finding added to the register and "
            "to no index | MINOR | L1 | **open** → U-01 | Injected by "
            "audit/_checker_mutations.py; if you are reading this in a real "
            "register, the harness failed to clean up. |\n")
@@ -139,7 +142,8 @@ def m_add_c_row_3digit(root: Path) -> bool:
     C-100..C-102 were invisible to five `C-\\d{2}` patterns.  If any of them
     regress to two digits, this mutation survives.
     """
-    row = ("| C-104 | Injected three-digit mutation row (regression lock for the "
+    # Fixture IDs stay ahead of the live register (see m_add_c_row's note).
+    row = ("| C-111 | Injected three-digit mutation row (regression lock for the "
            "C-\\d{2} under-count) | MINOR | L1 | **open** → U-01 | Injected by "
            "audit/_checker_mutations.py. |\n")
     txt = (root / "spec/06-contradictions-ambiguities.md").read_text(encoding="utf-8")
@@ -160,7 +164,11 @@ def m_drop_c_row(root: Path) -> bool:
 
 def m_add_u_heading(root: Path) -> bool:
     """A new unresolved decision with no index entry and no count update."""
-    block = ("\n### U-39 — Injected mutation decision\n\n"
+    # Fixture IDs must stay ahead of the live register (U-39...U-45 were taken by
+    # the request-pipeline audit on 2026-09-03); a collision would make the
+    # injected heading a duplicate, leaving the U- count set unchanged and
+    # muting the pin this mutation exercises.
+    block = ("\n### U-90 — Injected mutation decision\n\n"
              "- **Where:** R-CORE-08.\n"
              "- **State of source:** injected by audit/_checker_mutations.py.\n"
              "- **Decision needed:** none; this is a test fixture.\n"

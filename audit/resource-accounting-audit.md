@@ -74,6 +74,16 @@ $$t_{i+1} = t_i + \delta_t(c_i) \quad \text{verified by} \quad \mathbf{t_{\text{
 
 ## 4. Resource Accounting Clarification Addendum (`R-BUDGET-10`…`14`)
 
+> **STATUS NOTE (2026-09-03, per `spec/06` C-108):** the five obligations below are a
+> **proposal owned by this audit**, not frozen normative text. They appear in no
+> normative layer: `spec/01` S-11 ends at R-BUDGET-09, `mod/04` lists nine obligations,
+> `spec/03` has no R-BUDGET-10+ row, and the atomic registry stops at REQ-BUDGET-032.
+> R-BUDGET-11's five escrow paths also diverge from the frozen R-BUDGET-09 three-path
+> totality. The adoption decision (freeze some or all of R-BUDGET-10…14, and reconcile
+> three vs five escrow paths) is filed as `spec/09` **U-45**; until then, no checker or
+> implementation may cite these IDs as obligations. The wording above is quoted, not
+> rewritten (R-SCOPE-03).
+
 **R-BUDGET-10 (Resource-State Atomicity — frozen addendum).** All resource mutations belonging to an operational transition occur transactionally. A failed precondition produces zero state drift and zero partial debit:
 $$\text{Precondition failure} \implies \Sigma' = \Sigma$$
 (except for post-issuance host failure transitions where $c_{\text{issue}}$ remains consumed and escrow is disposed via host-failure consumption/refund).

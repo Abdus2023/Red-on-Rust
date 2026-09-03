@@ -251,6 +251,68 @@ Four further decisions come from the sweep that checked every `Enum::Variant` pa
 
 ---
 
+## Decisions added by the request-pipeline proof-obligation audit
+
+*Filed in their own section so that existing line numbers do not move (same convention as U-23…U-25, U-26…U-29, U-35…U-38). Source: `audit/request-pipeline-proof-obligation-matrix.md` (GAP-01…GAP-18), which traced every path from `Expr::Request` to a host-visible effect through the 16-step sequence and filed C-103…C-109 for the contradictions. It issued no frozen text (R-SCOPE-03); its recommendations are recorded as a draft (`audit/request-pipeline-remediation-draft.md`) and are not authority. U-44 is a verification-register decision with no C- row; C-108 is corrected in place with its adoption question filed here as U-45.*
+
+### U-39 — The two 16-step request protocols: which one does S-12 publish?
+
+- **Where:** R-EFFECT-01, R-EFFECT-03, REQ-EFFECT-005, R-DUR-01 (C-103).
+- **State of source:** `spec/01` S-12 quotes the turn-[21] 16-step protocol (L12177–12194: construct at step 13, host emission at step 15, durable `Issued` at step 16) while REQ-EFFECT-005/R-EFFECT-03/C-01 adopt the master-prompt protocol (L38024–38045: construct s4, durable issuance s14, Pending s15, host s16). C-01's resolution enumerates the 15-rule, 14-gate and 14-step presentations but never the earlier 16-step, so the canonical spec contains two protocols differing on the host/durability adjacency.
+- **Decision needed:** restate R-EFFECT-01's protocol in the S-12 body to the master-prompt form and record the turn-[21] form as superseded (quoted, not deleted), or — only if the turn-[21] order is genuinely intended — amend R-DUR-01/R-DUR-02 so the durable `Issued` write precedes the host emission in that protocol too. Edit the spec/06 C-01 row to record the turn-[21] form either way. The audit recommends the first reading: the second contradicts R-DUR-01's own normative sentence and R-CLAIM-02's prohibited-shortcut list.
+- **Blocking:** yes for the M5 effect gate (R-ORDER-02) — a conformance suite built against S-12's text can currently implement host-before-durability and pass a naive reading of both R-EFFECT-01 (as quoted) and R-EFFECT-03.
+- **Linked:** C-01, C-103, REQ-EFFECT-005/017/018, R-DUR-01/02, R-CORE-06.
+
+### U-40 — Step-10 deadline predicate: `t ≤ W` or `t + δ_t(req) ≤ W`?
+
+- **Where:** R-BUDGET-06, REQ-EFFECT-012, REQ-EFFECT-037, REQ-BUDGET-021, R-CAP-09 (C-104).
+- **State of source:** REQ-EFFECT-012 pins the pre-advance `t ≤ W`; R-BUDGET-06 and the v0.3 `E-Request` rule require `t + δ_t(req) ≤ W`; the `[30]` sketch implements the weaker `now > w`. δ_t values are open (U-07), so no reading is evaluable today.
+- **Decision needed:** freeze `t + δ_t(req) ≤ W` as the step-10 predicate and record `t ≤ W` as the weaker, superseded reading; freeze the per-transition δ_t table (U-07) so the gate is evaluable; decide the interaction with `Lifetime` (U-36) in the same pass, since both consume the same logical-time quantities. The audit recommends the stronger reading: under the weak one a host invocation can follow an over-deadline issuance, which breaks the deadline conjunct of R-CORE-02's chain (`DeadlineValid(E,t)`).
+- **Blocking:** no for starting — yes for the M5 effect gate's deadline conformance tests and for any determinism evidence (a wall-clock delta would break R-CAP-09).
+- **Linked:** C-104, U-07, U-36, REQ-BUDGET-021, R-CORE-02, R-CLAIM-02.
+
+### U-41 — Durable record payload for issuance: what makes `DurableIssued` and escrow survivable?
+
+- **Where:** R-DUR-01/02/05, REQ-DUR-008…014, R-PERSIST-03, REQ-RECOV-003/004/008, R-HOST-06, R-PLANNER-07 (C-105).
+- **State of source:** `EffectPrepared`/`EffectIssued` carry `{id, actor, digest}` only; R-DUR-013/014 require the escrowed `complete_max` to survive crashes identically; REQ-DUR-010 requires T1's discard to restore the budget; REQ-RECOV-008 requires T5 to resume the continuation byte-exactly; reconciliation (R-RECOV-07/08) must decide whether the host executed the effect. None of these amounts, payloads, or continuations is in a record. The v0.3 (`EffectIssued(h, Hash(E), E)`, L8743) and `[30]` (`issue_cost`, `reservation`) shapes carried them; journal unification and R-PLANNER-07's `{id, actor, digest}` shape dropped them.
+- **Decision needed:** pick one of (a) extend `EffectPrepared`/`EffectIssued` with the canonical effect bytes and the `EffectCost` + escrow/reservation amounts (the audit's recommendation: the records are the effect's causal evidence and must carry what causality proves), (b) add a companion record kind (`EffectCostRecord` / `EffectPayloadRecord`), or (c) pin snapshot cadence so the state is always captured at a T-boundary and never between s12 and s14 (U-43). Also state who answers the T2–T4 reconciliation identity question (host-side correspondence is the only remaining source) and what T1 restores from.
+- **Blocking:** yes for the M10 crash/recovery gate's reconstruction evidence — classification is provable today, reconstruction is not. Record-carried cost is also what makes `BUDGET-ESCROW-CONSERVATION` testable across a crash rather than only over live runs.
+- **Linked:** C-105, U-43, REQ-DUR-008…014, R-RECOV-013, R-BUDGET-09, R-PLANNER-07.
+
+### U-42 — Live journal/fsync failure at step 14: declared fault, rollback, or journal-driven commit?
+
+- **Where:** R-DUR-02, R-EFFECT-04, REQ-EFFECT-015, R-CORE-12, R-PERSIST-03, R-CALC-06/R-CORE-13 (C-106).
+- **State of source:** no frozen text says what an `append`/`sync` error at steps 14a/14b does. The audit's `Fault::PersistenceError` is not in the closed enum (U-08); R-EFFECT-04's five assertions are unsatisfiable after steps 12–13; R-CORE-12's "journal-driven commit" alternative has no record kind; the second-sync failure state is unclassified.
+- **Decision needed:** freeze one of: (a) reorder — journal-driven: append a single atomic record carrying the ID allocation and the budget/reservation commit (`EffectPrepared` extended per U-41), fsync, then mutate memory; any append/sync error faults with a declared `Fault::PersistenceError` (added to R-CORE-13's closed surface) and leaves the machine exactly at the pre-s12 state; or (b) rollback — keep the frozen order but define the rollback (which in-memory mutations to undo, in what order, and what the journal must contain so the undo is itself replay-safe); or (c) park-and-reconcile — park the actor, journal the failure, and classify on recovery like T0/T1/T2. The audit recommends (a): it is the only reading under which R-CORE-12's "durable appends precede irreversible in-memory mutations" and R-EFFECT-04's five assertions are both satisfied, and it makes the crash matrix and the live error path the same shape.
+- **Blocking:** yes — for the M5 effect gate (live error semantics are part of issuance) and for M034's panic-free evidence (a `Result` path must exist for every fallible operation).
+- **Linked:** C-106, U-41, U-08, REQ-DUR-001…004, REQ-EFFECT-015/019…023, R-CORE-12/13.
+
+### U-43 — Persistence boundaries around the effect transaction: snapshot cadence, ID-counter restoration, completion sync
+
+- **Where:** R-PERSIST-04/05, R-RECOV-02/03, REQ-RECOV-003/004, REQ-DUR-010, R-EFFECT-07, REQ-EFFECT-034 (C-107, C-109).
+- **State of source:** R-PERSIST-05 freezes when a snapshot is *valid*, not when one may be *taken*; no rule excludes a snapshot inside s12–s16; R-RECOV-03 has no step advancing `next_effect_id` from replayed `Issued` records; `EffectCompleted`'s append/fsync/charge/resume boundary is unpinned.
+- **Decision needed:** freeze (a) an atomic-section rule: no `SnapshotCommit` between entry to s12 and completion of s14b (or define the T-row a snapshot inside that window belongs to), (b) the authoritative source for `next_effect_id` on recovery (max(replayed `Issued` IDs + 1) vs snapshot counter, with the mismatch rule), and (c) the completion boundary order — the audit recommends `append(EffectCompleted)` then `sync()` then charge/release then resume, so T5's byte-exact resumption is never reached from a journal the crash may not have survived. U-17 (queue authority), U-34 (state shapes) and U-02 (encodings) must be decided in the same pass if snapshot authority is chosen as the base.
+- **Blocking:** no for starting — yes for the M10 gate's reconstruction evidence (same dependency chain as U-41) and for the M7 persistence gate's snapshot tests.
+- **Linked:** C-107, C-109, U-41, U-02, U-17, U-34, R-PERSIST-05, R-RECOV-03, R-EFFECT-07.
+
+### U-44 — Request-frame verification tags: add `REQUEST-ARGS-LTR` and `REQUEST-NON-CAP-SHORT-CIRCUIT` to the frozen tag set?
+
+- **Where:** R-TEST-07, MOD-05, MOD-08 Track A (no C- row; a verification-register gap, not a frozen-source contradiction).
+- **State of source:** R-TEST-07's frozen tag list covers `CEK-CALL-ARGS-LTR` and `CEK-CALL-ARITY-PRECHECK` (call arguments) but no tag for the request frames' left-to-right evaluation (G1–G3), the non-capability short-circuit at G1, or the "no later gate runs" property at G4–G11. Track A's request-frame properties are asserted in prose (L24035) and in the module files, but no stable obligation tag makes them a coverage target or a mutation target.
+- **Decision needed:** add `REQUEST-ARGS-LTR` (G3, request arguments strict LTR with exactly-one-per-step) and `REQUEST-NON-CAP-SHORT-CIRCUIT` (G1, non-capability error before any target/param evaluation; no gate 4–16 runs; no ID/budget/log mutation) to the R-TEST-07 tag list as an additive addendum, and record them in `spec/08` verification mapping and `mod/05`/`mod/08` verification sections. The audit recommends yes: the request path is the security boundary, its evaluation order is currently observable only by prose, and the existing M001/M002/M003 mutations target call arguments, not request arguments.
+- **Blocking:** no — coverage/tooling decision; it becomes blocking only if the M5 gate is declared without it.
+- **Linked:** R-TEST-07, R-REF-05, M001…M003, GAP-06.
+
+### U-45 — Adopt R-BUDGET-10…14 (resource-accounting audit addendum), and reconcile its escrow paths with R-BUDGET-09?
+
+- **Where:** R-BUDGET-01…09, R-CORE-05, R-DUR-05, R-RECOV-06 (C-108).
+- **State of source:** `audit/resource-accounting-audit.md` presents R-BUDGET-10…14 as a "frozen addendum" but they appear in no normative layer (`spec/01` S-11 ends at R-BUDGET-09; `mod/04` lists 9 obligations; `spec/03` has no row; the registry stops at REQ-BUDGET-032). Its R-BUDGET-11 escrow normal form (five paths: Consumed, Refunded, Transferred, Disposed-with-explicit-sink, Remains-Indeterminate) diverges from the frozen R-BUDGET-09 totality (three paths: Completed, host-failure consumption, durable Reconciled).
+- **Decision needed:** adopt (some or all of) R-BUDGET-10…14 as a numbered post-audit addendum in `spec/01` with registry + `spec/03` + `mod/04` rows, or file them as non-normative proposals; and reconcile the escrow-path sets — either R-BUDGET-09's three paths is the totality (R-BUDGET-11's Transferred/Disposed rows are refinements of Reconciled/consumed, not new paths) or R-BUDGET-09 is amended to the five-path form. The audit recommends adopting R-BUDGET-10 (state atomicity) and R-BUDGET-13 (persistent-capacity accounting as a separate dimension) as they strengthen the gate matrix, and folding R-BUDGET-11's extra paths into R-BUDGET-09's three as refinements rather than competitors.
+- **Blocking:** no — the resource-accounting audit's own rows (Op-01…Op-22) currently cite obligations that no checker knows, so its evidence cannot be evaluated; deciding turns its evidence on.
+- **Linked:** C-108, R-BUDGET-09, R-CORE-05, R-DUR-05, `audit/resource-accounting-audit.md`.
+
+---
+
 ## Process notes
 
 1. Each resolution must be recorded as a **numbered frozen addendum** appended to the canonical spec (this document set), with a new requirement ID range, so that supersession is never silent (R-SCOPE-03, 00 §1).

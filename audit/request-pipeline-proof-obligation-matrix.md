@@ -368,6 +368,36 @@ gate cannot pass on reconstruction evidence today.
 | GAP-17 | INFO | Gate numbering skew: resource-audit Op-16 (Gate 10 = ceiling, Gate 11 = deadline), [30] 14-gate, v0.3 3-gate, [54] 16-step — C-01's residual (no explicit gate↔step mapping) persists; the resource audit's numbers do not match the canonical form. | C-01; Op-16 |
 | GAP-18 | MEDIUM | `Fault::TypeError` used on the G1 non-capability path (and throughout CEK) is outside the frozen R-CALC-06 enum; R-CORE-13 "closed declared fault surface" does not list it. Same defect class as X-69. | L21500–21525; R-CALC-06; R-CORE-13; U-08 |
 
+### 5.1 Registry mapping (GAP → `spec/06` row → `spec/09` decision)
+
+| GAP | spec/06 row | spec/09 decision | Note |
+|---|---|---|---|
+| GAP-01 | C-103 | U-39 | second 16-step protocol in S-12 |
+| GAP-02 | — (pre-existing) | U-21 | Op/Target/Params domains |
+| GAP-03 | — (pre-existing: C-13…C-16 family) | U-02, U-08, U-14 | EffectError undeclared; encoding unfrozen |
+| GAP-04 | — (pre-existing: C-08 / C-102) | U-08, U-37 | ArithmeticOverflow naming; fixed widths |
+| GAP-05 | C-104 | U-40 | step-10 deadline predicate |
+| GAP-06 | — (no row; register gap) | U-44 | request-frame verification tags |
+| GAP-07 | C-106 | U-42 | live journal/fsync failure semantics |
+| GAP-07b | C-105 | U-41 | issuance records carry no effect/cost |
+| GAP-08 | — (pre-existing: C-57) | U-08, U-14 | host-fault mapping / HostFault declaration |
+| GAP-09 | C-107 | U-43 | ID-counter restoration; snapshot authority |
+| GAP-10 | C-107 | U-43 | snapshot cadence vs s12–s16 |
+| GAP-11 | C-105, C-107 | U-41, U-43 | continuation/effect reconstruction |
+| GAP-12 | C-106 | U-42 | s12–s16 atomicity; journal-driven commit |
+| GAP-13 | — (pre-existing: C-08) | U-08 | four corruption-outcome names |
+| GAP-14 | C-108 | U-45 | orphaned R-BUDGET-10…14; escrow-path divergence |
+| GAP-15 | C-109 | U-43 | `EffectCompleted` sync boundary |
+| GAP-16 | C-78 / C-80 (pre-existing) | U-02 | resolved in principle by R-PERSIST-07; encoding open |
+| GAP-17 | C-01 (residual) | — | gate/step numbering skew; recorded, no decision |
+| GAP-18 | — (pre-existing: C-08/X-69) | U-08 | TypeError undeclared |
+
+**Filing record:** C-103…C-109 were filed in `spec/06` and U-39…U-45 in `spec/09` on
+2026-09-03 by this audit; U-44 is the no-row exception (a verification-register gap),
+and C-108 is corrected in place in `audit/resource-accounting-audit.md` with its
+adoption question as U-45. No `spec/01` text was modified (R-SCOPE-03); the proposed
+addenda live in `audit/request-pipeline-remediation-draft.md` and are not authority.
+
 ---
 
 ## 6. Verification mapping (what proves the matrix)

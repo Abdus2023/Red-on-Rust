@@ -321,12 +321,18 @@ def main() -> int:
     # first three-digit IDs in either register and the two-digit patterns
     # silently under-counted them (found 99, not 102) rather than failing --
     # the exact silent drift these assertions exist to prevent.
-    if len(c_ids) != 102:
-        err(f"expected 102 C- rows in spec/06, found {len(c_ids)}")
+    # The request-pipeline proof-obligation audit
+    # (audit/request-pipeline-proof-obligation-matrix.md, GAP-01...GAP-18) then
+    # filed C-103...C-109 and U-39...U-45 -- 102 -> 109 and 32 -> 39.  All seven
+    # C rows are `open` except C-108, which is corrected in place with its
+    # adoption question at U-45; U-44 is a verification-tag decision with no C
+    # row (a register gap, not a frozen-source contradiction).
+    if len(c_ids) != 109:
+        err(f"expected 109 C- rows in spec/06, found {len(c_ids)}")
     # U-38 added by the same audit's checker-mutation pass (spec/08 M036 /
     # spec/_check.py severity wiring) -- 31 -> 32.
-    if len(u_ids) != 32:
-        err(f"expected 32 U- headings in spec/09, found {len(u_ids)}")
+    if len(u_ids) != 39:
+        err(f"expected 39 U- headings in spec/09, found {len(u_ids)}")
 
     # --- term/ register sizes, and the PROSE that advertises them -------------
     # The C-/U- pins above exist because prose counts drift silently. The term/

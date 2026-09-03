@@ -6366,7 +6366,7 @@ COLLISIONS += [
         ("req/03-ambiguous.md", 68, "that strike was itself wrong", "AMB-08's list, qualified in place rather than struck"),
         ("req/03-ambiguous.md", 264, "occurs nowhere in L1–42312", "AMB-34, rewritten, with the withdrawn claim quoted"),
         ("spec/06-contradictions-ambiguities.md", 69, "`Fault::StalePlan` occurs verbatim once, at L28373", "C-54, rewritten from a phantom finding to a used-but-undeclared one"),
-        ("spec/06-contradictions-ambiguities.md", 119, "rewritten** in this revision", "C-59..C-65 summary line, recording the retraction of the earlier claim"),
+        ("spec/06-contradictions-ambiguities.md", 126, "rewritten** in this revision", "C-59..C-65 summary line, recording the retraction of the earlier claim"),
       ]),
     X(xid="X-65",
       title="`MarshalFault` is declared twice with completely disjoint variant sets, and is used as an elided `Fault` payload",
