@@ -351,9 +351,22 @@ def m_renumber_u_heading(root: Path) -> bool:
 
 
 MUTATIONS = [
-    Mutation("K01", "finding row added, not indexed",
-             "The completeness gate must reject a register row absent from 10-index.json.",
-             m_add_c_row, regression_for="spec/_build_index.py L429-432 gate",
+    # NOTE on K01/K02/K03: these were written to exercise the completeness gate
+    # in spec/_build_index.py. They do not, and CANNOT. Two separate reasons,
+    # both established by experiment (see audit section 9(d)):
+    #   1. Each shifts line numbers, so a term/ anchor error fires first. That
+    #      is now repairable with `python3 term/_reanchor.py --write`.
+    #   2. With anchors repaired, the gate still PASSES: findings are DERIVED
+    #      from spec/06, so an added row is indexed automatically. The gate
+    #      catches the converse (an index entry with no register row) and the
+    #      named exclusions -- it structurally cannot catch "row not indexed".
+    # What actually kills them is the req/_validate.py count pin. The mutations
+    # are kept because that pin is worth locking; the claim about which gate
+    # they exercise is corrected here rather than left to flatter the harness.
+    Mutation("K01", "finding row added, counts not updated",
+             "Killed by the req/_validate.py C- count pin, NOT by the completeness "
+             "gate this was originally aimed at -- see the note above.",
+             m_add_c_row, regression_for="req/_validate.py C- count pin",
              tags=["register", "index"]),
     Mutation("K02", "THREE-DIGIT finding row added, not indexed",
              "Locks the C-\\d{2} under-count closed: C-100..C-102 were invisible to five patterns.",

@@ -12037,7 +12037,7 @@
     {
      "file": "spec/09-unresolved-decisions.md",
      "line": 56,
-     "text": "are not enumerated",
+     "text": "variants are not enumerated",
      "note": "U-08's claim, which hides the declared set and the `Invalid` split"
     }
    ]

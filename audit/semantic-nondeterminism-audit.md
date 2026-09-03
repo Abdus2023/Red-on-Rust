@@ -856,7 +856,7 @@ rejected by some checker. A green baseline is required first, so a red tree
 cannot pass everything vacuously. **16 of 17 are killed**; the seventeenth is
 M036, registered and filed rather than silently tolerated.
 
-Three results are worth recording beyond the pass/fail.
+Four results are worth recording beyond the pass/fail.
 
 **(a) A drift no checker could see — including one this audit introduced.**
 `spec/06`'s summary line read "74 findings (76 rows)" against 97 actual rows;
@@ -925,6 +925,50 @@ The general lesson is the one K12 and K04 already taught in smaller form, now
 three times over: **a mutation's exit status does not tell you which gate
 caught it.** A harness that only records kill/survive will report full coverage
 over gates it has never once exercised. Kills must be attributed, not counted.
+
+**(d) The anchor coupling, and what removing it revealed.**
+
+§9(c) left the `term/_terms.py` line anchors as a known soft spot: 87 of the
+216 anchors point into *living* documents, and any mid-file insertion staled
+all of the later ones. The citations do not become wrong, they become
+misaddressed — but `term/_check.py` fires first and loudest on every
+structural edit, which is why it kept absorbing kills meant for other gates.
+
+`term/_reanchor.py` removes the manual cost. For each living-document anchor
+it re-locates the substring and rewrites the line number; it **refuses** the
+two cases where guessing would be worse than failing — zero matches (a
+genuinely broken citation) and multiple matches (ambiguous). Measured against
+insertions of 1, 2, 3, 7 and 12 lines: **17 anchor errors → 0** in a single
+pass, every time. One anchor was made discriminating (`are not enumerated`
+occurred in two U- entries; it now reads `variants are not enumerated`), so
+all 87 relocate uniquely.
+
+Building it surfaced three defects in the tool itself, each the same shape as
+the findings above — *something that looked like it worked*:
+
+- **Shared anchors.** X-38 and X-59 both cite `spec/09:56 'denial outcome is
+  named'`. The first patcher replaced one occurrence and reported success,
+  leaving the other stale.
+- **Renumber collisions.** Anchor A moves 186→189 while B moves 189→192;
+  sequential edits let B's rewrite catch the row A had just moved onto.
+  Fixed with write-once sentinels.
+- **Stale bytecode.** The tool imports `_terms`, rewrites it, then shells out
+  to `_dict.py`/`_check.py` — which re-imported the cached `.pyc` and
+  validated the *old* anchors. This produced a phantom failure: the repair was
+  correct and the verification was reading a stale module. Clearing
+  `__pycache__` took 16 reported errors to 0 with no change to the repair.
+
+Then the useful negative result. With the anchor noise gone it became possible
+to ask what K01 actually tests. Adding an unindexed register row, anchors
+repaired: `spec/_build_index.py` **passes**. Not by oversight — findings are
+*derived* from `spec/06`, so an added row is indexed automatically and the
+count rises to 102. The completeness gate catches the converse (an index entry
+with no register row) and the named exclusions; it **structurally cannot**
+catch "row present but not indexed." K01, K02 and K03 have been killed all
+along by the `req/_validate.py` count pin, and their stated purpose was never
+achievable. The mutations are kept — the count pin deserves a lock — but the
+claim about which gate they exercise is corrected in the harness rather than
+left standing because it flattered the coverage.
 
 This addendum issues no frozen text. M036 is registered in `spec/08` as a
 **known, filed survivor** — the harness reports it as such rather than counting

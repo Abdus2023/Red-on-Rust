@@ -6265,7 +6265,7 @@ COLLISIONS += [
       new_finding=True,
       doc_sites=[
         ("spec/05-terminology.md", 112, "`CapabilityError`", "listed as 'Enum variants not enumerated' although L20408 declares them"),
-        ("spec/09-unresolved-decisions.md", 56, "are not enumerated", "U-08's claim, which hides the declared set and the `Invalid` split"),
+        ("spec/09-unresolved-decisions.md", 56, "variants are not enumerated", "U-08's claim, which hides the declared set and the `Invalid` split"),
       ]),
     X(xid="X-67",
       title="`HostFault` is declared once with two variants, and eight different undeclared variant paths are used — six of them on the frozen replay path",

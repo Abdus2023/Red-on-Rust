@@ -1891,7 +1891,7 @@ Yes, folded into U-14: which `MarshalFault` variant set governs, and does `Capab
 | File:line | Text at that line | Note |
 |---|---|---|
 | `spec/05-terminology.md`:112 | ```CapabilityError``` | listed as 'Enum variants not enumerated' although L20408 declares them |
-| `spec/09-unresolved-decisions.md`:56 | `are not enumerated` | U-08's claim, which hides the declared set and the `Invalid` split |
+| `spec/09-unresolved-decisions.md`:56 | `variants are not enumerated` | U-08's claim, which hides the declared set and the `Invalid` split |
 
 ### The collision
 
