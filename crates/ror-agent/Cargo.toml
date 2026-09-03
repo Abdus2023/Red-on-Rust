@@ -1,0 +1,10 @@
+[package]
+name = "ror-agent"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ror-core = { path = "../ror-core" }
+ror-compiler = { path = "../ror-compiler" }
+ror-runtime = { path = "../ror-runtime" }
+ror-persistence = { path = "../ror-persistence" }

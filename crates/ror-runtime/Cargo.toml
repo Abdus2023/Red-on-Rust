@@ -1,0 +1,9 @@
+[package]
+name = "ror-runtime"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ror-core = { path = "../ror-core" }
+ror-kernel = { path = "../ror-kernel" }
+ror-persistence = { path = "../ror-persistence" }

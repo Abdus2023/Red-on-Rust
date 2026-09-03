@@ -1,0 +1,14 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/ror-core",
+    "crates/ror-compiler",
+    "crates/ror-kernel",
+    "crates/ror-runtime",
+    "crates/ror-persistence",
+    "crates/ror-host",
+    "crates/ror-agent",
+    "crates/ror-reference",
+    "crates/ror-differential",
+    "crates/ror-testkit",
+]

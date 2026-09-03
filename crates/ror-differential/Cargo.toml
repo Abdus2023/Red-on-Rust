@@ -1,0 +1,9 @@
+[package]
+name = "ror-differential"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ror-reference = { path = "../ror-reference" }
+ror-runtime = { path = "../ror-runtime" }
+ror-testkit = { path = "../ror-testkit" }

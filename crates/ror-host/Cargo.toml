@@ -1,0 +1,8 @@
+[package]
+name = "ror-host"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ror-core = { path = "../ror-core" }
+ror-runtime = { path = "../ror-runtime" }
