@@ -857,7 +857,7 @@ rejected by some checker. A green baseline is required first, so a red tree
 cannot pass everything vacuously. **16 of 17 are killed**; the seventeenth is
 M036, registered and filed rather than silently tolerated.
 
-Nine results are worth recording beyond the pass/fail.
+Ten results are worth recording beyond the pass/fail.
 
 **(a) A drift no checker could see — including one this audit introduced.**
 `spec/06`'s summary line read "74 findings (76 rows)" against 97 actual rows;
@@ -1156,6 +1156,45 @@ written without U-02's canonical encoding, §2 needs DET-007's LE/BE
 resolution — and the draft states them rather than papering over them. A
 proposal that claimed to close U-35 outright would reproduce the exact defect
 this audit was asked to find.
+
+**(j) U-36 and U-37 drafted; two register errors found by drafting them.**
+
+`audit/u36-u37-proposals.md` completes the set. Neither hides a prior question
+the way U-35 did, so the expensive part was purely *enumeration* — which is now
+done and mechanically verified (41 line citations, zero unverified).
+
+Drafting found two defects in my own register entries:
+
+- **U-36 said "four Unix annotations"; there are five.** L3572, L3573, L4960,
+  L4961 and L5404 — and L5405 carries the `end` field with *no* comment, so the
+  third declaration is annotated on `start` only. The entry's line range
+  "L5404–5405" implied both. Corrected in `spec/09`.
+- **U-36 listed one authorization call site; there are two.** L6558
+  (`op_auth.lifetime.contains(logical_time)`) is a second, independent path
+  passing logical time into the Unix-documented parameter.
+
+The sharper framing that came out of it: **the dangerous reading is the one
+that compiles.** `contains(time: u64)` against a `LogicalTime` newtype over
+`u64` raises no type error, so a machine that never touches the clock still
+compares a logical counter against epoch seconds — making every capability
+permanently valid or permanently expired, silently, with no diagnostic. That is
+why DET-006 survived to be found by an audit rather than by `rustc`.
+
+For U-37 the enumeration changed the recommendation. Of 102 `usize`
+occurrences, 49 are declaration-position, and they split three ways: 13
+genuinely semantic, 23 false positives (local byte offsets in the decoder,
+where platform width is *correct*), and one live contradiction —
+`max_bytes`/`max_calls` are `u64` in `Resources` and `usize` in
+`ResourceLimits`, and **both types are used as `Authority.resources`**. So an
+authorization ceiling's width depends on which unresolved `Authority` shape
+governs; U-37 inherits that dependency and the draft says so.
+
+The source already applies the right discipline in exactly one layer:
+`checked_length(len: usize) -> Result<u32, CanonicalError>` at L30715, L32139
+and L33444. So the proposal is not "ban `usize`" — it is to make that existing
+boundary rule normative: `usize` inside, checked narrowing at any semantic or
+serialized edge. Stricter than the original U-37 sketch where it matters, and
+weaker where a ban would have forced pointless churn in the decoder.
 
 This addendum issues no frozen text. M036 is registered in `spec/08` as a
 **known, filed survivor** — the harness reports it as such rather than counting
