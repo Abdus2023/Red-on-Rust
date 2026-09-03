@@ -89,10 +89,10 @@ derivation, revocation, authorization, budget primitives, logical-time validatio
   derivation), MOD-08 (gate 6/7), MOD-14 (independent re-modeling of the algebra).
 - Crate edge: `ror-kernel → ror-core`; the kernel never references runtime state
   (one-directional, `spec/04` §B).
-- Blocking open items: **U-36** (is `Lifetime` wall-clock or logical time? The frozen
-  `Lifetime { start, end }` is annotated "Unix timestamp" three times yet is compared
-  against `LogicalTime` inside `authorizes` — R-CAP-06's fifth conjunct, computed at
-  gate 6 — contradicting R-CAP-09/R-CLAIM-02; `spec/06` C-100, audit DET-006),
+- Blocking open items: **U-36** (resolved by addendum IX 2026-09-03: `R-CAP-11` retypes
+  `Lifetime` to `LogicalTime`, half-open `[start, end)`, five Unix annotations
+  superseded-quoted, second call site L6558 recorded; `max_duration` declared-info only;
+  `Deadline` stays `Option<LogicalTime>`; `spec/06` C-100 re-graded),
   **U-09** (`AdmissibleConstraint` vs `Constraint` data form;
   AMB-12), **U-21** (`Op`/`Target`/`Params` domains), **U-02** (canonical encoding of
   `Authority`/`Constraint`, with MOD-10/11), **U-01** affects the lifetime/deadline
@@ -113,7 +113,7 @@ derivation, revocation, authorization, budget primitives, logical-time validatio
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-09/S-10; addenda I, V. All 16 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-09/S-10; addenda I, V, IX. All 17 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -127,6 +127,7 @@ Canonical text: `spec/01` S-09/S-10; addenda I, V. All 16 obligations `SPECIFIED
 | R-CAP-08 | Algebra theorems 1–3 (stated, proof-sketch only) | L6422–6433, L6657–6671 | property tests (NOT PROVEN) |
 | R-CAP-09 | Explicit logical time; no wall-clock | L6434–6436, L38858–38890 | determinism tests |
 | R-CAP-10 | AdmissibleConstraint defined: decidable well-formedness per semantic domain (O/S/Q/R/T); inadmissible constraint faults (InvalidConstraint), never identity/top-default; compile-time validation of attacker-authored constraints (C-94 resolved; M030) | addendum V (SEC-014) | M030, compiler negative suite |
+| R-CAP-11 | Lifetime is logical time: half-open `[start, end)`; call sites pass logical time; five Unix annotations superseded-quoted; `max_duration` declared-info only; `Deadline` stays `Option<LogicalTime>` (C-100 resolved) | addendum IX (duration-semantics) | M4 expiration/authorization gate tests |
 | R-KERN-01 | CapRef opaque, generation-safe, private, kernel-only | L9127–9133, L10178–10208 | visibility review |
 | R-KERN-02 | Kernel API: authorize/derive/validate with logical time | L6672–6728, L19153–19175 | exactly-one-call mock tests |
 | R-KERN-03 | Authority internals pub(crate)/inaccessible (D-09 canonical) | L39397–39407 | visibility + mutation M005-class |
@@ -140,7 +141,7 @@ E-AttenuateDenied rules), REQ-CAP-024 (`AdmissibleConstraint` premise), REQ-KERN
 (parents R-KERN-02+R-KERN-03, one module) and REQ-KERN-009 (evaluator exclusion set:
 never receives `Authority`/`Scope`/`Rights`/`Parent`/revocation state; second parent
 R-TRUST-03 stays central in MOD-01 — cross-reference only).
-**16 obligations / 35 records.**
+**17 obligations / 35 records.**
 
 ## SECURITY-BOUNDARY
 

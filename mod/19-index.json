@@ -3,7 +3,7 @@
   "organization": "17 semantic modules, split by architectural responsibility (not document length)",
   "normative_text_home": "spec/01 (obligations), req/ (atomic records); mod/ registers ownership, no normative text is duplicated except as marked in `duplications`",
   "module_count": 17,
-  "obligation_count": 181,
+  "obligation_count": 184,
   "record_count": 545,
   "evidence_status_of_every_obligation": "SPECIFIED",
   "modules": [
@@ -272,6 +272,7 @@
         "R-CAP-08",
         "R-CAP-09",
         "R-CAP-10",
+        "R-CAP-11",
         "R-KERN-01",
         "R-KERN-02",
         "R-KERN-03",
@@ -279,13 +280,18 @@
         "R-KERN-05",
         "R-KERN-06"
       ],
-      "obligation_count": 16,
+      "obligation_count": 17,
       "record_count": 35,
       "record_ranges": [
         "REQ-CAP-001…026",
         "REQ-KERN-001…009"
       ],
       "cross_references": {
+        "R-CAP-11": [
+          "MOD-08",
+          "MOD-04",
+          "MOD-10"
+        ],
         "R-CAP-05": [
           "MOD-01",
           "MOD-06"
@@ -352,9 +358,11 @@
         "R-BUDGET-09",
         "R-BUDGET-10",
         "R-BUDGET-11",
-        "R-BUDGET-13"
+        "R-BUDGET-13",
+        "R-BUDGET-15",
+        "R-BUDGET-16"
       ],
-      "obligation_count": 12,
+      "obligation_count": 14,
       "record_count": 32,
       "record_ranges": [
         "REQ-BUDGET-001…032"
@@ -376,6 +384,17 @@
           "MOD-11",
           "MOD-12",
           "MOD-10"
+        ],
+        "R-BUDGET-15": [
+          "MOD-08",
+          "MOD-12",
+          "MOD-03"
+        ],
+        "R-BUDGET-16": [
+          "MOD-07",
+          "MOD-09",
+          "MOD-12",
+          "MOD-11"
         ],
         "R-BUDGET-01": [
           "MOD-03",

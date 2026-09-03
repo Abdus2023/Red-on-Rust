@@ -8,6 +8,8 @@ or is cited by any register row as authority. Companion to
 must be issued as a numbered frozen addendum under `spec/09` process note 1,
 and only then do C-100 / C-102 move off `open` (R-SCOPE-03).
 
+**ADOPTED 2026-09-03 by addendum IX:** §U-36 below is adopted as submitted as `R-CAP-11` (half-open `[start, end)`, five superseded annotations quoted, second call site recorded; `max_duration` resolved as declared-info only in `R-BUDGET-15`). This file remains the proposal record; its wording above is quoted, not rewritten (R-SCOPE-03). **§U-37 is NOT adopted** — it stays a proposal; U-37 remains open.
+
 Unlike U-35, neither of these hides a prior question. Both are decidable today,
 and the work that made them expensive — *enumerating every affected site* — is
 done here and mechanically verified.

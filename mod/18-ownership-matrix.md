@@ -101,7 +101,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-COMPILE-05 | ExecutablePlan constructors private to compiler | L39296–39318 | MOD-17 (visibility review) | D-11 (marked restatement — canonical statement R-COMPILE-01, MOD-02) |
 | R-COMPILE-06 | Embedded Value::Capability literals must be plan-bound: foreign/garbage/undeclared capability literal is a compilation fault (U-22 security-direction closure) | addendum (SEC-002) | — | — |
 
-### MOD-03 — CAPABILITY (16 obligations)
+### MOD-03 — CAPABILITY (17 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -115,6 +115,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-CAP-08 | Algebra theorems 1–3 (stated, proof-sketch only) | L6422–6433, L6657–6671 | — | — |
 | R-CAP-09 | Explicit logical time; no wall-clock | L6434–6436, L38858–38890 | MOD-06 (logical time is global state), MOD-04 (deadline comparison), MOD-07 (scheduler steps advance t) | — |
 | R-CAP-10 | AdmissibleConstraint defined: decidable well-formedness per semantic domain (O/S/Q/R/T); inadmissible constraint faults (InvalidConstraint), never identity/top-default; compile-time validation of attacker-authored constraints (C-94 resolved; M030) | addendum (SEC-014) | — | — |
+| R-CAP-11 | Lifetime is logical time: half-open `[start, end)` validity, call sites pass logical time, five Unix annotations superseded-quoted; `max_duration` declared-info only; `Deadline` stays `Option<LogicalTime>` (C-100 resolved; U-36) | addendum (duration-semantics) | MOD-08 (gate-6 authorization computes with logical time), MOD-04 (duration/deadline boundary R-BUDGET-15), MOD-10 (LogicalTime canonical u64) | — |
 | R-KERN-01 | CapRef opaque, generation-safe, private fields, kernel-only construction | L9127–9133, L10178–10208 | MOD-10 (CapRef payload 0x30), MOD-11 (capability contexts in snapshots), MOD-06 (marshal rejection target) | — |
 | R-KERN-02 | Kernel API: authorize/derive/validate with logical time | L6672–6728, L19153–19175 | MOD-05 (evaluator calls authorize/derive), MOD-06 (spawn and delegation call derive) | — |
 | R-KERN-03 | Authority internals pub(crate)/inaccessible | L39397–39407 | MOD-01 (central restatement R-TRUST-03 (D-09)), MOD-17 (visibility enforcement review) | D-09 (canonical statement) |
@@ -122,22 +123,24 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-KERN-05 | CapabilityContext real frozen possession type; unit-type sketch superseded; snapshots carry capability context; recovery reconstructs possession before gate authorization | addendum (SEC-002) | — | — |
 | R-KERN-06 | Root-grant protocol frozen: Grant(source, authority, ceiling, t) with durable CapabilityGranted record, authority ≼ deployment ceiling, root minted once at initialization; Supervisor.host removed or issued-effect-only (R-HOST-02 binds all callers); planner I/O crate-separated (C-95 resolved) | addendum (SEC-015) | — | — |
 
-### MOD-04 — BUDGET (12 obligations)
+### MOD-04 — BUDGET (14 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
-| R-BUDGET-01 | B = ⟨C=⟨F,I,D⟩, R=⟨M,S⟩, W⟩ semantics | L8683–8700, L9161–9175 | MOD-03 (capability ceiling R shares component-wise order), MOD-17 (D semantics open - U-01) | — |
+| R-BUDGET-01 | B = ⟨C=⟨F,I,D⟩, R=⟨M,S⟩, W⟩ semantics | L8683–8700, L9161–9175 | MOD-03 (capability ceiling R shares component-wise order), MOD-17 (D semantics per R-BUDGET-15 (addendum IX)) | — |
 | R-BUDGET-02 | Checked arithmetic; no saturating_sub | L9207–9245, L38044–38046 | — | — |
 | R-BUDGET-03 | ReserveOK / ReleaseOK predicates | L7487–7520, L8692–8696 | — | — |
 | R-BUDGET-04 | WithinBudget dual gate (runtime + capability ceiling) | L8692–8696 | MOD-03 (capability ceiling is the second gate), MOD-08 (gates 7..10 of 16) | — |
 | R-BUDGET-05 | Conservation (consumables, reserved, deadline, global partition) | L7408–7425, L28203–28240, L35210–35215 | MOD-01 (central restatement R-CORE-05 (D-02)), MOD-06 (spawn transfer), MOD-08 (escrow at issuance), MOD-12 (survival after crash) | D-02 (canonical statement) |
-| R-BUDGET-06 | Time advancement δ_t (pure=0, host/scheduler>0, t+δ_t ≤ W) | L8698–8700, L10164–10168 | MOD-07 (scheduler step delta positive), MOD-09 (host interaction delta positive), MOD-17 (per-transition deltas open - U-07) | — |
+| R-BUDGET-06 | Time advancement δ_t (pure=0, host/scheduler>0, t+δ_t ≤ W) | L8698–8700, L10164–10168 | MOD-07 (scheduler step delta positive), MOD-09 (host interaction delta positive), MOD-17 (delta_t table per R-BUDGET-16 (addendum IX)) | — |
 | R-BUDGET-07 | CostModel contract; Consumable ≠ Reserved typing | L9155–9205, L10171–10177 | MOD-02 (static budget bound uses CostModel), MOD-08 (EffectCost is a Cost) | — |
 | R-BUDGET-08 | ¬BudgetOK ⇒ fault(BudgetExhausted), no partial debit | L7345–7352, L7410–7419 | MOD-08 (denial leaves budget unchanged) | — |
 | R-BUDGET-09 | Escrow disposition totality: every escrowed unit leaves via exactly one frozen path (Completed / host-failure consumption / durable Reconciled); live faults unified with crash reconciliation; logical-time deadline bound to Indeterminate; no quiescent strand (C-97 resolved; M035) | addendum (SEC-021) | — | — |
 | R-BUDGET-10 | Resource-state atomicity: every Op transition is one transactional resource mutation; precondition failure ⇒ `Σ' = Σ` (zero drift, zero partial debit); post-issuance host-failure caveat (C-108 resolved; U-45) | addendum (resource-accounting) | MOD-08 (issuance section atomicity R-DUR-07), MOD-01 (R-CORE-12 transition atomicity), MOD-11 (journal append/fsync), MOD-12 (host-failure recovery) | — |
 | R-BUDGET-11 | Escrow disposition normal form (RECONCILED): R-BUDGET-09's three paths are the totality; Consumed/Refunded are its completion leaves, Transferred/Disposed-with-explicit-sink its reconciled leaves; `Remains-Indeterminate` is a bounded transient, never terminal (C-108 resolved; U-45) | addendum (resource-accounting) | MOD-08 (escrow at issuance R-EFFECT-05), MOD-12 (R-RECOV-08/09 admissibility), MOD-01 (conservation R-CORE-05), MOD-06 (spawn/transfer partition) | — |
 | R-BUDGET-13 | Persistent-capacity accounting: volatile RAM distinct from persistent storage; RAM released on scope exit/halt; durable storage retained and snapshot-compacted; overflow faults (C-108 resolved; U-45) | addendum (resource-accounting) | MOD-11 (WAL/snapshot capacity), MOD-12 (snapshot compaction recovery), MOD-10 (15A artifact sizes) | — |
+| R-BUDGET-15 | Duration consumable semantics: per-actor D; `ΔD := δ_t` exactly once per time advance; no double charge (`cost_C(E)` duration declared/diagnostic only); `δ_t > D` ⇒ `DeadlineExceeded` zero-mutation; precedence `CapabilityViolation → BudgetExhausted → DeadlineExceeded → HostPolicyDenied` (C-114/C-115 resolved; U-01/U-07) | addendum (duration-semantics) | MOD-08 (issuance/receipt side effects), MOD-12 (R-RECOV-08 classification), MOD-03 (max_duration declared-info boundary) | — |
+| R-BUDGET-16 | Exhaustive δ_t table (pure 0; issuance +1; receipt +1; spawn/send/receive/blocked 0; turn carries the executed δ_t; per host round trip = 2; reconciliation 0); Pending W-eligibility on each advance; late receipts settle via R-RECOV-08 (`t+δ_t ≤ W` superseded-quoted); stable quiescence `Deadlock ∧ ∃Pending` ⇒ driver `QuiescenceReconcile` δ_t=0/ΔD=0, each pending → `Indeterminate` + R-RECOV-08 (C-112/C-113 resolved; U-01/U-07) | addendum (duration-semantics) | MOD-07 (scheduler turn carries the executed delta_t), MOD-09 (host round trip = two crossings), MOD-12 (quiescence reconciliation R-RECOV-08), MOD-11 (WAL/snapshot/replay delta_t = 0) | — |
 
 ### MOD-05 — EVALUATOR (7 obligations)
 
@@ -318,7 +321,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-TEST-11 | Final acceptance condition (3 conjuncts) | L38885–38911, L41196–41210 | MOD-15 (oracle equality conjunct), MOD-16 (kill-rate conjunct), MOD-12 (recovery-equivalence conjunct) | — |
 | R-TEST-12 | Request-frame verification tags: `REQUEST-ARGS-LTR` and `REQUEST-NON-CAP-SHORT-CIRCUIT` added to R-TEST-07's obligation-tagged coverage list; Track A coverage (U-44 resolved) | addendum (request-pipeline) | MOD-05 (request-frame LTR), MOD-08 (short-circuit gate), MOD-15 (R-TEST-07 tag-list owner) | — |
 
-**Partition check:** 181 obligations across 17 modules (expected 148).
+**Partition check:** 184 obligations across 17 modules (expected 148).
 
 ## 2. Atomic-record partition (545)
 

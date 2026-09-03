@@ -7,6 +7,9 @@ Companion: `audit/u01-duration-scoping.md` (scoping; D1–D8), `audit/u36-u37-pr
 **U-38 is completely out of scope.** Registers: this pass files **C-112…C-115**
 (C-110/C-111 are the mutation harness's K01/K02 fixtures — reserved, unavailable).
 
+
+**Adopted 2026-09-03 by addendum IX** (owner decision, `audit/spec-addendum9-draft.md`): D1–D3/D3a/D6/D8 frozen as R-CAP-11, R-BUDGET-15, R-BUDGET-16; D7's §5(c) minimal rule frozen exactly as stated (separate `QuiescenceReconcile` driver transition, scoped to `Deadlock ∧ ∃Pending`; unconditional quiescence reconciliation rejected); C-100 and C-112…C-115 re-graded `resolved-by-addendum`; U-01/U-07/U-36 resolved; the §2 sweep's rows now carry their adopted δ_t values as frozen text. U-38 untouched.
+
 **Owner pre-adoption decisions (2026-09-03), recorded here:** D1 APPROVED
 (per-actor remaining execution-duration budget distinct from absolute deadline W);
 D2 APPROVED (ΔD := δ_t for time-advancing transitions; explicit no-double-charge;

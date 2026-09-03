@@ -31,12 +31,12 @@
     },
     "id_schemes": {
       "S-NN": "specification section (24)",
-      "R-AREA-NN": "normative requirement/obligation (181; 148 source-transcribed + 33 post-audit frozen addenda)",
+      "R-AREA-NN": "normative requirement/obligation (184; 148 source-transcribed + 36 post-audit frozen addenda)",
       "C-NN": "contradiction/ambiguity finding (112 indexed; 113 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
       "U-NN": "unresolved item requiring explicit decision (39)",
       "M-NN": "milestone M0-M11",
-      "TAG": "source verification-obligation tags (23; 17 frozen-source + 6 post-audit addenda)",
-      "M0NN": "baseline mutation registry (39; 18 baseline + 21 post-audit: M019–M039; M036 is registered and currently SURVIVING — see spec/08 §2 and U-38)",
+      "TAG": "source verification-obligation tags (26; 17 frozen-source + 9 post-audit addenda)",
+      "M0NN": "baseline mutation registry (42; 18 baseline + 24 post-audit: M019–M042; M036 is registered and currently SURVIVING — see spec/08 §2 and U-38)",
       "ROR-NNN": "first-sprint tasks (16)"
     },
     "documents": {
@@ -257,7 +257,8 @@
         "R-CAP-07",
         "R-CAP-08",
         "R-CAP-09",
-        "R-CAP-10"
+        "R-CAP-10",
+        "R-CAP-11"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -307,7 +308,9 @@
         "R-BUDGET-09",
         "R-BUDGET-10",
         "R-BUDGET-11",
-        "R-BUDGET-13"
+        "R-BUDGET-13",
+        "R-BUDGET-15",
+        "R-BUDGET-16"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -2061,6 +2064,28 @@
       ]
     },
     {
+      "id": "R-CAP-11",
+      "section": "S-09",
+      "title": "Lifetime logical time; half-open; max_duration declared-info (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core",
+        "ror-kernel"
+      ],
+      "verification": [
+        "M4 expiration/authorization gate tests"
+      ],
+      "related_findings": [
+        "C-100"
+      ]
+    },
+    {
       "id": "R-KERN-01",
       "section": "S-10",
       "title": "CapRef opaque, generation-safe, private fields, kernel-only construction",
@@ -2462,6 +2487,55 @@
       ],
       "related_findings": [
         "C-108"
+      ]
+    },
+    {
+      "id": "R-BUDGET-15",
+      "section": "S-11",
+      "title": "Duration consumable semantics; delta_D = delta_t; no double charge (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core",
+        "ror-runtime"
+      ],
+      "verification": [
+        "M042",
+        "budget-gate tests"
+      ],
+      "related_findings": [
+        "C-114",
+        "C-115"
+      ]
+    },
+    {
+      "id": "R-BUDGET-16",
+      "section": "S-11",
+      "title": "Exhaustive delta_t table; late-receipt settlement; quiescence reconciliation (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "M040",
+        "M041",
+        "QUIESCENCE-RECONCILES-PENDING",
+        "ledger liveness"
+      ],
+      "related_findings": [
+        "C-112",
+        "C-113"
       ]
     },
     {
@@ -6259,7 +6333,7 @@
       "id": "C-100",
       "title": "Lifetime { start: u64, end: u64 } is documented three times as Unix timestamps (L3572–3573, L4960–4961, L5404–5405; prose L5244 \"e.g., Unix timestamps\") and its contains(&self, time: u64) (L3577) is invoked as auth.lifetime.contains(t) with t: LogicalTime inside the frozen pure authorization predicate authorizes (L11881–11889) — i.e. a wall-clock interval is compared against logical time inside authorization gate 6. ResourceLimits.max_duration: Duration (L5399) places a std::time quantity inside a resource ceiling. Directly contradicts L6437, R-CAP-09 (\"Wall-clock time MUST NOT be used as semantic machine state\"), term/ T-28, and R-CLAIM-02 (\"Never: use wall-clock time for deterministic semantics\") (audit DET-006)",
       "severity": "MAJOR",
-      "status": "open",
+      "status": "resolved-by-addendum",
       "resolved_into": "U-36",
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -6424,7 +6498,7 @@
       "id": "C-112",
       "title": "R-BUDGET-09's liveness bound is unreachable in quiescence: step_global returns GlobalStep::Deadlock when the runnable queue is empty, Pending actors are not requeued, and logical_time advances only while an actor steps — a single outstanding Pending effect therefore freezes t, so W can never expire as the bound requires",
       "severity": "BLOCKING",
-      "status": "open",
+      "status": "resolved-by-addendum",
       "resolved_into": "U-01;U-07",
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -6441,7 +6515,7 @@
       "id": "C-113",
       "title": "A post-deadline EffectReceipt makes the frozen E-Receipt rule inapplicable: the premise t + δ_t ≤ W (L8978) has no defined failure — neither fault, admission, nor reconciliation",
       "severity": "MAJOR",
-      "status": "open",
+      "status": "resolved-by-addendum",
       "resolved_into": "U-01",
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -6456,7 +6530,7 @@
       "id": "C-114",
       "title": "Three mutually inconsistent D debit models coexist: [15]-#4 (host/scheduler transitions consume ΔD), v0.3 E-Request (D is consumed at effect initiation via cost_C(E)'s ΔD component), and the E-ReceiveBlocked note (no budget consumed while blocked) against the resource-accounting audit's R-BUDGET-12 proposal (async waits debit D ← D − δ_t) — with no value or derivation for ΔD",
       "severity": "MAJOR",
-      "status": "open",
+      "status": "resolved-by-addendum",
       "resolved_into": "U-01",
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -6473,7 +6547,7 @@
       "id": "C-115",
       "title": "DeadlineExceeded exists in the closed fault surface but no frozen rule pins where it fires or its precedence relative to budget insufficiency and host-policy denial",
       "severity": "MINOR",
-      "status": "open",
+      "status": "resolved-by-addendum",
       "resolved_into": "U-01",
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -7161,6 +7235,28 @@
       ]
     },
     {
+      "id": "M040",
+      "defect": "delta_t table violation: a time-capable transition kind advances logical time without its frozen delta_t",
+      "kills_evidence_for": [
+        "R-BUDGET-16"
+      ]
+    },
+    {
+      "id": "M041",
+      "defect": "post-deadline EffectReceipt routed through the normal deadline gate instead of R-RECOV-08 settlement",
+      "kills_evidence_for": [
+        "R-BUDGET-16",
+        "R-RECOV-08"
+      ]
+    },
+    {
+      "id": "M042",
+      "defect": "cost_C(E) duration component debits D in addition to the transition delta_D = delta_t",
+      "kills_evidence_for": [
+        "R-BUDGET-15"
+      ]
+    },
+    {
       "id": "M026",
       "defect": "accept future-tagged proposal",
       "kills_evidence_for": [
@@ -7377,6 +7473,31 @@
         "R-PERSIST-04"
       ],
       "milestone": "M7 (addendum VIII)"
+    },
+    {
+      "tag": "TIME-DELTA-ENUMERATED",
+      "obligations": [
+        "R-BUDGET-16",
+        "R-BUDGET-06"
+      ],
+      "milestone": "M5 (addendum IX)"
+    },
+    {
+      "tag": "DURATION-NO-DOUBLE-CHARGE",
+      "obligations": [
+        "R-BUDGET-15",
+        "R-BUDGET-01"
+      ],
+      "milestone": "M5 (addendum IX)"
+    },
+    {
+      "tag": "QUIESCENCE-RECONCILES-PENDING",
+      "obligations": [
+        "R-BUDGET-16",
+        "R-BUDGET-09",
+        "R-RECOV-08"
+      ],
+      "milestone": "M5;M10 (addendum IX)"
     }
   ],
   "crash_matrix": [
@@ -7518,6 +7639,7 @@
         "R-KERN-05",
         "R-KERN-06",
         "R-CAP-10",
+        "R-CAP-11",
         "R-MARSHAL-05"
       ]
     },
@@ -7564,7 +7686,9 @@
         "R-RECOV-09",
         "R-TEST-12",
         "R-BUDGET-10",
-        "R-BUDGET-11"
+        "R-BUDGET-11",
+        "R-BUDGET-15",
+        "R-BUDGET-16"
       ]
     },
     {
@@ -7673,7 +7797,8 @@
         "R-PERSIST-07",
         "R-RECOV-08",
         "R-RECOV-09",
-        "R-BUDGET-11"
+        "R-BUDGET-11",
+        "R-BUDGET-16"
       ]
     },
     {
@@ -7854,7 +7979,9 @@
         "R-CANON-10",
         "R-CANON-11",
         "R-CANON-12",
-        "R-CANON-13"
+        "R-CANON-13",
+        "R-CAP-11",
+        "R-BUDGET-15"
       ],
       "depends_on": []
     },
@@ -7894,6 +8021,7 @@
         "R-KERN-05",
         "R-KERN-06",
         "R-CAP-10",
+        "R-CAP-11",
         "R-PERSIST-07",
         "R-CORE-11",
         "R-TRUST-03"
@@ -7948,7 +8076,9 @@
         "R-ARCH-05",
         "R-DUR-07",
         "R-BUDGET-10",
-        "R-BUDGET-11"
+        "R-BUDGET-11",
+        "R-BUDGET-15",
+        "R-BUDGET-16"
       ],
       "depends_on": [
         "ror-core",

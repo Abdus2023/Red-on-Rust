@@ -82,7 +82,12 @@ $$t_{i+1} = t_i + \delta_t(c_i) \quad \text{verified by} \quad \mathbf{t_{\text{
 > transient (logical-time bound → reconciliation), never a terminal disposition, so no
 > divergence remains. **R-BUDGET-12 is NOT adopted** (its D-advancement/debit rule decides
 > `spec/09` U-01, a separate open item) and **R-BUDGET-14 is deferred** to a resource-family
-> pass; both remain non-normative proposals here. The adopted wording above is quoted, not
+> pass; both remain non-normative proposals here.
+>
+> **Folded (2026-09-03, addendum IX):** R-BUDGET-12's duration rule is adopted as part of
+> **R-BUDGET-15**/**R-BUDGET-16** (per-actor `D`, `\Delta D := \delta_t`, no double charge;
+> exhaustive `\delta_t` table) — it still has no own ID here and this section is not a
+> normative layer. R-BUDGET-14 stays deferred. The adopted wording above is quoted, not
 > rewritten (R-SCOPE-03), except R-BUDGET-11 which carries the reconciled owner decision.
 
 **R-BUDGET-10 (Resource-State Atomicity — frozen addendum).** All resource mutations belonging to an operational transition occur transactionally. A failed precondition produces zero state drift and zero partial debit:

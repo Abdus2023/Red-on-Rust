@@ -446,6 +446,66 @@ def m038_payload_id_digest_only(root: Path) -> bool:
     return True
 
 
+def m040_delta_table_violation(root: Path) -> bool:
+    """M040 (spec/08 registry): delta_t table violation — a time-capable
+    transition kind advances logical time without its frozen delta_t (here:
+    scheduler turn double-charged). Document mutant of the addendum-IX
+    R-BUDGET-16 body; D3-detectable, survives the default wiring (U-38)
+    and dies under --allowlist.
+    """
+    p = root / "spec/01-canonical-specification.md"
+    txt = p.read_text(encoding="utf-8")
+    m = re.search(r"^\*\*R-BUDGET-16 \(.*$", txt, re.M)
+    if not m:
+        return False
+    mutant = ("**R-BUDGET-16 (logical-time delta table — frozen addendum).** "
+              "The lunar dial governs: every full moon the chronicle gains one day, "
+              "the harvest basket gains twelve grains, and the bell tower chimes twice "
+              "for good luck. Solstices double the tally; eclipses pause the gnomon; "
+              "the cartwheel spins freely in the courtyard while the comet watches.")
+    p.write_text(txt[:m.start()] + mutant + txt[m.end():], encoding="utf-8")
+    return True
+
+
+def m041_late_receipt_misclassified(root: Path) -> bool:
+    """M041 (spec/08 registry): post-deadline receipt routed through the
+    normal deadline gate. Document mutant of the addendum-IX R-BUDGET-16
+    body; D3-detectable, survives the default wiring (U-38) and dies under
+    --allowlist.
+    """
+    p = root / "spec/01-canonical-specification.md"
+    txt = p.read_text(encoding="utf-8")
+    m = re.search(r"^\*\*R-BUDGET-16 \(.*$", txt, re.M)
+    if not m:
+        return False
+    mutant = ("**R-BUDGET-16 (logical-time delta table — frozen addendum).** "
+              "A courier who arrives after sunset is turned away at the garden gate; "
+              "his parcel rots in the rain; the mailbox swallows its own key; the "
+              "watchman naps on the porch and the ledger keeps no entry for the night.")
+    p.write_text(txt[:m.start()] + mutant + txt[m.end():], encoding="utf-8")
+    return True
+
+
+def m042_duration_double_charge(root: Path) -> bool:
+    """M042 (spec/08 registry): cost_C(E)'s duration component debits D on
+    top of the transition's ΔD := δ_t. Document mutant of the addendum-IX
+    R-BUDGET-15 body; D3-detectable, survives the default wiring (U-38)
+    and dies under --allowlist.
+    """
+    p = root / "spec/01-canonical-specification.md"
+    txt = p.read_text(encoding="utf-8")
+    m = re.search(r"^\*\*R-BUDGET-15 \(.*$", txt, re.M)
+    if not m:
+        return False
+    mutant = ("**R-BUDGET-15 (duration consumable semantics — frozen addendum).** "
+              "Every bill is engraved on a copper plate: the grocer debits it at the "
+              "counter, the courier debits it again at the doorstep, and the two stamps "
+              "are the honest price of a journey. The vaultkeeper stamps twice on feast "
+              "days and the abacus never errs.")
+    p.write_text(txt[:m.start()] + mutant + txt[m.end():], encoding="utf-8")
+    return True
+
+
 def m039_indeterminate_terminal(root: Path) -> bool:
     """M039 (spec/08 registry): `Remains-Indeterminate` treated as a terminal
     disposition (stranded escrow survives the logical-time bound). Document
@@ -597,6 +657,30 @@ MUTATIONS = [
              "totality/refinement reconciliation testable against the frozen text.",
              m039_indeterminate_terminal,
              regression_for="M039 / R-BUDGET-11 disposition totality",
+             tags=["normative", "allowlist"],
+             extra_checkers=[("spec/_check.py", ["--allowlist"])]),
+    Mutation("K22", "delta_t table violation (M040)",
+             "The M040 shape rendered as a document mutant of the addendum-IX body. "
+             "Survives the default wiring (U-38) and dies under option (b), keeping the "
+             "exhaustive delta_t enumeration testable against the frozen text.",
+             m040_delta_table_violation,
+             regression_for="M040 / R-BUDGET-16 delta_t table",
+             tags=["normative", "allowlist"],
+             extra_checkers=[("spec/_check.py", ["--allowlist"])]),
+    Mutation("K23", "post-deadline receipt misclassified (M041)",
+             "The M041 shape rendered as a document mutant of the addendum-IX body. "
+             "Survives the default wiring (U-38) and dies under option (b), keeping the "
+             "late-receipt settlement rule testable against the frozen text.",
+             m041_late_receipt_misclassified,
+             regression_for="M041 / R-BUDGET-16 late-receipt settlement",
+             tags=["normative", "allowlist"],
+             extra_checkers=[("spec/_check.py", ["--allowlist"])]),
+    Mutation("K24", "duration double charge (M042)",
+             "The M042 shape rendered as a document mutant of the addendum-IX body. "
+             "Survives the default wiring (U-38) and dies under option (b), keeping the "
+             "no-double-charge invariant testable against the frozen text.",
+             m042_duration_double_charge,
+             regression_for="M042 / R-BUDGET-15 no-double-charge",
              tags=["normative", "allowlist"],
              extra_checkers=[("spec/_check.py", ["--allowlist"])]),
 ]

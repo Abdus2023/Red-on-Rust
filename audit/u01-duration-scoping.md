@@ -7,6 +7,11 @@ is filed here; the candidate findings below (C-112…C-115) are listed for the
 D-semantics pass to file together with their adoption, exactly as the
 request-pipeline audit filed C-103…C-109 alongside its addendum.
 
+**Adopted 2026-09-03 by addendum IX:** the D1–D8 recommendations in this
+document are the frozen semantics (`R-CAP-11`, `R-BUDGET-15`, `R-BUDGET-16`;
+U-01/U-07/U-36 resolved; C-100/C-112…C-115 re-graded). This document remains the
+scoping record; its wording is quoted, not rewritten (R-SCOPE-03).
+
 **Scope:** the semantic cluster U-01 exposes — what `D` measures, when `D` is
 debited, what `δ_t` is per transition, how logical time advances, the deadline
 predicate, and the Yield / async-wait / EffectRequest interaction — including

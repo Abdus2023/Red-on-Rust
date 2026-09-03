@@ -29,7 +29,7 @@ The master prompt §21 COVERAGE (L38544–38577) freezes this tag list; mileston
 
 **Tag normalization note:** the README (L41969–42010) lists a slightly different example set (e.g., `CEK-CALL-ARITY-PRECHECK`, `BUDGET-ESCROW-CONSERVATION`, `MARSHAL-CAPABILITY-REJECT`); the master-prompt list above is the frozen canonical set; `MARSHAL-CAPABILITY-REJECT` ≙ `MARSHAL-NO-RAW-CAPABILITY` (C-10, terminology 05 §5).
 
-**Post-audit addendum tags** (not part of the frozen source set; added by remediations SEC-001/SEC-004 and addenda VII/VIII):
+**Post-audit addendum tags** (not part of the frozen source set; added by remediations SEC-001/SEC-004 and addenda VII/VIII/IX):
 
 | Tag | Obligation(s) covered | Required evidence | Repo evidence |
 |---|---|---|---|
@@ -37,10 +37,13 @@ The master prompt §21 COVERAGE (L38544–38577) freezes this tag list; mileston
 | `RECOVERY-REVOCATION-DURABLE` | R-PERSIST-07 (post-audit addendum) | Revocation survives crash: crash matrix T0–T6 with revocation committed before the crash point; revoked caps stay revoked; dangling/generation-mismatched CapRefs ⇒ `RecoveryFault` (mutation M023) | NONE |
 | `BUDGET-ESCROW-DISPOSITION-TOTALITY` | R-BUDGET-09, R-BUDGET-11 (addendum VIII), R-EFFECT-05 | Every escrowed amount terminates: R-BUDGET-09's three-path totality with the five-leaf normal form as fine structure; `Remains-Indeterminate` bounded by the logical-time bound (mutation M039) | NONE |
 | `PERSISTENT-CAPACITY-ACCOUNTING` | R-BUDGET-13 (addendum VIII), R-PERSIST-04 | Volatile RAM distinct from persistent storage; durable capacity accounted per WAL frame/snapshot artifact; overflow faults | NONE |
+| `TIME-DELTA-ENUMERATED` | R-BUDGET-16 (addendum IX), R-BUDGET-06 | every time-capable transition kind carries its frozen δ_t; per host round trip = 2; the scheduler turn is the executed transition's δ_t (mutation M040) | NONE |
+| `DURATION-NO-DOUBLE-CHARGE` | R-BUDGET-15 (addendum IX), R-BUDGET-01 | exactly one duration debit per logical-time advance; `cost_C(E)`'s duration component is declared/diagnostic only, never a machine debit (mutation M042) | NONE |
+| `QUIESCENCE-RECONCILES-PENDING` | R-BUDGET-16 (addendum IX), R-BUDGET-09, R-RECOV-08 | stable quiescence with any `Pending` effect deterministically records `Indeterminate` per effect and binds to R-RECOV-08; Blocked-only quiescence does not (mutation M041) | NONE |
 | `REQUEST-ARGS-LTR` | R-TEST-12 (addendum VII), R-EFFECT-01 | Request arguments evaluated strictly left-to-right, exactly one per CEK step (step 3 of the frozen sequence); Track A request-suite coverage | NONE |
 | `REQUEST-NON-CAP-SHORT-CIRCUIT` | R-TEST-12 (addendum VII), R-EFFECT-04 | A non-capability capability expression faults before any target/parameter evaluation and before steps 4–16; no `EffectId`, budget or log mutation; `HostExecutor` never invoked | NONE |
 
-## 2. Mutation registry → obligation map (M001–M039, R-TEST-04)
+## 2. Mutation registry → obligation map (M001–M042, R-TEST-04)
 
 | Mutant | Injected defect | Obligation it must kill evidence for |
 |---|---|---|
@@ -83,8 +86,11 @@ The master prompt §21 COVERAGE (L38544–38577) freezes this tag list; mileston
 | M037 | in-memory s12–s13 mutations committed before the journal-driven append+fsync (host-visible pre-durability) | R-DUR-07 |
 | M038 | issuance records carry `{id, actor, digest}` only (loss of the escrow/effect source of truth) | R-DUR-06 |
 | M039 | `Remains-Indeterminate` treated as a terminal disposition (stranded escrow survives the logical-time bound) | R-BUDGET-11 |
+| M040 | δ_t table violation: a time-capable transition kind advances logical time without its frozen δ_t (e.g., a scheduler turn charged +1 on top of the executed transition, or a kind omitted from the enumeration) | R-BUDGET-16 |
+| M041 | post-deadline `EffectReceipt` routed through the normal deadline gate (rejected) instead of R-RECOV-08 settlement | R-BUDGET-16, R-RECOV-08 |
+| M042 | `cost_C(E)`'s duration component debits `D` in addition to the transition's `ΔD := δ_t` (double charge) | R-BUDGET-15 |
 
-**Evidence status:** registry is `SPECIFIED` (frozen content). No mutant is registered, injected, or killed in this repository; `MutationKillRate` is **not measured** (nothing to measure). 100% is a target, not a current claim (R-CLAIM-01). M037/M038 (addendum VII) and M039 (addendum VIII) are registered the same way — machine mutants, unmeasurable in BOOTSTRAP; their document-mutant shapes are exercised by `audit/_checker_mutations.py` K19/K20/K21. M036 remains the one measurable document mutant.
+**Evidence status:** registry is `SPECIFIED` (frozen content). No mutant is registered, injected, or killed in this repository; `MutationKillRate` is **not measured** (nothing to measure). 100% is a target, not a current claim (R-CLAIM-01). M037/M038 (addendum VII), M039 (addendum VIII) and M040–M042 (addendum IX) are registered the same way — machine mutants, unmeasurable in BOOTSTRAP; their document-mutant shapes are exercised by `audit/_checker_mutations.py` K19/K20/K21/K22-K24. M036 remains the one measurable document mutant.
 
 **M036 is the one exception, and it is currently a SURVIVING mutant.** Every other
 row above targets machine behaviour and cannot be measured here (no implementation).

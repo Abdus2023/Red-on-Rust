@@ -23,19 +23,19 @@ The frozen source (`Red-on-Rust.md`) has been canonicalized into the document se
 - `spec/00-overview.md` — method, status ladder (`SPECIFIED → IMPLEMENTED → TESTED → VERIFIED → PROVEN`), identifier scheme
 - `spec/01-canonical-specification.md` — cleaned normative specification (24 sections, `S-01`…`S-24`)
 - `spec/02-section-hierarchy.md` — stable section index with provenance and supersession records
-- `spec/03-obligation-matrix.md` — 181 stable requirement IDs (`R-…`; 148 from the frozen source + 33 post-audit frozen addenda, incl. the five addendum-VII and three addendum-VIII obligations) with status and provenance
+- `spec/03-obligation-matrix.md` — 184 stable requirement IDs (`R-…`; 148 from the frozen source + 36 post-audit frozen addenda, incl. the five addendum-VII, three addendum-VIII and three addendum-IX obligations) with status and provenance
 - `spec/04-dependency-graph.md` — section, object, and verification dependency graphs
 - `spec/05-terminology.md` — glossary and normalization rules
-- `spec/06-contradictions-ambiguities.md` — 112 consistency findings in 113 rows (`C-01`…`C-115`, C-39 a pointer row; C-98…C-102 added by the semantic-nondeterminism audit, C-103…C-109 by the request-pipeline proof-obligation audit and C-112…C-115 by the duration-semantics audit, C-103…C-107/C-109 `resolved-by-addendum` under addendum VII and C-108 under addendum VIII; C-46…C-76 added by the terminology pass and C-77…C-97 by the post-audit frozen addenda I–V; C-08 re-graded MINOR → MAJOR, and C-54 rewritten by its declaration sweep after the first version of that row was filed on a false premise)
+- `spec/06-contradictions-ambiguities.md` — 112 consistency findings in 113 rows (`C-01`…`C-115`, C-39 a pointer row; C-98…C-102 added by the semantic-nondeterminism audit, C-103…C-109 by the request-pipeline proof-obligation audit and C-112…C-115 by the duration-semantics audit, C-103…C-107/C-109 `resolved-by-addendum` under addendum VII, C-108 under addendum VIII and C-100/C-112…C-115 under addendum IX; C-46…C-76 added by the terminology pass and C-77…C-97 by the post-audit frozen addenda I–V; C-08 re-graded MINOR → MAJOR, and C-54 rewritten by its declaration sweep after the first version of that row was filed on a false premise)
 - `spec/07-implementation-mapping.md` — obligations → crate/module mapping; actual repository state
 - `spec/08-verification-mapping.md` — obligations → conformance tests and evidence status
-- `spec/09-unresolved-decisions.md` — 39 items (`U-…`) requiring explicit architectural decisions (U-23…U-25 added by the terminology pass, U-26…U-29 by its declaration sweep, U-30…U-34 by its struct-field sweep, U-35…U-37 by the semantic-nondeterminism audit and U-39…U-45 by the request-pipeline proof-obligation audit, U-39…U-44 resolved by addendum VII and U-45 by addendum VIII; U-08 corrected and U-14 escalated to blocking by its fault-taxonomy audit)
+- `spec/09-unresolved-decisions.md` — 39 items (`U-…`) requiring explicit architectural decisions (U-23…U-25 added by the terminology pass, U-26…U-29 by its declaration sweep, U-30…U-34 by its struct-field sweep, U-35…U-37 by the semantic-nondeterminism audit and U-39…U-45 by the request-pipeline proof-obligation audit, U-39…U-44 resolved by addendum VII, U-45 by addendum VIII and U-01/U-07/U-36 by addendum IX; U-08 corrected and U-14 escalated to blocking by its fault-taxonomy audit)
 - `spec/10-index.json` — machine-readable cross-index
 
 A fifth directory, `audit/`, holds **adversarial audits of the frozen specification**.
 These are review artifacts, not normative text: an audit may file register rows
 (`C-…`, `U-…`) and propose remediation, but it never issues frozen semantics
-(R-SCOPE-03). Three passes are complete:
+(R-SCOPE-03). Four passes are complete:
 
 - `audit/authority-trust-external-effect-audit.md` — **authority, trust-boundary and
   external-effect gating** (`SEC-001`…`SEC-023`: 3 CRITICAL, 5 HIGH, 3 MEDIUM-HIGH,
@@ -80,6 +80,16 @@ These are review artifacts, not normative text: an audit may file register rows
   against the formal `t + δ_t(req) ≤ W`. This pass issued no addendum — its rows
   `C-103`…`C-109` and decisions `U-39`…`U-45` are all `open`; its recommendations
   exist only as a draft (`audit/request-pipeline-remediation-draft.md`, NOT ADOPTED).
+- `audit/duration-semantics-audit.md` — **what `D` measures and how logical time advances**
+  (U-01/U-07/U-36; the audit filed C-112…C-115 and scoped the cluster into D1–D8; pre-adoption
+  owner decisions D1–D3/D6/D8 approved with D7 conditional on its own §5 evidence). Verdict:
+  the invariant "every logical-time advance has exactly one duration debit, and every
+  deadline-sensitive transition has a deterministic pre-state/post-state rule" fails in three
+  places — the quiescence clock hole (a `Pending` effect freezes `t`, so R-BUDGET-09's
+  liveness bound is unreachable), the missing post-deadline receipt rule, and three mutually
+  inconsistent `D` debit models — plus the unfrozen `DeadlineExceeded` firing point. Its
+  remediation is addendum IX (`R-CAP-11`, `R-BUDGET-15/16`): C-100/C-112…C-115 re-graded
+  `resolved-by-addendum`, U-01/U-07/U-36 resolved, R-BUDGET-12 folded, U-38 untouched.
 
 A second organization, `mod/`, splits the same specification into **17 semantic
 modules** (`MOD-01 CORE` … `MOD-17 VERIFICATION`) by architectural responsibility

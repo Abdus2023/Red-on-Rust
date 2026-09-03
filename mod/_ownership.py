@@ -60,9 +60,9 @@ _own("MOD-01", "TRUST",   [1, 2, 3, 4])   # +TRUST-04 complete trust table (adde
 _own("MOD-01", "ARCH",    [1, 2, 3, 4, 5])  # +ARCH-05 isolation ladder retired (addendum V)
 _own("MOD-01", "CALC",    range(1, 9))
 _own("MOD-02", "COMPILE", range(1, 7))    # +COMPILE-06 plan-bound capability literals (addendum I)
-_own("MOD-03", "CAP",     range(1, 11))   # +CAP-10 AdmissibleConstraint (addendum V)
+_own("MOD-03", "CAP",     range(1, 12))   # +CAP-10 (addendum V); +CAP-11 Lifetime logical time (addendum IX)
 _own("MOD-03", "KERN",    range(1, 7))    # +KERN-04/05 (addendum I), +KERN-06 root grant (addendum V)
-_own("MOD-04", "BUDGET",  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13])   # +BUDGET-09 (addendum V); +BUDGET-10/11/13 (addendum VIII); BUDGET-12 stays with U-01
+_own("MOD-04", "BUDGET",  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 16])   # +BUDGET-09 (addendum V); +BUDGET-10/11/13 (addendum VIII); +BUDGET-15/16 (addendum IX); BUDGET-12 folded into 15/16
 _own("MOD-05", "CEK",     range(1, 8))
 _own("MOD-06", "ACTOR",   [1, 2, 3, 5, 6, 8, 9, 10])  # +ACTOR-09 (add. III), +ACTOR-10 (add. V)
 _own("MOD-06", "MARSHAL", range(1, 7))    # +MARSHAL-05/06 (addendum II)
@@ -102,6 +102,9 @@ R_XREF = {
     "R-BUDGET-10": [("MOD-08", "issuance section atomicity R-DUR-07"), ("MOD-01", "R-CORE-12 transition atomicity"), ("MOD-11", "journal append/fsync"), ("MOD-12", "host-failure recovery")],
     "R-BUDGET-11": [("MOD-08", "escrow at issuance R-EFFECT-05"), ("MOD-12", "R-RECOV-08/09 admissibility"), ("MOD-01", "conservation R-CORE-05"), ("MOD-06", "spawn/transfer partition")],
     "R-BUDGET-13": [("MOD-11", "WAL/snapshot capacity"), ("MOD-12", "snapshot compaction recovery"), ("MOD-10", "15A artifact sizes")],
+    "R-CAP-11": [("MOD-08", "gate-6 authorization computes with logical time"), ("MOD-04", "duration/deadline boundary R-BUDGET-15"), ("MOD-10", "LogicalTime canonical u64")],
+    "R-BUDGET-15": [("MOD-08", "issuance/receipt side effects"), ("MOD-12", "R-RECOV-08 classification"), ("MOD-03", "max_duration declared-info boundary")],
+    "R-BUDGET-16": [("MOD-07", "scheduler turn carries the executed delta_t"), ("MOD-09", "host round trip = two crossings"), ("MOD-12", "quiescence reconciliation R-RECOV-08"), ("MOD-11", "WAL/snapshot/replay delta_t = 0")],
     "R-CORE-06": [("MOD-11", "operative owner (D-03)"), ("MOD-08", "sequence position (steps 14 before 16)"), ("MOD-09", "host never invoked earlier")],
     "R-CORE-07": [("MOD-06", "operative owner (D-04)"), ("MOD-03", "delegation is a kernel derive")],
     "R-CORE-08": [("MOD-07", "operative owner (D-05)"), ("MOD-09", "host trace term"), ("MOD-13", "planner trace for end-to-end runs")],
@@ -134,10 +137,10 @@ R_XREF = {
     "R-KERN-01": [("MOD-10", "CapRef payload 0x30"), ("MOD-11", "capability contexts in snapshots"), ("MOD-06", "marshal rejection target")],
     "R-KERN-02": [("MOD-05", "evaluator calls authorize/derive"), ("MOD-06", "spawn and delegation call derive")],
     "R-KERN-03": [("MOD-01", "central restatement R-TRUST-03 (D-09)"), ("MOD-17", "visibility enforcement review")],
-    "R-BUDGET-01": [("MOD-03", "capability ceiling R shares component-wise order"), ("MOD-17", "D semantics open - U-01")],
+    "R-BUDGET-01": [("MOD-03", "capability ceiling R shares component-wise order"), ("MOD-17", "D semantics per R-BUDGET-15 (addendum IX)")],
     "R-BUDGET-04": [("MOD-03", "capability ceiling is the second gate"), ("MOD-08", "gates 7..10 of 16")],
     "R-BUDGET-05": [("MOD-01", "central restatement R-CORE-05 (D-02)"), ("MOD-06", "spawn transfer"), ("MOD-08", "escrow at issuance"), ("MOD-12", "survival after crash")],
-    "R-BUDGET-06": [("MOD-07", "scheduler step delta positive"), ("MOD-09", "host interaction delta positive"), ("MOD-17", "per-transition deltas open - U-07")],
+    "R-BUDGET-06": [("MOD-07", "scheduler step delta positive"), ("MOD-09", "host interaction delta positive"), ("MOD-17", "delta_t table per R-BUDGET-16 (addendum IX)")],
     "R-BUDGET-07": [("MOD-02", "static budget bound uses CostModel"), ("MOD-08", "EffectCost is a Cost")],
     "R-BUDGET-08": [("MOD-08", "denial leaves budget unchanged")],
     "R-CEK-01": [("MOD-11", "continuation must be snapshot-serializable"), ("MOD-17", "recursive evaluator prohibited (R-CLAIM-02)")],
