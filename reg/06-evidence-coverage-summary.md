@@ -18,6 +18,6 @@
 
 - Status distribution: {'SPECIFIED': 184} — every row's status is the evidence-backed `SPECIFIED`; no row was promoted for having a registered target, tag or mutant (DEFINITION OF ABSENCE).
 - Verification tags: 25 defined (16 frozen + 9 addendum; 1 documented alias not indexed), repository evidence `NONE` for each (`final/04` §1). Mutation registry: 42 defined, executed none. Milestones M0–M11: none satisfied.
-- Repository gates (`python3 check.py`, 16 checkers incl. this one, derived from the `check.py` registration): repository-integrity evidence only. No requirement defines a repository checker as its verification method; `audit/_conservation_checker.py` is named by R-BUDGET-10 as *gate evidence for the rule shape*, which `final/08` §4 explicitly declines to treat as machine evidence — carried unchanged.
+- Repository gates (`python3 check.py`, 18 checkers incl. this one, derived from the `check.py` registration): repository-integrity evidence only. No requirement defines a repository checker as its verification method; `audit/_conservation_checker.py` is named by R-BUDGET-10 as *gate evidence for the rule shape*, which `final/08` §4 explicitly declines to treat as machine evidence — carried unchanged.
 - `REF1-CONDITIONAL`, `V1-CONDITIONAL`: conditional; V1 §8 UNKNOWN items remain UNKNOWN.
 - Requirements lacking evidence: 184/184. This figure is the bootstrap state, reported as such.

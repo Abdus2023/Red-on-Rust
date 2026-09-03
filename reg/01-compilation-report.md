@@ -9,7 +9,7 @@
 | 1 | Source registry hash (`final/03-requirement-registry.md`) | `sha256:294ca0efcfd27555958737c4ed117dd6ee816a4f8944c160dbecb2250ca5a9e3` |
 | 1b | Source statement authority hash (`spec/01-canonical-specification.md`) | `sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12` |
 | 1c | Frozen source hash (`Red-on-Rust.md`) | `sha256:2aeb9940665f6ef27bbba9895889e93b8be8c1ba9f5ff0558f2b95fee07a25eb` |
-| 2 | Generated registry hash (`reg/requirements.json`) | `sha256:07031bbb18ea62d3639999970469f7c91b58cd682481103d2621a3ffb3f21898` |
+| 2 | Generated registry hash (`reg/requirements.json`) | `sha256:dec2249cba4b7ef7ba7e1898bdaa3a3472cea45520ba5ec415ce2e65eca5f436` |
 | 3 | Requirement count | 184 (expected 184) |
 | 4 | Unique-ID count | 184 |
 | 5 | Duplicate IDs | none |
@@ -45,7 +45,7 @@ OK   13   security classification preserved: every GI-SEC home (22) is security_
 OK   14/15/16 implementation / test / verification mappings equal the canonical final/03 cells and spec/10 tag+mutation maps for 184/184
 OK   17   evidence traceable: 0 evidence entries; untraceable none
 OK   18   deterministic: two independent in-memory compilations render byte-identical
-OK   19   reproducible: committed reg/requirements.json == fresh compilation (sha256:07031bbb18ea62d3…)
+OK   19   reproducible: committed reg/requirements.json == fresh compilation (sha256:dec2249cba4b7ef7…)
 OK   20   governance: reg/_compile.py registered in check.py CHECKERS
 ```
 

@@ -65,6 +65,16 @@ CHECKERS: list[tuple[str, str]] = [
     ("reg/_compile.py", "R-REG requirements-registry compiler: recompiles reg/requirements.json from "
                         "final/03 + spec/01 in memory, runs the 20-point identity/provenance/status "
                         "battery (184/184, no promotion, hashes re-derived) and fails on drift vs reg/*"),
+    ("scripts/spec/_gate.py", "specification-pipeline gate (S0–S7): determinism (two renders are "
+                              "byte-identical), idempotence (Pipeline(Pipeline(X)) == Pipeline(X)), "
+                              "freshness of build/spec and of the committed spec/0x-* pointers, the "
+                              "S7 verification battery, the AST nondeterminism scan, stamp-free "
+                              "provenance, and the §21 boundary (no Rust artifact may exist)"),
+    ("tests/spec/_pipeline_mutations.py", "mutation-tests the specification pipeline: deliberate "
+                                          "drift of every §14 shape (identity change, silent deletion, "
+                                          "renumbering, status promotion, provenance loss, invented "
+                                          "requirement, edited history, stale projection, injected "
+                                          "timestamp) must each be caught; a survivor fails the gate"),
     ("state/_project.py", "repository-state projection + fail-closed cross-artifact gate (repair "
                           "pass v2 V-07/V-08): derives the single current-state projection from the "
                           "authorities (U registry vs projections, checker inventory vs FINAL1 counts, "

@@ -1466,7 +1466,7 @@ explicit repository-evidence per `spec/00` §2; none exists; none was granted. T
 | SPECIFICATION | this document; `spec/01`; `spec/03`; `req/` registry; frozen source normative text and code sketches | normative as specification text; not implementation evidence |
 | IMPLEMENTATION | none in repository | every obligation SPECIFIED and no higher |
 | TEST | none executed; test *contracts* only (R-TEST-*, vectors, mutation registry M001–M042 defined-not-run) | no absent test may be described as executed |
-| VERIFICATION | structural gates only: `check.py` 16 checkers PASS (count derived from the check.py registration; repository integrity); audit gates (conservation/crash-consistency/reference-independence/checker-mutations) | a passing repository checker MUST NOT be represented as proof unless that checker is explicitly and sufficiently defined as the proof method — none is; the gates check presence/structure, not machine semantics |
+| VERIFICATION | structural gates only: `check.py` 18 checkers PASS (count derived from the check.py registration; repository integrity); audit gates (conservation/crash-consistency/reference-independence/checker-mutations) | a passing repository checker MUST NOT be represented as proof unless that checker is explicitly and sufficiently defined as the proof method — none is; the gates check presence/structure, not machine semantics |
 | PROOF | none; source proof sketches exist for R-CAP-08 theorems | PROVEN is explicitly NOT claimed (R-CAP-08; R-CLAIM-01: tests are never proof of the entire calculus) |
 
 **Conditional verdicts carried at full limitation strength:**

@@ -12,14 +12,14 @@
 
 | Artifact | Role | sha256 |
 |---|---|---|
-| `reg/requirements.json` | generated registry | `sha256:07031bbb18ea62d3639999970469f7c91b58cd682481103d2621a3ffb3f21898` |
+| `reg/requirements.json` | generated registry | `sha256:dec2249cba4b7ef7ba7e1898bdaa3a3472cea45520ba5ec415ce2e65eca5f436` |
 | `reg/requirements.schema.json` | generated schema | `sha256:2ce11330e7d46207b98d5d93c2eb06a8f6fca396daa4d0fcd758d497a8cde9a8` |
 | `reg/status-transitions.json` | transition ledger (append-only) | `sha256:12133ca1553b9074d728f4420805d64326ff81a3b0093689e837eddef48477cc` |
 | `Red-on-Rust.md` | input authority | `sha256:2aeb9940665f6ef27bbba9895889e93b8be8c1ba9f5ff0558f2b95fee07a25eb` |
 | `spec/01-canonical-specification.md` | input authority | `sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12` |
 | `spec/03-obligation-matrix.md` | input authority | `sha256:ba5ac1c952b69b1cbbc3429a5dd4522293e496d6a10646e22527e7a7c97d8633` |
 | `spec/10-index.json` | input authority | `sha256:ae7a9f10b6d558e52ddbbbf0b445de07ac2b69deb0a399a7e779538987f62ac6` |
-| `final/01-canonical-specification.md` | input authority | `sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676` |
+| `final/01-canonical-specification.md` | input authority | `sha256:986c468d5a6af36133dc257e3e03de658ce64f065458fc642855b7cc9e98a9bc` |
 | `final/03-requirement-registry.md` | input authority | `sha256:294ca0efcfd27555958737c4ed117dd6ee816a4f8944c160dbecb2250ca5a9e3` |
 | `final/05-global-invariant-registry.md` | input authority | `sha256:8ffdba0bd48f34fa0d56d81a7f5ca558c17e23cb0b35b0216dfd1e9c01d704e1` |
 | `req/registry.json` | input authority | `sha256:3d8ab27dce34bd4b711c556cbecea302e70e66f43b39831622d499024bb3e134` |

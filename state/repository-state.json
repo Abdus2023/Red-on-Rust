@@ -18,7 +18,7 @@
   },
   "counts": {
     "atomic_obligations": 545,
-    "checkers_registered": 16,
+    "checkers_registered": 18,
     "classified_non_checkers": 7,
     "findings": 112,
     "mutations": 42,
@@ -54,7 +54,7 @@
   "evidence_ceiling": "SPECIFIED",
   "expected_counts": {
     "atomic_records": 545,
-    "checkers": 16,
+    "checkers": 18,
     "evidence_ceiling": "SPECIFIED",
     "findings": 112,
     "implementation": "BOOTSTRAP",

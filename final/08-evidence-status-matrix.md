@@ -22,7 +22,7 @@ Material-claim evidence states as the FINAL1 set must carry them. The status lad
 |---|---|---|
 | REF1-CONDITIONAL | **CONDITIONAL** | MUST NOT be represented as REF1-PASS anywhere without new evidence satisfying F-INFL-02's conditions (independent encoder, declared comparison domain, `ror-core` clause operationalized, crate-edge obligations registered, mutation 100 %, crash harness, differential agreement). — full rule in §3. |
 | V1-CONDITIONAL | **CONDITIONAL** | Carried at CONDITIONAL (no input evidence establishes a stronger status). — full rule in §3. |
-| `python3 check.py` | PASS (16 structural checkers, 7 classified non-checkers; inventory derived from the `check.py` registration by `final/_build.py` and independently re-derived by `state/_project.py`. Historical inventory counts — 13 at FINAL1 compilation, 15 before the V-08 state gate — are retained as history only) | repository-integrity evidence only; MUST NOT be represented as proof/verification of any R-… claim unless a checker is explicitly defined as the proof method — none is (V1 F-INFL-01) |
+| `python3 check.py` | PASS (18 structural checkers, 7 classified non-checkers; inventory derived from the `check.py` registration by `final/_build.py` and independently re-derived by `state/_project.py`. Historical inventory counts — 13 at FINAL1 compilation, 15 before the V-08 state gate — are retained as history only) | repository-integrity evidence only; MUST NOT be represented as proof/verification of any R-… claim unless a checker is explicitly defined as the proof method — none is (V1 F-INFL-01) |
 | README “Implementation: IN PROGRESS / READY” | orientation claim | not repository evidence (C-09); statuses above unchanged |
 | V1 §8 residual claims (F-01 semantics, F-05 record identity, F-04 Observed* domain, REF1-vs-build import) | **UNKNOWN** | genuinely ambiguous evidence, preserved UNKNOWN; absence of implementation never downgrades a SPECIFIED claim |
 
@@ -46,7 +46,7 @@ Material-claim evidence states as the FINAL1 set must carry them. The status lad
 |---|---|
 | REF1-CONDITIONAL → → REF1-PASS | prohibited by the REF1 audit itself and V1 F-INFL-02; no new evidence exists |
 | V1-CONDITIONAL → → V1-PASS | the audit lists material non-blocking gaps as precisely the reason for CONDITIONAL; nothing in the inputs closes them |
-| `python3 check.py` ALL PASS (16 checkers) → → semantic VERIFIED for any R-… | the checkers are structural gates over registers; none is defined as a proof method (R-CLAIM-01; spec/07 §1; V1 F-INFL-01) |
+| `python3 check.py` ALL PASS (18 checkers) → → semantic VERIFIED for any R-… | the checkers are structural gates over registers; none is defined as a proof method (R-CLAIM-01; spec/07 §1; V1 F-INFL-01) |
 | `audit/_conservation_checker.py` PASS → → R-CORE-05/R-BUDGET-05 VERIFIED or PROVEN | it validates the *rules and harness contract* over Op-01…Op-22, not an executing machine; the addendum text itself cites it as gate evidence for a rule shape, not as machine evidence |
 | persistence audit “satisfies the requested crash-consistency property” → → R-RECOV-* VERIFIED | conditional on the addenda being normative and at specification level only; carried as audit verdict, statuses unchanged |
 | request-pipeline audit “realizable through R-DUR-01/R-CORE-06/PanicHost/R-TRUST-05” → → provable/VERIFIED | the audit's own verdict line was “not provable as frozen on four counts”; addendum VII froze remediations (specification changes), not verification evidence |

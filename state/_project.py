@@ -24,7 +24,9 @@ defect in one parser cannot hide behind agreement with itself). The EXPECTED
 block is a validation pin in the style of reg/_compile.py's EXPECTED_COUNT:
 if a computed value differs, the failure says INVESTIGATE, it never silently
 re-bases. Pin history: checkers was 15 at the start of this repair pass and
-became 16 when this file itself was registered as the V-08 gate.
+became 16 when this file itself was registered as the V-08 gate, and 18 when the
+specification pipeline registered its own gate (`scripts/spec/_gate.py`) and mutation battery
+(`tests/spec/_pipeline_mutations.py`).
 
 Evidence discipline: this is a repository-integrity gate. A green run is NOT
 semantic verification of any R-… obligation (V1 F-INFL-01) and implies no
@@ -67,7 +69,7 @@ EXPECTED = {
     "findings": 112,              # spec/06 rows minus the C-39 pointer row
     "mutations": 42,              # spec/08 §2 (dense M001…M042)
     "verification_tags": 25,      # spec/08 §1 tables: 16 frozen + 9 addendum
-    "checkers": 16,               # check.py CHECKERS (15 pre-repair + this gate)
+    "checkers": 18,               # check.py CHECKERS (15 pre-repair + this gate + the 2 spec-pipeline gates)
     "non_checkers": 7,            # check.py NON_CHECKERS
     "implementation": "BOOTSTRAP",
     "evidence_ceiling": "SPECIFIED",

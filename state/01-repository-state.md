@@ -16,7 +16,7 @@
 | U numbering gaps | U-10, U-11, U-12, U-18, U-19, U-20 — numbering gaps, never back-filled | spec/09 |
 | Verification tags | 25 canonical (16 frozen-source + 9 post-audit; 1 documented alias not indexed) | spec/08 §1 == spec/10 |
 | Mutations | 42 (M001–M042, dense) | spec/08 §2 == spec/10 |
-| Checkers | 16 registered | check.py CHECKERS |
+| Checkers | 18 registered | check.py CHECKERS |
 | Classified non-checkers | 7 | check.py NON_CHECKERS |
 | Implementation state | BOOTSTRAP | spec/10 repository_state; spec/07 §1 |
 | Evidence ceiling | SPECIFIED | every spec/03 + req/ + reg status |
@@ -39,9 +39,9 @@ OK   1b cardinality ≠ range: registered 39 and numeric max 45 are distinct fac
 OK   1c spec/09 register-status declaration matches the derived registry state (got registered **39** · open **28** · resolved **11** · numeric maximum identifier **U-45**)
 OK   1d spec/10 unresolved index (39) == spec/09 registered (39)
 OK   1e final/09 §A projection matches the registry per-row (**28 OPEN, 11 resolved.**; every OPEN/RESOLVED cell agrees with spec/09)
-OK   2  checker inventory: 16 registered checkers + 7 classified non-checkers (check.py registration); all paths exist
+OK   2  checker inventory: 18 registered checkers + 7 classified non-checkers (check.py registration); all paths exist
 OK   2b every `*/_*.py` executable is classified (independent glob; unclassified: none)
-OK   2c FINAL1 + R-REG checker-count projections (final/00, final/08, reg/06) carry the derived current counts (16/7), not a historical figure
+OK   2c FINAL1 + R-REG checker-count projections (final/00, final/08, reg/06) carry the derived current counts (18/7), not a historical figure
 OK   3  canonical tag set == indexed tag set: spec/08 §1 tables 16+9 == spec/10 verification_tags 25 (unique); MARSHAL-CAPABILITY-REJECT carried as a documented non-indexed alias (1)
 OK   3b every documented alias points at an indexed canonical tag and is not indexed itself
 OK   3c reg/06 tag projection derived (25 / 16+9)

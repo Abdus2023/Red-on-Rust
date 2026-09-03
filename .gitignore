@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+# Deterministic derived output of the specification pipeline: reproducible
+from the committed source and generators, so it is not versioned (§4.2 reproducibility).
+build/
