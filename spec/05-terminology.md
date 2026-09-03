@@ -127,7 +127,7 @@ This glossary lists the canonical terms used by `01-canonical-specification.md`.
 | File | Contents |
 |---|---|
 | `../term/00-overview.md` | method, guarantees, how to read an entry, corrections made outside `term/` |
-| `../term/01-dictionary.md` | the 81 canonical terms (`T-01`…`T-81`) |
+| `../term/01-dictionary.md` | the 86 canonical terms (`T-01`…`T-86`) |
 | `../term/02-collisions.md` | the collision register (`X-01`…`X-86`) |
 | `../term/03-laws.md` | the non-conflation laws (`N-01`…`N-31`) |
 

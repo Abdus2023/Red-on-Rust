@@ -6,13 +6,13 @@
   "lines": 42312
  },
  "counts": {
-  "terms": 81,
+  "terms": 86,
   "required_terms": 26,
-  "laws": 31,
-  "collisions": 86,
+  "laws": 33,
+  "collisions": 87,
   "collision_severities": {
    "BLOCKING": 4,
-   "MAJOR": 62,
+   "MAJOR": 63,
    "MINOR": 19,
    "INFO": 1
   },
@@ -25,16 +25,16 @@
    "STATE-VS-RECORD": 1,
    "SYMBOL-OVERLOAD": 14,
    "SCOPE-DRIFT": 8,
+   "DIVERGENT-SHAPE": 8,
    "METHOD-SIGNATURE": 1,
    "UNDEFINED-TYPE": 3,
    "ALIAS-DEFECT": 4,
    "PROVENANCE-DEFECT": 4,
    "PHANTOM-IDENTIFIER": 1,
-   "UNDECLARED-VARIANT": 7,
-   "DIVERGENT-SHAPE": 7
+   "UNDECLARED-VARIANT": 7
   },
-  "term_collision_links": 369,
-  "new_findings": 83
+  "term_collision_links": 372,
+  "new_findings": 84
  },
  "required_terms": [
   {
@@ -1352,7 +1352,8 @@
     "X-44"
    ],
    "laws": [
-    "N-13"
+    "N-13",
+    "N-32"
    ],
    "shape": "pub struct Effect { pub op: Op, pub target: Target, pub params: Params, pub cost: Cost }",
    "supersedes": [
@@ -2398,7 +2399,8 @@
     "X-42"
    ],
    "laws": [
-    "N-18"
+    "N-18",
+    "N-33"
    ],
    "shape": null,
    "supersedes": [],
@@ -6882,6 +6884,241 @@
    "shape": "pub struct RefAuthority { ops: HashSet<Op>, scope: HashSet<Target>, /* ... */ }   // L11572\npub struct RefAuthority { operations: BTreeMap<Op, RefOperationAuthority> }       // L19603\npub struct RefAuthority { operations: BTreeSet<Op>, scope: RefScope, params: RefConstraint,\n                          resources: RefResources, lifetime: RefLifetime }        // L20851\npub struct RefAuthority { operations: BTreeMap<RefOp, RefOperationAuthority> }     // L35699",
    "supersedes": [],
    "note": "The reference model is the differential oracle: if its authority type has three shapes and four of its five component types are undeclared, then R-REF-03 (`reference_derive` must equal the production `derive`) has no fixed left-hand side to compare against. The frozen `reference_derive` body reads `parent.ops` and `constraint.ops` — field names that only the turn-[20] declaration has."
+  },
+  {
+   "tid": "T-82",
+   "CANONICAL_TERM": "SchedulerTrace",
+   "TYPE": "UNDECLARED-TYPE",
+   "OWNER": "MOD-07",
+   "owner_crate": "ror-runtime",
+   "domain": "SCHEDULING",
+   "DEFINITION": "The scheduler-decision sequence the determinism theorem takes as an INPUT the machine consumes. Thirteen occurrences in 42,312 lines, every one of them a use inside the theorem or its restatements; the source never declares it, never gives it an element type, and never says whether it is finite, total over the run, or replay-consumed by cursor. U-35 must freeze it.",
+   "FIRST_DEFINITION": {
+    "file": "Red-on-Rust.md",
+    "line": 25338,
+    "turn": 31,
+    "signature": "InitialState + SchedulerTrace + HostTrace"
+   },
+   "FROZEN_AT": null,
+   "DEPENDENTS": [
+    "T-83",
+    "T-84",
+    "T-85"
+   ],
+   "FORBIDDEN_VARIANTS": [
+    "EventLog (an output, not this input — see N-32)",
+    "event trace",
+    "schedule (unqualified)"
+   ],
+   "PROTECTED": [
+    {
+     "name": "SchedulerTrace",
+     "why": "name used in the frozen theorem; not renamed"
+    }
+   ],
+   "obligations": [
+    "R-CORE-08",
+    "R-ACTOR-04"
+   ],
+   "sections": [
+    "S-02",
+    "S-11"
+   ],
+   "collisions": [],
+   "laws": [
+    "N-32"
+   ],
+   "shape": null,
+   "supersedes": [],
+   "note": "UNDECLARED. 13 occurrences, all uses: L25338, L25763, L26053, L26998, L27369, L27529, L27538, L27818, L28238, L28426, L28575, L37120, L41641. L26998 gives a NON-EQUIVALENT form (Snapshot+EventLog+HostTrace+SchedulerTrace) that conflates this input with the EventLog output; L28426/L28575 give a third (MachineState+AcceptedPlan+...). DET-001; U-35."
+  },
+  {
+   "tid": "T-83",
+   "CANONICAL_TERM": "HostTrace",
+   "TYPE": "UNDECLARED-TYPE",
+   "OWNER": "MOD-09",
+   "owner_crate": "ror-host",
+   "domain": "HOST",
+   "DEFINITION": "The host-outcome sequence the determinism theorem takes as an INPUT. Undeclared like T-82, but unlike T-82 the source does supply a candidate shape six times over, under the name `ReplayHost` (X-87) — in five mutually incompatible forms. Only L34498 (`trace: Vec<EffectReceipt>` + `cursor`) satisfies R-HOST-03's ordered-consumption requirement; the L24011 `HashMap<EffectId, EffectReceipt>` form makes replay order-insensitive and is the reason DET-005 is HIGH.",
+   "FIRST_DEFINITION": {
+    "file": "Red-on-Rust.md",
+    "line": 25338,
+    "turn": 31,
+    "signature": "InitialState + SchedulerTrace + HostTrace"
+   },
+   "FROZEN_AT": null,
+   "DEPENDENTS": [
+    "T-82",
+    "T-84",
+    "T-85"
+   ],
+   "FORBIDDEN_VARIANTS": [
+    "ReceiptLog (one of the six competing shapes, not the term)",
+    "EffectLog",
+    "host log"
+   ],
+   "PROTECTED": [
+    {
+     "name": "HostTrace",
+     "why": "name used in the frozen theorem; not renamed"
+    }
+   ],
+   "obligations": [
+    "R-CORE-08",
+    "R-HOST-03"
+   ],
+   "sections": [
+    "S-02",
+    "S-14"
+   ],
+   "collisions": [
+    "X-87"
+   ],
+   "laws": [],
+   "shape": null,
+   "supersedes": [],
+   "note": "UNDECLARED as a type; six competing `ReplayHost` carriers at L1234, L9783, L10541, L22339, L24011, L34498 (five distinct shapes — L1234 and L10541 differ in element type). DET-005; U-35 proposes `Vec<EffectReceipt>`, ordered and cursor-consumed, per L34498."
+  },
+  {
+   "tid": "T-84",
+   "CANONICAL_TERM": "InitialState",
+   "TYPE": "UNDECLARED-TYPE",
+   "OWNER": "MOD-01",
+   "owner_crate": "ror-core",
+   "domain": "MACHINE",
+   "DEFINITION": "The starting configuration the determinism theorem quantifies over. Nine occurrences, all uses. Critically, the source never says whether it is closed: `GlobalState` (T-18) is the declared machine state, but the kernel authority arena (DET-009) and the capability slotmap (DET-010) are reachable from a transition and are not fields of it. If `InitialState := GlobalState` alone, the theorem is false as written; U-35 proposes `GlobalState + KernelAuthorityImage`.",
+   "FIRST_DEFINITION": {
+    "file": "Red-on-Rust.md",
+    "line": 25338,
+    "turn": 31,
+    "signature": "InitialState + SchedulerTrace + HostTrace"
+   },
+   "FROZEN_AT": null,
+   "DEPENDENTS": [
+    "T-18",
+    "T-82",
+    "T-83",
+    "T-85"
+   ],
+   "FORBIDDEN_VARIANTS": [
+    "GlobalState (not known to be equal — that is the open question)",
+    "Snapshot",
+    "MachineState (a competing theorem form, L28426)"
+   ],
+   "PROTECTED": [
+    {
+     "name": "InitialState",
+     "why": "name used in the frozen theorem; not renamed"
+    }
+   ],
+   "obligations": [
+    "R-CORE-08"
+   ],
+   "sections": [
+    "S-02"
+   ],
+   "collisions": [
+    "X-87"
+   ],
+   "laws": [],
+   "shape": null,
+   "supersedes": [],
+   "note": "UNDECLARED. 9 occurrences: L25338, L25763, L26053, L27369, L27529, L27536, L27818, L37118, L41641. L27369 adds a `Plan` term the other forms omit. DET-001, DET-009, DET-010; U-35."
+  },
+  {
+   "tid": "T-85",
+   "CANONICAL_TERM": "UniqueMachineTrace",
+   "TYPE": "UNDECLARED-TYPE",
+   "OWNER": "MOD-01",
+   "owner_crate": "ror-core",
+   "domain": "MACHINE",
+   "DEFINITION": "The theorem's consequent: the object asserted to be uniquely determined. Ten occurrences, all uses. The source never defines the EQUALITY under which it is unique — pointwise state identity, state-digest equality, event-envelope sequence equality, or some conjunction. Without that relation the theorem has no truth condition, which is the second half of DET-001. U-35 proposes pointwise state-digest AND event-envelope sequence equality.",
+   "FIRST_DEFINITION": {
+    "file": "Red-on-Rust.md",
+    "line": 25340,
+    "turn": 31,
+    "signature": "UniqueMachineTrace"
+   },
+   "FROZEN_AT": null,
+   "DEPENDENTS": [
+    "T-82",
+    "T-83",
+    "T-84"
+   ],
+   "FORBIDDEN_VARIANTS": [
+    "EventLog",
+    "trace (unqualified)",
+    "MachineTrace (no such declaration)"
+   ],
+   "PROTECTED": [
+    {
+     "name": "UniqueMachineTrace",
+     "why": "name used in the frozen theorem; not renamed"
+    }
+   ],
+   "obligations": [
+    "R-CORE-08"
+   ],
+   "sections": [
+    "S-02"
+   ],
+   "collisions": [
+    "X-87"
+   ],
+   "laws": [],
+   "shape": null,
+   "supersedes": [],
+   "note": "UNDECLARED, and the equality relation is unspecified. 10 occurrences: L25340, L25763, L26053, L27370, L27541, L27818, L28241, L28426, L28575, L41642. DET-001; U-35."
+  },
+  {
+   "tid": "T-86",
+   "CANONICAL_TERM": "Lifetime",
+   "TYPE": "RUST-STRUCT",
+   "OWNER": "MOD-03",
+   "owner_crate": "ror-kernel",
+   "domain": "AUTHORITY",
+   "DEFINITION": "The validity interval of an `Authority`. Declared three times identically (L3571, L4959, L5403) as `{ start: u64, end: u64 }` with the verbatim comment `// Unix timestamp` on both fields — yet it is consumed by the pure authorization predicate `authorizes(auth, effect, t: LogicalTime)` at L11881-11889 via `auth.lifetime.contains(t)`. A wall-clock interval is therefore compared against logical time inside the one predicate R-CAP-09 requires to be free of wall-clock dependence. This is DET-006 and it is a type error, not a naming preference.",
+   "FIRST_DEFINITION": {
+    "file": "Red-on-Rust.md",
+    "line": 3571,
+    "turn": 7,
+    "signature": "pub struct Lifetime {"
+   },
+   "FROZEN_AT": null,
+   "DEPENDENTS": [
+    "T-28",
+    "T-27"
+   ],
+   "FORBIDDEN_VARIANTS": [
+    "WallClockInterval (the current READING, which N-33 forbids)",
+    "validity window (unqualified)",
+    "expiry"
+   ],
+   "PROTECTED": [
+    {
+     "name": "Lifetime",
+     "why": "frozen Rust type name"
+    },
+    {
+     "name": "contains",
+     "why": "frozen method name used by `authorizes`"
+    }
+   ],
+   "obligations": [
+    "R-CAP-09",
+    "R-CORE-08"
+   ],
+   "sections": [
+    "S-09",
+    "S-11"
+   ],
+   "collisions": [],
+   "laws": [
+    "N-33"
+   ],
+   "shape": "pub struct Lifetime {\n    pub start: u64,  // Unix timestamp\n    pub end: u64,    // Unix timestamp\n}",
+   "supersedes": [],
+   "note": "Three identical declarations: L3571, L4959, L5403. The `// Unix timestamp` comments are verbatim frozen text. DET-006 (HIGH); U-36 proposes retyping both fields to `LogicalTime` (T-28), jointly with U-01."
   }
  ],
  "laws": [
@@ -7793,6 +8030,48 @@
      "file": "Red-on-Rust.md",
      "line": 41297,
      "note": "README: 'Frozen specification ≠ verified implementation'"
+    }
+   ]
+  },
+  {
+   "lid": "N-32",
+   "left": "T-82",
+   "right": "T-16",
+   "statement": "`SchedulerTrace ≠ EventLog`. The scheduler trace is an INPUT the machine CONSUMES to resolve its nondeterministic choices; the event log is an OUTPUT the machine PRODUCES as it runs. They are not two names for one object, and a theorem that takes the output as an input is circular: it assumes the very sequence whose uniqueness it purports to establish.",
+   "mandated_by": "spec/06 C-98; spec/09 U-35",
+   "enforcement": "R-CORE-08, R-ACTOR-04",
+   "consequence": "The L26998 form is not a restatement of the L25338 theorem but a different and weaker claim. Replay from a recorded EventLog reproduces that log trivially; it establishes nothing about determinism of the transition relation.",
+   "evidence": [
+    {
+     "file": "Red-on-Rust.md",
+     "line": 25338,
+     "note": "InitialState + SchedulerTrace + HostTrace"
+    },
+    {
+     "file": "Red-on-Rust.md",
+     "line": 26998,
+     "note": "Snapshot+EventLog+HostTrace+SchedulerTrace"
+    }
+   ]
+  },
+  {
+   "lid": "N-33",
+   "left": "T-86",
+   "right": "T-28",
+   "statement": "`Lifetime ≠ WallClockInterval`. An authority's validity interval is compared against LOGICAL time by `authorizes(auth, effect, t: LogicalTime)`, so its endpoints must be logical times. The frozen declaration types them `u64` and annotates both `// Unix timestamp`, which makes authorization depend on the host clock — precisely what R-CAP-09 forbids.",
+   "mandated_by": "spec/06 C-100; spec/09 U-36",
+   "enforcement": "R-CAP-09, R-CORE-08",
+   "consequence": "Two machines replaying identical inputs at different wall-clock instants can reach different authorization outcomes, so the determinism theorem fails on a hidden input that appears nowhere in its antecedent.",
+   "evidence": [
+    {
+     "file": "Red-on-Rust.md",
+     "line": 3571,
+     "note": "pub struct Lifetime {"
+    },
+    {
+     "file": "Red-on-Rust.md",
+     "line": 11885,
+     "note": "&& auth.lifetime.contains(t)"
     }
    ]
   }
@@ -8740,6 +9019,78 @@
     }
    ],
    "doc_sites": []
+  },
+  {
+   "xid": "X-87",
+   "title": "`ReplayHost` — the sole concrete realization of the theorem's `HostTrace` parameter — is declared six times in five incompatible shapes, and only one of them is ordered",
+   "kind": "DIVERGENT-SHAPE",
+   "severity": "MAJOR",
+   "affects": [
+    "T-83",
+    "T-84",
+    "T-85"
+   ],
+   "previously": [
+    "C-99",
+    "U-35"
+   ],
+   "new_finding": true,
+   "decision_needed": "Which `ReplayHost` declaration governs, and is replay order-sensitive? If the L24011 HashMap form governs, the effect-order-permutation test in the audit §6 must pass by construction and DET-005 is unfixable without a shape change.",
+   "statement": "The determinism theorem's `HostTrace` parameter has no declaration of its own (T-83), so `ReplayHost` is the only frozen text that fixes what a host trace IS. It does so six times, in five mutually incompatible shapes, spanning turns [2] through [48].",
+   "why_it_matters": "The shapes are not stylistic variants: they disagree about whether replay is ORDER-SENSITIVE. The L24011 `HashMap<EffectId, EffectReceipt>` form resolves effects by identifier lookup, so a permuted effect sequence replays identically and the theorem's `HostTrace` input carries strictly less information than the live run did. L35218 and L38282 both assert flatly that `ReplayHost` is ordered, and L34911 lists `ReplayHost validates ordered ID + digest` as a satisfied checklist item — claims the L24011 declaration does not support. R-HOST-03 requires ordered consumption; four of the six declarations cannot satisfy it.",
+   "disposition": "REPORTED. No declaration is struck and none is promoted: U-35 must choose, and the audit recommends L34498's shape (`Vec<EffectReceipt>` + cursor) because it is the only one that is simultaneously receipt-typed, unconditionally ordered, and consistent with the ordered-replay claims made elsewhere in frozen text.",
+   "sites": [
+    {
+     "file": "Red-on-Rust.md",
+     "line": 1234,
+     "text": "pub struct ReplayHost {",
+     "denotes": "turn [2]: `cursor: usize` + `trace: Vec<Result<Value, HostFault>>` — ordered, but the element type is a bare `Value`, not a receipt"
+    },
+    {
+     "file": "Red-on-Rust.md",
+     "line": 9783,
+     "text": "pub struct ReplayHost {",
+     "denotes": "turn [17]: `trace: ReplayTrace` — delegates the shape to a type that is itself never declared"
+    },
+    {
+     "file": "Red-on-Rust.md",
+     "line": 10541,
+     "text": "pub struct ReplayHost {",
+     "denotes": "turn [18]: `trace: VecDeque<EffectReceipt>` consumed by `pop_front()` — ordered, receipt-typed, and the only form whose consumption discipline is visible in its own body"
+    },
+    {
+     "file": "Red-on-Rust.md",
+     "line": 22339,
+     "text": "pub struct ReplayHost {",
+     "denotes": "turn [28]: `receipts: ReceiptLog` — a third undeclared carrier type"
+    },
+    {
+     "file": "Red-on-Rust.md",
+     "line": 24011,
+     "text": "pub struct ReplayHost {",
+     "denotes": "turn [30]: `recorded_receipts: HashMap<EffectId, EffectReceipt>` + `cursor: usize` commented `// For ordered trace consumption if needed` — UNORDERED lookup, and the cursor is optional by its own comment"
+    },
+    {
+     "file": "Red-on-Rust.md",
+     "line": 34498,
+     "text": "pub struct ReplayHost {",
+     "denotes": "turn [48]: `trace: Vec<EffectReceipt>` + `cursor: usize` — the only declaration that is both receipt-typed and unconditionally ordered"
+    }
+   ],
+   "doc_sites": [
+    {
+     "file": "spec/06-contradictions-ambiguities.md",
+     "line": 114,
+     "text": "| C-99 | `ReplayHost`",
+     "note": "C-99"
+    },
+    {
+     "file": "spec/09-unresolved-decisions.md",
+     "line": 206,
+     "text": "### U-35",
+     "note": "U-35 rules on the governing shape"
+    }
+   ]
   },
   {
    "xid": "X-19",

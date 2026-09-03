@@ -94,9 +94,9 @@ generated: `dep/00-overview.md` …
 `dep/05-violations.md` plus `dep/10-graph.json`; regenerate with
 `python3 dep/_graph.py --write` and check with `python3 dep/_graph.py`.
 
-A fourth organization, `term/`, is the **terminology normalization**: 81 canonical terms
-(`T-01`…`T-81`), each carrying `CANONICAL_TERM`, `FORBIDDEN_VARIANTS`, `DEFINITION`, `TYPE`,
-`OWNER`, `FIRST_DEFINITION` and `DEPENDENTS`; 31 non-conflation laws (`N-01`…`N-31`) enforcing
+A fourth organization, `term/`, is the **terminology normalization**: 86 canonical terms
+(`T-01`…`T-86`), each carrying `CANONICAL_TERM`, `FORBIDDEN_VARIANTS`, `DEFINITION`, `TYPE`,
+`OWNER`, `FIRST_DEFINITION` and `DEPENDENTS`; 33 non-conflation laws (`N-01`…`N-33`) enforcing
 the distinctions the specification depends on — `Block ≠ ExecutablePlan`, `PlanProposal ≠
 ExecutablePlan`, `CapRef ≠ Authority`, `EffectRequest ≠ EffectIssued`, `EffectIssued ≠
 EffectCompleted`, `Specification ≠ Implementation`, `Implementation ≠ Verification`,
@@ -109,7 +109,7 @@ source froze two names for one thing, both are quoted; where it froze one name f
 both denotations are quoted; where a name is used but never declared, that is reported rather
 than filled in. `term/01-dictionary.md`, `term/02-collisions.md`, `term/03-laws.md` and
 `term/10-index.json` are generated from `term/_terms.py` (`python3 term/_dict.py --write`);
-`python3 term/_check.py` re-greps all 1008 citations against `Red-on-Rust.md`, verifies every
+`python3 term/_check.py` re-greps all 1025 citations against `Red-on-Rust.md`, verifies every
 turn attribution from the source's own `## [n]` markers, checks all 369 term↔collision links in
 both directions, and fails on drift; `python3 term/_structs.py` re-derives every declaration. Twelve collisions (X-39…X-41, X-51, X-59…X-64, X-66, X-68)
 are defects in `spec/`, `mod/`, `req/` or this README, wholly or in part; each is corrected in

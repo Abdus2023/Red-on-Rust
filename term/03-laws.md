@@ -4,7 +4,7 @@
 
 # 03 — Non-Conflation Laws
 
-31 laws. A law states that two canonical terms must never be used for each other. The first nine are mandated by the request's special rule about not silently renaming an API, type, mathematical symbol or protocol field; the rest are mandated by the request's list of required distinctions or by a named part of the frozen specification. A law is not a rename: both terms keep their frozen names, and the law says which one a given sentence must use.
+33 laws. A law states that two canonical terms must never be used for each other. The first nine are mandated by the request's special rule about not silently renaming an API, type, mathematical symbol or protocol field; the rest are mandated by the request's list of required distinctions or by a named part of the frozen specification. A law is not a rename: both terms keep their frozen names, and the law says which one a given sentence must use.
 
 | ID | Law | Mandated by | Enforced by |
 |---|---|---|---|
@@ -39,6 +39,8 @@
 | [N-29](#n-29) | `delegate ≠ attenuate ≠ derive` | spec/05 §1 (derive/attenuate/delegate row) | R-MARSHAL-01, R-MARSHAL-02, R-CAP-04, R-CORE-07 |
 | [N-30](#n-30) | `Mailbox ≠ RunnableQueue` | request §Required distinctions | R-ACTOR-03, R-ACTOR-04, R-ACTOR-07, SCHED-FIFO |
 | [N-31](#n-31) | `Frozen ≠ Verified` | spec/05 §6.9-6.10; request §Special rule (by implication) | R-SCOPE-02, R-SCOPE-03, R-TEST-09 |
+| [N-32](#n-32) | `SchedulerTrace ≠ EventLog` | spec/06 C-98; spec/09 U-35 | R-CORE-08, R-ACTOR-04 |
+| [N-33](#n-33) | `Lifetime ≠ WallClockInterval` | spec/06 C-100; spec/09 U-36 | R-CAP-09, R-CORE-08 |
 
 ---
 
@@ -651,3 +653,39 @@ Conflation schedules an actor twice per turn (breaking one-transition-per-turn d
 ### Consequence of conflating them
 
 Conflation treats a stable document as evidence of correctness and suppresses the STOP-and-report rule when an ambiguity is found.
+
+## N-32
+
+**`SchedulerTrace ≠ EventLog`. The scheduler trace is an INPUT the machine CONSUMES to resolve its nondeterministic choices; the event log is an OUTPUT the machine PRODUCES as it runs. They are not two names for one object, and a theorem that takes the output as an input is circular: it assumes the very sequence whose uniqueness it purports to establish.**
+
+- **Left term:** T-82 `SchedulerTrace`
+- **Right term:** T-16 `Effect`
+- **Mandated by:** spec/06 C-98; spec/09 U-35
+- **Enforced by:** R-CORE-08, R-ACTOR-04
+
+### Evidence
+
+- `Red-on-Rust.md` L25338 — InitialState + SchedulerTrace + HostTrace
+- `Red-on-Rust.md` L26998 — Snapshot+EventLog+HostTrace+SchedulerTrace
+
+### Consequence of conflating them
+
+The L26998 form is not a restatement of the L25338 theorem but a different and weaker claim. Replay from a recorded EventLog reproduces that log trivially; it establishes nothing about determinism of the transition relation.
+
+## N-33
+
+**`Lifetime ≠ WallClockInterval`. An authority's validity interval is compared against LOGICAL time by `authorizes(auth, effect, t: LogicalTime)`, so its endpoints must be logical times. The frozen declaration types them `u64` and annotates both `// Unix timestamp`, which makes authorization depend on the host clock — precisely what R-CAP-09 forbids.**
+
+- **Left term:** T-86 `Lifetime`
+- **Right term:** T-28 `LogicalTime`
+- **Mandated by:** spec/06 C-100; spec/09 U-36
+- **Enforced by:** R-CAP-09, R-CORE-08
+
+### Evidence
+
+- `Red-on-Rust.md` L3571 — pub struct Lifetime {
+- `Red-on-Rust.md` L11885 — && auth.lifetime.contains(t)
+
+### Consequence of conflating them
+
+Two machines replaying identical inputs at different wall-clock instants can reach different authorization outcomes, so the determinism theorem fails on a hidden input that appears nowhere in its antecedent.

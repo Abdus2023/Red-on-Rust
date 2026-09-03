@@ -328,6 +328,62 @@ def main() -> int:
     if len(u_ids) != 32:
         err(f"expected 32 U- headings in spec/09, found {len(u_ids)}")
 
+    # --- term/ register sizes, and the PROSE that advertises them -------------
+    # The C-/U- pins above exist because prose counts drift silently. The term/
+    # registers had exactly the same exposure and no gate at all: adding
+    # T-82..T-86, N-32/N-33 and X-87 left "81 canonical terms", "31 laws",
+    # "86 collisions", "1008 citations" and "T-01...T-81" standing in README.md,
+    # spec/00, spec/05 and term/00-overview.md. Nothing failed. Rather than pin
+    # five more magic numbers, derive them from term/_terms.py and check every
+    # live claim against the derived value.
+    import sys as _sys
+    import importlib.util as _ilu
+    _spec = _ilu.spec_from_file_location("_terms_gate", A.REPO_ROOT / "term" / "_terms.py")
+    _t = _ilu.module_from_spec(_spec)
+    _sys.modules["_terms_gate"] = _t  # dataclasses resolves annotations via sys.modules
+    _spec.loader.exec_module(_t)
+    n_terms, n_laws, n_coll = len(_t.TERMS), len(_t.LAWS), len(_t.COLLISIONS)
+    max_t = max(int(x.tid[2:]) for x in _t.TERMS)
+    max_n = max(int(x.lid[2:]) for x in _t.LAWS)
+    max_x = max(int(x.xid[2:]) for x in _t.COLLISIONS)
+
+    # (file, regex capturing a claimed number, the derived value it must equal)
+    _claims = [
+        ("README.md", r"(\d+) canonical terms", n_terms),
+        ("README.md", r"(\d+) non-conflation laws", n_laws),
+        ("spec/05-terminology.md", r"the (\d+) canonical terms", n_terms),
+        ("term/00-overview.md", r"the (\d+) canonical terms, with all seven", n_terms),
+        ("term/00-overview.md", r"present on all (\d+) terms", n_terms),
+        ("term/00-overview.md", r"^(\d+) collisions:", n_coll),
+        ("term/00-overview.md", r"(\d+) collisions are reported", n_coll),
+    ]
+    for fname, pat, want in _claims:
+        txt = (A.REPO_ROOT / fname).read_text(encoding="utf-8")
+        m = _re.search(pat, txt, _re.M)
+        if m is None:
+            err(f"{fname}: no live claim matching /{pat}/ — the prose-count gate "
+                f"has lost its target and is no longer checking anything")
+        elif int(m.group(1)) != want:
+            err(f"{fname}: claims {m.group(1)} where term/_terms.py has {want} "
+                f"(/{pat}/)")
+
+    # ID-range claims of the form `T-01…T-NN`.
+    for fname, pat, want in (
+        ("README.md", r"`T-01`…`T-(\d+)`", max_t),
+        ("spec/00-overview.md", r"T-01…T-(\d+)", max_t),
+        ("spec/00-overview.md", r"N-01…N-(\d+)", max_n),
+        ("spec/00-overview.md", r"X-01…X-(\d+)", max_x),
+        ("README.md", r"`N-01`…`N-(\d+)`", max_n),
+        ("spec/05-terminology.md", r"`T-01`…`T-(\d+)`", max_t),
+    ):
+        txt = (A.REPO_ROOT / fname).read_text(encoding="utf-8")
+        m = _re.search(pat, txt)
+        if m is None:
+            err(f"{fname}: no live ID-range claim matching /{pat}/")
+        elif int(m.group(1)) != want:
+            err(f"{fname}: ID range ends at {m.group(1)} but the register's "
+                f"maximum is {want} (/{pat}/)")
+
     # 7c-bis. The prose summary line must agree with the rows it summarises.
     # spec/06 opens its summary with "<n> findings (<m> rows ...)".  Both numbers
     # had silently drifted: the line read "74 findings (76 rows)" against 97

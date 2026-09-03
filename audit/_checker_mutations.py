@@ -226,12 +226,22 @@ def m_drop_module_obligation(root: Path) -> bool:
 
 
 def m_stale_generated_file(root: Path) -> bool:
-    """Hand-edit a GENERATED file so it no longer matches its source of truth."""
+    """Hand-edit a GENERATED file so it no longer matches its source of truth.
+
+    The count is located DYNAMICALLY. This mutation originally hard-coded
+    "81 canonical terms." and silently became inapplicable the moment the
+    register reached 86 -- reporting neither a kill nor a survival, just
+    quietly testing nothing. That is the K12 failure mode verbatim, and it is
+    why the runner now surfaces `inapplicable` as its own bucket instead of
+    letting it vanish from the denominator.
+    """
     p = root / "term/01-dictionary.md"
     txt = p.read_text(encoding="utf-8")
-    if "81 canonical terms." not in txt:
+    m = re.search(r"(\d+) canonical terms\.", txt)
+    if m is None:
         return False
-    p.write_text(txt.replace("81 canonical terms.", "82 canonical terms.", 1), encoding="utf-8")
+    bumped = "%d canonical terms." % (int(m.group(1)) + 1)
+    p.write_text(txt.replace(m.group(0), bumped, 1), encoding="utf-8")
     return True
 
 
@@ -350,6 +360,36 @@ def m_renumber_u_heading(root: Path) -> bool:
     return True
 
 
+def m_term_count_drift(root: Path) -> bool:
+    """Add a term to term/_terms.py and leave the prose counts alone.
+
+    The exact drift the T-82..T-86 pass caused: five files kept advertising
+    "81 canonical terms" and "T-01...T-81" after the register reached 86, and
+    no checker objected. Same family as the spec/06 74/76 drift (K13) and the
+    spec/08-vs-index mutation drift (K15) -- a number quietly wrong rather
+    than a build that fails.
+    """
+    p = root / "term/_terms.py"
+    txt = p.read_text(encoding="utf-8")
+    marker = '    Term(\n        "T-86", "Lifetime",'
+    if marker not in txt:
+        return False
+    i = txt.index(marker)
+    end = txt.index("\n    ),\n", i) + len("\n    ),\n")
+    block = txt[i:end].replace('"T-86", "Lifetime"', '"T-87", "InjectedTerm"', 1)
+    p.write_text(txt[:end] + block + txt[end:], encoding="utf-8")
+    # Regenerate the term/ outputs. Without this the mutation dies on "01-dictionary
+    # is stale" -- a real kill, but of the generated-file check (already covered by
+    # K10), not of the prose-count gate this mutation exists to exercise. Kills must
+    # be attributed: an unregenerated tree would let K17 pass while testing nothing
+    # new. Same lesson as K01/K12/K04.
+    subprocess.run([sys.executable, "term/_dict.py", "--write"],
+                   cwd=root, capture_output=True, text=True)
+    for pyc in (root / "term" / "__pycache__").glob("*.pyc"):
+        pyc.unlink()
+    return True
+
+
 MUTATIONS = [
     # NOTE on K01/K02/K03: these were written to exercise the completeness gate
     # in spec/_build_index.py. They do not, and CANNOT. Two separate reasons,
@@ -432,6 +472,12 @@ MUTATIONS = [
     Mutation("K16", "unresolved decision renumbered IN PLACE",
              "The U- twin of K14; strong form of K04/K05.",
              m_renumber_u_heading, tags=["register", "index", "in-place"]),
+    Mutation("K17", "term/ register grows, prose counts left behind",
+             "Five files advertise the term/ register sizes and ID ranges; none was "
+             "gated until the T-82..T-86 pass drifted all of them at once.",
+             m_term_count_drift,
+             regression_for="the 81-vs-86 term-count drift this pass caused",
+             tags=["term", "register", "regression"]),
 ]
 
 

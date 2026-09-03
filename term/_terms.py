@@ -3611,6 +3611,127 @@ TERMS += [
             "and `constraint.ops` — field names that only the turn-[20] declaration has."
         ),
     ),
+    # -- T-82..T-86: semantic-nondeterminism audit (DET-001, DET-005, DET-006).
+    # The four theorem terms are UNDECLARED-TYPE for the reason DET-001 states:
+    # the source uses them only inside the determinism theorem and never
+    # declares any of them. These entries record the names, every use site, and
+    # the gap. Following T-07's precedent, they do NOT invent declarations --
+    # the definitions are U-35's to freeze.
+    Term(
+        "T-82", "SchedulerTrace", "SCHEDULING", "UNDECLARED-TYPE",
+        "The scheduler-decision sequence the determinism theorem takes as an INPUT the "
+        "machine consumes. Thirteen occurrences in 42,312 lines, every one of them a use "
+        "inside the theorem or its restatements; the source never declares it, never "
+        "gives it an element type, and never says whether it is finite, total over the "
+        "run, or replay-consumed by cursor. U-35 must freeze it.",
+        "MOD-07", "ror-runtime",
+        A(25338, 31, "InitialState + SchedulerTrace + HostTrace"),
+        None,
+        forbidden=["EventLog (an output, not this input — see N-32)",
+                   "event trace", "schedule (unqualified)"],
+        protected=[("SchedulerTrace", "name used in the frozen theorem; not renamed")],
+        dependents=["T-83", "T-84", "T-85"],
+        obligations=["R-CORE-08", "R-ACTOR-04"],
+        sections=["S-02", "S-11"],
+        collisions=[],
+        note="UNDECLARED. 13 occurrences, all uses: L25338, L25763, L26053, L26998, "
+             "L27369, L27529, L27538, L27818, L28238, L28426, L28575, L37120, L41641. "
+             "L26998 gives a NON-EQUIVALENT form (Snapshot+EventLog+HostTrace+"
+             "SchedulerTrace) that conflates this input with the EventLog output; "
+             "L28426/L28575 give a third (MachineState+AcceptedPlan+...). DET-001; U-35.",
+    ),
+    Term(
+        "T-83", "HostTrace", "HOST", "UNDECLARED-TYPE",
+        "The host-outcome sequence the determinism theorem takes as an INPUT. Undeclared "
+        "like T-82, but unlike T-82 the source does supply a candidate shape six times "
+        "over, under the name `ReplayHost` (X-87) — in five mutually incompatible forms. "
+        "Only L34498 (`trace: Vec<EffectReceipt>` + `cursor`) satisfies R-HOST-03's "
+        "ordered-consumption requirement; the L24011 `HashMap<EffectId, EffectReceipt>` "
+        "form makes replay order-insensitive and is the reason DET-005 is HIGH.",
+        "MOD-09", "ror-host",
+        A(25338, 31, "InitialState + SchedulerTrace + HostTrace"),
+        None,
+        forbidden=["ReceiptLog (one of the six competing shapes, not the term)",
+                   "EffectLog", "host log"],
+        protected=[("HostTrace", "name used in the frozen theorem; not renamed")],
+        dependents=["T-82", "T-84", "T-85"],
+        obligations=["R-CORE-08", "R-HOST-03"],
+        sections=["S-02", "S-14"],
+        collisions=["X-87"],
+        note="UNDECLARED as a type; six competing `ReplayHost` carriers at L1234, L9783, "
+             "L10541, L22339, L24011, L34498 (five distinct shapes — L1234 and L10541 "
+             "differ in element type). DET-005; U-35 proposes `Vec<EffectReceipt>`, "
+             "ordered and cursor-consumed, per L34498.",
+    ),
+    Term(
+        "T-84", "InitialState", "MACHINE", "UNDECLARED-TYPE",
+        "The starting configuration the determinism theorem quantifies over. Nine "
+        "occurrences, all uses. Critically, the source never says whether it is closed: "
+        "`GlobalState` (T-18) is the declared machine state, but the kernel authority "
+        "arena (DET-009) and the capability slotmap (DET-010) are reachable from a "
+        "transition and are not fields of it. If `InitialState := GlobalState` alone, "
+        "the theorem is false as written; U-35 proposes `GlobalState + KernelAuthorityImage`.",
+        "MOD-01", "ror-core",
+        A(25338, 31, "InitialState + SchedulerTrace + HostTrace"),
+        None,
+        forbidden=["GlobalState (not known to be equal — that is the open question)",
+                   "Snapshot", "MachineState (a competing theorem form, L28426)"],
+        protected=[("InitialState", "name used in the frozen theorem; not renamed")],
+        dependents=["T-18", "T-82", "T-83", "T-85"],
+        obligations=["R-CORE-08"],
+        sections=["S-02"],
+        collisions=["X-87"],
+        note="UNDECLARED. 9 occurrences: L25338, L25763, L26053, L27369, L27529, L27536, "
+             "L27818, L37118, L41641. L27369 adds a `Plan` term the other forms omit. "
+             "DET-001, DET-009, DET-010; U-35.",
+    ),
+    Term(
+        "T-85", "UniqueMachineTrace", "MACHINE", "UNDECLARED-TYPE",
+        "The theorem's consequent: the object asserted to be uniquely determined. Ten "
+        "occurrences, all uses. The source never defines the EQUALITY under which it is "
+        "unique — pointwise state identity, state-digest equality, event-envelope "
+        "sequence equality, or some conjunction. Without that relation the theorem has "
+        "no truth condition, which is the second half of DET-001. U-35 proposes "
+        "pointwise state-digest AND event-envelope sequence equality.",
+        "MOD-01", "ror-core",
+        A(25340, 31, "UniqueMachineTrace"),
+        None,
+        forbidden=["EventLog", "trace (unqualified)", "MachineTrace (no such declaration)"],
+        protected=[("UniqueMachineTrace", "name used in the frozen theorem; not renamed")],
+        dependents=["T-82", "T-83", "T-84"],
+        obligations=["R-CORE-08"],
+        sections=["S-02"],
+        collisions=["X-87"],
+        note="UNDECLARED, and the equality relation is unspecified. 10 occurrences: "
+             "L25340, L25763, L26053, L27370, L27541, L27818, L28241, L28426, L28575, "
+             "L41642. DET-001; U-35.",
+    ),
+    Term(
+        "T-86", "Lifetime", "AUTHORITY", "RUST-STRUCT",
+        "The validity interval of an `Authority`. Declared three times identically "
+        "(L3571, L4959, L5403) as `{ start: u64, end: u64 }` with the verbatim comment "
+        "`// Unix timestamp` on both fields — yet it is consumed by the pure "
+        "authorization predicate `authorizes(auth, effect, t: LogicalTime)` at L11881-11889 "
+        "via `auth.lifetime.contains(t)`. A wall-clock interval is therefore compared "
+        "against logical time inside the one predicate R-CAP-09 requires to be free of "
+        "wall-clock dependence. This is DET-006 and it is a type error, not a naming "
+        "preference.",
+        "MOD-03", "ror-kernel",
+        A(3571, 7, "pub struct Lifetime {"),
+        None,
+        forbidden=["WallClockInterval (the current READING, which N-33 forbids)",
+                   "validity window (unqualified)", "expiry"],
+        protected=[("Lifetime", "frozen Rust type name"),
+                   ("contains", "frozen method name used by `authorizes`")],
+        dependents=["T-28", "T-27"],
+        obligations=["R-CAP-09", "R-CORE-08"],
+        sections=["S-09", "S-11"],
+        collisions=[],
+        shape="pub struct Lifetime {\n    pub start: u64,  // Unix timestamp\n    pub end: u64,    // Unix timestamp\n}",
+        note="Three identical declarations: L3571, L4959, L5403. The `// Unix timestamp` "
+             "comments are verbatim frozen text. DET-006 (HIGH); U-36 proposes retyping "
+             "both fields to `LogicalTime` (T-28), jointly with U-01.",
+    ),
 ]
 
 
@@ -3990,6 +4111,30 @@ LAWS: list[Law] = [
       "Conflation treats a stable document as evidence of correctness and suppresses the "
       "STOP-and-report rule when an ambiguity is found.",
       "R-SCOPE-02, R-SCOPE-03, R-TEST-09", "spec/05 §6.9-6.10; request §Special rule (by implication)"),
+    L("N-32", "T-82", "T-16",
+      "`SchedulerTrace ≠ EventLog`. The scheduler trace is an INPUT the machine "
+      "CONSUMES to resolve its nondeterministic choices; the event log is an OUTPUT the "
+      "machine PRODUCES as it runs. They are not two names for one object, and a "
+      "theorem that takes the output as an input is circular: it assumes the very "
+      "sequence whose uniqueness it purports to establish.",
+      [(25338, "InitialState + SchedulerTrace + HostTrace"),
+       (26998, "Snapshot+EventLog+HostTrace+SchedulerTrace")],
+      "The L26998 form is not a restatement of the L25338 theorem but a different and "
+      "weaker claim. Replay from a recorded EventLog reproduces that log trivially; it "
+      "establishes nothing about determinism of the transition relation.",
+      "R-CORE-08, R-ACTOR-04", "spec/06 C-98; spec/09 U-35"),
+    L("N-33", "T-86", "T-28",
+      "`Lifetime ≠ WallClockInterval`. An authority's validity interval is compared "
+      "against LOGICAL time by `authorizes(auth, effect, t: LogicalTime)`, so its "
+      "endpoints must be logical times. The frozen declaration types them `u64` and "
+      "annotates both `// Unix timestamp`, which makes authorization depend on the host "
+      "clock — precisely what R-CAP-09 forbids.",
+      [(3571, "pub struct Lifetime {"),
+       (11885, "&& auth.lifetime.contains(t)")],
+      "Two machines replaying identical inputs at different wall-clock instants can "
+      "reach different authorization outcomes, so the determinism theorem fails on a "
+      "hidden input that appears nowhere in its antecedent.",
+      "R-CAP-09, R-CORE-08", "spec/06 C-100; spec/09 U-36"),
 ]
 
 
@@ -4514,6 +4659,57 @@ COLLISIONS: list[Collision] = [
       "reported, not papered over.",
       ["T-38", "T-37", "T-32", "T-25"],
       ["C-42", "U-02"], "", True),
+    X("X-87",
+      "`ReplayHost` — the sole concrete realization of the theorem's `HostTrace` "
+      "parameter — is declared six times in five incompatible shapes, and only one "
+      "of them is ordered",
+      "DIVERGENT-SHAPE", "MAJOR",
+      [(1234, "pub struct ReplayHost {",
+        "turn [2]: `cursor: usize` + `trace: Vec<Result<Value, HostFault>>` — ordered, "
+        "but the element type is a bare `Value`, not a receipt"),
+       (9783, "pub struct ReplayHost {",
+        "turn [17]: `trace: ReplayTrace` — delegates the shape to a type that is itself "
+        "never declared"),
+       (10541, "pub struct ReplayHost {",
+        "turn [18]: `trace: VecDeque<EffectReceipt>` consumed by `pop_front()` — ordered, "
+        "receipt-typed, and the only form whose consumption discipline is visible in its "
+        "own body"),
+       (22339, "pub struct ReplayHost {",
+        "turn [28]: `receipts: ReceiptLog` — a third undeclared carrier type"),
+       (24011, "pub struct ReplayHost {",
+        "turn [30]: `recorded_receipts: HashMap<EffectId, EffectReceipt>` + `cursor: usize` "
+        "commented `// For ordered trace consumption if needed` — UNORDERED lookup, and "
+        "the cursor is optional by its own comment"),
+       (34498, "pub struct ReplayHost {",
+        "turn [48]: `trace: Vec<EffectReceipt>` + `cursor: usize` — the only declaration "
+        "that is both receipt-typed and unconditionally ordered")],
+      "The determinism theorem's `HostTrace` parameter has no declaration of its own "
+      "(T-83), so `ReplayHost` is the only frozen text that fixes what a host trace IS. "
+      "It does so six times, in five mutually incompatible shapes, spanning turns [2] "
+      "through [48].",
+      "The shapes are not stylistic variants: they disagree about whether replay is "
+      "ORDER-SENSITIVE. The L24011 `HashMap<EffectId, EffectReceipt>` form resolves "
+      "effects by identifier lookup, so a permuted effect sequence replays identically "
+      "and the theorem's `HostTrace` input carries strictly less information than the "
+      "live run did. L35218 and L38282 both assert flatly that `ReplayHost` is ordered, "
+      "and L34911 lists `ReplayHost validates ordered ID + digest` as a satisfied "
+      "checklist item — claims the L24011 declaration does not support. R-HOST-03 "
+      "requires ordered consumption; four of the six declarations cannot satisfy it.",
+      "REPORTED. No declaration is struck and none is promoted: U-35 must choose, and "
+      "the audit recommends L34498's shape (`Vec<EffectReceipt>` + cursor) because it is "
+      "the only one that is simultaneously receipt-typed, unconditionally ordered, and "
+      "consistent with the ordered-replay claims made elsewhere in frozen text.",
+      ["T-83", "T-84", "T-85"],
+      previously=["C-99", "U-35"],
+      decision_needed="Which `ReplayHost` declaration governs, and is replay "
+                      "order-sensitive? If the L24011 HashMap form governs, the "
+                      "effect-order-permutation test in the audit §6 must pass by "
+                      "construction and DET-005 is unfixable without a shape change.",
+      doc_sites=[("spec/06-contradictions-ambiguities.md", 114,
+                  "| C-99 | `ReplayHost`", "C-99"),
+                 ("spec/09-unresolved-decisions.md", 206,
+                  "### U-35", "U-35 rules on the governing shape")],
+    ),
 ]
 
 

@@ -8,7 +8,7 @@
 | File | Contents | Status |
 |---|---|---|
 | `00-overview.md` | this document — method, guarantees, how to read an entry | hand-written |
-| `01-dictionary.md` | the 81 canonical terms, with all seven required fields | generated |
+| `01-dictionary.md` | the 86 canonical terms, with all seven required fields | generated |
 | `02-collisions.md` | the 75-entry collision register, each cited to a frozen line | generated |
 | `03-laws.md` | the 31 non-conflation laws the required distinctions imply | generated |
 | `10-index.json` | machine-readable index of all three | generated |
@@ -30,7 +30,7 @@ under one hard constraint —
 
 — to enforce nine distinctions as separate canonical terms, to name 26 required terms, and to **report every terminology collision**.
 
-All seven fields are present on all 81 terms. All nine distinctions are enforced as laws (§4) and, where the source itself conflates them, filed as collisions (§5). 86 collisions are reported, including 4 that block work.
+All seven fields are present on all 86 terms. All nine distinctions are enforced as laws (§4) and, where the source itself conflates them, filed as collisions (§5). 87 collisions are reported, including 4 that block work.
 
 **The request lists 25 required names; the dictionary realizes them as 26 canonical terms.** `Observation` maps to two — `Observation (planner-facing)` (T-54) and `Observation (differential)` (T-57) — because the frozen source declares two incompatible structs under that one name: `{sequence, actor, value, events, faults, available_capabilities, budget}` at L27156 and `{terminal_states, event_trace, effects, budgets, scheduler_trace, faults, …}` at L36170. Covering the name with a single entry would have been exactly the conflation the request asks to be reported, so it is split and the split is filed as X-06 with the law N-22 beside it. `term/_check.py` verifies the mapping both ways: every one of the 25 names maps to at least one term, each mapped term's canonical name contains the request name, the union is exactly the 26 required terms, and no term is claimed by two names. The remaining 24 names map one-to-one:
 
@@ -120,7 +120,7 @@ N-10…N-31 extend the same discipline to the 26 required terms and to the pairs
 
 ## 5. The collision register
 
-86 collisions: **4 BLOCKING**, 62 MAJOR, 19 MINOR, 1 INFO. 83 are new findings; 3 extend or correct an existing `C-`/`U-`/`AMB-` entry and say so. X-64…X-68 come from a fault-taxonomy audit that re-read every `Fault`-family declaration, X-69…X-75 from the enum-variant sweep, and **X-76…X-86 from the exhaustive struct-field sweep** that `term/_structs.py` now re-derives mechanically: 272 struct declarations across 90 names, of which **22 names carry more than one non-elided field set**, and 108 enum declarations across 39 names, of which **11 carry more than one variant set**. Eight of the 22 divergent struct names were already filed (`Block` X-28, `CapRef` X-25, `Effect` X-26, `EffectRequest` X-27, `ExecutablePlan` X-03, `Observation` X-06, `ReplayHost` X-43, `ValidatedPlan` X-01) and ten of the 11 divergent enums were already filed; the remainder are X-76…X-86. One divergence was deliberately **not** filed: `EffectCost.complete` versus `complete_max` (L21390 versus L25477) is already resolved by `spec/01` R-CALC-05's Phase 12 correction, so filing it again would duplicate a resolved row. The same sweep **corrected six existing entries** in place — X-26, X-37, X-43, X-46, X-47 and X-72 (§6) — two of which were wrong: X-37's `AuthorityNode` is declared three times, not once, and is not always elided; X-72's four shapes are four variant sets but five payload shapes.
+87 collisions: **4 BLOCKING**, 63 MAJOR, 19 MINOR, 1 INFO. 84 are new findings; 3 extend or correct an existing `C-`/`U-`/`AMB-` entry and say so. X-64…X-68 come from a fault-taxonomy audit that re-read every `Fault`-family declaration, X-69…X-75 from the enum-variant sweep, and **X-76…X-86 from the exhaustive struct-field sweep** that `term/_structs.py` now re-derives mechanically: 272 struct declarations across 90 names, of which **22 names carry more than one non-elided field set**, and 108 enum declarations across 39 names, of which **11 carry more than one variant set**. Eight of the 22 divergent struct names were already filed (`Block` X-28, `CapRef` X-25, `Effect` X-26, `EffectRequest` X-27, `ExecutablePlan` X-03, `Observation` X-06, `ReplayHost` X-43, `ValidatedPlan` X-01) and ten of the 11 divergent enums were already filed; the remainder are X-76…X-86. One divergence was deliberately **not** filed: `EffectCost.complete` versus `complete_max` (L21390 versus L25477) is already resolved by `spec/01` R-CALC-05's Phase 12 correction, so filing it again would duplicate a resolved row. The same sweep **corrected six existing entries** in place — X-26, X-37, X-43, X-46, X-47 and X-72 (§6) — two of which were wrong: X-37's `AuthorityNode` is declared three times, not once, and is not always elided; X-72's four shapes are four variant sets but five payload shapes.
 
 **The four blocking collisions** must be decided before the work they gate can start:
 
@@ -201,7 +201,7 @@ Three of these deserve emphasis. `req/_validate.py` is a **checker**, and changi
 12. every `OWNER` resolves in `mod/00-overview.md`;
 13. the generated markdown and JSON match the data (no drift).
 
-Current run: **1008 citations re-grepped, 369 links verified in both directions, 0 errors, 41 warnings** — 13 intentional domain/owner divergences (e.g. `CanonicalEnvelope` sits in `PERSISTENCE` but is owned by MOD-10; `Fault` sits in `MACHINE` but is owned by MOD-01, which is where R-CALC-06 lives), 18 forbidden variants that are attested nowhere and are kept as guards against future invention, and 6 canonical names that are descriptive labels rather than identifiers (T-54, T-57, T-58, T-59, T-62, T-68) and so cannot be attested verbatim. Warnings are reviewed, not suppressed; the count is part of the checker's output so that a change in it is visible.
+Current run: **1025 citations re-grepped, 372 links verified in both directions, 0 errors, 41 warnings** — 13 intentional domain/owner divergences (e.g. `CanonicalEnvelope` sits in `PERSISTENCE` but is owned by MOD-10; `Fault` sits in `MACHINE` but is owned by MOD-01, which is where R-CALC-06 lives), 18 forbidden variants that are attested nowhere and are kept as guards against future invention, and 6 canonical names that are descriptive labels rather than identifiers (T-54, T-57, T-58, T-59, T-62, T-68) and so cannot be attested verbatim. Warnings are reviewed, not suppressed; the count is part of the checker's output so that a change in it is visible.
 
 ## 8. Running it
 

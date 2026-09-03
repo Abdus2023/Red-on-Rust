@@ -4,7 +4,7 @@
 
 # 02 — Terminology Collision Register
 
-**86 collisions.** Every terminology collision found in the frozen source and in the canonicalization layer is reported here; none is silently resolved. Severity: BLOCKING 4, MAJOR 62, MINOR 19, INFO 1. 83 are new findings not previously registered in `spec/06` or `req/03`; the remainder extend or correct an existing `C-`/`U-`/`AMB-` entry, which is named in **Previously registered as**.
+**87 collisions.** Every terminology collision found in the frozen source and in the canonicalization layer is reported here; none is silently resolved. Severity: BLOCKING 4, MAJOR 63, MINOR 19, INFO 1. 84 are new findings not previously registered in `spec/06` or `req/03`; the remainder extend or correct an existing `C-`/`U-`/`AMB-` entry, which is named in **Previously registered as**.
 
 A collision is filed when the source (or a document derived from it) uses one name for two incompatible things, two names for one thing without retracting either, a name for something never declared, or a citation for text that is not there. **Nothing is renamed to make a collision disappear.** The disposition states what the canonicalization layer does instead: record both, name the governing text, and escalate the decision where the source does not settle it.
 
@@ -14,8 +14,8 @@ A collision is filed when the source (or a document derived from it) uses one na
 | `FIELD-SET` | same type name, different field sets or field names | 15 |
 | `SYMBOL-OVERLOAD` | one mathematical symbol, two or more denotations | 14 |
 | `TYPE-HOMONYM` | one name, two or more incompatible type declarations | 14 |
+| `DIVERGENT-SHAPE` | the same type name is declared repeatedly with materially different variant or field shapes | 8 |
 | `SCOPE-DRIFT` | a name's scope changed between frozen eras without retraction | 8 |
-| `DIVERGENT-SHAPE` | the same type name is declared repeatedly with materially different variant or field shapes | 7 |
 | `UNDECLARED-VARIANT` | an `Enum::Variant` path is used in the frozen source but appears in no declaration of that enum | 7 |
 | `ALIAS-DEFECT` | the canonicalization layer states an alias/definition the source does not support | 4 |
 | `PREDICATE-SIGNATURE` | one predicate name, several arities/argument orders | 4 |
@@ -96,6 +96,7 @@ A collision is filed when the source (or a document derived from it) uses one na
 | [X-84](#x-84) | Thirty-one more type names are used in frozen field positions and declared nowhere — including the reference model's whole vocabulary | UNDEFINED-TYPE | **MAJOR** | 9 | X-29, X-30, X-75, U-13, U-16, U-21, C-33 | YES |
 | [X-85](#x-85) | `FunctionValue.env` is an `EnvironmentSnapshot` in one declaration and a live `Environment` in two; X-33 records the name, not the divergence | FIELD-SET | **MAJOR** | 6 | X-33, X-84, X-45, U-09, U-02 | YES |
 | [X-86](#x-86) | `Frame`'s eleven declarations carry five distinct variant sets, and the continuation's variant names change twice | DIVERGENT-SHAPE | **MAJOR** | 5 | X-37, AMB-26, X-35, X-57, U-02 | YES |
+| [X-87](#x-87) | `ReplayHost` — the sole concrete realization of the theorem's `HostTrace` parameter — is declared six times in five incompatible shapes, and only one of them is ordered | DIVERGENT-SHAPE | **MAJOR** | 3 | C-99, U-35 | YES |
 | [X-11](#x-11) | The symbol `A` denotes Authority and, subscripted, an actor's state | SYMBOL-OVERLOAD | **MINOR** | 2 | — | no |
 | [X-14](#x-14) | The symbol `H` denotes the effect journal while calligraphic `ℋ` denotes the heap | SYMBOL-OVERLOAD | **MINOR** | 3 | — | no |
 | [X-15](#x-15) | The symbol `B` denotes the Budget and, in turn [1], a Block | SYMBOL-OVERLOAD | **MINOR** | 2 | — | no |
@@ -2759,6 +2760,49 @@ REPORTED; no variant renamed, none struck, and the excerpts at L20307/L20713/L21
 ### Decision needed
 
 Which `Frame` variant set governs — the nine-variant form of turns [21]-[22], the five/six-variant forms of turns [25]-[27], or the three-variant form of turn [30]? And are the request frames `SendTarget`/`SendValue`, `RequestCapability`, or `RequestTarget`/`RequestArgument`?
+
+## X-87
+
+**`ReplayHost` — the sole concrete realization of the theorem's `HostTrace` parameter — is declared six times in five incompatible shapes, and only one of them is ordered**
+
+- **Kind:** `DIVERGENT-SHAPE` — the same type name is declared repeatedly with materially different variant or field shapes
+- **Severity:** MAJOR
+- **Terms affected:** T-83 `HostTrace`, T-84 `InitialState`, T-85 `UniqueMachineTrace`
+- **Previously registered as:** `C-99`, `U-35`
+
+### Evidence (frozen source)
+
+| Line | Text at that line | What it denotes there |
+|---|---|---|
+| `Red-on-Rust.md` L1234 | `pub struct ReplayHost {` | turn [2]: `cursor: usize` + `trace: Vec<Result<Value, HostFault>>` — ordered, but the element type is a bare `Value`, not a receipt |
+| `Red-on-Rust.md` L9783 | `pub struct ReplayHost {` | turn [17]: `trace: ReplayTrace` — delegates the shape to a type that is itself never declared |
+| `Red-on-Rust.md` L10541 | `pub struct ReplayHost {` | turn [18]: `trace: VecDeque<EffectReceipt>` consumed by `pop_front()` — ordered, receipt-typed, and the only form whose consumption discipline is visible in its own body |
+| `Red-on-Rust.md` L22339 | `pub struct ReplayHost {` | turn [28]: `receipts: ReceiptLog` — a third undeclared carrier type |
+| `Red-on-Rust.md` L24011 | `pub struct ReplayHost {` | turn [30]: `recorded_receipts: HashMap<EffectId, EffectReceipt>` + `cursor: usize` commented `// For ordered trace consumption if needed` — UNORDERED lookup, and the cursor is optional by its own comment |
+| `Red-on-Rust.md` L34498 | `pub struct ReplayHost {` | turn [48]: `trace: Vec<EffectReceipt>` + `cursor: usize` — the only declaration that is both receipt-typed and unconditionally ordered |
+
+### Evidence (canonicalization layer)
+
+| File:line | Text at that line | Note |
+|---|---|---|
+| `spec/06-contradictions-ambiguities.md`:114 | ``\| C-99 \| `ReplayHost``` | C-99 |
+| `spec/09-unresolved-decisions.md`:206 | `### U-35` | U-35 rules on the governing shape |
+
+### The collision
+
+The determinism theorem's `HostTrace` parameter has no declaration of its own (T-83), so `ReplayHost` is the only frozen text that fixes what a host trace IS. It does so six times, in five mutually incompatible shapes, spanning turns [2] through [48].
+
+### Why it matters
+
+The shapes are not stylistic variants: they disagree about whether replay is ORDER-SENSITIVE. The L24011 `HashMap<EffectId, EffectReceipt>` form resolves effects by identifier lookup, so a permuted effect sequence replays identically and the theorem's `HostTrace` input carries strictly less information than the live run did. L35218 and L38282 both assert flatly that `ReplayHost` is ordered, and L34911 lists `ReplayHost validates ordered ID + digest` as a satisfied checklist item — claims the L24011 declaration does not support. R-HOST-03 requires ordered consumption; four of the six declarations cannot satisfy it.
+
+### Disposition
+
+REPORTED. No declaration is struck and none is promoted: U-35 must choose, and the audit recommends L34498's shape (`Vec<EffectReceipt>` + cursor) because it is the only one that is simultaneously receipt-typed, unconditionally ordered, and consistent with the ordered-replay claims made elsewhere in frozen text.
+
+### Decision needed
+
+Which `ReplayHost` declaration governs, and is replay order-sensitive? If the L24011 HashMap form governs, the effect-order-permutation test in the audit §6 must pass by construction and DET-005 is unfixable without a shape change.
 
 ## X-11
 

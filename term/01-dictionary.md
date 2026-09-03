@@ -4,7 +4,7 @@
 
 # 01 — Canonical Terminology Dictionary
 
-81 canonical terms. Each entry states the seven fields the normalization request requires — **CANONICAL_TERM**, **FORBIDDEN_VARIANTS**, **DEFINITION**, **TYPE**, **OWNER**, **FIRST_DEFINITION**, **DEPENDENTS** — plus the frozen shape, any superseded declarations, the obligations that use the term, and the collisions it participates in.
+86 canonical terms. Each entry states the seven fields the normalization request requires — **CANONICAL_TERM**, **FORBIDDEN_VARIANTS**, **DEFINITION**, **TYPE**, **OWNER**, **FIRST_DEFINITION**, **DEPENDENTS** — plus the frozen shape, any superseded declarations, the obligations that use the term, and the collisions it participates in.
 
 **Hard constraint honoured throughout:** no API, type, mathematical symbol or protocol field is renamed anywhere in this dictionary. Where the frozen source uses two names for one thing, or one name for two things, both are recorded verbatim and the conflict is filed in `02-collisions.md`; the canonical term is the one an author must *use*, never a new identifier to *introduce*. Names the source froze are listed under **PROTECTED (do not rename)**.
 
@@ -92,6 +92,11 @@
 | [T-79](#t-79-marshalledvalue) | `MarshalledValue` | RUST-NEWTYPE | CONCURRENCY | MOD-06 | `L9925` | 2 |
 | [T-80](#t-80-refstate) | `RefState` | RUST-STRUCT | VERIFICATION | MOD-14 | `L14728` | 4 |
 | [T-81](#t-81-refauthority) | `RefAuthority` | RUST-STRUCT | AUTHORITY | MOD-14 | `L11572` | 4 |
+| [T-82](#t-82-schedulertrace) | `SchedulerTrace` | UNDECLARED-TYPE | SCHEDULING | MOD-07 | `L25338` | 0 |
+| [T-83](#t-83-hosttrace) | `HostTrace` | UNDECLARED-TYPE | HOST | MOD-09 | `L25338` | 1 |
+| [T-84](#t-84-initialstate) | `InitialState` | UNDECLARED-TYPE | MACHINE | MOD-01 | `L25338` | 1 |
+| [T-85](#t-85-uniquemachinetrace) | `UniqueMachineTrace` | UNDECLARED-TYPE | MACHINE | MOD-01 | `L25340` | 1 |
+| [T-86](#t-86-lifetime) | `Lifetime` | RUST-STRUCT | AUTHORITY | MOD-03 | `L3571` | 0 |
 
 ★ = one of the 26 terms the normalization request explicitly requires.
 
@@ -553,6 +558,31 @@ pub struct RefAuthority { operations: BTreeMap<RefOp, RefOperationAuthority> }  
 - **COLLISIONS:** [X-77](02-collisions.md#x-77), [X-78](02-collisions.md#x-78), [X-79](02-collisions.md#x-79), [X-84](02-collisions.md#x-84)
 - **NOTE:** The reference model is the differential oracle: if its authority type has three shapes and four of its five component types are undeclared, then R-REF-03 (`reference_derive` must equal the production `derive`) has no fixed left-hand side to compare against. The frozen `reference_derive` body reads `parent.ops` and `constraint.ops` — field names that only the turn-[20] declaration has.
 
+### T-86 — `Lifetime`
+
+- **CANONICAL_TERM:** `Lifetime`
+- **TYPE:** RUST-STRUCT — a Rust `struct` declaration (nominal type)
+- **OWNER:** MOD-03 (`ror-kernel`)
+- **DEFINITION:** The validity interval of an `Authority`. Declared three times identically (L3571, L4959, L5403) as `{ start: u64, end: u64 }` with the verbatim comment `// Unix timestamp` on both fields — yet it is consumed by the pure authorization predicate `authorizes(auth, effect, t: LogicalTime)` at L11881-11889 via `auth.lifetime.contains(t)`. A wall-clock interval is therefore compared against logical time inside the one predicate R-CAP-09 requires to be free of wall-clock dependence. This is DET-006 and it is a type error, not a naming preference.
+- **FIRST_DEFINITION:** `L3571`, turn [7] — `pub struct Lifetime {`
+- **DEPENDENTS:** T-28 `LogicalTime`, T-27 `Deadline`
+- **FORBIDDEN_VARIANTS:**
+    - `WallClockInterval` — the current READING, which N-33 forbids
+    - `validity window` — unqualified
+    - `expiry`
+- **PROTECTED (do not rename):**
+    - `Lifetime` — frozen Rust type name
+    - `contains` — frozen method name used by `authorizes`
+- **FROZEN SHAPE:** `pub struct Lifetime {
+    pub start: u64,  // Unix timestamp
+    pub end: u64,    // Unix timestamp
+}`
+- **OBLIGATIONS:** `R-CAP-09`, `R-CORE-08`
+- **SECTIONS:** `S-09`, `S-11`
+- **COLLISIONS:** —
+- **LAWS:** [N-33](03-laws.md#n-33)
+- **NOTE:** Three identical declarations: L3571, L4959, L5403. The `// Unix timestamp` comments are verbatim frozen text. DET-006 (HIGH); U-36 proposes retyping both fields to `LogicalTime` (T-28), jointly with U-01.
+
 ---
 
 ## EFFECT — Effect model and request/issuance protocol
@@ -595,7 +625,7 @@ Owning module: **MOD-08**.
 - **OBLIGATIONS:** `R-CALC-04`, `R-CALC-05`, `R-EFFECT-01`
 - **SECTIONS:** `S-07`, `S-12`
 - **COLLISIONS:** [X-04](02-collisions.md#x-04), [X-05](02-collisions.md#x-05), [X-20](02-collisions.md#x-20), [X-26](02-collisions.md#x-26), [X-27](02-collisions.md#x-27), [X-35](02-collisions.md#x-35), [X-36](02-collisions.md#x-36), [X-39](02-collisions.md#x-39), [X-44](02-collisions.md#x-44)
-- **LAWS:** [N-13](03-laws.md#n-13)
+- **LAWS:** [N-13](03-laws.md#n-13), [N-32](03-laws.md#n-32)
 - **NOTE:** spec/05 defines `Effect` as `{capability, operation, target, params, cost}`. No declaration in the source has that field set: the frozen form (L9297) has no capability field, and the only form with one is the superseded turn-[3] `cap_ref`. Because `EffectDigest = SHA-256(canonical_bytes(effect))`, adding a capability field would bind the digest to a `CapRef` and change digest semantics. Reported as X-39; the frozen field set is authoritative.
 
 ### T-17 — `EffectRequest`
@@ -938,7 +968,7 @@ Owning module: **MOD-04**.
 - **OBLIGATIONS:** `R-BUDGET-06`, `R-CAP-09`, `R-CORE-08`
 - **SECTIONS:** `S-11`, `S-09`
 - **COLLISIONS:** [X-42](02-collisions.md#x-42)
-- **LAWS:** [N-18](03-laws.md#n-18)
+- **LAWS:** [N-18](03-laws.md#n-18), [N-33](03-laws.md#n-33)
 - **NOTE:** R-CAP-09 prohibits wall-clock time as semantic machine state. The per-transition `δ_t` values are not frozen (U-07), so `LogicalTime` is defined but its advancement schedule is not.
 
 ### T-29 — `CostModel`
@@ -1301,6 +1331,44 @@ pub enum StepResult { Progressed, Blocked(ActorId), Pending(ActorId, EffectReque
 - **COLLISIONS:** [X-75](02-collisions.md#x-75)
 - **NOTE:** Distinct from `Frame` (T-33), which is declared eleven times and is the evaluation frame of the frozen turn-[30] machine; the two names are not interchangeable and the source uses both.
 
+### T-84 — `InitialState`
+
+- **CANONICAL_TERM:** `InitialState`
+- **TYPE:** UNDECLARED-TYPE — a name used as a type in frozen declarations but never declared anywhere
+- **OWNER:** MOD-01 (`ror-core`)
+- **DEFINITION:** The starting configuration the determinism theorem quantifies over. Nine occurrences, all uses. Critically, the source never says whether it is closed: `GlobalState` (T-18) is the declared machine state, but the kernel authority arena (DET-009) and the capability slotmap (DET-010) are reachable from a transition and are not fields of it. If `InitialState := GlobalState` alone, the theorem is false as written; U-35 proposes `GlobalState + KernelAuthorityImage`.
+- **FIRST_DEFINITION:** `L25338`, turn [31] — `InitialState + SchedulerTrace + HostTrace`
+- **DEPENDENTS:** T-18 `EffectIssued`, T-82 `SchedulerTrace`, T-83 `HostTrace`, T-85 `UniqueMachineTrace`
+- **FORBIDDEN_VARIANTS:**
+    - `GlobalState` — not known to be equal — that is the open question
+    - `Snapshot`
+    - `MachineState` — a competing theorem form, L28426
+- **PROTECTED (do not rename):**
+    - `InitialState` — name used in the frozen theorem; not renamed
+- **OBLIGATIONS:** `R-CORE-08`
+- **SECTIONS:** `S-02`
+- **COLLISIONS:** [X-87](02-collisions.md#x-87)
+- **NOTE:** UNDECLARED. 9 occurrences: L25338, L25763, L26053, L27369, L27529, L27536, L27818, L37118, L41641. L27369 adds a `Plan` term the other forms omit. DET-001, DET-009, DET-010; U-35.
+
+### T-85 — `UniqueMachineTrace`
+
+- **CANONICAL_TERM:** `UniqueMachineTrace`
+- **TYPE:** UNDECLARED-TYPE — a name used as a type in frozen declarations but never declared anywhere
+- **OWNER:** MOD-01 (`ror-core`)
+- **DEFINITION:** The theorem's consequent: the object asserted to be uniquely determined. Ten occurrences, all uses. The source never defines the EQUALITY under which it is unique — pointwise state identity, state-digest equality, event-envelope sequence equality, or some conjunction. Without that relation the theorem has no truth condition, which is the second half of DET-001. U-35 proposes pointwise state-digest AND event-envelope sequence equality.
+- **FIRST_DEFINITION:** `L25340`, turn [31] — `UniqueMachineTrace`
+- **DEPENDENTS:** T-82 `SchedulerTrace`, T-83 `HostTrace`, T-84 `InitialState`
+- **FORBIDDEN_VARIANTS:**
+    - `EventLog`
+    - `trace` — unqualified
+    - `MachineTrace` — no such declaration
+- **PROTECTED (do not rename):**
+    - `UniqueMachineTrace` — name used in the frozen theorem; not renamed
+- **OBLIGATIONS:** `R-CORE-08`
+- **SECTIONS:** `S-02`
+- **COLLISIONS:** [X-87](02-collisions.md#x-87)
+- **NOTE:** UNDECLARED, and the equality relation is unspecified. 10 occurrences: L25340, L25763, L26053, L27370, L27541, L27818, L28241, L28426, L28575, L41642. DET-001; U-35.
+
 ---
 
 ## CONCURRENCY — Actors, status, mailboxes, marshalling
@@ -1537,6 +1605,26 @@ Owning module: **MOD-07**.
 - **LAWS:** [N-30](03-laws.md#n-30)
 - **NOTE:** The snapshot is said to contain the runnable queue while recovery reconstructs it from actor states (C-26, U-17): which is authoritative on mismatch is undecided.
 
+### T-82 — `SchedulerTrace`
+
+- **CANONICAL_TERM:** `SchedulerTrace`
+- **TYPE:** UNDECLARED-TYPE — a name used as a type in frozen declarations but never declared anywhere
+- **OWNER:** MOD-07 (`ror-runtime`)
+- **DEFINITION:** The scheduler-decision sequence the determinism theorem takes as an INPUT the machine consumes. Thirteen occurrences in 42,312 lines, every one of them a use inside the theorem or its restatements; the source never declares it, never gives it an element type, and never says whether it is finite, total over the run, or replay-consumed by cursor. U-35 must freeze it.
+- **FIRST_DEFINITION:** `L25338`, turn [31] — `InitialState + SchedulerTrace + HostTrace`
+- **DEPENDENTS:** T-83 `HostTrace`, T-84 `InitialState`, T-85 `UniqueMachineTrace`
+- **FORBIDDEN_VARIANTS:**
+    - `EventLog` — an output, not this input — see N-32
+    - `event trace`
+    - `schedule` — unqualified
+- **PROTECTED (do not rename):**
+    - `SchedulerTrace` — name used in the frozen theorem; not renamed
+- **OBLIGATIONS:** `R-CORE-08`, `R-ACTOR-04`
+- **SECTIONS:** `S-02`, `S-11`
+- **COLLISIONS:** —
+- **LAWS:** [N-32](03-laws.md#n-32)
+- **NOTE:** UNDECLARED. 13 occurrences, all uses: L25338, L25763, L26053, L26998, L27369, L27529, L27538, L27818, L28238, L28426, L28575, L37120, L41641. L26998 gives a NON-EQUIVALENT form (Snapshot+EventLog+HostTrace+SchedulerTrace) that conflates this input with the EventLog output; L28426/L28575 give a third (MachineState+AcceptedPlan+...). DET-001; U-35.
+
 ---
 
 ## HOST — Live host gate and ordered replay
@@ -1679,6 +1767,25 @@ Owning module: **MOD-09**.
 - **SECTIONS:** `S-14`
 - **COLLISIONS:** [X-58](02-collisions.md#x-58), [X-59](02-collisions.md#x-59), [X-67](02-collisions.md#x-67), [X-68](02-collisions.md#x-68)
 - **NOTE:** Not one of the eight used variant paths is declared. `ReplayCorruption` is simultaneously a `HostFault` path and a `Fault` variant (L23814), so the same name denotes faults at two different levels of the taxonomy.
+
+### T-83 — `HostTrace`
+
+- **CANONICAL_TERM:** `HostTrace`
+- **TYPE:** UNDECLARED-TYPE — a name used as a type in frozen declarations but never declared anywhere
+- **OWNER:** MOD-09 (`ror-host`)
+- **DEFINITION:** The host-outcome sequence the determinism theorem takes as an INPUT. Undeclared like T-82, but unlike T-82 the source does supply a candidate shape six times over, under the name `ReplayHost` (X-87) — in five mutually incompatible forms. Only L34498 (`trace: Vec<EffectReceipt>` + `cursor`) satisfies R-HOST-03's ordered-consumption requirement; the L24011 `HashMap<EffectId, EffectReceipt>` form makes replay order-insensitive and is the reason DET-005 is HIGH.
+- **FIRST_DEFINITION:** `L25338`, turn [31] — `InitialState + SchedulerTrace + HostTrace`
+- **DEPENDENTS:** T-82 `SchedulerTrace`, T-84 `InitialState`, T-85 `UniqueMachineTrace`
+- **FORBIDDEN_VARIANTS:**
+    - `ReceiptLog` — one of the six competing shapes, not the term
+    - `EffectLog`
+    - `host log`
+- **PROTECTED (do not rename):**
+    - `HostTrace` — name used in the frozen theorem; not renamed
+- **OBLIGATIONS:** `R-CORE-08`, `R-HOST-03`
+- **SECTIONS:** `S-02`, `S-14`
+- **COLLISIONS:** [X-87](02-collisions.md#x-87)
+- **NOTE:** UNDECLARED as a type; six competing `ReplayHost` carriers at L1234, L9783, L10541, L22339, L24011, L34498 (five distinct shapes — L1234 and L10541 differ in element type). DET-005; U-35 proposes `Vec<EffectReceipt>`, ordered and cursor-consumed, per L34498.
 
 ---
 

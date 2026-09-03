@@ -80,7 +80,7 @@ is total and single-valued. An audit of semantic nondeterminism is therefore an 
 - `Red-on-Rust.md` L25338, L25763, L26053, L27369, L27529, L27536–27539, L28238–28239, L28426, L28575, L37118–37121, L41641 — all 13 occurrences of `SchedulerTrace`
 - `spec/01` L12 (R-SCOPE-01, informative), L37 (**R-CORE-08**, normative), L116 (**R-PLANNER-04**, normative), L334 (**R-ACTOR-07**, normative)
 - `mod/01` §114, `mod/07` §39–40, §93, `mod/13` §44; `req/01-registry-part1` §15, §18, §327, §330
-- `term/01-dictionary.md` — 81 canonical terms; **`SchedulerTrace`, `HostTrace`, `InitialState`, `UniqueMachineTrace` are not among them.** `LogicalTime` is T-28; `GlobalState` is present; the four theorem terms are absent from the dictionary, from the collision register, and from the non-conflation laws.
+- `term/01-dictionary.md` — 86 canonical terms; **`SchedulerTrace`, `HostTrace`, `InitialState`, `UniqueMachineTrace` are not among them.** `LogicalTime` is T-28; `GlobalState` is present; the four theorem terms are absent from the dictionary, from the collision register, and from the non-conflation laws.
 
 **VIOLATION**
 Every occurrence of `SchedulerTrace` and `HostTrace` in the entire corpus is **inside the boxed formula or a restatement of it**. Neither term is ever:
@@ -856,7 +856,7 @@ rejected by some checker. A green baseline is required first, so a red tree
 cannot pass everything vacuously. **16 of 17 are killed**; the seventeenth is
 M036, registered and filed rather than silently tolerated.
 
-Four results are worth recording beyond the pass/fail.
+Five results are worth recording beyond the pass/fail.
 
 **(a) A drift no checker could see — including one this audit introduced.**
 `spec/06`'s summary line read "74 findings (76 rows)" against 97 actual rows;
@@ -969,6 +969,52 @@ along by the `req/_validate.py` count pin, and their stated purpose was never
 achievable. The mutations are kept — the count pin deserves a lock — but the
 claim about which gate they exercise is corrected in the harness rather than
 left standing because it flattered the coverage.
+
+**(e) Landing the `term/` entries, and the drift that landed with them.**
+
+The audit's §7 table proposed `term/` entries for the determinism vocabulary.
+Those are now filed — they are *descriptive*, so unlike U-35…U-38 they need no
+owner decision:
+
+| Entry | What it records |
+|---|---|
+| **T-82** `SchedulerTrace` · **T-83** `HostTrace` · **T-84** `InitialState` · **T-85** `UniqueMachineTrace` | `UNDECLARED-TYPE`, following T-07's precedent: every occurrence is a *use* inside the theorem, every use site is enumerated, and no declaration is invented. |
+| **T-86** `Lifetime` | The `// Unix timestamp` declaration, verbatim, against the `authorizes(…, t: LogicalTime)` consumer. |
+| **X-87** `ReplayHost` | Six declarations, five shapes, with each site's ordering discipline recorded. |
+| **N-32** `SchedulerTrace ≠ EventLog` · **N-33** `Lifetime ≠ WallClockInterval` | The input/output conflation and the clock/logical-time conflation. |
+
+Filing them mechanized two claims that had been prose. `SchedulerTrace` has
+**13 occurrences in 42,312 lines and not one is a declaration** — that is
+DET-001, now enumerated line by line in the entry rather than asserted. The
+six `ReplayHost` shapes are recorded per-site, including the L24011
+`HashMap<EffectId, EffectReceipt>` whose own comment reads
+`// For ordered trace consumption if needed` while L35218 and L38282 assert
+flatly that `ReplayHost` is ordered.
+
+`term/_check.py` rejected the first draft four times — a wrong turn number
+(L3571 is turn [7], not [6]), a nonexistent obligation (`R-SCHED-01`; the FIFO
+scheduler obligation is `R-ACTOR-04`), and two asymmetric collision links.
+Each error was mine and each was caught before it landed, which is the
+strongest evidence in this audit that the `term/` gates work.
+
+Then the familiar shape. Growing the register to 86 terms / 33 laws / 87
+collisions left **five files** advertising "81 canonical terms", "31
+non-conflation laws", "86 collisions", "1008 citations" and the ID ranges
+`T-01…T-81`, `N-01…N-31`, `X-01…X-86`. Every checker passed. This is the third
+instance of the same family (after the `spec/06` 74/76 drift and the
+`spec/08`-vs-index mutation drift), so the fix generalizes rather than pins
+another literal: `req/_validate.py` now *derives* all six values from
+`term/_terms.py` and checks every live prose claim and ID-range claim against
+them, failing both when a count is stale and when a claim disappears entirely.
+K17 locks it.
+
+Fixing that surfaced one more: **K10 had silently become inapplicable.** It
+hard-coded `"81 canonical terms."`, so once the register reached 86 it matched
+nothing and reported neither kill nor survival — testing nothing, invisibly.
+That is the K12 failure mode verbatim, in a mutation written to guard against
+exactly this class. It now locates the count dynamically. The suite is
+**17/17** with no inapplicable mutations; `inapplicable` is surfaced as its own
+bucket precisely so a non-test can never again be mistaken for coverage.
 
 This addendum issues no frozen text. M036 is registered in `spec/08` as a
 **known, filed survivor** — the harness reports it as such rather than counting
