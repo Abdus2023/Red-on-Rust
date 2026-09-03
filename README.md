@@ -16,6 +16,145 @@ Its purpose is to establish a **small, explicit, deterministic machine boundary*
  
 The architecture defines required behavior. Independent reference execution, differential testing, mutation testing, crash injection, stress testing, and security review provide the evidence that an implementation conforms to that specification.
   
+## Canonical Specification Document Set
+
+The frozen source (`Red-on-Rust.md`) has been canonicalized into the document set in `spec/`:
+
+- `spec/00-overview.md` — method, status ladder (`SPECIFIED → IMPLEMENTED → TESTED → VERIFIED → PROVEN`), identifier scheme
+- `spec/01-canonical-specification.md` — cleaned normative specification (24 sections, `S-01`…`S-24`)
+- `spec/02-section-hierarchy.md` — stable section index with provenance and supersession records
+- `spec/03-obligation-matrix.md` — 184 stable requirement IDs (`R-…`; 148 from the frozen source + 36 post-audit frozen addenda, incl. the five addendum-VII, three addendum-VIII and three addendum-IX obligations) with status and provenance
+- `spec/04-dependency-graph.md` — section, object, and verification dependency graphs
+- `spec/05-terminology.md` — glossary and normalization rules
+- `spec/06-contradictions-ambiguities.md` — 112 consistency findings in 113 rows (`C-01`…`C-115`, C-39 a pointer row; C-98…C-102 added by the semantic-nondeterminism audit, C-103…C-109 by the request-pipeline proof-obligation audit and C-112…C-115 by the duration-semantics audit, C-103…C-107/C-109 `resolved-by-addendum` under addendum VII, C-108 under addendum VIII and C-100/C-112…C-115 under addendum IX; C-46…C-76 added by the terminology pass and C-77…C-97 by the post-audit frozen addenda I–V; C-08 re-graded MINOR → MAJOR, and C-54 rewritten by its declaration sweep after the first version of that row was filed on a false premise)
+- `spec/07-implementation-mapping.md` — obligations → crate/module mapping; actual repository state
+- `spec/08-verification-mapping.md` — obligations → conformance tests and evidence status
+- `spec/09-unresolved-decisions.md` — 39 items (`U-…`) requiring explicit architectural decisions (U-23…U-25 added by the terminology pass, U-26…U-29 by its declaration sweep, U-30…U-34 by its struct-field sweep, U-35…U-38 by the semantic-nondeterminism audit (U-38 by its checker-mutation pass) and U-39…U-45 by the request-pipeline proof-obligation audit, U-39…U-44 resolved by addendum VII, U-45 by addendum VIII, U-01/U-07/U-36 by addendum IX and U-38 by the repository-gate adoption of option (b) (2026-09-03); U-08 corrected and U-14 escalated to blocking by its fault-taxonomy audit)
+- `spec/10-index.json` — machine-readable cross-index
+
+A fifth directory, `audit/`, holds **adversarial audits of the frozen specification**.
+These are review artifacts, not normative text: an audit may file register rows
+(`C-…`, `U-…`) and propose remediation, but it never issues frozen semantics
+(R-SCOPE-03). Four passes are complete:
+
+- `audit/authority-trust-external-effect-audit.md` — **authority, trust-boundary and
+  external-effect gating** (`SEC-001`…`SEC-023`: 3 CRITICAL, 5 HIGH, 3 MEDIUM-HIGH,
+  9 MEDIUM, 2 LOW/MEDIUM, 1 LOW). Verdict: the invariants `LLMOutput ∧ UntrustedInput
+  ↛ ExternalEffect` and the 7-conjunct effect chain do **not** hold at specification
+  level. Its findings were remediated by the 25 frozen addenda now in `spec/01`
+  (`R-CORE-11`…`R-CORE-13`, `R-EFFECT-08`, `R-HOST-06`, `R-CAP-10`, `R-KERN-06`,
+  `R-PERSIST-07/08`, `R-ACTOR-09/10`, `R-BUDGET-09`, `R-RECOV-08`, `R-CANON-12/13`, …),
+  which is why `C-77`…`C-97` read `resolved-by-addendum`.
+- `audit/semantic-nondeterminism-audit.md` — **semantic nondeterminism** (`DET-001`…
+  `DET-018`: 2 CRITICAL, 5 HIGH, 6 MEDIUM, 3 LOW-MEDIUM, 2 CLEAN), auditing the
+  determinism theorem `InitialState + SchedulerTrace + HostTrace ⇒ UniqueMachineTrace`
+  across fifteen categories. Verdict: **NOT VERIFIED**, on two independent grounds.
+  (1) The theorem is *ill-formed* — `SchedulerTrace`, `HostTrace`, `InitialState` and
+  `UniqueMachineTrace` are undefined in all 42,312 source lines and in all five
+  canonical organizations; all 13 occurrences of `SchedulerTrace` sit inside the boxed
+  formula, so the claim is currently unfalsifiable. (2) Under the charitable reading the
+  transition function reads **eleven inputs the theorem does not name** — among them
+  per-process hash-seed randomization, a wall-clock `Lifetime` compared against
+  `LogicalTime` inside authorization gate 6, the kernel arena's residence outside
+  `GlobalState`, and filesystem-order-dependent snapshot selection. Two categories are
+  **clean** and recorded as such so the negative results are auditable: floating-point
+  dependence (zero `f32`/`f64`) and implicit environment variables (zero `std::env`).
+  This pass issued no addendum: its rows `C-98`…`C-102` and decisions `U-35`…`U-37` are
+  all `open`, and `U-02`/`U-07` gained appended amendment notes rather than rewrites.
+
+  Its §5.4 states the replay claim in the only form the corpus supports: **replay proves
+  machine-state/event reproduction subject to explicit external-effect reconciliation —
+  it does not reproduce the external world.** A receipt records what the machine was
+  told, not what happened; the `Indeterminate` class (L26714) is irreducible, and
+  R-DUR-04/R-RECOV-08 forbid any component resolving it on local policy.
+- `audit/request-pipeline-proof-obligation-matrix.md` — **every path from `Expr::Request`
+  to a host-visible effect** (GAP-01…GAP-18: 2 CRITICAL, 2 BLOCKING, 6 HIGH incl. one
+  historical/resolved-in-principle, 1 MAJOR, 6 MEDIUM, 1 LOW/MEDIUM, 1 INFO).
+  Verdict: the 16-step gate sequence is sound and `HostInvoked(E) ⇒ DurableIssued(E)`
+  is *realizable* through R-DUR-01/R-CORE-06/PanicHost/R-TRUST-05, but it is **not
+  provable as frozen** on four counts — `spec/01` S-12 still publishes the superseded
+  host-before-Issued 16-step order, live journal/fsync failure at step 14 is unpinned
+  (no fault, no rollback, R-EFFECT-04's five assertions unsatisfiable), the durable
+  `Prepared`/`Issued` records carry no effect or cost so escrow survival and T1 budget
+  restoration have no source of truth, and the step-10 deadline premise is pinned weak
+  against the formal `t + δ_t(req) ≤ W`. This pass issued no addendum — its rows
+  `C-103`…`C-109` and decisions `U-39`…`U-45` are all `open`; its recommendations
+  exist only as a draft (`audit/request-pipeline-remediation-draft.md`, NOT ADOPTED).
+- `audit/duration-semantics-audit.md` — **what `D` measures and how logical time advances**
+  (U-01/U-07/U-36; the audit filed C-112…C-115 and scoped the cluster into D1–D8; pre-adoption
+  owner decisions D1–D3/D6/D8 approved with D7 conditional on its own §5 evidence). Verdict:
+  the invariant "every logical-time advance has exactly one duration debit, and every
+  deadline-sensitive transition has a deterministic pre-state/post-state rule" fails in three
+  places — the quiescence clock hole (a `Pending` effect freezes `t`, so R-BUDGET-09's
+  liveness bound is unreachable), the missing post-deadline receipt rule, and three mutually
+  inconsistent `D` debit models — plus the unfrozen `DeadlineExceeded` firing point. Its
+  remediation is addendum IX (`R-CAP-11`, `R-BUDGET-15/16`): C-100/C-112…C-115 re-graded
+  `resolved-by-addendum`, U-01/U-07/U-36 resolved, R-BUDGET-12 folded, U-38 untouched.
+
+A second organization, `mod/`, splits the same specification into **17 semantic
+modules** (`MOD-01 CORE` … `MOD-17 VERIFICATION`) by architectural responsibility
+rather than document structure: one canonical owner per obligation, explicit
+cross-references for requirements that span components, and a marked-duplication
+register (`D-01`…`D-12`). Each module file carries SECTION-ID, TITLE, PURPOSE,
+NORMATIVE-CONTENT, NON-NORMATIVE-CONTENT, INPUTS, OUTPUTS, DEPENDENCIES, INVARIANTS,
+REQUIREMENTS, SECURITY-BOUNDARY, VERIFICATION-OBLIGATIONS, SOURCE-PROVENANCE, and
+CROSS-REFERENCES. Normative text remains single-homed in `spec/01`/`req/`;
+`mod/18-ownership-matrix.md` and `mod/19-index.json` are generated
+(`python3 mod/_build.py --write`; checked with `python3 mod/_build.py`).
+
+A third organization, `dep/`, is the **dependency graph** derived from the other two:
+four layers (10 crates / 17 crate edges, 17 modules / 134 typed module edges, 545 atomic
+records / 927 requirement edges, 24 sections / 34 section edges), each edge typed
+`TYPE_ | SEMANTIC_ | SECURITY_ | SERIALIZATION_ | PERSISTENCE_ | VERIFICATION_ |
+RUNTIME_DEPENDENCY` and read as **`A -> B` = B depends on A**. It reports roots, leaves,
+strongly connected components, circular dependencies requiring architectural review,
+hidden dependencies (`HD-1`…`HD-6`), invalid dependency directions, requirements
+referenced before definition, and the violations of architectural independence
+(the findings register `V-…`). For the four findings that block a build order it also
+measures what each possible answer would cost — crate DAG, hidden dependencies, build
+order — without applying any of them (`dep/05` §7). All seven files in `dep/` are
+generated: `dep/00-overview.md` …
+`dep/05-violations.md` plus `dep/10-graph.json`; regenerate with
+`python3 dep/_graph.py --write` and check with `python3 dep/_graph.py`.
+
+**Running the checks.** `python3 check.py` runs every checker in the repository in
+dependency order and exits non-zero if any fails. It also fails when a `*/_*.py`
+executable is neither run nor explicitly classified as a data module or
+write-mode generator, so a new gate cannot sit unattended: `term/_structs.py`
+did exactly that, and a `ReplayHost` shape count it disproves stood wrong in five
+documents until it was finally run. `python3 check.py --list` shows the inventory.
+Generators run in check mode, so a generator whose output would change is a
+failure rather than a silent fix.
+
+A fourth organization, `term/`, is the **terminology normalization**: 86 canonical terms
+(`T-01`…`T-86`), each carrying `CANONICAL_TERM`, `FORBIDDEN_VARIANTS`, `DEFINITION`, `TYPE`,
+`OWNER`, `FIRST_DEFINITION` and `DEPENDENTS`; 33 non-conflation laws (`N-01`…`N-33`) enforcing
+the distinctions the specification depends on — `Block ≠ ExecutablePlan`, `PlanProposal ≠
+ExecutablePlan`, `CapRef ≠ Authority`, `EffectRequest ≠ EffectIssued`, `EffectIssued ≠
+EffectCompleted`, `Specification ≠ Implementation`, `Implementation ≠ Verification`,
+`Verification ≠ Proof`, `LLM output ≠ Authority`; and an **86-entry collision register**
+(`X-01`…`X-87`, of which 4 are BLOCKING) reporting every terminology collision found in the
+frozen source *and* in this repository's own documents. Its governing constraint is that a
+canonical term is a name an author must **use**, never a new identifier to **introduce**: no
+API, type, mathematical symbol or protocol field is renamed anywhere in `term/`. Where the
+source froze two names for one thing, both are quoted; where it froze one name for two things,
+both denotations are quoted; where a name is used but never declared, that is reported rather
+than filled in. `term/01-dictionary.md`, `term/02-collisions.md`, `term/03-laws.md` and
+`term/10-index.json` are generated from `term/_terms.py` (`python3 term/_dict.py --write`);
+`python3 term/_check.py` re-greps all 1025 citations against `Red-on-Rust.md`, verifies every
+turn attribution from the source's own `## [n]` markers, checks all 372 term↔collision links in
+both directions, and fails on drift; `python3 term/_structs.py` re-derives every declaration. Twelve collisions (X-39…X-41, X-51, X-59…X-64, X-66, X-68)
+are defects in `spec/`, `mod/`, `req/` or this README, wholly or in part; each is corrected in
+place with its `X-` id cited and the superseded wording quoted rather than deleted. Two claims an
+earlier revision of this pass had written were found to be false on re-reading the cited lines
+and are **withdrawn** — quoted, not silently overwritten (R-SCOPE-03): the C-08 assertion that
+`CapabilityError` never occurs as a `Fault` variant (withdrawn in `spec/06` C-08 and X-59), and
+the X-64 assertion that “`Fault::StalePlan` occurs nowhere in L1–42312”, on which four documents
+were amended and which the declaration sweep showed false at L28373 — all four are reverted, and
+X-64 is refiled from `PHANTOM-IDENTIFIER` to `UNDECLARED-VARIANT`. See `term/00-overview.md` §6 for the full correction table.
+
+**Status discipline:** the repository currently contains no implementation, tests, or proofs; every obligation is therefore `SPECIFIED`, and no claim has been promoted beyond that level. Where the canonicalized text and `Red-on-Rust.md` differ, the source's latest frozen text governs.
+
 # Core Thesis
  
  

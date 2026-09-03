@@ -1,0 +1,590 @@
+"""Validate the Red-on-Rust atomic requirement registry and emit registry.json.
+
+Run from anywhere:  python3 req/_validate.py [--write]
+
+Checks performed
+----------------
+1.  Every record has exactly the 12 required fields, in the required order.
+2.  REQ-IDs are unique and area numbering is gap-free.
+3.  NORMATIVE-LEVEL is in the frozen vocabulary; EVIDENCE-STATUS is in the
+    allowed set and is never promoted above SPECIFIED.
+4.  SOURCE cites at least one `Red-on-Rust.md` line range, every cited line is
+    inside 1..42312, and the turn number is present.
+5.  Parent-obligation coverage: every `R-AREA-NN` obligation in
+    `spec/01-canonical-specification.md` is cited by at least one record, and
+    every parent obligation cited by a record exists there.
+6.  DEPENDENCIES resolve: every `REQ-…`, `CN-…`, `AMB-…`, `VU-…` reference
+    points at something that exists in this directory.
+7.  Signature provenance: every type-like identifier in STATEMENT or INVARIANTS
+    actually occurs inside the line range(s) that record cites.  This is the
+    check that catches a copied-but-wrong `L3xxxx` citation.
+8.  Frozen line anchors in `_anchors.py` are re-grepped against the source.
+9.  Declared per-area counts in each part-file header match the parsed records.
+
+Exit status is 1 if any ERROR is reported.
+"""
+
+from __future__ import annotations
+
+import collections
+import json
+import re
+import sys
+
+import _anchors as A
+
+ERRORS: list[str] = []
+WARNINGS: list[str] = []
+
+
+def err(msg: str) -> None:
+    ERRORS.append(msg)
+
+
+def warn(msg: str) -> None:
+    WARNINGS.append(msg)
+
+
+# --------------------------------------------------------------------------
+# Tokens that are legitimately referenced across record boundaries: a record
+# names a type whose *declaration* sits outside its own cited range because the
+# record is about behaviour, not about the declaration.  Each entry names the
+# record's own anchor for that concept.  Anything not listed is an error.
+# --------------------------------------------------------------------------
+CROSS_REFERENCE_TOKENS: dict[str, str] = {
+    "Fault": "closed enum declared L23806; behavioural records cite the rule",
+    "Value": "machine value domain declared L12283",
+    "Expr": "frozen AST declared L12145",
+    "CapRef": "declared L12126",
+    "EffectId": "declared L12122",
+    "ActorId": "declared L12118",
+    "EffectCost": "declared L10062",
+    "Budget": "declared L10076",
+    "Constraint": "declared L10068",
+    "Authority": "declared L6380",
+    "Block": "declared L12100",
+    "EvalState": "declared L12655",
+    "Frame": "declared L16943",
+    "Spawn": "declared L12190 (frozen Expr variant)",
+    "Delegate": "declared L25989-25992 (turn [32]); absent from the frozen AST L12145-12200",
+    "WalFrame": "declared L35099",
+    "WalRecord": "declared L35127",
+    "GlobalSnapshot": "declared L35181",
+    "GlobalState": "declared L24156, L25535, L25862 (three declarations)",
+    "GlobalSnapshot": "declared L26301",
+    "CanonicalError": "declared L32959",
+    "MarshalFault": "declared L25685",
+    "AuthorityNode": "declared L39373",
+    "PlanProposal": "declared L27175",
+    "ExecutablePlan": "declared L37964",
+    "ValidatedPlan": "declared L37929",
+    "NormalizedAST": "declared L37889",
+    "PlanIR": "declared L37929",
+    "Effect": "declared L10052",
+    "Deadline": "declared L10114",
+    "Lifetime": "declared L10074",
+    "AdmissibleConstraint": "used L8717; declared-without-definition (AMB-12)",
+    "ActorStatus": "declared L37838",
+    "RunState": "declared L10140",
+    "ReconciliationOutcome": "named L38185",
+    "EventSequence": "declared L31697 and again L32060",
+    "LogicalTime": "declared L12116",
+    "Symbol": "declared L12108",
+    "Environment": "declared L12600",
+    "FunctionValue": "declared L12400",
+    "Continuation": "declared L12517; `Frame` is declared 11 times",
+    "MachineEvent": "declared L12700",
+    "EffectReceipt": "declared L38074",
+    "HostFault": "declared L27901",
+    "PanicHost": "declared L27901",
+    "CapabilityKernel": "declared L39253",
+    "PlannerMetadata": "declared L27411",
+    "ProposalDigest": "declared L27411",
+    "StalePlan": "declared L27236",
+    "BudgetAllocationSpec": "named L10076 (AMB-22)",
+    "MutationKillRate": "declared L38506",
+    "Consumable": "declared L10090",
+    "Reserved": "declared L10094",
+    "ReadCursor": "declared L30723 (the canonical decode cursor)",
+    "MarshalResult": "declared L9905 and L10836",
+    "MarshalledValue": "declared L25981",
+    "WalSequence": "declared L35127",
+    "Recover": "declared L26133",
+    "Commit": "declared L35181",
+    "Canonical": "declared L33087",
+    "Digest": "declared L33087",
+    "Observe_P": "declared L38585",
+    "Observe_R": "declared L38585",
+    "Recover_P": "declared L38653",
+    "Recover_R": "declared L38653",
+    "Authorized": "declared L6406",
+    "Valid": "declared L6423",
+    "WithinBudget": "declared L8833",
+    "ReserveOK": "declared L10090",
+    "ReleaseOK": "declared L10094",
+    "derive": "declared L6425",
+    "marshal": "declared L10165",
+    "unmarshal": "declared L10165",
+}
+
+
+def expand_ranges(text: str) -> set[str]:
+    """Expand `REQ-X-006…REQ-X-018` style spans and collect single ids."""
+    found: set[str] = set()
+    for m in A.RECORD_ID.finditer(text):
+        found.add(m.group(0))
+    for m in re.finditer(r"(REQ-[A-Z]+)-(\d{3})\s*[…-]+\s*(?:REQ-[A-Z]+-)?(\d{3})", text):
+        area, lo, hi = m.group(1), int(m.group(2)), int(m.group(3))
+        for n in range(lo, hi + 1):
+            found.add(f"{area}-{n:03d}")
+    return found
+
+
+def main() -> int:
+    write_json = "--write" in sys.argv
+
+    lines = A.read_source_lines()
+    if len(lines) - 1 != A.SOURCE_MAX_LINE:
+        err(f"source line count {len(lines)-1} != declared bound {A.SOURCE_MAX_LINE}")
+
+    records = A.load_registry_records()
+    if not records:
+        err("no records parsed")
+        return 1
+
+    starts = A.turn_starts(lines)
+    if len(starts) != 60:
+        err(f"expected 60 turn headers in the source, found {len(starts)}")
+    source_blob = "\n".join(lines)
+
+    canonical = A.CANONICAL_SPEC.read_text(encoding="utf-8")
+    parents = sorted({m.group(0) for m in A.PARENT_OBLIGATION.finditer(canonical)})
+
+    # Post-audit frozen addenda (spec/03 provenance "addendum (SEC-…)") have no
+    # req/ record by design: the normalization-records scope note declares each
+    # addendum its own original (Original = Normalized by construction).  They
+    # are exempt from req/-citation coverage (check 5b) but validate everywhere
+    # else (unknown-parent check 5, table integrity 7d, …).
+    matrix = (A.REPO_ROOT / "spec" / "03-obligation-matrix.md").read_text(encoding="utf-8")
+    addendum_ids = {
+        m.group(1)
+        for m in re.finditer(r"^\|\s*(R-[A-Z]+-\d+)\s*\|[^|]*\|\s*addendum", matrix, re.M)
+    }
+
+    seen: dict[str, str] = {}
+    per_file: collections.Counter = collections.Counter()
+    per_area: collections.Counter = collections.Counter()
+    per_file_area: collections.Counter = collections.Counter()
+    area_max: dict[str, int] = {}
+
+    for rec in records:
+        rid = rec["REQ-ID"]
+        per_file[rec["_file"]] += 1
+        area = rid.split("-")[1]
+        per_area[area] += 1
+        per_file_area[(rec["_file"], area)] += 1
+        area_max[area] = max(area_max.get(area, 0), int(rid.split("-")[2]))
+
+        # 1. fields
+        if rec["_fields"] != A.FIELDS:
+            err(f"{rid}: field list {rec['_fields']} != required {A.FIELDS}")
+
+        if rec.get("_id_field") != rid:
+            err(f"{rid}: header and REQ-ID field disagree (field says {rec.get('_id_field')!r})")
+
+        # 2. uniqueness
+        if rid in seen:
+            err(f"{rid}: duplicate (also in {seen[rid]})")
+        seen[rid] = rec["_file"]
+
+        # 3. vocabularies
+        lvl = rec.get("NORMATIVE-LEVEL", "")
+        if lvl not in A.NORMATIVE_LEVELS:
+            err(f"{rid}: NORMATIVE-LEVEL {lvl!r} not in vocabulary")
+        ev = rec.get("EVIDENCE-STATUS", "")
+        if ev not in A.EVIDENCE_STATES:
+            err(f"{rid}: EVIDENCE-STATUS {ev!r} not allowed")
+        elif ev != "SPECIFIED":
+            err(f"{rid}: EVIDENCE-STATUS promoted to {ev!r}")
+
+        # 4. provenance bounds + turn/range agreement
+        source = rec.get("SOURCE", "")
+        cits = A.cited_citations(source)
+        spans = [(lo, hi) for lo, hi, _ in cits]
+        if not spans:
+            err(f"{rid}: SOURCE cites no Red-on-Rust.md line range")
+        for lo, hi, declared in cits:
+            if lo < 1 or hi > A.SOURCE_MAX_LINE or lo > hi:
+                err(f"{rid}: cited range L{lo}-L{hi} outside 1..{A.SOURCE_MAX_LINE}")
+            actual = A.turn_of(lo, starts)
+            if declared is None:
+                err(f"{rid}: L{lo}-L{hi} carries no turn marker")
+            elif declared != actual:
+                err(
+                    f"{rid}: L{lo}-L{hi} labelled [{declared}] but those lines are in turn [{actual}]"
+                )
+
+        # 5. parent obligations cited must exist
+        for p in A.parent_obligations(source):
+            if p not in parents:
+                err(f"{rid}: cites unknown parent obligation {p}")
+
+        # 7. signature provenance
+        blob = rec.get("STATEMENT", "") + " " + rec.get("INVARIANTS", "")
+        for tok in {m.group(1) for m in A.IDENTIFIER.finditer(blob)}:
+            if tok in A.FIELDS or tok.startswith(("REQ-", "R-")):
+                continue
+            if len(tok) <= 2:
+                continue  # single math symbols (F, S, R, t, …)
+            if not (":" in tok or "_" in tok or tok[0].isupper()):
+                continue  # ordinary words, math symbols, prose
+            if tok in CROSS_REFERENCE_TOKENS and tok in source_blob:
+                continue
+            if any(tok in "\n".join(lines[lo - 1:hi]) for lo, hi in spans):
+                continue
+            if tok in CROSS_REFERENCE_TOKENS:
+                err(f"{rid}: cross-reference token `{tok}` does not occur anywhere in the source")
+                continue
+            if "::" in tok and tok.rsplit("::", 1)[-1] in "\n".join(
+                lines[lo - 1:hi] for lo, hi in spans
+            ):
+                continue  # path-qualified name whose variant is declared in range
+            first = next(
+                (i + 1 for i, ln in enumerate(lines) if tok in ln), None
+            )
+            err(
+                f"{rid}: token `{tok}` not in cited ranges "
+                f"{['L%d-L%d' % s for s in spans]}; first occurrence "
+                f"{'L%d' % first if first else 'NONE'}"
+            )
+
+    # 2b. gap-free numbering
+    for area, mx in sorted(area_max.items()):
+        if area not in A.AREAS:
+            err(f"unknown area {area!r}")
+        if per_area[area] != mx:
+            err(f"area {area}: {per_area[area]} records but highest index {mx} (gap)")
+
+    # 5b. parent coverage
+    cited_parents = set()
+    for rec in records:
+        cited_parents.update(A.parent_obligations(rec.get("SOURCE", "")))
+    missing = [p for p in parents if p not in cited_parents and p not in addendum_ids]
+    if missing:
+        err(f"{len(missing)} parent obligations not cited: {missing}")
+
+    # 6. dependency resolution
+    cn = set(re.findall(r"\bCN-\d+\b", (A.REQ_DIR / "02-compound-not-split.md").read_text()))
+    amb = set(re.findall(r"\bAMB-\d+\b", (A.REQ_DIR / "03-ambiguous.md").read_text()))
+    vu = set(re.findall(r"\bVU-\d+\b", (A.REQ_DIR / "04-verification-undefined.md").read_text()))
+    all_ids = set(seen)
+    for rec in records:
+        for ref in expand_ranges(rec.get("DEPENDENCIES", "")):
+            if ref not in all_ids:
+                err(f"{rec['REQ-ID']}: DEPENDENCIES references unknown {ref}")
+        for kind, pool, doc in (
+            ("CN", cn, "02-compound-not-split.md"),
+            ("AMB", amb, "03-ambiguous.md"),
+            ("VU", vu, "04-verification-undefined.md"),
+        ):
+            for m in re.findall(rf"\b{kind}-\d+\b", rec.get("DEPENDENCIES", "") + rec.get("SECURITY-IMPACT", "") + rec.get("VERIFICATION-METHOD", "") + rec.get("INVARIANTS", "")):
+                if m not in pool:
+                    err(f"{rec['REQ-ID']}: references {m}, absent from {doc}")
+
+    # 7b. every cross-reference token must be a real source identifier
+    for tok in CROSS_REFERENCE_TOKENS:
+        if tok not in source_blob:
+            err(f"CROSS_REFERENCE_TOKENS lists `{tok}`, absent from the source")
+
+    # 7c. every spec/06 C-nn and spec/09 U-nn cross-reference must exist
+    import re as _re
+    c_ids = set(_re.findall(r"^\| (C-\d{2,3}) \|", (A.REPO_ROOT / "spec" / "06-contradictions-ambiguities.md").read_text(encoding="utf-8"), _re.M))
+    u_ids = set(_re.findall(r"^### (U-\d{2,3}) ", (A.REPO_ROOT / "spec" / "09-unresolved-decisions.md").read_text(encoding="utf-8"), _re.M))
+    # 45 -> 53 -> 58 and 16 -> 19: the terminology-normalization pass (term/)
+    # added C-46...C-53 and U-23...U-25, and its fault-taxonomy audit then added
+    # C-54...C-58 (X-64...X-68) and re-graded C-08 from MINOR to MAJOR, and the
+    # declaration sweep that followed added C-59...C-65 (X-69...X-75), U-26...U-29, and rewrote
+    # C-54 -- which it had first filed on a false premise, now withdrawn.  The struct-field and
+    # enum-variant sweeps then added C-66...C-76 (X-76...X-86) and U-30...U-34, one C- row per
+    # new X- entry.  The expectations are updated here explicitly rather than
+    # left to fail, so that the growth of the registers is a recorded change and
+    # not silent drift.  The post-audit frozen addenda grew the registers again:
+    # C-77 (addendum I), C-78…C-81 (addendum II), C-82…C-85 (addendum III),
+    # C-86…C-92 (addendum IV), and C-93…C-97 (SEC-013/014/015/019/021,
+    # addendum V) — 76 -> 81 -> 85 -> 92 -> 97, recorded for the same reason
+    # (raw rows incl. the C-39 pointer; the index excludes it).
+    # The semantic-nondeterminism audit (audit/semantic-nondeterminism-audit.md,
+    # DET-001...DET-018) then added C-98...C-102 and U-35...U-37 -- 97 -> 102 and
+    # 28 -> 31 -- all filed `open` (that pass issued no frozen addendum, per
+    # R-SCOPE-03), recorded here for the same reason.  The two ID patterns were
+    # widened from \d{2} to \d{2,3} on the same change: C-100...C-102 are the
+    # first three-digit IDs in either register and the two-digit patterns
+    # silently under-counted them (found 99, not 102) rather than failing --
+    # the exact silent drift these assertions exist to prevent.
+    # The request-pipeline proof-obligation audit
+    # (audit/request-pipeline-proof-obligation-matrix.md, GAP-01...GAP-18) then
+    # filed C-103...C-109 and U-39...U-45 -- 102 -> 109 and 32 -> 39.  All seven
+    # C rows are `open` except C-108, which is corrected in place with its
+    # adoption question at U-45; U-44 is a verification-tag decision with no C
+    # row (a register gap, not a frozen-source contradiction).  Addendum VII
+    # (2026-09-03) then re-graded C-103...C-107/C-109 resolved-by-addendum and resolved
+    # U-39...U-44; the counts pinned here are unchanged by a re-grading, and C-108 stays
+    # corrected-in-place with U-45 deferred to a dedicated pass.  Addendum VIII
+    # (2026-09-03) then froze R-BUDGET-10/11/13 and re-graded C-108 resolved-by-addendum;
+    # R-BUDGET-12 stays with U-01 and R-BUDGET-14 is deferred.  The duration-semantics
+    # audit (2026-09-03) then filed C-112...C-115 (open, vs U-01/U-07) -- 109 -> 113 rows;
+    # all five were re-graded by Addendum IX (2026-09-03): C-100 -> R-CAP-11 (U-36) and
+    # C-112...C-115 -> R-BUDGET-15/16 (U-01/U-07), resolving U-01/U-07/U-36.  The pinned
+    # counts are unchanged by a re-grading; findings are resolved, never deleted.
+    if len(c_ids) != 113:
+        err(f"expected 109 C- rows in spec/06, found {len(c_ids)}")
+    # U-38 added by the same audit's checker-mutation pass (spec/08 M036 /
+    # spec/_check.py severity wiring) -- 31 -> 32.
+    if len(u_ids) != 39:
+        err(f"expected 39 U- headings in spec/09, found {len(u_ids)}")
+
+    # --- term/ register sizes, and the PROSE that advertises them -------------
+    # The C-/U- pins above exist because prose counts drift silently. The term/
+    # registers had exactly the same exposure and no gate at all: adding
+    # T-82..T-86, N-32/N-33 and X-87 left "81 canonical terms", "31 laws",
+    # "86 collisions", "1008 citations" and "T-01...T-81" standing in README.md,
+    # spec/00, spec/05 and term/00-overview.md. Nothing failed. Rather than pin
+    # five more magic numbers, derive them from term/_terms.py and check every
+    # live claim against the derived value.
+    import sys as _sys
+    import importlib.util as _ilu
+    _spec = _ilu.spec_from_file_location("_terms_gate", A.REPO_ROOT / "term" / "_terms.py")
+    _t = _ilu.module_from_spec(_spec)
+    _sys.modules["_terms_gate"] = _t  # dataclasses resolves annotations via sys.modules
+    _spec.loader.exec_module(_t)
+    n_terms, n_laws, n_coll = len(_t.TERMS), len(_t.LAWS), len(_t.COLLISIONS)
+    max_t = max(int(x.tid[2:]) for x in _t.TERMS)
+    max_n = max(int(x.lid[2:]) for x in _t.LAWS)
+    max_x = max(int(x.xid[2:]) for x in _t.COLLISIONS)
+
+    # (file, regex capturing a claimed number, the derived value it must equal)
+    _claims = [
+        ("README.md", r"(\d+) canonical terms", n_terms),
+        ("README.md", r"(\d+) non-conflation laws", n_laws),
+        ("spec/05-terminology.md", r"the (\d+) canonical terms", n_terms),
+        ("term/00-overview.md", r"the (\d+) canonical terms, with all seven", n_terms),
+        ("term/00-overview.md", r"present on all (\d+) terms", n_terms),
+        ("term/00-overview.md", r"^(\d+) collisions:", n_coll),
+        ("term/00-overview.md", r"(\d+) collisions are reported", n_coll),
+    ]
+    for fname, pat, want in _claims:
+        txt = (A.REPO_ROOT / fname).read_text(encoding="utf-8")
+        m = _re.search(pat, txt, _re.M)
+        if m is None:
+            err(f"{fname}: no live claim matching /{pat}/ — the prose-count gate "
+                f"has lost its target and is no longer checking anything")
+        elif int(m.group(1)) != want:
+            err(f"{fname}: claims {m.group(1)} where term/_terms.py has {want} "
+                f"(/{pat}/)")
+
+    # ID-range claims of the form `T-01…T-NN`.
+    for fname, pat, want in (
+        ("README.md", r"`T-01`…`T-(\d+)`", max_t),
+        ("spec/00-overview.md", r"T-01…T-(\d+)", max_t),
+        ("spec/00-overview.md", r"N-01…N-(\d+)", max_n),
+        ("spec/00-overview.md", r"X-01…X-(\d+)", max_x),
+        ("README.md", r"`N-01`…`N-(\d+)`", max_n),
+        # README also carries an X- range. It was omitted from this list on the
+        # first pass and went stale immediately -- the gate checked spec/00's
+        # X- range and not this one, which is the same "looks covered, isn't"
+        # shape the gate exists to prevent.
+        ("README.md", r"`X-01`…`X-(\d+)`", max_x),
+        ("spec/05-terminology.md", r"`T-01`…`T-(\d+)`", max_t),
+    ):
+        txt = (A.REPO_ROOT / fname).read_text(encoding="utf-8")
+        m = _re.search(pat, txt)
+        if m is None:
+            err(f"{fname}: no live ID-range claim matching /{pat}/")
+        elif int(m.group(1)) != want:
+            err(f"{fname}: ID range ends at {m.group(1)} but the register's "
+                f"maximum is {want} (/{pat}/)")
+
+    # 7c-bis. The prose summary line must agree with the rows it summarises.
+    # spec/06 opens its summary with "<n> findings (<m> rows ...)".  Both numbers
+    # had silently drifted: the line read "74 findings (76 rows)" against 97
+    # actual rows, and the semantic-nondeterminism pass then added 5 to that
+    # stale base and wrote "79 in 81".  No checker noticed -- the figure is
+    # prose, and every other gate counts the table.  Mutation K12 in
+    # audit/_checker_mutations.py survived all six checkers, which is what
+    # surfaced it.  The authoritative count is the table; any "<n> findings
+    # (<m> rows" claim in the file must match it, so the summary cannot drift
+    # again without failing the build.
+    s06 = (A.REPO_ROOT / "spec" / "06-contradictions-ambiguities.md").read_text(encoding="utf-8")
+    claims = _re.findall(r"(\d+) findings? in (\d+) rows|(\d+) findings? \((\d+) rows", s06)
+    n_rows = len(c_ids)
+    n_find = n_rows - 1  # the C-39 pointer row duplicates C-25; the index excludes it
+    for tup in claims:
+        f_claim = tup[0] or tup[2]
+        r_claim = tup[1] or tup[3]
+        if not f_claim:
+            continue
+        # A quoted historical figure is legitimate: superseded wording is kept
+        # verbatim (R-SCOPE-03).  Only the *live* claim -- the one naming the
+        # current row count -- is checked, and it must be exactly right.
+        if int(r_claim) == n_rows and int(f_claim) != n_find:
+            err(f"spec/06 summary claims {f_claim} findings for {r_claim} rows; "
+                f"the table has {n_rows} rows = {n_find} findings + the C-39 pointer")
+    if not any((t[1] or t[3]) and int(t[1] or t[3]) == n_rows for t in claims):
+        err(f"spec/06 has {n_rows} C- rows but no summary claim states that row "
+            f"count; the prose summary has drifted from the table")
+
+    # 7d. markdown table integrity.  A literal `|` inside a cell -- a set
+    # builder `{ (o,v) | o in O }`, a closure body `unwrap_or_else(|| ...)`, a
+    # quoted property-test matrix row, a grammar's `A | B | C` alternatives, a
+    # wire layout `a || b || c` -- splits that row into extra columns and
+    # silently corrupts the rendered register.  Every row must have the header's
+    # cell count, counting only UNescaped separators; the fix is always to write
+    # `\|`, which is the convention spec/06 C-47 already uses.
+    for path in sorted(A.REPO_ROOT.glob("*/[0-9]*.md")) + [A.REPO_ROOT / "README.md"]:
+        header = None
+        for n, line in enumerate(path.read_text(encoding="utf-8").split("\n"), 1):
+            if not line.startswith("|"):
+                header = None
+                continue
+            cells = len(_re.split(r"(?<!\\)\|", line)) - 2
+            if _re.match(r"^\|[\s:|-]+\|$", line):
+                header = cells
+                continue
+            if header is None:
+                header = cells
+                continue
+            if cells != header:
+                err(f"{path.relative_to(A.REPO_ROOT)}:{n}: table row has {cells} cells but its header "
+                    f"has {header} -- an unescaped `|` inside a cell? write it as `\\|`")
+    for path in sorted(A.REQ_DIR.glob("*.md")):
+        body = path.read_text(encoding="utf-8")
+        for m in _re.finditer(r"\b(C-\d{2}|U-\d{2})\b", body):
+            ref = m.group(1)
+            pool, doc = (c_ids, "spec/06") if ref.startswith("C-") else (u_ids, "spec/09")
+            if ref not in pool:
+                line_no = body[:m.start()].count("\n") + 1
+                err(f"{path.name}:{line_no}: references {ref}, which does not exist in {doc}")
+
+    # 7d. the counts stated in 04-verification-undefined.md must match the records
+    doc04 = (A.REQ_DIR / "04-verification-undefined.md").read_text(encoding="utf-8")
+    counts = {"undefined": 0, "notapplicable": 0, "reviewonly": 0}
+    for rec in records:
+        vm = rec.get("VERIFICATION-METHOD", "")
+        if vm.startswith("UNDEFINED"):
+            counts["undefined"] += 1
+        elif vm.startswith("not applicable"):
+            counts["notapplicable"] += 1
+        elif all(re.fullmatch(r"[^;]*review[^;]*", part.strip()) for part in vm.split(";")):
+            counts["reviewonly"] += 1
+    counts["nonnormative"] = sum(
+        1 for rec in records if rec.get("NORMATIVE-LEVEL") == "NON-NORMATIVE"
+    )
+    rows = {
+        "undefined": r"§1 `UNDEFINED` verification method \| (\d+)",
+        "nonnormative": r"§2 `NON-NORMATIVE` \| (\d+)",
+        "permissions": r"§3 `MAY` permission with no obligation \| (\d+)",
+        "reviewonly": r"§4 review-only \| (\d+)",
+    }
+    found = {}
+    for key, pattern in rows.items():
+        m = re.search(pattern, doc04)
+        if not m:
+            err(f"04-verification-undefined.md: cannot find the {key} count row")
+            continue
+        found[key] = int(m.group(1))
+    for key in ("undefined", "nonnormative", "reviewonly"):
+        if key in found and found[key] != counts[key]:
+            err(f"04-verification-undefined.md declares {key}={found[key]}, registry has {counts[key]}")
+    if "permissions" in found and "nonnormative" in found:
+        want = counts["nonnormative"] + found["permissions"]
+        if want != counts["notapplicable"]:
+            err(
+                f"04-verification-undefined.md §2+§3 = {want} but the registry has "
+                f"{counts['notapplicable']} records with no verification obligation"
+            )
+    other = len(records) - counts["undefined"] - counts["notapplicable"] - counts["reviewonly"]
+    m = re.search(r"differential test\) \| (\d+) \|", doc04)
+    if m and int(m.group(1)) != other:
+        err(f"04-verification-undefined.md declares other={m.group(1)}, registry has {other}")
+    m = re.search(r"\*\*Total registry records\*\* \| \*\*(\d+)\*\*", doc04)
+    if m and int(m.group(1)) != len(records):
+        err(f"04-verification-undefined.md declares total={m.group(1)}, registry has {len(records)}")
+
+    # 8. anchors
+    for tok, ln in A.ANCHORS.items():
+        if ln > len(lines) or tok not in lines[ln - 1]:
+            first = next((i + 1 for i, l in enumerate(lines) if tok in l), None)
+            err(f"anchor {tok}@L{ln} wrong; first occurrence {'L%d' % first if first else 'NONE'}")
+
+    # 9. declared counts in part-file headers
+    for path in sorted(A.REQ_DIR.glob("01-registry-part*.md")):
+        header = path.read_text(encoding="utf-8")[:2000]
+        declared = re.findall(r"`([A-Z]+)` \((\d+)\)", header)
+        for area, n in declared:
+            want = per_file_area[(path.name, area)]
+            if int(n) != want:
+                err(f"{path.name}: header declares {area}={n}, parsed {want} in this file")
+        for (fname, area), n in sorted(per_file_area.items()):
+            if fname == path.name and not any(a == area for a, _ in declared):
+                err(f"{path.name}: contains {n} {area} records but the header declares no `{area}` count")
+        total = re.search(r"— (\d+) atomic units", header)
+        declared_sum = sum(int(n) for _, n in declared)
+        if total and int(total.group(1)) != declared_sum:
+            err(f"{path.name}: header total {total.group(1)} != sum of declared areas {declared_sum}")
+        if declared and declared_sum != per_file[path.name]:
+            err(f"{path.name}: declared {declared_sum} records, parsed {per_file[path.name]}")
+
+    # ------------------------------------------------------------------
+    payload = {
+        "specification": "Red-on-Rust.md",
+        "source_lines": A.SOURCE_MAX_LINE,
+        "record_count": len(records),
+        "evidence_status_of_every_record": "SPECIFIED",
+        "per_file": dict(per_file),
+        "per_area": dict(per_area),
+        "normative_levels": dict(collections.Counter(r.get("NORMATIVE-LEVEL", "") for r in records)),
+        "parent_obligations_total": len(parents),
+        "parent_obligations_cited": len(cited_parents),
+        "records": [
+            {k: v for k, v in r.items() if not k.startswith("_")} for r in records
+        ],
+        "validator_checks": [
+            "12 fields present and ordered",
+            "unique IDs, header/field agreement, gap-free area numbering",
+            "normative-level and evidence-state vocabularies, no promotion",
+            "line cites within 1..42312, every cite carries a turn marker",
+            "cited lines really are in the turn the SOURCE claims",
+            "parent-obligation existence and full 148-obligation coverage",
+            "DEPENDENCIES / CN- / AMB- / VU- references resolve",
+            "every backticked identifier in STATEMENT or INVARIANTS occurs in a cited range",
+            "frozen anchors re-grepped against the source",
+            "part-file header counts match parsed records",
+            "markdown tables structurally intact (no unescaped `|` inside a cell)",
+        ],
+    }
+    out = A.REQ_DIR / "registry.json"
+    if write_json:
+        out.write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    print(f"records parsed          : {len(records)}")
+    print(f"files                   : {dict(per_file)}")
+    print(f"normative levels        : {dict(collections.Counter(r.get('NORMATIVE-LEVEL','') for r in records))}")
+    print(f"evidence states         : {dict(collections.Counter(r.get('EVIDENCE-STATUS','') for r in records))}")
+    print(f"parent obligations      : {len(cited_parents)}/{len(parents)} cited")
+    print(f"per area                : {dict(sorted(per_area.items()))}")
+    print(f"cross-reference tokens  : {len(CROSS_REFERENCE_TOKENS)}")
+    if write_json:
+        print(f"written                 : {out} ({out.stat().st_size} bytes)")
+    print(f"ERRORS                  : {len(ERRORS)}")
+    for e in ERRORS[:60]:
+        print("  ERROR " + e)
+    if len(ERRORS) > 60:
+        print(f"  … {len(ERRORS)-60} more")
+    print(f"WARNINGS                : {len(WARNINGS)}")
+    for w in WARNINGS[:20]:
+        print("  WARN " + w)
+    return 1 if ERRORS else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
