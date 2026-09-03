@@ -19,6 +19,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-CORE-08 | Determinism: state+traces ⇒ unique machine trace | L41623–41646, L27518–27547 | SPECIFIED | ror-runtime | SCHED-FIFO, R-REF-05 |
 | R-CORE-09 | Causal crash recovery (qualified theorem) | L27551–27569, L35159–35176 | SPECIFIED | ror-persistence | R-RECOV-02 T0–T6 |
 | R-CORE-10 | No silent recovery corruption | L42100–42105, L35196–35208 | SPECIFIED | ror-persistence | M015, M016, negative recovery tests |
+| R-CORE-11 | One canonical signature per I2 predicate: ValidatedRequest(E) request-time subsuming ValidatedPlan(plan(E)); Authorized(holder, c, E, t) possession conjunct (formalizes R-KERN-04); ValidatedPlan_pred vs ValidatedPlan_struct; chain stated once (X-01/X-04/X-05; C-80 resolved) | addendum (SEC-016) | SPECIFIED | ror-kernel, ror-runtime | R-TEST-09 differential adjudication |
 | R-TRUST-01 | Trust table (LLM/Block No; host Partial; rest Yes) | L41823–41841, L27611–27624 | SPECIFIED | — | — |
 | R-TRUST-02 | TCB composition; LLM output ∉ TCB authority | L28178–28230 | SPECIFIED | — | — |
 | R-TRUST-03 | No hidden authority; evaluator sees refs only | L37722–37748, L19153–19175 | SPECIFIED | ror-kernel, ror-runtime | Track B (mock kernel), visibility checks |
@@ -128,6 +129,8 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-MARSHAL-02 | Explicit delegation only; DelegatedCapability envelope; ≼ parent | L25972–26001, L37953–37959 | SPECIFIED | ror-runtime, ror-kernel | Track C (delegation) |
 | R-MARSHAL-03 | MarshalledValue = canonical bytes; unmarshal(marshal(v)) = v | L25674–25701 | SPECIFIED | ror-runtime | Track B (marshalling) |
 | R-MARSHAL-04 | Semantic marshalling rule (CapRef ∉ marshal(v)) | L8695–8698 | SPECIFIED | ror-runtime | Track B |
+| R-MARSHAL-05 | Delegation constructible: Expr::Delegate calls kernel.derive and yields a kernel-constructed envelope, never a plain Value variant; receive-side revalidation (liveness, lineage, target, generation) before registration, faults leave the recipient CapabilityContext byte-identical; MarshalledValue is the checked-bytes form; MarshalFault unified (X-65; C-79 resolved) | addendum (SEC-005) | SPECIFIED | ror-runtime, ror-kernel | M024, delegation negative suite |
+| R-MARSHAL-06 | contains_capability is a frozen total predicate: closed traversal domain descending into List, Map, Tuple at any depth and FunctionValue.env recursively; sole exclusion kernel-sealed delegation envelopes; Bytes are data; marshal Ok implies no reachable capability (C-81 resolved) | addendum (SEC-018) | SPECIFIED | ror-runtime | M032, closure-smuggling corpus |
 
 ## S-17 Canonical serialization
 | ID | Obligation (short) | Provenance | Status | Impl→ | Verify→ |
@@ -143,6 +146,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-CANON-09 | Digest rules + when-to-compare-bytes rule | L28185–28228, L30588–30590 | SPECIFIED | ror-core | digest property tests |
 | R-CANON-10 | Injectivity as structural property + scoped evidence claim | L30592–30598, L35068 | SPECIFIED | ror-core | round-trip + differential |
 | R-CANON-11 | Golden vectors as normative fixtures | L30599–30646, L31948–32010, L33266–33286 | SPECIFIED | ror-core (vectors/) | M1 acceptance |
+| R-CANON-12 | Data decoder rejects capability payloads: 0x05 and standalone 0x30 yield CanonicalError::CapabilityInData; only the kernel-mediated codec path produces or consumes capability payloads; unmarshal runs contains_capability — symmetric boundary (C-14/U-02 security direction; C-78 resolved) | addendum (SEC-003) | SPECIFIED | ror-core | M022, negative golden vectors |
 
 ## S-18 Persistence / S-19 Recovery
 | ID | Obligation (short) | Provenance | Status | Impl→ | Verify→ |
@@ -153,6 +157,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-PERSIST-04 | Snapshot content (include/exclude lists) | L26293–26330 | SPECIFIED | ror-persistence | snapshot review, U-02 |
 | R-PERSIST-05 | Atomic snapshot protocol; ValidSnapshot iff commit+digest | L26216–26240, L35177–35188 | SPECIFIED | ror-persistence | SNAPSHOT-COMMIT-INTEGRITY, crash harness T6 |
 | R-PERSIST-06 | WAL sequence continuity; gaps rejected | L35088–35110, L35189–35208 | SPECIFIED | ror-persistence | WAL-SEQUENCE-CONTINUITY, WAL-GAP-REJECT, M015 |
+| R-PERSIST-07 | Durable authority lattice: snapshot carries the AuthorityNode set, revocation_set and generation counters; WAL event kinds CapabilityGranted/Derived/Revoked; recovery reconstructs the arena, replays capability events, faults on dangling or generation-mismatched CapRef; revocation monotonic across crashes (RECOVERY-REVOCATION-DURABLE) | addendum (SEC-004) | SPECIFIED | ror-persistence, ror-kernel | RECOVERY-REVOCATION-DURABLE, M023, crash matrix T0–T6 with pre-crash revocation |
 | R-RECOV-01 | D = ⟨S,L,H⟩; Recover = Replay | L26122–26140 | SPECIFIED | ror-persistence | recovery differential |
 | R-RECOV-02 | Normative crash matrix T0–T6 | L35159–35176, L28467–28493 | SPECIFIED | ror-persistence | crash harness, M10 |
 | R-RECOV-03 | Recovery algorithm (12 steps) | L35189–35208, L26272–26300 | SPECIFIED | ror-persistence | recovery differential (R-REF-01) |
@@ -198,4 +203,4 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-CLAIM-03 | Engineering response format; CONFLICT reporting | L38808–38846 | SPECIFIED | process | — |
 | R-CLAIM-04 | Start condition (no new semantic phase; reference alongside) | L38921–38928 | SPECIFIED | process | — |
 
-**Total: 152 obligations** (148 transcribed from the frozen source + 4 post-audit frozen addenda: R-COMPILE-06, R-KERN-04, R-KERN-05, R-EFFECT-08). All `SPECIFIED`. None may be promoted without repository evidence per `00-overview.md` §2.
+**Total: 157 obligations** (148 transcribed from the frozen source + 9 post-audit frozen addenda: R-COMPILE-06, R-CORE-11, R-KERN-04, R-KERN-05, R-EFFECT-08, R-MARSHAL-05, R-MARSHAL-06, R-CANON-12, R-PERSIST-07). All `SPECIFIED`. None may be promoted without repository evidence per `00-overview.md` §2.

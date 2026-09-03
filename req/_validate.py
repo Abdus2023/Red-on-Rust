@@ -160,6 +160,17 @@ def main() -> int:
     canonical = A.CANONICAL_SPEC.read_text(encoding="utf-8")
     parents = sorted({m.group(0) for m in A.PARENT_OBLIGATION.finditer(canonical)})
 
+    # Post-audit frozen addenda (spec/03 provenance "addendum (SEC-…)") have no
+    # req/ record by design: the normalization-records scope note declares each
+    # addendum its own original (Original = Normalized by construction).  They
+    # are exempt from req/-citation coverage (check 5b) but validate everywhere
+    # else (unknown-parent check 5, table integrity 7d, …).
+    matrix = (A.REPO_ROOT / "spec" / "03-obligation-matrix.md").read_text(encoding="utf-8")
+    addendum_ids = {
+        m.group(1)
+        for m in re.finditer(r"^\|\s*(R-[A-Z]+-\d+)\s*\|[^|]*\|\s*addendum", matrix, re.M)
+    }
+
     seen: dict[str, str] = {}
     per_file: collections.Counter = collections.Counter()
     per_area: collections.Counter = collections.Counter()
@@ -258,7 +269,7 @@ def main() -> int:
     cited_parents = set()
     for rec in records:
         cited_parents.update(A.parent_obligations(rec.get("SOURCE", "")))
-    missing = [p for p in parents if p not in cited_parents]
+    missing = [p for p in parents if p not in cited_parents and p not in addendum_ids]
     if missing:
         err(f"{len(missing)} parent obligations not cited: {missing}")
 
@@ -297,9 +308,12 @@ def main() -> int:
     # enum-variant sweeps then added C-66...C-76 (X-76...X-86) and U-30...U-34, one C- row per
     # new X- entry.  The expectations are updated here explicitly rather than
     # left to fail, so that the growth of the registers is a recorded change and
-    # not silent drift.
-    if len(c_ids) != 76:
-        err(f"expected 76 C- rows in spec/06, found {len(c_ids)}")
+    # not silent drift.  The post-audit frozen addenda grew the registers again:
+    # C-77 (SEC-001/SEC-002 remediation, addendum I) and C-78…C-81
+    # (SEC-003/004/005/016/018, addendum II) — 76 -> 81, recorded here for the
+    # same reason.
+    if len(c_ids) != 81:
+        err(f"expected 81 C- rows in spec/06, found {len(c_ids)}")
     if len(u_ids) != 28:
         err(f"expected 28 U- headings in spec/09, found {len(u_ids)}")
 

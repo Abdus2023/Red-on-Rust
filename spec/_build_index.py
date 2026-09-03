@@ -15,7 +15,7 @@ SPEC = "SPECIFIED"
 
 sections = [
  ("S-01","Part I — Foundations","Scope, status, conventions",["R-SCOPE-01","R-SCOPE-02","R-SCOPE-03","R-SCOPE-04"],prov("37640-37695","41280-41320"),None),
- ("S-02","Part I — Foundations","Core thesis and central invariants",["R-CORE-01","R-CORE-02","R-CORE-03","R-CORE-04","R-CORE-05","R-CORE-06","R-CORE-07","R-CORE-08","R-CORE-09","R-CORE-10"],prov("27485-27654","41320-41770"),None),
+ ("S-02","Part I — Foundations","Core thesis and central invariants",["R-CORE-01","R-CORE-02","R-CORE-03","R-CORE-04","R-CORE-05","R-CORE-06","R-CORE-07","R-CORE-08","R-CORE-09","R-CORE-10","R-CORE-11"],prov("27485-27654","41320-41770"),None),
  ("S-03","Part I — Foundations","Trust model and trusted computing base",["R-TRUST-01","R-TRUST-02","R-TRUST-03"],prov("27611-27624","28178-28230","37722-37748"),None),
  ("S-04","Part I — Foundations","System architecture and component boundaries",["R-ARCH-01","R-ARCH-02","R-ARCH-03","R-ARCH-04"],prov("37750-37790","9059-9118","39036-39195"),None),
  ("S-05","Part I — Foundations","LLM / planner boundary",["R-PLANNER-01","R-PLANNER-02","R-PLANNER-03","R-PLANNER-04","R-PLANNER-05"],prov("27150-27480","27920-27931","37750-37790"),None),
@@ -29,9 +29,9 @@ sections = [
  ("S-13","Part IV — Effects","Transactional issuance and durability boundary",["R-DUR-01","R-DUR-02","R-DUR-03","R-DUR-04","R-DUR-05"],prov("35078-35258","37908-37981"),None),
  ("S-14","Part IV — Effects","Host boundary and replay",["R-HOST-01","R-HOST-02","R-HOST-03","R-HOST-04","R-HOST-05"],prov("25972-25996","37985-38000","24003-24030"),"U-06"),
  ("S-15","Part V — Concurrency","Actors and deterministic scheduling",["R-ACTOR-01","R-ACTOR-02","R-ACTOR-03","R-ACTOR-04","R-ACTOR-05","R-ACTOR-06","R-ACTOR-07","R-ACTOR-08"],prov("25457-26108","24069-25428"),"U-03;U-05"),
- ("S-16","Part V — Concurrency","Marshalling and delegation",["R-MARSHAL-01","R-MARSHAL-02","R-MARSHAL-03","R-MARSHAL-04"],prov("25674-26001","37946-37959","8695-8698"),"U-09"),
- ("S-17","Part VI — Persistence","Canonical serialization (15A frozen wire format)",["R-CANON-01","R-CANON-02","R-CANON-03","R-CANON-04","R-CANON-05","R-CANON-06","R-CANON-07","R-CANON-08","R-CANON-09","R-CANON-10","R-CANON-11"],prov("32936-33707","29451-31298","34987-35024"),"C-02"),
- ("S-18","Part VI — Persistence","Persistence protocol (15B)",["R-PERSIST-01","R-PERSIST-02","R-PERSIST-03","R-PERSIST-04","R-PERSIST-05","R-PERSIST-06"],prov("35078-35258","33757-34916"),"U-02;U-16"),
+ ("S-16","Part V — Concurrency","Marshalling and delegation",["R-MARSHAL-01","R-MARSHAL-02","R-MARSHAL-03","R-MARSHAL-04","R-MARSHAL-05","R-MARSHAL-06"],prov("25674-26001","37946-37959","8695-8698"),"U-09"),
+ ("S-17","Part VI — Persistence","Canonical serialization (15A frozen wire format)",["R-CANON-01","R-CANON-02","R-CANON-03","R-CANON-04","R-CANON-05","R-CANON-06","R-CANON-07","R-CANON-08","R-CANON-09","R-CANON-10","R-CANON-11","R-CANON-12"],prov("32936-33707","29451-31298","34987-35024"),"C-02"),
+ ("S-18","Part VI — Persistence","Persistence protocol (15B)",["R-PERSIST-01","R-PERSIST-02","R-PERSIST-03","R-PERSIST-04","R-PERSIST-05","R-PERSIST-06","R-PERSIST-07"],prov("35078-35258","33757-34916"),"U-02;U-16"),
  ("S-19","Part VI — Persistence","Crash recovery",["R-RECOV-01","R-RECOV-02","R-RECOV-03","R-RECOV-04","R-RECOV-05","R-RECOV-06","R-RECOV-07"],prov("35159-35258","26109-27484"),"U-15;U-17"),
  ("S-20","Part VII — Verification","Independent reference model and differential verification",["R-REF-01","R-REF-02","R-REF-03","R-REF-04","R-REF-05","R-REF-06"],prov("35272-37168","37985-38560","28590-28717"),None),
  ("S-21","Part VII — Verification","Test infrastructure, mutation, CI",["R-TEST-01","R-TEST-02","R-TEST-03","R-TEST-04","R-TEST-05","R-TEST-06","R-TEST-07","R-TEST-08","R-TEST-09","R-TEST-10","R-TEST-11"],prov("38587-38970","37169-37338","37339-37459"),None),
@@ -56,6 +56,7 @@ requirements = [
  ("R-CORE-08","S-02","Determinism: initial state + scheduler trace + host trace implies unique machine trace","41623-41646;27518-27547",SPEC,[],["ror-runtime"],["SCHED-FIFO","R-REF-05"],["U-07"]),
  ("R-CORE-09","S-02","Causal crash recovery (qualified theorem); never infer NotExecuted","27551-27569;35159-35176",SPEC,[],["ror-persistence"],["RECOVERY-ISSUED-INDETERMINATE"],["U-15"]),
  ("R-CORE-10","S-02","No silent recovery corruption","42100-42105;35196-35208",SPEC,[],["ror-persistence"],["M015","M016","negative recovery tests"],[]),
+ ("R-CORE-11","S-02","I2 predicate signatures, canonical form (frozen addendum)","addendum",SPEC,[],["ror-kernel","ror-runtime"],["R-TEST-09","R-KERN-04"],["C-80"]),
  ("R-TRUST-01","S-03","Trust table (LLM/Block No; host Partial; rest Yes)","41823-41841;27610-27624",SPEC,[],[],[],[]),
  ("R-TRUST-02","S-03","TCB composition; LLM output not in TCB authority","28178-28230",SPEC,[],[],[],[]),
  ("R-TRUST-03","S-03","No hidden authority; evaluator sees references only","37722-37748;19153-19175",SPEC,[],["ror-kernel","ror-runtime"],["Track B mock kernel","visibility checks"],[]),
@@ -141,6 +142,8 @@ requirements = [
  ("R-MARSHAL-02","S-16","Explicit delegation only; DelegatedCapability envelope; <= parent","25972-26001;37953-37959",SPEC,[],["ror-runtime","ror-kernel"],["Track C (delegation)"],[]),
  ("R-MARSHAL-03","S-16","MarshalledValue = canonical bytes; unmarshal(marshal(v)) = v","25674-25701;26073-26079",SPEC,[],["ror-runtime"],["Track B (marshalling)"],["U-09"]),
  ("R-MARSHAL-04","S-16","Semantic marshalling rule (CapRef not in marshal(v))","8695-8698",SPEC,[],["ror-runtime"],["Track B"],[]),
+ ("R-MARSHAL-05","S-16","Delegation surface constructible and revalidated (frozen addendum)","addendum",SPEC,[],["ror-runtime","ror-kernel"],["M024","delegation negative suite"],["C-79"]),
+ ("R-MARSHAL-06","S-16","contains_capability frozen total predicate (frozen addendum)","addendum",SPEC,[],["ror-runtime"],["M032","closure-smuggling corpus"],["C-81"]),
  ("R-CANON-01","S-17","Serialization independent of Rust layout/serializers","28185-28228;28453-28465",SPEC,[],["ror-core"],["format review"],[]),
  ("R-CANON-02","S-17","Universal envelope (version/tag/len/payload)","30532-30543;33290-33347",SPEC,[],["ror-core"],["golden vectors"],[]),
  ("R-CANON-03","S-17","Frozen standalone type tags (0x00,0x20,0x30,0x40,0x41)","33087-33154",SPEC,[],["ror-core"],["golden vectors"],["C-02"]),
@@ -152,12 +155,14 @@ requirements = [
  ("R-CANON-09","S-17","Digest rules + when-to-compare-bytes rule","28185-28228;30588-30590",SPEC,[],["ror-core"],["digest property tests"],["C-12","C-13"]),
  ("R-CANON-10","S-17","Injectivity as structural property + scoped evidence claim","30592-30598;35068",SPEC,[],["ror-core"],["round-trip + differential"],["C-12"]),
  ("R-CANON-11","S-17","Golden vectors as normative fixtures","30599-30646;31948-32010;33266-33286",SPEC,[],["ror-core (vectors/)"],["M1 acceptance"],[]),
+ ("R-CANON-12","S-17","Data decoder rejects capability payloads (frozen addendum)","addendum",SPEC,[],["ror-core"],["M022","negative golden vectors"],["C-78"]),
  ("R-PERSIST-01","S-18","Persistence = recording, not a semantic machine; no secondary serialization","33757-33790;35078-35087",SPEC,[],["ror-persistence"],["dependency review"],[]),
  ("R-PERSIST-02","S-18","Two-level framing; WalFrame checksum; 8 rejection classes","33802-33830;35088-35110",SPEC,[],["ror-persistence"],["negative parsing tests","M016"],[]),
  ("R-PERSIST-03","S-18","Record taxonomy; EventEnvelope monotonic sequence","33860-33900;35111-35144",SPEC,[],["ror-persistence"],["sequence property"],["U-16"]),
  ("R-PERSIST-04","S-18","Snapshot content (include/exclude lists)","26293-26330",SPEC,[],["ror-persistence"],["snapshot review"],["U-02"]),
  ("R-PERSIST-05","S-18","Atomic snapshot protocol; ValidSnapshot iff commit+digest","26216-26240;35177-35188",SPEC,[],["ror-persistence"],["SNAPSHOT-COMMIT-INTEGRITY","crash harness T6"],[]),
  ("R-PERSIST-06","S-18","WAL sequence continuity; gaps rejected","35088-35110;35189-35208",SPEC,[],["ror-persistence"],["WAL-SEQUENCE-CONTINUITY","WAL-GAP-REJECT","M015"],["U-16"]),
+ ("R-PERSIST-07","S-18","Durable authority lattice; revocation survives crash (frozen addendum)","addendum",SPEC,[],["ror-persistence","ror-kernel"],["RECOVERY-REVOCATION-DURABLE","M023"],[]),
  ("R-RECOV-01","S-19","D = <S,L,H>; Recover = Replay","26122-26140",SPEC,[],["ror-persistence"],["recovery differential"],["C-40"]),
  ("R-RECOV-02","S-19","Normative crash matrix T0-T6","35159-35176;28467-28493",SPEC,[],["ror-persistence"],["crash harness","M10"],[]),
  ("R-RECOV-03","S-19","Recovery algorithm (12 steps)","35189-35208;26271-26300",SPEC,[],["ror-persistence"],["recovery differential (R-REF-01)"],["U-02","U-17"]),
@@ -441,6 +446,10 @@ mutations = [
  ("M019","resume with Value::Capability result",["R-EFFECT-08"]),
  ("M020","resume with closure result",["R-EFFECT-08"]),
  ("M021","authorize without possession check",["R-KERN-04"]),
+ ("M022","unmarshal accepts capability payload",["R-CANON-12"]),
+ ("M023","recovery resurrects revoked capability",["R-PERSIST-07"]),
+ ("M024","receive-side registration without kernel revalidation",["R-MARSHAL-05"]),
+ ("M032","contains_capability skips FunctionValue.env",["R-MARSHAL-06"]),
 ]
 
 tags = [
@@ -462,6 +471,7 @@ tags = [
  ("RECOVERY-ISSUED-INDETERMINATE",["R-DUR-04","R-RECOV-02"],"M10"),
  ("SNAPSHOT-COMMIT-INTEGRITY",["R-PERSIST-05"],"M7;M10"),
  ("EFFECT-RECEIPT-RESULT-NO-AUTHORITY",["R-EFFECT-08"],"M5 (post-audit addendum)"),
+ ("RECOVERY-REVOCATION-DURABLE",["R-PERSIST-07"],"M10 (post-audit addendum)"),
 ]
 
 crash_matrix = [
@@ -476,16 +486,16 @@ crash_matrix = [
 
 milestones = [
  ("M0","Workspace",["cargo check/test/fmt/clippy pass","no semantic functionality required"],["R-REPO-01","R-ORDER-04"]),
- ("M1","Canonical serialization",["golden vectors pass","round trips pass","malformed inputs reject","duplicate keys reject","canonical bytes deterministic"],["R-CANON-01","R-CANON-02","R-CANON-03","R-CANON-04","R-CANON-05","R-CANON-06","R-CANON-07","R-CANON-08","R-CANON-09","R-CANON-10","R-CANON-11"]),
+ ("M1","Canonical serialization",["golden vectors pass","round trips pass","malformed inputs reject","duplicate keys reject","canonical bytes deterministic"],["R-CANON-01","R-CANON-02","R-CANON-03","R-CANON-04","R-CANON-05","R-CANON-06","R-CANON-07","R-CANON-08","R-CANON-09","R-CANON-10","R-CANON-11","R-CANON-12"]),
  ("M2","Pure CEK",["differential equivalence for Value Var Let Seq If"],["R-CEK-01","R-CEK-02","R-CEK-06","R-CEK-07","R-REF-01"]),
  ("M3","Lambda / Call",["CEK-CALL-ARITY-PRECHECK","CEK-CALL-ARGS-LTR","CEK-CLOSURE-LEXICAL-CAPTURE","deep-call stress"],["R-CEK-03","R-CEK-04","R-CEK-05"]),
- ("M4","Capability / Attenuation",["CAP-DERIVE-NO-AMPLIFICATION","revocation","expiration","lexical capability binding","independent reference capability algebra"],["R-CAP-01","R-CAP-02","R-CAP-03","R-CAP-04","R-CAP-05","R-CAP-06","R-CAP-07","R-CAP-08","R-CAP-09","R-KERN-01","R-KERN-02","R-KERN-03","R-KERN-04","R-KERN-05"]),
- ("M5","Effects",["authorization","budget gates","deadline","host policy","EffectId","EffectDigest","durable issuance","receipt validation"],["R-EFFECT-01","R-EFFECT-02","R-EFFECT-03","R-EFFECT-04","R-EFFECT-05","R-EFFECT-06","R-EFFECT-07","R-DUR-01","R-DUR-02","R-DUR-03","R-DUR-04","R-DUR-05","R-HOST-01","R-HOST-02","R-HOST-03","R-HOST-04","R-HOST-05","R-EFFECT-08"]),
- ("M6","Actors",["FIFO scheduler","FIFO mailbox","spawn isolation","send/receive","delegation","blocked/wakeup semantics"],["R-ACTOR-01","R-ACTOR-02","R-ACTOR-03","R-ACTOR-04","R-ACTOR-05","R-ACTOR-06","R-ACTOR-07","R-ACTOR-08","R-MARSHAL-01","R-MARSHAL-02","R-MARSHAL-03","R-MARSHAL-04"]),
- ("M7","Persistence",["WAL","snapshot","effect journal","checksum","sequence continuity","recovery"],["R-PERSIST-01","R-PERSIST-02","R-PERSIST-03","R-PERSIST-04","R-PERSIST-05","R-PERSIST-06","R-RECOV-01","R-RECOV-03","R-RECOV-04","R-RECOV-05","R-RECOV-06"]),
+ ("M4","Capability / Attenuation",["CAP-DERIVE-NO-AMPLIFICATION","revocation","expiration","lexical capability binding","independent reference capability algebra"],["R-CAP-01","R-CAP-02","R-CAP-03","R-CAP-04","R-CAP-05","R-CAP-06","R-CAP-07","R-CAP-08","R-CAP-09","R-KERN-01","R-KERN-02","R-KERN-03","R-KERN-04","R-KERN-05","R-MARSHAL-05"]),
+ ("M5","Effects",["authorization","budget gates","deadline","host policy","EffectId","EffectDigest","durable issuance","receipt validation"],["R-EFFECT-01","R-EFFECT-02","R-EFFECT-03","R-EFFECT-04","R-EFFECT-05","R-EFFECT-06","R-EFFECT-07","R-DUR-01","R-DUR-02","R-DUR-03","R-DUR-04","R-DUR-05","R-HOST-01","R-HOST-02","R-HOST-03","R-HOST-04","R-HOST-05","R-EFFECT-08","R-CORE-11"]),
+ ("M6","Actors",["FIFO scheduler","FIFO mailbox","spawn isolation","send/receive","delegation","blocked/wakeup semantics"],["R-ACTOR-01","R-ACTOR-02","R-ACTOR-03","R-ACTOR-04","R-ACTOR-05","R-ACTOR-06","R-ACTOR-07","R-ACTOR-08","R-MARSHAL-01","R-MARSHAL-02","R-MARSHAL-03","R-MARSHAL-04","R-MARSHAL-06"]),
+ ("M7","Persistence",["WAL","snapshot","effect journal","checksum","sequence continuity","recovery"],["R-PERSIST-01","R-PERSIST-02","R-PERSIST-03","R-PERSIST-04","R-PERSIST-05","R-PERSIST-06","R-RECOV-01","R-RECOV-03","R-RECOV-04","R-RECOV-05","R-RECOV-06","R-PERSIST-07"]),
  ("M8","Differential system",["generated programs","reference execution","production execution","normalized comparison","first-divergence reporting","shrinking"],["R-REF-01","R-REF-02","R-REF-03","R-REF-04","R-REF-05","R-REF-06","R-TEST-02","R-TEST-03","R-TEST-07"]),
  ("M9","Mutation gate",["MutationKillRate = 100% for all registered non-equivalent mutants"],["R-TEST-04","R-TEST-05","R-TEST-06"]),
- ("M10","Crash/recovery gate",["T0..T6 all produce the frozen expected classification"],["R-RECOV-02","R-TEST-08","R-DUR-04"]),
+ ("M10","Crash/recovery gate",["T0..T6 all produce the frozen expected classification"],["R-RECOV-02","R-TEST-08","R-DUR-04","R-PERSIST-07"]),
  ("M11","Release candidate",["exhaustive","property","mutation","differential","crash","stress","determinism","serialization","security all green"],["R-TEST-10","R-TEST-11","R-CLAIM-01"]),
 ]
 
@@ -509,11 +519,11 @@ sprint = [
 ]
 
 crates = [
- ("ror-core","Lowest-level semantic domain types; std-only",["R-CALC-01","R-CALC-02","R-CALC-03","R-CALC-04","R-CALC-05","R-CALC-06","R-CALC-08","R-BUDGET-01","R-BUDGET-02","R-BUDGET-03","R-BUDGET-04","R-BUDGET-05","R-BUDGET-06","R-BUDGET-07","R-CAP-01","R-KERN-01","R-CANON-01","R-CANON-02","R-CANON-03","R-CANON-04","R-CANON-05","R-CANON-06","R-CANON-07","R-CANON-08","R-CANON-09","R-CANON-10","R-CANON-11"],[]),
+ ("ror-core","Lowest-level semantic domain types; std-only",["R-CALC-01","R-CALC-02","R-CALC-03","R-CALC-04","R-CALC-05","R-CALC-06","R-CALC-08","R-BUDGET-01","R-BUDGET-02","R-BUDGET-03","R-BUDGET-04","R-BUDGET-05","R-BUDGET-06","R-BUDGET-07","R-CAP-01","R-KERN-01","R-CANON-01","R-CANON-02","R-CANON-03","R-CANON-04","R-CANON-05","R-CANON-06","R-CANON-07","R-CANON-08","R-CANON-09","R-CANON-10","R-CANON-11","R-CANON-12"],[]),
  ("ror-compiler","Block -> ExecutablePlan; plan constructors private",["R-ARCH-03","R-COMPILE-01","R-COMPILE-02","R-COMPILE-03","R-COMPILE-04","R-COMPILE-05","R-COMPILE-06","R-ORDER-03"],["ror-core"]),
- ("ror-kernel","CapabilityKernel: derive/authorize/validate/revocation; authority storage",["R-CAP-02","R-CAP-03","R-CAP-04","R-CAP-05","R-CAP-06","R-CAP-07","R-CAP-08","R-CAP-09","R-KERN-01","R-KERN-02","R-KERN-03","R-KERN-04","R-KERN-05","R-TRUST-03"],["ror-core"]),
- ("ror-runtime","CEK machine, actors, scheduler, effects, marshalling",["R-ARCH-01","R-CORE-08","R-CEK-01","R-CEK-02","R-CEK-03","R-CEK-04","R-CEK-05","R-CEK-06","R-CEK-07","R-EFFECT-01","R-EFFECT-02","R-EFFECT-03","R-EFFECT-04","R-EFFECT-05","R-EFFECT-06","R-EFFECT-07","R-EFFECT-08","R-ACTOR-01","R-ACTOR-02","R-ACTOR-03","R-ACTOR-04","R-ACTOR-05","R-ACTOR-06","R-ACTOR-07","R-ACTOR-08","R-MARSHAL-01","R-MARSHAL-02","R-MARSHAL-03","R-MARSHAL-04"],["ror-core","ror-kernel"]),
- ("ror-persistence","WAL, snapshots, effect journal, recovery",["R-DUR-01","R-DUR-02","R-DUR-03","R-DUR-04","R-DUR-05","R-PERSIST-01","R-PERSIST-02","R-PERSIST-03","R-PERSIST-04","R-PERSIST-05","R-PERSIST-06","R-RECOV-01","R-RECOV-02","R-RECOV-03","R-RECOV-04","R-RECOV-05","R-RECOV-06","R-RECOV-07","R-KERN-05"],["ror-core"]),
+ ("ror-kernel","CapabilityKernel: derive/authorize/validate/revocation; authority storage",["R-CAP-02","R-CAP-03","R-CAP-04","R-CAP-05","R-CAP-06","R-CAP-07","R-CAP-08","R-CAP-09","R-KERN-01","R-KERN-02","R-KERN-03","R-KERN-04","R-KERN-05","R-PERSIST-07","R-CORE-11","R-TRUST-03"],["ror-core"]),
+ ("ror-runtime","CEK machine, actors, scheduler, effects, marshalling",["R-ARCH-01","R-CORE-08","R-CEK-01","R-CEK-02","R-CEK-03","R-CEK-04","R-CEK-05","R-CEK-06","R-CEK-07","R-EFFECT-01","R-EFFECT-02","R-EFFECT-03","R-EFFECT-04","R-EFFECT-05","R-EFFECT-06","R-EFFECT-07","R-EFFECT-08","R-ACTOR-01","R-ACTOR-02","R-ACTOR-03","R-ACTOR-04","R-ACTOR-05","R-ACTOR-06","R-ACTOR-07","R-ACTOR-08","R-MARSHAL-01","R-MARSHAL-02","R-MARSHAL-03","R-MARSHAL-04","R-MARSHAL-05","R-MARSHAL-06","R-CORE-11"],["ror-core","ror-kernel"]),
+ ("ror-persistence","WAL, snapshots, effect journal, recovery",["R-DUR-01","R-DUR-02","R-DUR-03","R-DUR-04","R-DUR-05","R-PERSIST-01","R-PERSIST-02","R-PERSIST-03","R-PERSIST-04","R-PERSIST-05","R-PERSIST-06","R-RECOV-01","R-RECOV-02","R-RECOV-03","R-RECOV-04","R-RECOV-05","R-RECOV-06","R-RECOV-07","R-KERN-05","R-PERSIST-07"],["ror-core"]),
  ("ror-host","Host execution and replay boundaries",["R-HOST-01","R-HOST-02","R-HOST-03","R-HOST-04","R-HOST-05"],["ror-core"]),
  ("ror-agent","Planner/observation/supervisor integration",["R-ARCH-01","R-PLANNER-01","R-PLANNER-02","R-PLANNER-03","R-PLANNER-04","R-PLANNER-05"],["ror-core","ror-compiler","ror-runtime"]),
  ("ror-reference","Independent executable semantic model",["R-REF-01","R-REF-02","R-REF-03","R-REF-04"],["frozen semantics only (no production core deps)"]),
@@ -562,12 +572,12 @@ index = {
     },
     "id_schemes": {
       "S-NN": "specification section (24)",
-      "R-AREA-NN": "normative requirement/obligation (152; 148 source-transcribed + 4 post-audit frozen addenda)",
+      "R-AREA-NN": "normative requirement/obligation (157; 148 source-transcribed + 9 post-audit frozen addenda)",
       "C-NN": f"contradiction/ambiguity finding ({len(findings)} indexed; {len(findings)+len(INDEX_EXCLUSIONS)} rows in spec/06, incl. pointer C-39 which duplicates C-25)",
       "U-NN": f"unresolved item requiring explicit decision ({len(unresolved)})",
       "M-NN": "milestone M0-M11",
-      "TAG": "source verification-obligation tags (18; 17 frozen-source + 1 post-audit addendum)",
-      "M0NN": "baseline mutation registry (21; 18 baseline + 3 post-audit)",
+      "TAG": "source verification-obligation tags (19; 17 frozen-source + 2 post-audit addenda)",
+      "M0NN": "baseline mutation registry (25; 18 baseline + 7 post-audit: M019–M024, M032)",
       "ROR-NNN": "first-sprint tasks (16)"
     },
     "documents": {

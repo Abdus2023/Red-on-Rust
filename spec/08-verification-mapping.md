@@ -29,13 +29,14 @@ The master prompt §21 COVERAGE (L38544–38577) freezes this tag list; mileston
 
 **Tag normalization note:** the README (L41969–42010) lists a slightly different example set (e.g., `CEK-CALL-ARITY-PRECHECK`, `BUDGET-ESCROW-CONSERVATION`, `MARSHAL-CAPABILITY-REJECT`); the master-prompt list above is the frozen canonical set; `MARSHAL-CAPABILITY-REJECT` ≙ `MARSHAL-NO-RAW-CAPABILITY` (C-10, terminology 05 §5).
 
-**Post-audit addendum tag** (not part of the frozen source set; added by the SEC-001 remediation, obligation R-EFFECT-08):
+**Post-audit addendum tags** (not part of the frozen source set; added by remediations SEC-001 and SEC-004):
 
 | Tag | Obligation(s) covered | Required evidence | Repo evidence |
 |---|---|---|---|
 | `EFFECT-RECEIPT-RESULT-NO-AUTHORITY` | R-EFFECT-08 (post-audit addendum) | Receipt-result admission: result payload is data-domain only, capability/closure-free at any nesting depth, verified before resumption (mutations M019, M020) | NONE |
+| `RECOVERY-REVOCATION-DURABLE` | R-PERSIST-07 (post-audit addendum) | Revocation survives crash: crash matrix T0–T6 with revocation committed before the crash point; revoked caps stay revoked; dangling/generation-mismatched CapRefs ⇒ `RecoveryFault` (mutation M023) | NONE |
 
-## 2. Mutation registry → obligation map (M001–M021, R-TEST-04)
+## 2. Mutation registry → obligation map (M001–M024 + M032, R-TEST-04)
 
 | Mutant | Injected defect | Obligation it must kill evidence for |
 |---|---|---|
@@ -60,6 +61,10 @@ The master prompt §21 COVERAGE (L38544–38577) freezes this tag list; mileston
 | M019 | resume with `Value::Capability` result | R-EFFECT-08 |
 | M020 | resume with closure result | R-EFFECT-08 |
 | M021 | authorize without possession check | R-KERN-04 |
+| M022 | unmarshal accepts capability payload | R-CANON-12 |
+| M023 | recovery resurrects revoked capability | R-PERSIST-07 |
+| M024 | receive-side registration without kernel revalidation | R-MARSHAL-05 |
+| M032 | contains_capability skips `FunctionValue.env` | R-MARSHAL-06 |
 
 **Evidence status:** registry is `SPECIFIED` (frozen content). No mutant is registered, injected, or killed in this repository; `MutationKillRate` is **not measured** (nothing to measure). 100% is a target, not a current claim (R-CLAIM-01).
 

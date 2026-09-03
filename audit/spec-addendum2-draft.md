@@ -1,11 +1,16 @@
 # Addendum II — HIGH-findings freeze (SEC-003 / SEC-004 / SEC-005 / SEC-016 / SEC-018)
 
-**Status: DRAFT FOR SPECIFICATION-OWNER ADOPTION — not applied.** No frozen or
-canonical text is changed by this file. The exact edit set lives in
-`audit/spec_addendum2.py` (this draft is generated from its constants, so the two
-cannot drift); `python3 audit/spec_addendum2.py` proves it on temporary copies,
-`--apply` executes it in place. Rollback after apply: `git revert` of the
-adoption commit (additive, quoted-not-deleted throughout).
+**Status: APPLIED** via `audit/spec_addendum2.py --apply` (adoption commit on
+`arena/01a063c4-red-on-rust`; post-apply verification: 157 obligations /
+157 matrix rows / 148 records, `spec/_check.py` D1=0 exit 0 with only the
+pre-existing adjudicated warnings, `req/_validate.py` 0 errors after its
+explicit register expectations were recorded (76→81 C-rows, incl. the
+retroactive C-77 from addendum I; post-audit addenda exempt from req/-citation
+coverage by the records scope note), index rebuilt at 157/80/25/19). This file
+is retained as the review record of exactly what was adopted and why; rollback
+is `git revert` of the adoption commit. The exact edit set lives in
+`audit/spec_addendum2.py` (this draft was generated from its constants, so the
+two cannot drift).
 
 ## 1. What this freezes (audit report §6 item 3)
 

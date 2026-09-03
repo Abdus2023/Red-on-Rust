@@ -31,12 +31,12 @@
     },
     "id_schemes": {
       "S-NN": "specification section (24)",
-      "R-AREA-NN": "normative requirement/obligation (152; 148 source-transcribed + 4 post-audit frozen addenda)",
-      "C-NN": "contradiction/ambiguity finding (76 indexed; 77 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
+      "R-AREA-NN": "normative requirement/obligation (157; 148 source-transcribed + 9 post-audit frozen addenda)",
+      "C-NN": "contradiction/ambiguity finding (80 indexed; 81 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
       "U-NN": "unresolved item requiring explicit decision (28)",
       "M-NN": "milestone M0-M11",
-      "TAG": "source verification-obligation tags (18; 17 frozen-source + 1 post-audit addendum)",
-      "M0NN": "baseline mutation registry (21; 18 baseline + 3 post-audit)",
+      "TAG": "source verification-obligation tags (19; 17 frozen-source + 2 post-audit addenda)",
+      "M0NN": "baseline mutation registry (25; 18 baseline + 7 post-audit: M019–M024, M032)",
       "ROR-NNN": "first-sprint tasks (16)"
     },
     "documents": {
@@ -45,7 +45,7 @@
       "03-obligation-matrix.md": "all requirements with stable IDs, status, provenance",
       "04-dependency-graph.md": "section/object/verification dependency graphs + DOT",
       "05-terminology.md": "glossary, normalization rules, under-specified terms",
-      "06-contradictions-ambiguities.md": "findings C-01..C-77 with severity and status",
+      "06-contradictions-ambiguities.md": "findings C-01..C-81 with severity and status",
       "07-implementation-mapping.md": "obligations -> crates/modules; actual repo state; milestone crosswalk",
       "08-verification-mapping.md": "obligations -> tags/tests/evidence; claim ladder per theorem",
       "09-unresolved-decisions.md": "items U-01..U-34 requiring explicit architectural decisions",
@@ -86,7 +86,8 @@
         "R-CORE-07",
         "R-CORE-08",
         "R-CORE-09",
-        "R-CORE-10"
+        "R-CORE-10",
+        "R-CORE-11"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -410,7 +411,9 @@
         "R-MARSHAL-01",
         "R-MARSHAL-02",
         "R-MARSHAL-03",
-        "R-MARSHAL-04"
+        "R-MARSHAL-04",
+        "R-MARSHAL-05",
+        "R-MARSHAL-06"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -439,7 +442,8 @@
         "R-CANON-08",
         "R-CANON-09",
         "R-CANON-10",
-        "R-CANON-11"
+        "R-CANON-11",
+        "R-CANON-12"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -463,7 +467,8 @@
         "R-PERSIST-03",
         "R-PERSIST-04",
         "R-PERSIST-05",
-        "R-PERSIST-06"
+        "R-PERSIST-06",
+        "R-PERSIST-07"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -922,6 +927,29 @@
         "negative recovery tests"
       ],
       "related_findings": []
+    },
+    {
+      "id": "R-CORE-11",
+      "section": "S-02",
+      "title": "I2 predicate signatures, canonical form (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel",
+        "ror-runtime"
+      ],
+      "verification": [
+        "R-TEST-09",
+        "R-KERN-04"
+      ],
+      "related_findings": [
+        "C-80"
+      ]
     },
     {
       "id": "R-TRUST-01",
@@ -2761,6 +2789,51 @@
       "related_findings": []
     },
     {
+      "id": "R-MARSHAL-05",
+      "section": "S-16",
+      "title": "Delegation surface constructible and revalidated (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime",
+        "ror-kernel"
+      ],
+      "verification": [
+        "M024",
+        "delegation negative suite"
+      ],
+      "related_findings": [
+        "C-79"
+      ]
+    },
+    {
+      "id": "R-MARSHAL-06",
+      "section": "S-16",
+      "title": "contains_capability frozen total predicate (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "M032",
+        "closure-smuggling corpus"
+      ],
+      "related_findings": [
+        "C-81"
+      ]
+    },
+    {
       "id": "R-CANON-01",
       "section": "S-17",
       "title": "Serialization independent of Rust layout/serializers",
@@ -3005,6 +3078,28 @@
       "related_findings": []
     },
     {
+      "id": "R-CANON-12",
+      "section": "S-17",
+      "title": "Data decoder rejects capability payloads (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "M022",
+        "negative golden vectors"
+      ],
+      "related_findings": [
+        "C-78"
+      ]
+    },
+    {
       "id": "R-PERSIST-01",
       "section": "S-18",
       "title": "Persistence = recording, not a semantic machine; no secondary serialization",
@@ -3138,6 +3233,27 @@
       "related_findings": [
         "U-16"
       ]
+    },
+    {
+      "id": "R-PERSIST-07",
+      "section": "S-18",
+      "title": "Durable authority lattice; revocation survives crash (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence",
+        "ror-kernel"
+      ],
+      "verification": [
+        "RECOVERY-REVOCATION-DURABLE",
+        "M023"
+      ],
+      "related_findings": []
     },
     {
       "id": "R-RECOV-01",
@@ -5210,6 +5326,76 @@
           "23891"
         ]
       }
+    },
+    {
+      "id": "C-78",
+      "title": "C-14/U-02 record the capability-encoding gap (CapRef serializable; the 15A decoder mints Value::Capability from raw bytes) as an encoding ambiguity; the security consequence — every bytes→value path mints authority references without kernel involvement (snapshot mailbox payloads, WAL decode, differential fixtures) — is absent (audit SEC-003)",
+      "severity": "BLOCKING",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "33158-33191",
+          "25685-25696",
+          "26008-26030",
+          "5987"
+        ]
+      }
+    },
+    {
+      "id": "C-79",
+      "title": "term/ X-65 records MarshalFault declared twice with disjoint variants and MarshalledValue as two incompatible boundary mechanisms (private-constructor Value wrapper vs raw canonical bytes); the security consequence — the sanctioned authority-transfer channel (R-MARSHAL-02's \"only exception\") is unimplementable as frozen, so every implementation invents its own authority-transfer surface — is absent (audit SEC-005)",
+      "severity": "BLOCKING",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "10827-10841",
+          "25683-25687",
+          "25976-25986",
+          "12145-12205",
+          "8695-8697"
+        ]
+      }
+    },
+    {
+      "id": "C-80",
+      "title": "term/ X-01 (BLOCKING) and X-05 (MAJOR) record the ValidatedPlan predicate/struct homonym and the six incompatible Authorized signatures; the security consequence — the verification contract for the entire audit is ill-formed, so the weaker reading (plan-time validation, authority-first authorization) is always available to an implementation under adjudication — is absent (audit SEC-016)",
+      "severity": "BLOCKING",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "23694",
+          "41337-41351",
+          "865",
+          "2111",
+          "3293",
+          "4687",
+          "5998",
+          "6406",
+          "8733"
+        ]
+      }
+    },
+    {
+      "id": "C-81",
+      "title": "contains_capability — the sole mechanism of the R-CORE-07/R-MARSHAL-01 marshalling boundary — is invoked exactly once (L25685–25691) and defined nowhere; no rule states its traversal domain, so closure-environment smuggling (a closure whose captured environment binds a capability) is undetectable (audit SEC-018)",
+      "severity": "MAJOR",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25685-25691",
+          "12354-12359",
+          "10860",
+          "12283-12310"
+        ]
+      }
     }
   ],
   "unresolved": [
@@ -5674,6 +5860,34 @@
       "kills_evidence_for": [
         "R-KERN-04"
       ]
+    },
+    {
+      "id": "M022",
+      "defect": "unmarshal accepts capability payload",
+      "kills_evidence_for": [
+        "R-CANON-12"
+      ]
+    },
+    {
+      "id": "M023",
+      "defect": "recovery resurrects revoked capability",
+      "kills_evidence_for": [
+        "R-PERSIST-07"
+      ]
+    },
+    {
+      "id": "M024",
+      "defect": "receive-side registration without kernel revalidation",
+      "kills_evidence_for": [
+        "R-MARSHAL-05"
+      ]
+    },
+    {
+      "id": "M032",
+      "defect": "contains_capability skips FunctionValue.env",
+      "kills_evidence_for": [
+        "R-MARSHAL-06"
+      ]
     }
   ],
   "verification_tags": [
@@ -5810,6 +6024,13 @@
         "R-EFFECT-08"
       ],
       "milestone": "M5 (post-audit addendum)"
+    },
+    {
+      "tag": "RECOVERY-REVOCATION-DURABLE",
+      "obligations": [
+        "R-PERSIST-07"
+      ],
+      "milestone": "M10 (post-audit addendum)"
     }
   ],
   "crash_matrix": [
@@ -5890,7 +6111,8 @@
         "R-CANON-08",
         "R-CANON-09",
         "R-CANON-10",
-        "R-CANON-11"
+        "R-CANON-11",
+        "R-CANON-12"
       ]
     },
     {
@@ -5946,7 +6168,8 @@
         "R-KERN-02",
         "R-KERN-03",
         "R-KERN-04",
-        "R-KERN-05"
+        "R-KERN-05",
+        "R-MARSHAL-05"
       ]
     },
     {
@@ -5980,7 +6203,8 @@
         "R-HOST-03",
         "R-HOST-04",
         "R-HOST-05",
-        "R-EFFECT-08"
+        "R-EFFECT-08",
+        "R-CORE-11"
       ]
     },
     {
@@ -6006,7 +6230,8 @@
         "R-MARSHAL-01",
         "R-MARSHAL-02",
         "R-MARSHAL-03",
-        "R-MARSHAL-04"
+        "R-MARSHAL-04",
+        "R-MARSHAL-06"
       ]
     },
     {
@@ -6031,7 +6256,8 @@
         "R-RECOV-03",
         "R-RECOV-04",
         "R-RECOV-05",
-        "R-RECOV-06"
+        "R-RECOV-06",
+        "R-PERSIST-07"
       ]
     },
     {
@@ -6078,7 +6304,8 @@
       "obligations": [
         "R-RECOV-02",
         "R-TEST-08",
-        "R-DUR-04"
+        "R-DUR-04",
+        "R-PERSIST-07"
       ]
     },
     {
@@ -6257,7 +6484,8 @@
         "R-CANON-08",
         "R-CANON-09",
         "R-CANON-10",
-        "R-CANON-11"
+        "R-CANON-11",
+        "R-CANON-12"
       ],
       "depends_on": []
     },
@@ -6295,6 +6523,8 @@
         "R-KERN-03",
         "R-KERN-04",
         "R-KERN-05",
+        "R-PERSIST-07",
+        "R-CORE-11",
         "R-TRUST-03"
       ],
       "depends_on": [
@@ -6333,7 +6563,10 @@
         "R-MARSHAL-01",
         "R-MARSHAL-02",
         "R-MARSHAL-03",
-        "R-MARSHAL-04"
+        "R-MARSHAL-04",
+        "R-MARSHAL-05",
+        "R-MARSHAL-06",
+        "R-CORE-11"
       ],
       "depends_on": [
         "ror-core",
@@ -6362,7 +6595,8 @@
         "R-RECOV-05",
         "R-RECOV-06",
         "R-RECOV-07",
-        "R-KERN-05"
+        "R-KERN-05",
+        "R-PERSIST-07"
       ],
       "depends_on": [
         "ror-core"
