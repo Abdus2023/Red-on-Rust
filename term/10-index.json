@@ -10168,7 +10168,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 21,
+     "line": 22,
      "text": "Nine names for the same denial outcome, not four",
      "note": "C-08's description, corrected in place on this pass; it previously read \"Four names for the same denial outcome\" and its severity cell was MINOR"
     },
@@ -10319,7 +10319,7 @@
    "doc_sites": [
     {
      "file": "spec/01-canonical-specification.md",
-     "line": 479,
+     "line": 490,
      "text": "Block → parse → NormalizedAST",
      "note": "the single-ordering rendering"
     },
@@ -11494,13 +11494,13 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 21,
+     "line": 22,
      "text": "fault(CapabilityViolation)",
      "note": "C-08's 1st (wrong) citation, kept verbatim above the correction"
     },
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 21,
+     "line": 22,
      "text": "with variants undefined",
      "note": "C-08's false gloss on its 4th citation"
     },
@@ -11741,7 +11741,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 22,
+     "line": 23,
      "text": "README L22–28 (\"Implementation: IN PROGRESS\") vs README L656–661 / L42092–42100",
      "note": "the defective citations"
     },
@@ -11830,7 +11830,7 @@
    "doc_sites": [
     {
      "file": "spec/01-canonical-specification.md",
-     "line": 138,
+     "line": 156,
      "text": "plus `StalePlan` at the planner boundary",
      "note": "normative R-CALC-06 — source-supported and kept; its annotation now says used-but-undeclared, not phantom"
     },
@@ -11866,13 +11866,13 @@
     },
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 68,
+     "line": 69,
      "text": "`Fault::StalePlan` occurs verbatim once, at L28373",
      "note": "C-54, rewritten from a phantom finding to a used-but-undeclared one"
     },
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 92,
+     "line": 114,
      "text": "rewritten** in this revision",
      "note": "C-59..C-65 summary line, recording the retraction of the earlier claim"
     }
@@ -11956,7 +11956,7 @@
     },
     {
      "file": "spec/08-verification-mapping.md",
-     "line": 63,
+     "line": 87,
      "text": "MarshalFault",
      "note": "verification mapping that assumes a single variant set"
     }
@@ -12282,7 +12282,7 @@
     },
     {
      "file": "spec/01-canonical-specification.md",
-     "line": 138,
+     "line": 156,
      "text": "The frozen fault taxonomy is the Rust `Fault` enum",
      "note": "R-CALC-06 states a flat variant list that matches neither reading of `HostFault`"
     }
@@ -12443,13 +12443,13 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 73,
+     "line": 74,
      "text": "Twelve `Fault::` variant paths",
      "note": "C-59, the row this entry backs"
     },
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 68,
+     "line": 69,
      "text": "one of twelve (C-59)",
      "note": "C-54, corrected to point at the population finding"
     },
@@ -12551,7 +12551,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 74,
+     "line": 75,
      "text": "Theorem 2's proof and the property-test matrix",
      "note": "C-60, rewritten from a duplicate of X-29 to the theorem-dependency finding"
     },
@@ -12690,7 +12690,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 75,
+     "line": 76,
      "text": "`MachineEvent` is declared eight times",
      "note": "C-61, the row this entry backs"
     },
@@ -12821,7 +12821,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 76,
+     "line": 77,
      "text": "`CanonicalError` is declared seven times",
      "note": "C-62, the row this entry backs"
     },
@@ -12926,7 +12926,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 77,
+     "line": 78,
      "text": "`StepResult` is two disjoint enums",
      "note": "C-63, the row this entry backs"
     },
@@ -13020,7 +13020,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 78,
+     "line": 79,
      "text": "`ActorStatus` is declared seven times",
      "note": "C-64, the row this entry backs"
     },
@@ -13165,7 +13165,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 79,
+     "line": 80,
      "text": "Residual used-but-undeclared variant paths",
      "note": "C-65, the row this entry backs"
     }
@@ -13260,7 +13260,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 80,
+     "line": 81,
      "text": "| C-66 | `MarshalledValue`'s payload is `Value`",
      "note": "C-66, the contradictions-register row for this finding"
     },
@@ -13423,7 +13423,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 81,
+     "line": 82,
      "text": "| C-67 | `Authority` is declared seven times in six field sets",
      "note": "C-67"
     },
@@ -13553,7 +13553,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 82,
+     "line": 83,
      "text": "| C-68 | `RefAuthority` is declared four times in three shapes",
      "note": "C-68"
     },
@@ -13671,7 +13671,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 83,
+     "line": 84,
      "text": "| C-69 | `RefState` is declared with the production machine's types",
      "note": "C-69"
     },
@@ -13760,7 +13760,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 84,
+     "line": 85,
      "text": "| C-70 | `WalFrame` gains `payload_length: u32`",
      "note": "C-70"
     },
@@ -13853,7 +13853,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 85,
+     "line": 86,
      "text": "| C-71 | `EffectReceipt`'s first declaration has no `effect_digest`",
      "note": "C-71"
     }
@@ -13965,7 +13965,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 86,
+     "line": 87,
      "text": "| C-72 | `CapabilityKernel`'s arena changes value type and container",
      "note": "C-72"
     },
@@ -14104,7 +14104,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 87,
+     "line": 88,
      "text": "| C-73 | The turn-[31] and turn-[32] state structs are not the same structs",
      "note": "C-73"
     },
@@ -14271,7 +14271,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 88,
+     "line": 89,
      "text": "| C-74 | Thirty-one more type names are used in frozen field positions",
      "note": "C-74"
     },
@@ -14355,7 +14355,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 89,
+     "line": 90,
      "text": "| C-75 | `FunctionValue.env` is an `EnvironmentSnapshot` in one declaration",
      "note": "C-75"
     }
@@ -14450,7 +14450,7 @@
    "doc_sites": [
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 90,
+     "line": 91,
      "text": "| C-76 | `Frame`'s eleven declarations carry five distinct variant sets",
      "note": "C-76"
     },

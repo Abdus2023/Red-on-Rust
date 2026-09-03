@@ -1381,7 +1381,7 @@ Yes — freeze one liveness and one coverage predicate signature, and state whet
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:21 | `Nine names for the same denial outcome, not four` | C-08's description, corrected in place on this pass; it previously read "Four names for the same denial outcome" and its severity cell was MINOR |
+| `spec/06-contradictions-ambiguities.md`:22 | `Nine names for the same denial outcome, not four` | C-08's description, corrected in place on this pass; it previously read "Four names for the same denial outcome" and its severity cell was MINOR |
 | `spec/09-unresolved-decisions.md`:54 | `denial outcome is named` | U-08 lists four names; the verified count is nine |
 
 ### The collision
@@ -1749,8 +1749,8 @@ All seven declarations and both payload types recorded verbatim; nothing renamed
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:21 | `fault(CapabilityViolation)` | C-08's 1st (wrong) citation, kept verbatim above the correction |
-| `spec/06-contradictions-ambiguities.md`:21 | `with variants undefined` | C-08's false gloss on its 4th citation |
+| `spec/06-contradictions-ambiguities.md`:22 | `fault(CapabilityViolation)` | C-08's 1st (wrong) citation, kept verbatim above the correction |
+| `spec/06-contradictions-ambiguities.md`:22 | `with variants undefined` | C-08's false gloss on its 4th citation |
 | `spec/09-unresolved-decisions.md`:54 | `denial outcome is named` | U-08 — four names listed, nine verified (X-38) |
 | `spec/05-terminology.md`:112 | `Enum variants not enumerated` | the same claim under U-14 |
 | `req/01-registry-part2-semantics.md`:186 | `inner variants not enumerated` | REQ-CALC-013's INVARIANTS — false on both halves |
@@ -1795,14 +1795,14 @@ No new decision; U-08/U-14 stand, restated against verified text.
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/01-canonical-specification.md`:138 | ``plus `StalePlan` at the planner boundary`` | normative R-CALC-06 — source-supported and kept; its annotation now says used-but-undeclared, not phantom |
+| `spec/01-canonical-specification.md`:156 | ``plus `StalePlan` at the planner boundary`` | normative R-CALC-06 — source-supported and kept; its annotation now says used-but-undeclared, not phantom |
 | `req/01-registry-part2-semantics.md`:197 | `Verified, correction reverted` | REQ-CALC-014 STATEMENT, restored after the phantom claim was shown false |
 | `req/01-registry-part2-semantics.md`:199 | `Withdrawal reverted` | REQ-CALC-014 POSTCONDITIONS, restored — `Fault::StalePlan` occurs verbatim at L28373 |
 | `req/01-registry-part2-semantics.md`:195 | `L28373([36])` | REQ-CALC-014's SOURCE line, which cited the occurrence all along |
 | `req/03-ambiguous.md`:68 | `that strike was itself wrong` | AMB-08's list, qualified in place rather than struck |
 | `req/03-ambiguous.md`:264 | `occurs nowhere in L1–42312` | AMB-34, rewritten, with the withdrawn claim quoted |
-| `spec/06-contradictions-ambiguities.md`:68 | ```Fault::StalePlan` occurs verbatim once, at L28373`` | C-54, rewritten from a phantom finding to a used-but-undeclared one |
-| `spec/06-contradictions-ambiguities.md`:92 | `rewritten** in this revision` | C-59..C-65 summary line, recording the retraction of the earlier claim |
+| `spec/06-contradictions-ambiguities.md`:69 | ```Fault::StalePlan` occurs verbatim once, at L28373`` | C-54, rewritten from a phantom finding to a used-but-undeclared one |
+| `spec/06-contradictions-ambiguities.md`:114 | `rewritten** in this revision` | C-59..C-65 summary line, recording the retraction of the earlier claim |
 
 ### The collision
 
@@ -1847,7 +1847,7 @@ Yes, but owned by U-08 and now widened by X-69: does `StalePlan` join the declar
 |---|---|---|
 | `mod/06-actor.md`:103 | `MarshalFault::CapabilityRequiresDelegation` | cites only the turn-[32] variant set |
 | `req/01-registry-part1-foundations.md`:301 | `Err(MarshalFault::CapabilityRequiresDelegation)` | REQ postcondition citing only the turn-[32] set |
-| `spec/08-verification-mapping.md`:63 | `MarshalFault` | verification mapping that assumes a single variant set |
+| `spec/08-verification-mapping.md`:87 | `MarshalFault` | verification mapping that assumes a single variant set |
 
 ### The collision
 
@@ -1934,7 +1934,7 @@ Yes, folded into U-14: is `Invalid` a distinct variant or a typo for `InvalidCon
 | File:line | Text at that line | Note |
 |---|---|---|
 | `req/03-ambiguous.md`:69 | ``previously also mapped `IsolationBreach``` | AMB-08's reading (a), corrected in place: `IsolationBreach` is the receipt-mismatch fault |
-| `spec/01-canonical-specification.md`:138 | ``The frozen fault taxonomy is the Rust `Fault` enum`` | R-CALC-06 states a flat variant list that matches neither reading of `HostFault` |
+| `spec/01-canonical-specification.md`:156 | ``The frozen fault taxonomy is the Rust `Fault` enum`` | R-CALC-06 states a flat variant list that matches neither reading of `HostFault` |
 
 ### The collision
 
@@ -1991,8 +1991,8 @@ Yes, folded into U-08: for each of `HostFault`, `Revoked` and `IsolationBreach`,
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:73 | ``Twelve `Fault::` variant paths`` | C-59, the row this entry backs |
-| `spec/06-contradictions-ambiguities.md`:68 | `one of twelve (C-59)` | C-54, corrected to point at the population finding |
+| `spec/06-contradictions-ambiguities.md`:74 | ``Twelve `Fault::` variant paths`` | C-59, the row this entry backs |
+| `spec/06-contradictions-ambiguities.md`:69 | `one of twelve (C-59)` | C-54, corrected to point at the population finding |
 | `req/03-ambiguous.md`:68 | ``one of twelve such `Fault::` paths`` | AMB-08, qualified rather than struck |
 
 ### The collision
@@ -2039,7 +2039,7 @@ Yes — owned by U-08, but U-08 as written covers only the declared variant set;
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:74 | `Theorem 2's proof and the property-test matrix` | C-60, rewritten from a duplicate of X-29 to the theorem-dependency finding |
+| `spec/06-contradictions-ambiguities.md`:75 | `Theorem 2's proof and the property-test matrix` | C-60, rewritten from a duplicate of X-29 to the theorem-dependency finding |
 | `req/03-ambiguous.md`:91 | ```Expr::Delegate` is absent from the frozen AST`` | AMB-11, which already records the declaration gap and is not superseded |
 
 ### The collision
@@ -2093,7 +2093,7 @@ Yes — owned by U-02 as extended by this entry: does `Expr::Delegate` become a 
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:75 | ```MachineEvent` is declared eight times`` | C-61, the row this entry backs |
+| `spec/06-contradictions-ambiguities.md`:76 | ```MachineEvent` is declared eight times`` | C-61, the row this entry backs |
 | `spec/09-unresolved-decisions.md`:144 | ``### U-28 — Which `MachineEvent` names govern`` | the decision this entry escalates to; added by the same sweep |
 | `req/03-ambiguous.md`:277 | ``### AMB-36 — `MachineEvent` is declared eight times`` | the ambiguity row this entry backs |
 
@@ -2145,7 +2145,7 @@ Yes — `spec/09` U-28: is the vocabulary the union of all eight declarations or
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:76 | ```CanonicalError` is declared seven times`` | C-62, the row this entry backs |
+| `spec/06-contradictions-ambiguities.md`:77 | ```CanonicalError` is declared seven times`` | C-62, the row this entry backs |
 | `spec/09-unresolved-decisions.md`:151 | ``### U-29 — Which `CanonicalError` shape governs`` | the decision this entry escalates to; added by the same sweep |
 | `req/03-ambiguous.md`:285 | ``### AMB-37 — `CanonicalError` is declared seven times`` | the ambiguity row this entry backs |
 
@@ -2193,7 +2193,7 @@ Yes — `spec/09` U-29: which of the four shapes governs, do the unit variants o
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:77 | ```StepResult` is two disjoint enums`` | C-63, the row this entry backs |
+| `spec/06-contradictions-ambiguities.md`:78 | ```StepResult` is two disjoint enums`` | C-63, the row this entry backs |
 | `spec/09-unresolved-decisions.md`:130 | ``### U-26 — Which layer owns the name `StepResult`?`` | the decision this entry escalates to; added by the same sweep |
 | `req/03-ambiguous.md`:293 | ``### AMB-38 — `StepResult` names two disjoint enums`` | the ambiguity row this entry backs |
 
@@ -2239,7 +2239,7 @@ Yes — `spec/09` U-26: which layer keeps the name `StepResult` and what the oth
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:78 | ```ActorStatus` is declared seven times`` | C-64, the row this entry backs |
+| `spec/06-contradictions-ambiguities.md`:79 | ```ActorStatus` is declared seven times`` | C-64, the row this entry backs |
 | `spec/09-unresolved-decisions.md`:137 | ``### U-27 — Which `ActorStatus` shape governs`` | the decision this entry escalates to; added by the same sweep |
 | `req/03-ambiguous.md`:301 | ``### AMB-39 — `ActorStatus` is declared seven times`` | the ambiguity row this entry backs |
 
@@ -2287,7 +2287,7 @@ Yes — `spec/09` U-27: which shape governs, and where shape (iii)'s continuatio
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:80 | ``\| C-66 \| `MarshalledValue`'s payload is `Value``` | C-66, the contradictions-register row for this finding |
+| `spec/06-contradictions-ambiguities.md`:81 | ``\| C-66 \| `MarshalledValue`'s payload is `Value``` | C-66, the contradictions-register row for this finding |
 | `spec/09-unresolved-decisions.md`:160 | ``### U-30 — Which payload does `MarshalledValue` carry`` | U-30, the decision this finding needs |
 | `term/00-overview.md`:175 | ``\| `term/_terms.py T-79…T-81, N-28` \|`` | the §6 row recording T-79's creation |
 | `README.md`:68 | ``(`X-01`…`X-86`, of which 4 are BLOCKING)`` | the README's collision-register count, updated by this pass |
@@ -2344,7 +2344,7 @@ Which payload is `MarshalledValue`'s — `Value` (turns [17]-[31], with `new`/`i
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:81 | ``\| C-67 \| `Authority` is declared seven times in six field sets`` | C-67 |
+| `spec/06-contradictions-ambiguities.md`:82 | ``\| C-67 \| `Authority` is declared seven times in six field sets`` | C-67 |
 | `spec/09-unresolved-decisions.md`:168 | ``### U-31 — Which field set is `Authority`'s`` | U-31 |
 | `term/00-overview.md`:175 | ``\| `term/_terms.py T-79…T-81, N-28` \|`` | the §6 row recording N-28's four new evidence sites |
 | `term/00-overview.md`:174 | ``\| `term/_terms.py X-26, X-37, X-43, X-46, X-47, X-72` \|`` | the §6 row recording X-37's correction, which this entry extends |
@@ -2396,7 +2396,7 @@ Which field set is `Authority`'s and which is `Constraint`'s? The turn-[11] decl
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:82 | ``\| C-68 \| `RefAuthority` is declared four times in three shapes`` | C-68 |
+| `spec/06-contradictions-ambiguities.md`:83 | ``\| C-68 \| `RefAuthority` is declared four times in three shapes`` | C-68 |
 | `spec/09-unresolved-decisions.md`:184 | `### U-33 — Which reference-model declarations govern` | U-33 |
 | `term/00-overview.md`:173 | ``\| `term/_structs.py` \| **new checker**`` | the §6 row for the checker that produced the counts |
 
@@ -2446,7 +2446,7 @@ Which `RefAuthority` shape is the oracle's — a set of operations (turns [20], 
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:83 | ``\| C-69 \| `RefState` is declared with the production machine's types`` | C-69 |
+| `spec/06-contradictions-ambiguities.md`:84 | ``\| C-69 \| `RefState` is declared with the production machine's types`` | C-69 |
 | `spec/09-unresolved-decisions.md`:184 | `### U-33 — Which reference-model declarations govern` | U-33 |
 
 ### The collision
@@ -2491,7 +2491,7 @@ Which `RefState` governs the differential oracle — the production-typed form o
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:84 | ``\| C-70 \| `WalFrame` gains `payload_length: u32``` | C-70 |
+| `spec/06-contradictions-ambiguities.md`:85 | ``\| C-70 \| `WalFrame` gains `payload_length: u32``` | C-70 |
 | `spec/09-unresolved-decisions.md`:176 | ``### U-32 — Does the durable `WalFrame` carry `payload_length``` | U-32 |
 
 ### The collision
@@ -2541,7 +2541,7 @@ Does the durable frame carry `payload_length`, and is the checksum `SHA-256(sequ
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:86 | ``\| C-72 \| `CapabilityKernel`'s arena changes value type and container`` | C-72 |
+| `spec/06-contradictions-ambiguities.md`:87 | ``\| C-72 \| `CapabilityKernel`'s arena changes value type and container`` | C-72 |
 | `spec/09-unresolved-decisions.md`:168 | ``### U-31 — Which field set is `Authority`'s`` | U-31, which also rules on the kernel's arena |
 
 ### The collision
@@ -2594,7 +2594,7 @@ What does the kernel's arena hold — `Authority`, `RuntimeAuthority` or `Author
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:87 | `\| C-73 \| The turn-[31] and turn-[32] state structs are not the same structs` | C-73 |
+| `spec/06-contradictions-ambiguities.md`:88 | `\| C-73 \| The turn-[31] and turn-[32] state structs are not the same structs` | C-73 |
 | `spec/09-unresolved-decisions.md`:192 | `### U-34 — Which turn-[31]/turn-[32] state structs govern` | U-34 |
 
 ### The collision
@@ -2651,7 +2651,7 @@ Does `GlobalState` carry `scheduler: SchedulerState`? Does `ActorState` carry `r
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:88 | `\| C-74 \| Thirty-one more type names are used in frozen field positions` | C-74 |
+| `spec/06-contradictions-ambiguities.md`:89 | `\| C-74 \| Thirty-one more type names are used in frozen field positions` | C-74 |
 | `spec/09-unresolved-decisions.md`:184 | `### U-33 — Which reference-model declarations govern` | U-33, which rules on the twelve `Ref*` names |
 | `term/00-overview.md`:213 | `python3 term/_structs.py --undeclared # field types declared nowhere: 69 names` | the §8 command that re-derives this entry's counts |
 
@@ -2695,7 +2695,7 @@ Are the thirty-one names to be declared (and by whom — the reference model's t
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:89 | ``\| C-75 \| `FunctionValue.env` is an `EnvironmentSnapshot` in one declaration`` | C-75 |
+| `spec/06-contradictions-ambiguities.md`:90 | ``\| C-75 \| `FunctionValue.env` is an `EnvironmentSnapshot` in one declaration`` | C-75 |
 
 ### The collision
 
@@ -2741,7 +2741,7 @@ Does a `FunctionValue` capture a snapshot of its defining environment or the liv
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:90 | ``\| C-76 \| `Frame`'s eleven declarations carry five distinct variant sets`` | C-76 |
+| `spec/06-contradictions-ambiguities.md`:91 | ``\| C-76 \| `Frame`'s eleven declarations carry five distinct variant sets`` | C-76 |
 | `term/00-overview.md`:212 | `python3 term/_structs.py --enums      # every enum variant set: 11 names with >1` | the §8 command that re-derives the variant sets |
 
 ### The collision
@@ -2941,7 +2941,7 @@ Yes — identify the single frozen `Frame` declaration and state `AuthorityNode`
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/01-canonical-specification.md`:479 | `Block → parse → NormalizedAST` | the single-ordering rendering |
+| `spec/01-canonical-specification.md`:490 | `Block → parse → NormalizedAST` | the single-ordering rendering |
 | `mod/02-compiler.md`:45 | `Block → parse → NormalizedAST` | the same rendering repeated in the module layer |
 
 ### The collision
@@ -3310,7 +3310,7 @@ AMB-25 is corrected in this pass to the four attested names, with the correction
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:22 | `README L22–28 ("Implementation: IN PROGRESS") vs README L656–661 / L42092–42100` | the defective citations |
+| `spec/06-contradictions-ambiguities.md`:23 | `README L22–28 ("Implementation: IN PROGRESS") vs README L656–661 / L42092–42100` | the defective citations |
 | `req/03-ambiguous.md`:189 | ```README.md` L22–28 vs L656–661`` | the same defective citations, repeated |
 | `README.md`:12 | `Implementation:     IN PROGRESS` | the real first status block |
 | `README.md`:735 | `Implementation     READY` | the real last status block |
@@ -3361,7 +3361,7 @@ C-09 and AMB-24 are corrected in this pass to the verified citations (README L12
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:79 | `Residual used-but-undeclared variant paths` | C-65, the row this entry backs |
+| `spec/06-contradictions-ambiguities.md`:80 | `Residual used-but-undeclared variant paths` | C-65, the row this entry backs |
 
 ### The collision
 
@@ -3406,7 +3406,7 @@ Only in part: `NotRunnable`'s removal and `Null` versus `Unit` need a ruling; th
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/06-contradictions-ambiguities.md`:85 | ``\| C-71 \| `EffectReceipt`'s first declaration has no `effect_digest``` | C-71 |
+| `spec/06-contradictions-ambiguities.md`:86 | ``\| C-71 \| `EffectReceipt`'s first declaration has no `effect_digest``` | C-71 |
 
 ### The collision
 
