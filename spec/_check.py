@@ -218,10 +218,61 @@ def check_d3(spec01, matrix, verbose):
     return flags
 
 
+ALLOWLIST = Path(__file__).resolve().parent / "_check_allowlist.txt"
+
+
+def _read_allowlist() -> tuple[set[tuple[str, str]], list[str]]:
+    """Parse `D2 R-FOO-01` rows. Returns (allowed, malformed_lines)."""
+    allowed: set[tuple[str, str]] = set()
+    bad: list[str] = []
+    if not ALLOWLIST.is_file():
+        return allowed, bad
+    for raw in ALLOWLIST.read_text(encoding="utf-8").split("\n"):
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split()
+        if len(parts) != 2 or parts[0] not in ("D2", "D3") or not parts[1].startswith("R-"):
+            bad.append(raw)
+            continue
+        allowed.add((parts[0], parts[1]))
+    return allowed, bad
+
+
+def _write_allowlist(d2, d3) -> None:
+    rows = [(c, r) for r, _, c, _ in d2 + d3]
+    n2 = sum(1 for c, _ in rows if c == "D2")
+    n3 = len(rows) - n2
+    head = [
+        "# GENERATED BASELINE -- do not hand-edit counts; regenerate with:",
+        "#     python3 spec/_check.py --write-allowlist",
+        "#",
+        "# Each row is a D2/D3 warning that was adjudicated as acceptable when the",
+        "# allow-list was frozen: terse obligation bodies whose wording legitimately",
+        "# differs from the cited source lines or from the spec/03 matrix label.",
+        "#",
+        "# This file is the substance of U-38 option (b). While spec/_check.py runs",
+        "# in its default mode nothing here is enforced. Under --allowlist, every",
+        "# warning NOT listed here hard-fails, so a NEW body/source divergence -- the",
+        "# SEC-023 and M036 class -- fails the build while these stay tolerated.",
+        "#",
+        "# Removing a row is how a warning gets fixed: fix the body, drop the line,",
+        "# and the gate holds it closed. Adding a row must be a reviewed decision.",
+        "#",
+        f"# frozen at: {len(rows)} warnings ({n2}x D2, {n3}x D3)",
+        "",
+    ]
+    ALLOWLIST.write_text("\n".join(head + [f"{c} {r}" for c, r in rows]) + "\n",
+                         encoding="utf-8")
+    print(f"wrote {ALLOWLIST.name}: {len(rows)} rows ({n2}x D2, {n3}x D3)")
+
+
 def main() -> int:
     ap = sys.argv[1:]
     verbose = "--verbose" in ap
     strict = "--strict" in ap
+    allowlist = "--allowlist" in ap
+    write_allowlist = "--write-allowlist" in ap
     global MIN_OVERLAP
     if "--min-overlap" in ap:
         MIN_OVERLAP = float(ap[ap.index("--min-overlap") + 1])
@@ -252,8 +303,48 @@ def main() -> int:
     if d1:
         print(f"\nFAIL: {len(d1)} D1 rule-identity violation(s) (SEC-023 class)")
         return 1
+    # --- U-38 option (b): allow-list mode -------------------------------------
+    # Default behaviour is UNCHANGED: D2/D3 warn, exit 0. Under --allowlist,
+    # the adjudicated warnings in spec/_check_allowlist.txt stay tolerated and
+    # every OTHER D2/D3 hard-fails -- so a NEW body/source divergence (the
+    # SEC-023 and M036 class) fails the build instead of hiding among 36
+    # pre-existing warnings. This is the mechanism U-38 must choose to adopt;
+    # it is wired and tested but NOT switched on, because which of the three
+    # options governs is a decision for the specification owner, not for the
+    # tool that reports the problem.
+    if write_allowlist:
+        _write_allowlist(d2, d3)
+        return 0
+
+    allowed, unknown_rows = (_read_allowlist() if allowlist else (set(), []))
+    if allowlist and unknown_rows:
+        for line in unknown_rows:
+            print(f"  MALFORMED allow-list row: {line!r}")
+        print(f"\nFAIL: {len(unknown_rows)} malformed row(s) in {ALLOWLIST}")
+        return 1
+
+    unlisted = [(rid, sc, check, msg) for rid, sc, check, msg in d2 + d3
+                if (check, rid) not in allowed]
+    stale = sorted(allowed - {(check, rid) for rid, _, check, _ in d2 + d3})
+
     for rid, sc, check, msg in d2 + d3:
-        print(f"  WARN [{check}] {rid:14s} score={sc:.2f}  {msg}")
+        tolerated = allowlist and (check, rid) in allowed
+        label = "ALLOW" if tolerated else "WARN"
+        print(f"  {label} [{check}] {rid:14s} score={sc:.2f}  {msg}")
+
+    if allowlist:
+        for check, rid in stale:
+            print(f"  STALE [{check}] {rid:14s} allow-listed but no longer warns "
+                  f"-- remove it from {ALLOWLIST}")
+        if unlisted or stale:
+            print(f"\nFAIL: {len(unlisted)} unlisted D2/D3 warning(s), "
+                  f"{len(stale)} stale allow-list row(s) "
+                  f"({len(allowed)} adjudicated warnings tolerated)")
+            return 1
+        print(f"\nOK: D1=0; {len(allowed)} adjudicated D2/D3 warnings, all allow-listed, "
+              f"none stale")
+        return 0
+
     if d2 or d3:
         print(f"\n{'FAIL' if strict else 'OK with warnings'}: "
               f"D1=0, {len(d2)}x D2, {len(d3)}x D3 "

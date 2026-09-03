@@ -110,6 +110,14 @@ ones are visible), or promote D2/D3 to hard-fail with an explicit allow-list of 
 adjudicated cases. The second is preferable: an allow-list makes each accepted warning
 a recorded decision rather than a tolerated background level. Filed as **U-38**.
 
+**Update — option (b) is built.** `spec/_check.py --allowlist` now reads
+`spec/_check_allowlist.txt` (36 generated rows: 18×D2, 18×D3), tolerates exactly
+those, and hard-fails anything unlisted, stale or malformed. Re-running the M036
+rotation: **default mode exit 0 (survives), `--allowlist` exit 1 (killed**, both
+rotated obligation IDs named). The default is deliberately unchanged — M036
+remains a registered surviving mutant because U-38 is undecided, not because the
+mechanism is missing. Mutation `K18` asserts the conditional kill on every run.
+
 ## 3. Conformance test obligations → obligation map (frozen suite)
 
 | Conformance obligation (frozen) | Obligation(s) | Evidence in repo |

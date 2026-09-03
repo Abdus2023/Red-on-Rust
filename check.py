@@ -39,7 +39,9 @@ CHECKERS: list[tuple[str, str]] = [
     ("spec/_build_index.py", "regenerates spec/10-index.json; carries the completeness "
                              "gate and the spec/08 mutation-register comparison"),
     ("spec/_check.py",       "obligation bodies vs frozen source and vs spec/03 (D1 hard, "
-                             "D2/D3 warn -- see U-38)"),
+                             "D2/D3 warn -- see U-38; `--allowlist` hard-fails any warning "
+                             "not in spec/_check_allowlist.txt, which is U-38 option (b) "
+                             "built but not adopted)"),
     ("mod/_build.py",        "module ownership: exactly one canonical owner per obligation"),
     ("dep/_graph.py",        "dependency edges and cycle checks"),
     ("term/_check.py",       "re-greps every term/ citation; verifies term<->collision links"),

@@ -1,0 +1,53 @@
+# GENERATED BASELINE -- do not hand-edit counts; regenerate with:
+#     python3 spec/_check.py --write-allowlist
+#
+# Each row is a D2/D3 warning that was adjudicated as acceptable when the
+# allow-list was frozen: terse obligation bodies whose wording legitimately
+# differs from the cited source lines or from the spec/03 matrix label.
+#
+# This file is the substance of U-38 option (b). While spec/_check.py runs
+# in its default mode nothing here is enforced. Under --allowlist, every
+# warning NOT listed here hard-fails, so a NEW body/source divergence -- the
+# SEC-023 and M036 class -- fails the build while these 36 stay tolerated.
+#
+# Removing a row is how a warning gets fixed: fix the body, drop the line,
+# and the gate holds it closed. Adding a row must be a reviewed decision.
+#
+# frozen at: 36 warnings (18x D2, 18x D3)
+
+D2 R-ACTOR-03
+D2 R-ARCH-04
+D2 R-ARCH-05
+D2 R-CALC-06
+D2 R-CANON-04
+D2 R-CEK-02
+D2 R-CEK-04
+D2 R-COMPILE-02
+D2 R-CORE-05
+D2 R-CORE-06
+D2 R-EFFECT-01
+D2 R-ORDER-03
+D2 R-ORDER-04
+D2 R-PLANNER-03
+D2 R-SCOPE-01
+D2 R-TEST-05
+D2 R-TEST-08
+D2 R-TEST-09
+D3 R-ACTOR-08
+D3 R-BUDGET-01
+D3 R-CANON-04
+D3 R-CAP-01
+D3 R-CAP-03
+D3 R-CAP-08
+D3 R-CEK-07
+D3 R-CLAIM-03
+D3 R-DUR-02
+D3 R-ORDER-05
+D3 R-PERSIST-02
+D3 R-PERSIST-04
+D3 R-PLANNER-05
+D3 R-RECOV-06
+D3 R-REF-02
+D3 R-TEST-08
+D3 R-TEST-09
+D3 R-TEST-11

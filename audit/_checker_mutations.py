@@ -84,6 +84,10 @@ class Mutation:
     expect: str = ""  # substring expected in the killing checker's output
     regression_for: str = ""  # a real defect this mutation locks closed
     tags: list = field(default_factory=list)
+    #: extra (script, args) pairs to run for THIS mutation only -- used by K18,
+    #: which must exercise `spec/_check.py --allowlist`, a mode the baseline
+    #: deliberately does not run.
+    extra_checkers: list = field(default_factory=list)
 
 
 # --------------------------------------------------------------------------
@@ -398,6 +402,18 @@ def m_term_count_drift(root: Path) -> bool:
     return True
 
 
+def m_m036_under_allowlist(root: Path) -> bool:
+    """The M036 rotation, to be run against `spec/_check.py --allowlist`.
+
+    Identical mutation to M036. The point is the CONTRAST: under the default
+    severity wiring this survives (that is U-38); under the allow-list it dies.
+    Registering it as a normal mutation means the claim "option (b) closes the
+    SEC-023 hole" is re-verified on every run rather than resting on one
+    measurement recorded in prose.
+    """
+    return m036_rotate_obligation_body(root)
+
+
 MUTATIONS = [
     # NOTE on K01/K02/K03: these were written to exercise the completeness gate
     # in spec/_build_index.py. They do not, and CANNOT. Two separate reasons,
@@ -486,6 +502,14 @@ MUTATIONS = [
              m_term_count_drift,
              regression_for="the 81-vs-86 term-count drift this pass caused",
              tags=["term", "register", "regression"]),
+    Mutation("K18", "obligation body rotated -- caught by the U-38 allow-list",
+             "The M036 rotation run against `spec/_check.py --allowlist`. Survives "
+             "under the default wiring (that IS U-38); dies under option (b). Locks "
+             "in the claim that the proposed remedy actually closes the hole.",
+             m_m036_under_allowlist,
+             regression_for="U-38 option (b) / the SEC-023 class",
+             tags=["spec", "severity", "u-38"],
+             extra_checkers=[("spec/_check.py", ["--allowlist"])]),
 ]
 
 
@@ -493,21 +517,22 @@ MUTATIONS = [
 # runner
 # --------------------------------------------------------------------------
 
-def run_checkers(root: Path, verbose: bool = False):
+def run_checkers(root: Path, verbose: bool = False, extra_checkers=()):
     """Run every checker; return (killer_name, combined_output) or (None, out)."""
     combined = []
-    for rel, extra in CHECKERS:
+    for rel, extra in list(CHECKERS) + list(extra_checkers):
         script = root / rel
         if not script.exists():
             continue
         proc = subprocess.run([sys.executable, str(script), *extra], cwd=root,
                               capture_output=True, text=True, timeout=900)
         out = proc.stdout + proc.stderr
-        combined.append(f"----- {rel} (exit {proc.returncode}) -----\n{out}")
+        label = rel if not extra else f"{rel} {' '.join(extra)}"
+        combined.append(f"----- {label} (exit {proc.returncode}) -----\n{out}")
         if verbose:
             print(f"    {rel}: exit {proc.returncode}")
         if proc.returncode != 0:
-            return rel, "\n".join(combined)
+            return label, "\n".join(combined)
     return None, "\n".join(combined)
 
 
@@ -563,7 +588,8 @@ def main() -> int:
                 print("      SKIP  (could not apply -- anchor text moved)\n")
                 inapplicable.append(mut)
                 continue
-            killer, out = run_checkers(root, verbose=args.verbose)
+            killer, out = run_checkers(root, verbose=args.verbose,
+                                       extra_checkers=getattr(mut, "extra_checkers", ()))
             if killer:
                 first = ""
                 for line in out.splitlines():

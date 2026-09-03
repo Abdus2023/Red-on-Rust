@@ -857,7 +857,7 @@ rejected by some checker. A green baseline is required first, so a red tree
 cannot pass everything vacuously. **16 of 17 are killed**; the seventeenth is
 M036, registered and filed rather than silently tolerated.
 
-Seven results are worth recording beyond the pass/fail.
+Eight results are worth recording beyond the pass/fail.
 
 **(a) A drift no checker could see — including one this audit introduced.**
 `spec/06`'s summary line read "74 findings (76 rows)" against 97 actual rows;
@@ -1089,6 +1089,33 @@ gate checked `spec/00`'s X- range but not the README's: a list of claims I
 wrote by hand, missing an entry, which is precisely the "looks covered, isn't"
 shape the gate was built to prevent. Both the claim and the gate's coverage
 are fixed, and the fix is verified to fail in the drifted direction.
+
+**(h) U-38: building the option instead of re-arguing it.**
+
+U-38's substance is a judgement about tolerance and belongs to the
+specification owner. Its *cost*, though, was mine to remove — the reason not to
+adopt option (b) was that nobody had built it, which is not a reason.
+
+`spec/_check.py --allowlist` reads `spec/_check_allowlist.txt`, a generated
+baseline of the 36 adjudicated warnings, tolerates exactly those, and hard-fails
+anything else. Measured against the rotation that survives today:
+
+| Mode | M036 rotation | Exit |
+|---|---|---|
+| default (today) | one extra D3 warning among 36 | **0 — survives** |
+| `--allowlist` | both rotated IDs reported unlisted | **1 — killed** |
+
+It also fails on **stale** rows — an allow-listed warning that no longer fires,
+so a body that gets fixed cannot leave dead tolerance behind — and on malformed
+rows. All three failure modes are verified, and `K18` re-asserts the conditional
+kill on every harness run.
+
+**The default is deliberately unchanged.** M036 is still a registered surviving
+mutant, and that is now precise rather than resigned: it survives because a
+decision is unmade, not because a mechanism is missing. Adopting (b) is a
+one-word CI change; reverting it is deleting a flag. Choosing (a) or (c) is
+still open, but now has to be argued against a working alternative rather than
+against an absence — which is the form a decision record should take.
 
 This addendum issues no frozen text. M036 is registered in `spec/08` as a
 **known, filed survivor** — the harness reports it as such rather than counting
