@@ -95,7 +95,7 @@ Every occurrence of `SchedulerTrace` and `HostTrace` in the entire corpus is **i
 
 The consequence is not pedantic. Four normative `MUST` obligations (R-CORE-08, R-ACTOR-07, R-PLANNER-04, and by reference R-SCOPE-01/R-SCOPE-03) require conformance to a proposition whose subject and two parameters have no denotation. **An implementer cannot construct a `SchedulerTrace`, cannot serialize one, cannot compare two, and cannot record one for replay** — yet R-HOST-04 ("replay correspondence") and `mod/17` Track D ("global differential") are both specified as tests over exactly these objects.
 
-Note also that the theorem appears in **three non-equivalent forms** in frozen text (§1): `InitialState + SchedulerTrace + HostTrace`, `MachineState + AcceptedPlan + SchedulerTrace + HostTrace` (L28426, L28575), and `Snapshot + EventLog + HostTrace + SchedulerTrace` (L26998). These differ in whether the plan is an input, and in whether the event log is an input or an output. If the `EventLog` is an *input* (L26998) while also being a `GlobalState` field written by transitions (L24160), the formula is circular. `spec/06` C-37 registers a nearby wording drift ("deterministic interleaving" vs FIFO lockstep) but does **not** register the undefinedness of the theorem's own terms — this is unregistered.
+Note also that the theorem appears in **three non-equivalent forms** in frozen text (§1): `InitialState + SchedulerTrace + HostTrace`, `MachineState + AcceptedPlan + SchedulerTrace + HostTrace` (L28426, L28575), and `Snapshot + EventLog + HostTrace + SchedulerTrace` (L26998). These differ in whether the plan is an input, and in whether the event log is an input or an output. If the `EventLog` is an *input* (L26998) while also being a `GlobalState` field written by transitions (L24163), the formula is circular. `spec/06` C-37 registers a nearby wording drift ("deterministic interleaving" vs FIFO lockstep) but does **not** register the undefinedness of the theorem's own terms — this is unregistered.
 
 **NONDETERMINISM-ADMITTED**
 Unbounded and unmeasurable. Because the parameters are undefined, *any* divergence between two runs can be attributed to "a different SchedulerTrace" or "a different HostTrace" post hoc. The theorem as frozen is **unfalsifiable**, which is the worst possible property for a claim whose entire purpose is to be mechanically checked. Every finding DET-002…DET-016 below is, formally, a candidate for that post-hoc absorption; they are filed as findings because a determinism claim that can absorb `HashMap` iteration order into "the scheduler trace was different" is not a determinism claim.
@@ -328,14 +328,14 @@ Replay-time-dependent authorization: the same `(InitialState, SchedulerTrace, Ho
 - L28309 (LE) "1. Integers: Explicit widths (u32, u64) and **Little-Endian (LE)** byte order."
 - L29123 (BE) "`BTreeMap<K, V>`: Payload is `[Count: u32 (**Big-Endian**)]`…"; L29925/L29958 `TAG_BTREEMAP = 0x41`
 - L30575, L33087–33154 — the 15A BE envelope, tags `0x00/0x20/0x30/0x40/0x41`
-- L27703 "// 2. Serialize logical_time (u64 **LE**)" — inside the `GlobalState` sketch (DET-002)
+- L27702 "// 2. Serialize logical_time (u64 **LE**)" — inside the `GlobalState` sketch (DET-002)
 - L29815 — the source's own note that a `BTreeMap<u32, Value>` golden vector "needs to be regenerated from the current envelope grammar rather than adapted from the previous LE/older-format vector"
 - Resolution attempted: `spec/01` **R-CANON-13** "One canonical grammar: 15A BE envelope sole; LE revised grammar superseded in-source"; `spec/09` **U-12/U-?? (L114)** still records the open decision "confirm that the big-endian `u8`-tag form governs and that the L28298 doc comment is superseded"; cross-ref SEC-017, `term/` X-50/X-54
 
 **VIOLATION**
 Registered, and partially remediated by the R-CANON-13 addendum — but filed here because its *determinism* consequence is distinct from the security consequence SEC-017 records, and because the remediation is incomplete on the exact point this audit is about.
 
-R-CANON-13 declares BE sole. But `spec/09` L114 still lists the confirmation as an **open decision**, and the LE statement survives at L28309 **inside an API doc comment**, which — as `spec/09` notes — "an implementer will read first." More importantly for DT: the `GlobalState` serialization sketch at L27703, which is the *only* text describing how the state digest is computed, says **LE**. So the one place the grammar meets the determinism theorem still specifies the superseded endianness, and DET-002 means there is no complete BE replacement for it to be superseded *by*.
+R-CANON-13 declares BE sole. But `spec/09` L114 still lists the confirmation as an **open decision**, and the LE statement survives at L28309 **inside an API doc comment**, which — as `spec/09` notes — "an implementer will read first." More importantly for DT: the `GlobalState` serialization sketch at L27702, which is the *only* text describing how the state digest is computed, says **LE**. So the one place the grammar meets the determinism theorem still specifies the superseded endianness, and DET-002 means there is no complete BE replacement for it to be superseded *by*.
 
 DT's conclusion, operationalized, is equality of digest sequences. Every digest in the system — `EffectDigest`, `StateDigest`, `ResultDigest`, WAL frame checksums (now chained, R-PERSIST-08), snapshot commit records, the R-HOST-06 result-digest conjunct — is a hash of canonical bytes. A grammar ambiguity is therefore not a serialization detail; it is a **fork in the meaning of "unique trace."** Two conforming implementations produce disjoint digest universes, and the R-EFFECT-06 causal validation (`receipt.effect_digest = digest(request.effect)`) fails across them.
 
@@ -347,7 +347,7 @@ Exactly one grammar reachable from any frozen text, with the digest definition s
 
 **REMEDIATION**
 1. Close the `spec/09` L114 decision affirmatively (BE governs) and mark it resolved by R-CANON-13, so the open-decision register stops contradicting the normative layer.
-2. Correct **L27703** specifically — the `GlobalState` sketch must say BE, and must be replaced wholesale when DET-002 is closed. These two findings should be remediated together; fixing endianness in a sketch that has no body is not progress.
+2. Correct **L27702** specifically — the `GlobalState` sketch must say BE, and must be replaced wholesale when DET-002 is closed. These two findings should be remediated together; fixing endianness in a sketch that has no body is not progress.
 3. Bidirectional negative golden vectors: LE-encoded input must be **rejected**, not silently misparsed (R-CANON-13 already requires this; the vectors are the evidence).
 
 **VERIFICATION**
@@ -706,7 +706,7 @@ The machine "must use" seven mechanisms. Status of each in the frozen corpus:
 
 | Required mechanism | Frozen? | Adequate? | Evidence / gap |
 |---|---|---|---|
-| **LogicalTime** | **YES** | **PARTIAL** | `pub struct LogicalTime(pub u64)` (L9137, L10201, L10686), held once in `GlobalState` (L24158), `term/` T-28, R-CAP-09 prohibits wall-clock. **Gaps:** `δ_t` advancement schedule unfrozen (DET-008); `Lifetime` is Unix-timestamped and compared against it (DET-006). The type is right; the clock's *rate* and one of its *comparands* are not. |
+| **LogicalTime** | **YES** | **PARTIAL** | `pub struct LogicalTime(pub u64)` (L9137, L10201, L10686), held once in `GlobalState` (L24159), `term/` T-28, R-CAP-09 prohibits wall-clock. **Gaps:** `δ_t` advancement schedule unfrozen (DET-008); `Lifetime` is Unix-timestamped and compared against it (DET-006). The type is right; the clock's *rate* and one of its *comparands* are not. |
 | **Deterministic IDs** | **YES** | **PARTIAL** | R-ACTOR-03 / R-EFFECT-03: monotonic counters, `next_actor_id`/`next_effect_id` in `GlobalState`; explicit prohibition of UUIDs, PIDs, addresses, thread IDs, wall-clock (L24258–24260, L21949–21953). **Gaps:** `CapRef` allocation left to the arena allocator (DET-010); `fresh_actor()`/"globally unique" survive in the semantics rules (DET-015). Two of three identifier families are fully disciplined. |
 | **Explicit SchedulerTrace** | **NO** | **—** | **Does not exist as an artifact.** All 13 occurrences are inside the theorem. No type, no fields, no encoding, no equality, no recording rule, no `term/` entry (DET-001). |
 | **Explicit HostTrace** | **NO** | **—** | **Does not exist as a defined artifact.** Same 13 occurrences. Its only concrete proxy, `ReplayHost`, is frozen in **six declarations across five mutually incompatible shapes**, two of which are unordered map lookups that violate R-HOST-03 (DET-001, DET-005). |

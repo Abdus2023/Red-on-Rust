@@ -26,11 +26,47 @@ The frozen source (`Red-on-Rust.md`) has been canonicalized into the document se
 - `spec/03-obligation-matrix.md` — 173 stable requirement IDs (`R-…`; 148 from the frozen source + 25 post-audit frozen addenda) with status and provenance
 - `spec/04-dependency-graph.md` — section, object, and verification dependency graphs
 - `spec/05-terminology.md` — glossary and normalization rules
-- `spec/06-contradictions-ambiguities.md` — 96 consistency findings in 97 rows (`C-01`…`C-97`, C-39 a pointer row; C-46…C-76 added by the terminology pass and C-77…C-97 by the post-audit frozen addenda I–V; C-08 re-graded MINOR → MAJOR, and C-54 rewritten by its declaration sweep after the first version of that row was filed on a false premise)
+- `spec/06-contradictions-ambiguities.md` — 101 consistency findings in 102 rows (`C-01`…`C-102`, C-39 a pointer row; C-98…C-102 added by the semantic-nondeterminism audit, all `open`; C-46…C-76 added by the terminology pass and C-77…C-97 by the post-audit frozen addenda I–V; C-08 re-graded MINOR → MAJOR, and C-54 rewritten by its declaration sweep after the first version of that row was filed on a false premise)
 - `spec/07-implementation-mapping.md` — obligations → crate/module mapping; actual repository state
 - `spec/08-verification-mapping.md` — obligations → conformance tests and evidence status
-- `spec/09-unresolved-decisions.md` — 28 items (`U-…`) requiring explicit architectural decisions (U-23…U-25 added by the terminology pass, U-26…U-29 by its declaration sweep and U-30…U-34 by its struct-field sweep; U-08 corrected and U-14 escalated to blocking by its fault-taxonomy audit)
+- `spec/09-unresolved-decisions.md` — 31 items (`U-…`) requiring explicit architectural decisions (U-23…U-25 added by the terminology pass, U-26…U-29 by its declaration sweep, U-30…U-34 by its struct-field sweep and U-35…U-37 by the semantic-nondeterminism audit; U-08 corrected and U-14 escalated to blocking by its fault-taxonomy audit)
 - `spec/10-index.json` — machine-readable cross-index
+
+A fifth directory, `audit/`, holds **adversarial audits of the frozen specification**.
+These are review artifacts, not normative text: an audit may file register rows
+(`C-…`, `U-…`) and propose remediation, but it never issues frozen semantics
+(R-SCOPE-03). Two passes are complete:
+
+- `audit/authority-trust-external-effect-audit.md` — **authority, trust-boundary and
+  external-effect gating** (`SEC-001`…`SEC-023`: 3 CRITICAL, 5 HIGH, 3 MEDIUM-HIGH,
+  9 MEDIUM, 2 LOW/MEDIUM, 1 LOW). Verdict: the invariants `LLMOutput ∧ UntrustedInput
+  ↛ ExternalEffect` and the 7-conjunct effect chain do **not** hold at specification
+  level. Its findings were remediated by the 25 frozen addenda now in `spec/01`
+  (`R-CORE-11`…`R-CORE-13`, `R-EFFECT-08`, `R-HOST-06`, `R-CAP-10`, `R-KERN-06`,
+  `R-PERSIST-07/08`, `R-ACTOR-09/10`, `R-BUDGET-09`, `R-RECOV-08`, `R-CANON-12/13`, …),
+  which is why `C-77`…`C-97` read `resolved-by-addendum`.
+- `audit/semantic-nondeterminism-audit.md` — **semantic nondeterminism** (`DET-001`…
+  `DET-018`: 2 CRITICAL, 5 HIGH, 6 MEDIUM, 3 LOW-MEDIUM, 2 CLEAN), auditing the
+  determinism theorem `InitialState + SchedulerTrace + HostTrace ⇒ UniqueMachineTrace`
+  across fifteen categories. Verdict: **NOT VERIFIED**, on two independent grounds.
+  (1) The theorem is *ill-formed* — `SchedulerTrace`, `HostTrace`, `InitialState` and
+  `UniqueMachineTrace` are undefined in all 42,312 source lines and in all five
+  canonical organizations; all 13 occurrences of `SchedulerTrace` sit inside the boxed
+  formula, so the claim is currently unfalsifiable. (2) Under the charitable reading the
+  transition function reads **eleven inputs the theorem does not name** — among them
+  per-process hash-seed randomization, a wall-clock `Lifetime` compared against
+  `LogicalTime` inside authorization gate 6, the kernel arena's residence outside
+  `GlobalState`, and filesystem-order-dependent snapshot selection. Two categories are
+  **clean** and recorded as such so the negative results are auditable: floating-point
+  dependence (zero `f32`/`f64`) and implicit environment variables (zero `std::env`).
+  This pass issued no addendum: its rows `C-98`…`C-102` and decisions `U-35`…`U-37` are
+  all `open`, and `U-02`/`U-07` gained appended amendment notes rather than rewrites.
+
+  Its §5.4 states the replay claim in the only form the corpus supports: **replay proves
+  machine-state/event reproduction subject to explicit external-effect reconciliation —
+  it does not reproduce the external world.** A receipt records what the machine was
+  told, not what happened; the `Indeterminate` class (L26714) is irreducible, and
+  R-DUR-04/R-RECOV-08 forbid any component resolving it on local policy.
 
 A second organization, `mod/`, splits the same specification into **17 semantic
 modules** (`MOD-01 CORE` … `MOD-17 VERIFICATION`) by architectural responsibility

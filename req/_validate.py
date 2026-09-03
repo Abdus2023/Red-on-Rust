@@ -298,8 +298,8 @@ def main() -> int:
 
     # 7c. every spec/06 C-nn and spec/09 U-nn cross-reference must exist
     import re as _re
-    c_ids = set(_re.findall(r"^\| (C-\d{2}) \|", (A.REPO_ROOT / "spec" / "06-contradictions-ambiguities.md").read_text(encoding="utf-8"), _re.M))
-    u_ids = set(_re.findall(r"^### (U-\d{2}) ", (A.REPO_ROOT / "spec" / "09-unresolved-decisions.md").read_text(encoding="utf-8"), _re.M))
+    c_ids = set(_re.findall(r"^\| (C-\d{2,3}) \|", (A.REPO_ROOT / "spec" / "06-contradictions-ambiguities.md").read_text(encoding="utf-8"), _re.M))
+    u_ids = set(_re.findall(r"^### (U-\d{2,3}) ", (A.REPO_ROOT / "spec" / "09-unresolved-decisions.md").read_text(encoding="utf-8"), _re.M))
     # 45 -> 53 -> 58 and 16 -> 19: the terminology-normalization pass (term/)
     # added C-46...C-53 and U-23...U-25, and its fault-taxonomy audit then added
     # C-54...C-58 (X-64...X-68) and re-graded C-08 from MINOR to MAJOR, and the
@@ -313,10 +313,18 @@ def main() -> int:
     # C-86…C-92 (addendum IV), and C-93…C-97 (SEC-013/014/015/019/021,
     # addendum V) — 76 -> 81 -> 85 -> 92 -> 97, recorded for the same reason
     # (raw rows incl. the C-39 pointer; the index excludes it).
-    if len(c_ids) != 97:
-        err(f"expected 97 C- rows in spec/06, found {len(c_ids)}")
-    if len(u_ids) != 28:
-        err(f"expected 28 U- headings in spec/09, found {len(u_ids)}")
+    # The semantic-nondeterminism audit (audit/semantic-nondeterminism-audit.md,
+    # DET-001...DET-018) then added C-98...C-102 and U-35...U-37 -- 97 -> 102 and
+    # 28 -> 31 -- all filed `open` (that pass issued no frozen addendum, per
+    # R-SCOPE-03), recorded here for the same reason.  The two ID patterns were
+    # widened from \d{2} to \d{2,3} on the same change: C-100...C-102 are the
+    # first three-digit IDs in either register and the two-digit patterns
+    # silently under-counted them (found 99, not 102) rather than failing --
+    # the exact silent drift these assertions exist to prevent.
+    if len(c_ids) != 102:
+        err(f"expected 102 C- rows in spec/06, found {len(c_ids)}")
+    if len(u_ids) != 31:
+        err(f"expected 31 U- headings in spec/09, found {len(u_ids)}")
 
     # 7d. markdown table integrity.  A literal `|` inside a cell -- a set
     # builder `{ (o,v) | o in O }`, a closure body `unwrap_or_else(|| ...)`, a

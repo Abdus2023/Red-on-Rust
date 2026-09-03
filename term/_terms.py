@@ -5231,7 +5231,7 @@ COLLISIONS += [
       new_finding=True,
       doc_sites=[
         ("spec/06-contradictions-ambiguities.md", 22, "Nine names for the same denial outcome, not four", "C-08's description, corrected in place on this pass; it previously read \"Four names for the same denial outcome\" and its severity cell was MINOR"),
-        ("spec/09-unresolved-decisions.md", 54, "denial outcome is named", "U-08 lists four names; the verified count is nine"),
+        ("spec/09-unresolved-decisions.md", 56, "denial outcome is named", "U-08 lists four names; the verified count is nine"),
       ]),
 ]
 
@@ -5685,7 +5685,7 @@ COLLISIONS += [
       ["T-65", "T-64", "T-68"],
       ["C-09", "AMB-24"], "", True,
       [("README.md", 12, "Implementation:     IN PROGRESS", "the README's first status block"),
-       ("README.md", 735, "Implementation     READY", "the README's last status block")]),
+       ("README.md", 771, "Implementation     READY", "the README's last status block")]),
 ]
 
 
@@ -5966,7 +5966,7 @@ COLLISIONS += [
       doc_sites=[
         ("spec/06-contradictions-ambiguities.md", 22, "fault(CapabilityViolation)", "C-08's 1st (wrong) citation, kept verbatim above the correction"),
         ("spec/06-contradictions-ambiguities.md", 22, "with variants undefined", "C-08's false gloss on its 4th citation"),
-        ("spec/09-unresolved-decisions.md", 54, "denial outcome is named", "U-08 — four names listed, nine verified (X-38)"),
+        ("spec/09-unresolved-decisions.md", 56, "denial outcome is named", "U-08 — four names listed, nine verified (X-38)"),
         ("spec/05-terminology.md", 112, "Enum variants not enumerated", "the same claim under U-14"),
         ("req/01-registry-part2-semantics.md", 186, "inner variants not enumerated", "REQ-CALC-013's INVARIANTS — false on both halves"),
       ]),
@@ -6032,7 +6032,7 @@ COLLISIONS += [
       "correction removes a false premise rather than changing the type.",
       ["T-45", "T-47", "T-19", "T-20", "T-51"],
       ["U-15", "AMB-15", "U-06"], "", True,
-      [("spec/09-unresolved-decisions.md", 73,
+      [("spec/09-unresolved-decisions.md", 75,
         "the variant set of `ReconciliationOutcome` is never enumerated",
         "the false premise, corrected by this dictionary"),
        ("req/03-ambiguous.md", 127,
@@ -6099,7 +6099,7 @@ COLLISIONS += [
        ("req/03-ambiguous.md", 189, "`README.md` L22–28 vs L656–661",
         "the same defective citations, repeated"),
        ("README.md", 12, "Implementation:     IN PROGRESS", "the real first status block"),
-       ("README.md", 735, "Implementation     READY", "the real last status block")]),
+       ("README.md", 771, "Implementation     READY", "the real last status block")]),
     X(xid="X-64",
       title="`Fault::StalePlan` is used by the frozen source at L28373 but is a variant of none of the seven `Fault` declarations",
       kind="UNDECLARED-VARIANT",
@@ -6169,7 +6169,7 @@ COLLISIONS += [
         ("req/03-ambiguous.md", 68, "that strike was itself wrong", "AMB-08's list, qualified in place rather than struck"),
         ("req/03-ambiguous.md", 264, "occurs nowhere in L1–42312", "AMB-34, rewritten, with the withdrawn claim quoted"),
         ("spec/06-contradictions-ambiguities.md", 69, "`Fault::StalePlan` occurs verbatim once, at L28373", "C-54, rewritten from a phantom finding to a used-but-undeclared one"),
-        ("spec/06-contradictions-ambiguities.md", 114, "rewritten** in this revision", "C-59..C-65 summary line, recording the retraction of the earlier claim"),
+        ("spec/06-contradictions-ambiguities.md", 119, "rewritten** in this revision", "C-59..C-65 summary line, recording the retraction of the earlier claim"),
       ]),
     X(xid="X-65",
       title="`MarshalFault` is declared twice with completely disjoint variant sets, and is used as an elided `Fault` payload",
@@ -6265,7 +6265,7 @@ COLLISIONS += [
       new_finding=True,
       doc_sites=[
         ("spec/05-terminology.md", 112, "`CapabilityError`", "listed as 'Enum variants not enumerated' although L20408 declares them"),
-        ("spec/09-unresolved-decisions.md", 54, "are not enumerated", "U-08's claim, which hides the declared set and the `Invalid` split"),
+        ("spec/09-unresolved-decisions.md", 56, "are not enumerated", "U-08's claim, which hides the declared set and the `Invalid` split"),
       ]),
     X(xid="X-67",
       title="`HostFault` is declared once with two variants, and eight different undeclared variant paths are used — six of them on the frozen replay path",
@@ -6586,7 +6586,7 @@ COLLISIONS += [
       new_finding=True,
       doc_sites=[
         ("spec/06-contradictions-ambiguities.md", 76, "`MachineEvent` is declared eight times", "C-61, the row this entry backs"),
-        ("spec/09-unresolved-decisions.md", 144,
+        ("spec/09-unresolved-decisions.md", 146,
          "### U-28 — Which `MachineEvent` names govern",
          "the decision this entry escalates to; added by the same sweep"),
         ("req/03-ambiguous.md", 277,
@@ -6663,7 +6663,7 @@ COLLISIONS += [
       new_finding=True,
       doc_sites=[
         ("spec/06-contradictions-ambiguities.md", 77, "`CanonicalError` is declared seven times", "C-62, the row this entry backs"),
-        ("spec/09-unresolved-decisions.md", 151,
+        ("spec/09-unresolved-decisions.md", 153,
          "### U-29 — Which `CanonicalError` shape governs",
          "the decision this entry escalates to; added by the same sweep"),
         ("req/03-ambiguous.md", 285,
@@ -6720,7 +6720,7 @@ COLLISIONS += [
       new_finding=True,
       doc_sites=[
         ("spec/06-contradictions-ambiguities.md", 78, "`StepResult` is two disjoint enums", "C-63, the row this entry backs"),
-        ("spec/09-unresolved-decisions.md", 130,
+        ("spec/09-unresolved-decisions.md", 132,
          "### U-26 — Which layer owns the name `StepResult`?",
          "the decision this entry escalates to; added by the same sweep"),
         ("req/03-ambiguous.md", 293,
@@ -6781,7 +6781,7 @@ COLLISIONS += [
       new_finding=True,
       doc_sites=[
         ("spec/06-contradictions-ambiguities.md", 79, "`ActorStatus` is declared seven times", "C-64, the row this entry backs"),
-        ("spec/09-unresolved-decisions.md", 137,
+        ("spec/09-unresolved-decisions.md", 139,
          "### U-27 — Which `ActorStatus` shape governs",
          "the decision this entry escalates to; added by the same sweep"),
         ("req/03-ambiguous.md", 301,
@@ -6909,11 +6909,11 @@ COLLISIONS += [
       doc_sites=[
         ("spec/06-contradictions-ambiguities.md", 81, "| C-66 | `MarshalledValue`'s payload is `Value`",
          "C-66, the contradictions-register row for this finding"),
-        ("spec/09-unresolved-decisions.md", 160, "### U-30 — Which payload does `MarshalledValue` carry",
+        ("spec/09-unresolved-decisions.md", 162, "### U-30 — Which payload does `MarshalledValue` carry",
          "U-30, the decision this finding needs"),
         ("term/00-overview.md", 175, "| `term/_terms.py T-79…T-81, N-28` |",
          "the §6 row recording T-79's creation"),
-        ("README.md", 68, "(`X-01`…`X-86`, of which 4 are BLOCKING)",
+        ("README.md", 104, "(`X-01`…`X-86`, of which 4 are BLOCKING)",
          "the README's collision-register count, updated by this pass"),
       ]),
     X(xid="X-77",
@@ -6988,7 +6988,7 @@ COLLISIONS += [
       doc_sites=[
         ("spec/06-contradictions-ambiguities.md", 82, "| C-67 | `Authority` is declared seven times in six field sets",
          "C-67"),
-        ("spec/09-unresolved-decisions.md", 168, "### U-31 — Which field set is `Authority`'s",
+        ("spec/09-unresolved-decisions.md", 170, "### U-31 — Which field set is `Authority`'s",
          "U-31"),
         ("term/00-overview.md", 175, "| `term/_terms.py T-79…T-81, N-28` |",
          "the §6 row recording N-28's four new evidence sites"),
@@ -7057,7 +7057,7 @@ COLLISIONS += [
       doc_sites=[
         ("spec/06-contradictions-ambiguities.md", 83, "| C-68 | `RefAuthority` is declared four times in three shapes",
          "C-68"),
-        ("spec/09-unresolved-decisions.md", 184, "### U-33 — Which reference-model declarations govern",
+        ("spec/09-unresolved-decisions.md", 186, "### U-33 — Which reference-model declarations govern",
          "U-33"),
         ("term/00-overview.md", 173, "| `term/_structs.py` | **new checker**",
          "the §6 row for the checker that produced the counts"),
@@ -7116,7 +7116,7 @@ COLLISIONS += [
       doc_sites=[
         ("spec/06-contradictions-ambiguities.md", 84, "| C-69 | `RefState` is declared with the production machine's types",
          "C-69"),
-        ("spec/09-unresolved-decisions.md", 184, "### U-33 — Which reference-model declarations govern",
+        ("spec/09-unresolved-decisions.md", 186, "### U-33 — Which reference-model declarations govern",
          "U-33"),
       ]),
     X(xid="X-80",
@@ -7171,7 +7171,7 @@ COLLISIONS += [
       doc_sites=[
         ("spec/06-contradictions-ambiguities.md", 85, "| C-70 | `WalFrame` gains `payload_length: u32`",
          "C-70"),
-        ("spec/09-unresolved-decisions.md", 176, "### U-32 — Does the durable `WalFrame` carry `payload_length`",
+        ("spec/09-unresolved-decisions.md", 178, "### U-32 — Does the durable `WalFrame` carry `payload_length`",
          "U-32"),
       ]),
 
@@ -7283,7 +7283,7 @@ COLLISIONS += [
       doc_sites=[
         ("spec/06-contradictions-ambiguities.md", 87, "| C-72 | `CapabilityKernel`'s arena changes value type and container",
          "C-72"),
-        ("spec/09-unresolved-decisions.md", 168, "### U-31 — Which field set is `Authority`'s",
+        ("spec/09-unresolved-decisions.md", 170, "### U-31 — Which field set is `Authority`'s",
          "U-31, which also rules on the kernel's arena"),
       ]),
     X(xid="X-83",
@@ -7350,7 +7350,7 @@ COLLISIONS += [
       doc_sites=[
         ("spec/06-contradictions-ambiguities.md", 88, "| C-73 | The turn-[31] and turn-[32] state structs are not the same structs",
          "C-73"),
-        ("spec/09-unresolved-decisions.md", 192, "### U-34 — Which turn-[31]/turn-[32] state structs govern",
+        ("spec/09-unresolved-decisions.md", 194, "### U-34 — Which turn-[31]/turn-[32] state structs govern",
          "U-34"),
       ]),
     X(xid="X-84",
@@ -7431,7 +7431,7 @@ COLLISIONS += [
       doc_sites=[
         ("spec/06-contradictions-ambiguities.md", 89, "| C-74 | Thirty-one more type names are used in frozen field positions",
          "C-74"),
-        ("spec/09-unresolved-decisions.md", 184, "### U-33 — Which reference-model declarations govern",
+        ("spec/09-unresolved-decisions.md", 186, "### U-33 — Which reference-model declarations govern",
          "U-33, which rules on the twelve `Ref*` names"),
         ("term/00-overview.md", 213, "python3 term/_structs.py --undeclared # field types declared nowhere: 69 names",
          "the §8 command that re-derives this entry's counts"),
