@@ -6,7 +6,7 @@
 |---|---|---|
 | `requirements.json` | 1 | Machine-readable requirements registry (184 records; derived from `final/03` + `spec/01`/`final/01`) |
 | `requirements.schema.json` | 2 | JSON Schema (draft 2020-12) for `requirements.json` |
-| `01-compilation-report.md` | 3 | Registry compilation report (the 15 mandated audit figures + the 20-point validation battery) |
+| `01-compilation-report.md` | 3 | Registry compilation report (the 15 mandated audit figures + the 22-point validation battery) |
 | `02-identity-diff-report.md` | 4 | Identity/diff report against the canonical requirement registry |
 | `03-status-transition-audit-model.md` + `status-transitions.json` | 5 | Status-transition/audit model and the (append-only) transition ledger |
 | `04-provenance-report.md` | 6 | Provenance report |

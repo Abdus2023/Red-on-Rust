@@ -11,6 +11,70 @@
     "skip_justification",
     "approved_by"
   ],
+  "evidence_kind_enforcement": {
+    "compiler_enforcement": "battery point 21",
+    "description": "Evidence kind must match target status. A generic evidence kind MUST NOT be used to claim any status level.",
+    "fail_closed": true,
+    "rules": {
+      "IMPLEMENTED": {
+        "prohibited_kinds": [
+          "test",
+          "differential",
+          "mutation",
+          "crash-matrix",
+          "proof",
+          "repository-integrity-gate"
+        ],
+        "required_kinds": [
+          "source"
+        ]
+      },
+      "PROVEN": {
+        "prohibited_kinds": [
+          "source",
+          "test",
+          "differential",
+          "mutation",
+          "crash-matrix",
+          "repository-integrity-gate"
+        ],
+        "required_kinds": [
+          "proof"
+        ]
+      },
+      "TESTED": {
+        "prohibited_kinds": [
+          "source",
+          "differential",
+          "mutation",
+          "crash-matrix",
+          "proof",
+          "repository-integrity-gate"
+        ],
+        "required_kinds": [
+          "test"
+        ]
+      },
+      "VERIFIED": {
+        "prohibited_kinds": [
+          "source",
+          "test",
+          "proof",
+          "repository-integrity-gate"
+        ],
+        "required_kinds": [
+          "differential",
+          "mutation",
+          "crash-matrix"
+        ]
+      }
+    }
+  },
   "ledger": "R-REG status-transition ledger (append-only; historical entries immutable)",
+  "skip_evidence_completeness": {
+    "compiler_enforcement": "battery point 22",
+    "description": "If a transition skips intermediate levels, the evidence package MUST include at least one evidence entry for each skipped level's required kinds.",
+    "fail_closed": true
+  },
   "transitions": []
 }

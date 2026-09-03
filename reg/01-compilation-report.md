@@ -26,7 +26,7 @@
 
 Figures 12–15 are *absence of registered artefacts*. They neither promote nor demote any status (DEFINITION OF ABSENCE).
 
-## 2. Validation battery (20 points; any FAIL aborts `--write` and fails `check.py`)
+## 2. Validation battery (22 points; any FAIL aborts `--write` and fails `check.py`)
 
 ```
 OK   1/2  schema validity + required fields: 0 violation(s)
@@ -39,6 +39,8 @@ OK   7    dependencies resolve: 0 R-level edges (== spec/10 canonical); unresolv
 OK   8/9  provenance present for 184/184; source hashes re-derive from the spec/01 chunk bytes and the input file hashes; 36 rows without frozen-source line ranges are exactly the frozen addenda (recorded, not missing)
 OK   10/11 status values legal ([('SPECIFIED', 184)]); identical to final/03 and final/01 markers for all rows; no promotion without a ledger entry (ledger entries: 0)
 OK   12   historical evidence unchanged: transition ledger is append-only vs the committed copy; 0 entries
+OK   21   evidence-kind enforcement: 0 violation(s) in 0 ledger entries; all kinds match target statuses
+OK   22   skip evidence completeness: 0 violation(s) in skip transitions; all skips have complete evidence
 OK   13   security classification preserved: every GI-SEC home (22) is security_relevant; flag == (basis non-empty) for all rows
 OK   14/15/16 implementation / test / verification mappings equal the canonical final/03 cells and spec/10 tag+mutation maps for 184/184
 OK   17   evidence traceable: 0 evidence entries; untraceable none

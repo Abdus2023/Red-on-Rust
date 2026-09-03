@@ -16,7 +16,42 @@ SPECIFIED -> IMPLEMENTED -> TESTED -> VERIFIED -> PROVEN
 | VERIFIED | independent evidence: differential agreement, mutation kill, crash matrix |
 | PROVEN | mechanized proof artefact in the repository |
 
-## 2. Rules enforced by the compiler
+## 2. Evidence-kind predicates (status-appropriate evidence)
+
+The evidence `kind` MUST be appropriate for the target `establishes` status. A generic evidence kind MUST NOT be used to claim any status level.
+
+| Target status | Required evidence kinds | Prohibited evidence kinds |
+|---|---|---|
+| `IMPLEMENTED` | `source` | `test`, `differential`, `mutation`, `crash-matrix`, `proof`, `repository-integrity-gate` |
+| `TESTED` | `test` | `source`, `differential`, `mutation`, `crash-matrix`, `proof`, `repository-integrity-gate` |
+| `VERIFIED` | `differential`, `mutation`, `crash-matrix` | `source`, `test`, `proof`, `repository-integrity-gate` |
+| `PROVEN` | `proof` | `source`, `test`, `differential`, `mutation`, `crash-matrix`, `repository-integrity-gate` |
+
+**Rationale:**
+- `source` evidence (implementation files) establishes IMPLEMENTED, not TESTED/VERIFIED/PROVEN.
+- `test` evidence (executed tests) establishes TESTED, not IMPLEMENTED/VERIFIED/PROVEN.
+- `differential`/`mutation`/`crash-matrix` evidence establishes VERIFIED, not IMPLEMENTED/TESTED/PROVEN.
+- `proof` evidence (formal proof artefacts) establishes PROVEN, not IMPLEMENTED/TESTED/VERIFIED.
+- `repository-integrity-gate` evidence (check.py PASS) establishes NONE — it is repository-integrity evidence only, never a status promotion.
+
+**Fail-closed rule:** If a ledger entry's evidence `kind` does not match the required kinds for its `new_status`, the compiler MUST reject the entry.
+
+## 3. Skip semantics
+
+If a status transition skips one or more intermediate levels, the evidence package MUST satisfy:
+1. The target status's evidence requirements, AND
+2. All intermediate status evidence requirements.
+
+**Example:** SPECIFIED → VERIFIED requires:
+- `source` evidence (for IMPLEMENTED), AND
+- `test` evidence (for TESTED), AND
+- `differential`/`mutation`/`crash-matrix` evidence (for VERIFIED).
+
+A skip MUST NOT mean "higher status requested, therefore higher status is accepted." Every skip MUST carry an explicit `skip_justification` explaining why intermediate evidence is not required or is bundled.
+
+**Fail-closed rule:** If a ledger entry skips levels and does not carry evidence for all intermediate statuses, the compiler MUST reject the entry unless an explicit authorized skip rule exists.
+
+## 4. Rules enforced by the compiler
 
 1. `status` is **copied** from `final/03` and cross-checked against the `final/01` canonical-home marker; the compiler has no code path that writes any other value.
 2. A row whose status is above SPECIFIED must have at least one entry in `reg/status-transitions.json` — otherwise the build fails (battery point 10/11).
@@ -24,15 +59,17 @@ SPECIFIED -> IMPLEMENTED -> TESTED -> VERIFIED -> PROVEN
 4. No inference: SPECIFIED→IMPLEMENTED, IMPLEMENTED→TESTED, TESTED→VERIFIED, VERIFIED→PROVEN are never derived from statement text, from `implementation_targets`, from `test_targets`, from a passing repository checker, or from the words "implementation ready", "gate PASS" or "audit complete".
 5. Skipping a rung is admissible only if the ledger entry carries an explicit `skip_justification` and the evidence model permits it; the compiler rejects an entry whose `new_status` is not later in the ladder than `previous_status`.
 6. `REF1-CONDITIONAL` / `V1-CONDITIONAL` are audit verdicts, not requirement statuses; they are carried in `conditional_verdicts` and may only change through a new audit record, never through this ledger.
+7. **Evidence-kind enforcement:** Every evidence entry in a ledger transition MUST have a `kind` that is in the required set for the `new_status`. The compiler rejects entries with mismatched evidence kinds (battery point 21).
+8. **Skip evidence completeness:** If a transition skips intermediate levels, the evidence package MUST include at least one evidence entry for each skipped level's required kinds. The compiler rejects incomplete skip evidence (battery point 22).
 
-## 3. Ledger entry shape (`reg/status-transitions.json`)
+## 5. Ledger entry shape (`reg/status-transitions.json`)
 
 ```json
 {
   "requirement_id": "R-…",
   "previous_status": "SPECIFIED",
   "new_status": "IMPLEMENTED",
-  "evidence": [{"kind": "test", "reference": "repo/path#anchor", "establishes": "TESTED"}],
+  "evidence": [{"kind": "source", "reference": "repo/path#anchor", "establishes": "IMPLEMENTED"}],
   "verification_method": "…",
   "repository_revision": "git commit sha",
   "timestamp": "YYYY-MM-DD",
@@ -42,6 +79,12 @@ SPECIFIED -> IMPLEMENTED -> TESTED -> VERIFIED -> PROVEN
 }
 ```
 
-## 4. Current ledger
+**Evidence-kind examples:**
+- SPECIFIED → IMPLEMENTED: `{"kind": "source", "reference": "crates/ror-core/src/lib.rs", "establishes": "IMPLEMENTED"}`
+- IMPLEMENTED → TESTED: `{"kind": "test", "reference": "tests/cek_test.rs#test_let_binding", "establishes": "TESTED"}`
+- TESTED → VERIFIED: `{"kind": "differential", "reference": "tests/differential/cek_agreement.rs", "establishes": "VERIFIED"}`
+- VERIFIED → PROVEN: `{"kind": "proof", "reference": "proofs/capability_attenuation.v", "establishes": "PROVEN"}`
+
+## 6. Current ledger
 
 Entries: **0**. Status distribution: {'SPECIFIED': 184}. No transition has occurred; no historical evidence exists to overwrite. Every one of the 184 canonical obligations remains at its evidence-backed status `SPECIFIED` — the bootstrap state is carried, not promoted.

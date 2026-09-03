@@ -14,7 +14,7 @@
 |---|---|---|
 | `reg/requirements.json` | generated registry | `sha256:03cf4accc7ee1ac4a764f3974b4f776143201347f9db6dd31261a6eef15d5536` |
 | `reg/requirements.schema.json` | generated schema | `sha256:2ce11330e7d46207b98d5d93c2eb06a8f6fca396daa4d0fcd758d497a8cde9a8` |
-| `reg/status-transitions.json` | transition ledger (append-only) | `sha256:2ed6572990db503beb74b0372ad699e66f046043e7025fd1ee1c2bdff5c9adc5` |
+| `reg/status-transitions.json` | transition ledger (append-only) | `sha256:12133ca1553b9074d728f4420805d64326ff81a3b0093689e837eddef48477cc` |
 | `Red-on-Rust.md` | input authority | `sha256:2aeb9940665f6ef27bbba9895889e93b8be8c1ba9f5ff0558f2b95fee07a25eb` |
 | `spec/01-canonical-specification.md` | input authority | `sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2` |
 | `spec/03-obligation-matrix.md` | input authority | `sha256:ba5ac1c952b69b1cbbc3429a5dd4522293e496d6a10646e22527e7a7c97d8633` |
