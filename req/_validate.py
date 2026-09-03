@@ -326,6 +326,35 @@ def main() -> int:
     if len(u_ids) != 31:
         err(f"expected 31 U- headings in spec/09, found {len(u_ids)}")
 
+    # 7c-bis. The prose summary line must agree with the rows it summarises.
+    # spec/06 opens its summary with "<n> findings (<m> rows ...)".  Both numbers
+    # had silently drifted: the line read "74 findings (76 rows)" against 97
+    # actual rows, and the semantic-nondeterminism pass then added 5 to that
+    # stale base and wrote "79 in 81".  No checker noticed -- the figure is
+    # prose, and every other gate counts the table.  Mutation K12 in
+    # audit/_checker_mutations.py survived all six checkers, which is what
+    # surfaced it.  The authoritative count is the table; any "<n> findings
+    # (<m> rows" claim in the file must match it, so the summary cannot drift
+    # again without failing the build.
+    s06 = (A.REPO_ROOT / "spec" / "06-contradictions-ambiguities.md").read_text(encoding="utf-8")
+    claims = _re.findall(r"(\d+) findings? in (\d+) rows|(\d+) findings? \((\d+) rows", s06)
+    n_rows = len(c_ids)
+    n_find = n_rows - 1  # the C-39 pointer row duplicates C-25; the index excludes it
+    for tup in claims:
+        f_claim = tup[0] or tup[2]
+        r_claim = tup[1] or tup[3]
+        if not f_claim:
+            continue
+        # A quoted historical figure is legitimate: superseded wording is kept
+        # verbatim (R-SCOPE-03).  Only the *live* claim -- the one naming the
+        # current row count -- is checked, and it must be exactly right.
+        if int(r_claim) == n_rows and int(f_claim) != n_find:
+            err(f"spec/06 summary claims {f_claim} findings for {r_claim} rows; "
+                f"the table has {n_rows} rows = {n_find} findings + the C-39 pointer")
+    if not any((t[1] or t[3]) and int(t[1] or t[3]) == n_rows for t in claims):
+        err(f"spec/06 has {n_rows} C- rows but no summary claim states that row "
+            f"count; the prose summary has drifted from the table")
+
     # 7d. markdown table integrity.  A literal `|` inside a cell -- a set
     # builder `{ (o,v) | o in O }`, a closure body `unwrap_or_else(|| ...)`, a
     # quoted property-test matrix row, a grammar's `A | B | C` alternatives, a
