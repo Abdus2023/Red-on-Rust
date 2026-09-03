@@ -62,7 +62,7 @@ _own("MOD-01", "CALC",    range(1, 9))
 _own("MOD-02", "COMPILE", range(1, 7))    # +COMPILE-06 plan-bound capability literals (addendum I)
 _own("MOD-03", "CAP",     range(1, 11))   # +CAP-10 AdmissibleConstraint (addendum V)
 _own("MOD-03", "KERN",    range(1, 7))    # +KERN-04/05 (addendum I), +KERN-06 root grant (addendum V)
-_own("MOD-04", "BUDGET",  range(1, 10))   # +BUDGET-09 escrow totality (addendum V)
+_own("MOD-04", "BUDGET",  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13])   # +BUDGET-09 (addendum V); +BUDGET-10/11/13 (addendum VIII); BUDGET-12 stays with U-01
 _own("MOD-05", "CEK",     range(1, 8))
 _own("MOD-06", "ACTOR",   [1, 2, 3, 5, 6, 8, 9, 10])  # +ACTOR-09 (add. III), +ACTOR-10 (add. V)
 _own("MOD-06", "MARSHAL", range(1, 7))    # +MARSHAL-05/06 (addendum II)
@@ -99,6 +99,9 @@ R_XREF = {
     "R-CORE-03": [("MOD-03", "predicate owner (D-08)"), ("MOD-08", "gate application")],
     "R-CORE-04": [("MOD-03", "operative owner (D-01)"), ("MOD-06", "cross-actor transfer still bounded by delegation")],
     "R-CORE-05": [("MOD-04", "operative owner (D-02)"), ("MOD-12", "survives crash (R-RECOV-06)"), ("MOD-06", "spawn transfer, not creation")],
+    "R-BUDGET-10": [("MOD-08", "issuance section atomicity R-DUR-07"), ("MOD-01", "R-CORE-12 transition atomicity"), ("MOD-11", "journal append/fsync"), ("MOD-12", "host-failure recovery")],
+    "R-BUDGET-11": [("MOD-08", "escrow at issuance R-EFFECT-05"), ("MOD-12", "R-RECOV-08/09 admissibility"), ("MOD-01", "conservation R-CORE-05"), ("MOD-06", "spawn/transfer partition")],
+    "R-BUDGET-13": [("MOD-11", "WAL/snapshot capacity"), ("MOD-12", "snapshot compaction recovery"), ("MOD-10", "15A artifact sizes")],
     "R-CORE-06": [("MOD-11", "operative owner (D-03)"), ("MOD-08", "sequence position (steps 14 before 16)"), ("MOD-09", "host never invoked earlier")],
     "R-CORE-07": [("MOD-06", "operative owner (D-04)"), ("MOD-03", "delegation is a kernel derive")],
     "R-CORE-08": [("MOD-07", "operative owner (D-05)"), ("MOD-09", "host trace term"), ("MOD-13", "planner trace for end-to-end runs")],

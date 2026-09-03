@@ -122,7 +122,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-KERN-05 | CapabilityContext real frozen possession type; unit-type sketch superseded; snapshots carry capability context; recovery reconstructs possession before gate authorization | addendum (SEC-002) | — | — |
 | R-KERN-06 | Root-grant protocol frozen: Grant(source, authority, ceiling, t) with durable CapabilityGranted record, authority ≼ deployment ceiling, root minted once at initialization; Supervisor.host removed or issued-effect-only (R-HOST-02 binds all callers); planner I/O crate-separated (C-95 resolved) | addendum (SEC-015) | — | — |
 
-### MOD-04 — BUDGET (9 obligations)
+### MOD-04 — BUDGET (12 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -135,6 +135,9 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-BUDGET-07 | CostModel contract; Consumable ≠ Reserved typing | L9155–9205, L10171–10177 | MOD-02 (static budget bound uses CostModel), MOD-08 (EffectCost is a Cost) | — |
 | R-BUDGET-08 | ¬BudgetOK ⇒ fault(BudgetExhausted), no partial debit | L7345–7352, L7410–7419 | MOD-08 (denial leaves budget unchanged) | — |
 | R-BUDGET-09 | Escrow disposition totality: every escrowed unit leaves via exactly one frozen path (Completed / host-failure consumption / durable Reconciled); live faults unified with crash reconciliation; logical-time deadline bound to Indeterminate; no quiescent strand (C-97 resolved; M035) | addendum (SEC-021) | — | — |
+| R-BUDGET-10 | Resource-state atomicity: every Op transition is one transactional resource mutation; precondition failure ⇒ `Σ' = Σ` (zero drift, zero partial debit); post-issuance host-failure caveat (C-108 resolved; U-45) | addendum (resource-accounting) | MOD-08 (issuance section atomicity R-DUR-07), MOD-01 (R-CORE-12 transition atomicity), MOD-11 (journal append/fsync), MOD-12 (host-failure recovery) | — |
+| R-BUDGET-11 | Escrow disposition normal form (RECONCILED): R-BUDGET-09's three paths are the totality; Consumed/Refunded are its completion leaves, Transferred/Disposed-with-explicit-sink its reconciled leaves; `Remains-Indeterminate` is a bounded transient, never terminal (C-108 resolved; U-45) | addendum (resource-accounting) | MOD-08 (escrow at issuance R-EFFECT-05), MOD-12 (R-RECOV-08/09 admissibility), MOD-01 (conservation R-CORE-05), MOD-06 (spawn/transfer partition) | — |
+| R-BUDGET-13 | Persistent-capacity accounting: volatile RAM distinct from persistent storage; RAM released on scope exit/halt; durable storage retained and snapshot-compacted; overflow faults (C-108 resolved; U-45) | addendum (resource-accounting) | MOD-11 (WAL/snapshot capacity), MOD-12 (snapshot compaction recovery), MOD-10 (15A artifact sizes) | — |
 
 ### MOD-05 — EVALUATOR (7 obligations)
 
@@ -315,7 +318,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-TEST-11 | Final acceptance condition (3 conjuncts) | L38885–38911, L41196–41210 | MOD-15 (oracle equality conjunct), MOD-16 (kill-rate conjunct), MOD-12 (recovery-equivalence conjunct) | — |
 | R-TEST-12 | Request-frame verification tags: `REQUEST-ARGS-LTR` and `REQUEST-NON-CAP-SHORT-CIRCUIT` added to R-TEST-07's obligation-tagged coverage list; Track A coverage (U-44 resolved) | addendum (request-pipeline) | MOD-05 (request-frame LTR), MOD-08 (short-circuit gate), MOD-15 (R-TEST-07 tag-list owner) | — |
 
-**Partition check:** 178 obligations across 17 modules (expected 148).
+**Partition check:** 181 obligations across 17 modules (expected 148).
 
 ## 2. Atomic-record partition (545)
 

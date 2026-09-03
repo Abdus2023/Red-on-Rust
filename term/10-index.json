@@ -10670,7 +10670,7 @@
    "doc_sites": [
     {
      "file": "spec/01-canonical-specification.md",
-     "line": 504,
+     "line": 510,
      "text": "Block → parse → NormalizedAST",
      "note": "the single-ordering rendering"
     },
@@ -12307,7 +12307,7 @@
     },
     {
      "file": "spec/08-verification-mapping.md",
-     "line": 131,
+     "line": 134,
      "text": "MarshalFault",
      "note": "verification mapping that assumes a single variant set"
     }

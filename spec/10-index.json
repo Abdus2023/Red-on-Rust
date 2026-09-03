@@ -31,12 +31,12 @@
     },
     "id_schemes": {
       "S-NN": "specification section (24)",
-      "R-AREA-NN": "normative requirement/obligation (178; 148 source-transcribed + 30 post-audit frozen addenda)",
+      "R-AREA-NN": "normative requirement/obligation (181; 148 source-transcribed + 33 post-audit frozen addenda)",
       "C-NN": "contradiction/ambiguity finding (108 indexed; 109 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
       "U-NN": "unresolved item requiring explicit decision (39)",
       "M-NN": "milestone M0-M11",
-      "TAG": "source verification-obligation tags (21; 17 frozen-source + 4 post-audit addenda)",
-      "M0NN": "baseline mutation registry (38; 18 baseline + 20 post-audit: M019–M038; M036 is registered and currently SURVIVING — see spec/08 §2 and U-38)",
+      "TAG": "source verification-obligation tags (23; 17 frozen-source + 6 post-audit addenda)",
+      "M0NN": "baseline mutation registry (39; 18 baseline + 21 post-audit: M019–M039; M036 is registered and currently SURVIVING — see spec/08 §2 and U-38)",
       "ROR-NNN": "first-sprint tasks (16)"
     },
     "documents": {
@@ -304,7 +304,10 @@
         "R-BUDGET-06",
         "R-BUDGET-07",
         "R-BUDGET-08",
-        "R-BUDGET-09"
+        "R-BUDGET-09",
+        "R-BUDGET-10",
+        "R-BUDGET-11",
+        "R-BUDGET-13"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -2392,6 +2395,73 @@
       ],
       "related_findings": [
         "C-97"
+      ]
+    },
+    {
+      "id": "R-BUDGET-10",
+      "section": "S-11",
+      "title": "Resource-state atomicity (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime",
+        "ror-persistence"
+      ],
+      "verification": [
+        "Op-01..Op-22 atomicity harness"
+      ],
+      "related_findings": [
+        "C-108"
+      ]
+    },
+    {
+      "id": "R-BUDGET-11",
+      "section": "S-11",
+      "title": "Escrow disposition normal form, reconciled (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime",
+        "ror-persistence"
+      ],
+      "verification": [
+        "M039",
+        "ledger liveness",
+        "T0-T6"
+      ],
+      "related_findings": [
+        "C-108"
+      ]
+    },
+    {
+      "id": "R-BUDGET-13",
+      "section": "S-11",
+      "title": "Persistent-capacity accounting (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "M7 snapshot-capacity tests"
+      ],
+      "related_findings": [
+        "C-108"
       ]
     },
     {
@@ -6328,8 +6398,8 @@
       "id": "C-108",
       "title": "Orphaned \"frozen addendum\" R-BUDGET-10…14 in audit/resource-accounting-audit.md: cited by no normative layer, and its five-path escrow normal form diverges from R-BUDGET-09's three paths",
       "severity": "MINOR",
-      "status": "corrected-in-place (provenance recorded)",
-      "resolved_into": "U-none",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-45",
       "provenance": {
         "file": "Red-on-Rust.md",
         "line_ranges": [
@@ -7018,6 +7088,13 @@
       ]
     },
     {
+      "id": "M039",
+      "defect": "Remains-Indeterminate treated as a terminal disposition (stranded escrow survives the logical-time bound)",
+      "kills_evidence_for": [
+        "R-BUDGET-11"
+      ]
+    },
+    {
       "id": "M026",
       "defect": "accept future-tagged proposal",
       "kills_evidence_for": [
@@ -7217,6 +7294,23 @@
         "R-TEST-12"
       ],
       "milestone": "M5 (addendum VII)"
+    },
+    {
+      "tag": "BUDGET-ESCROW-DISPOSITION-TOTALITY",
+      "obligations": [
+        "R-BUDGET-09",
+        "R-BUDGET-11",
+        "R-EFFECT-05"
+      ],
+      "milestone": "M5;M10 (addendum VIII)"
+    },
+    {
+      "tag": "PERSISTENT-CAPACITY-ACCOUNTING",
+      "obligations": [
+        "R-BUDGET-13",
+        "R-PERSIST-04"
+      ],
+      "milestone": "M7 (addendum VIII)"
     }
   ],
   "crash_matrix": [
@@ -7402,7 +7496,9 @@
         "R-DUR-06",
         "R-DUR-07",
         "R-RECOV-09",
-        "R-TEST-12"
+        "R-TEST-12",
+        "R-BUDGET-10",
+        "R-BUDGET-11"
       ]
     },
     {
@@ -7459,7 +7555,8 @@
         "R-RECOV-05",
         "R-RECOV-06",
         "R-PERSIST-07",
-        "R-PERSIST-08"
+        "R-PERSIST-08",
+        "R-BUDGET-13"
       ]
     },
     {
@@ -7509,7 +7606,8 @@
         "R-DUR-04",
         "R-PERSIST-07",
         "R-RECOV-08",
-        "R-RECOV-09"
+        "R-RECOV-09",
+        "R-BUDGET-11"
       ]
     },
     {
@@ -7782,7 +7880,9 @@
         "R-ACTOR-10",
         "R-BUDGET-09",
         "R-ARCH-05",
-        "R-DUR-07"
+        "R-DUR-07",
+        "R-BUDGET-10",
+        "R-BUDGET-11"
       ],
       "depends_on": [
         "ror-core",
@@ -7820,7 +7920,10 @@
         "R-PERSIST-08",
         "R-HOST-06",
         "R-RECOV-08",
-        "R-RECOV-09"
+        "R-RECOV-09",
+        "R-BUDGET-10",
+        "R-BUDGET-11",
+        "R-BUDGET-13"
       ],
       "depends_on": [
         "ror-core"

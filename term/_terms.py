@@ -5523,7 +5523,7 @@ COLLISIONS += [
       "rather than edited.",
       ["T-03", "T-04", "T-06", "T-07", "T-08"],
       [], "", True,
-      [("spec/01-canonical-specification.md", 504, "Block → parse → NormalizedAST",
+      [("spec/01-canonical-specification.md", 510, "Block → parse → NormalizedAST",
         "the single-ordering rendering"),
        ("mod/02-compiler.md", 45, "Block → parse → NormalizedAST",
         "the same rendering repeated in the module layer")]),
@@ -6414,7 +6414,7 @@ COLLISIONS += [
       doc_sites=[
         ("mod/06-actor.md", 103, "MarshalFault::CapabilityRequiresDelegation", "cites only the turn-[32] variant set"),
         ("req/01-registry-part1-foundations.md", 301, "Err(MarshalFault::CapabilityRequiresDelegation)", "REQ postcondition citing only the turn-[32] set"),
-        ("spec/08-verification-mapping.md", 131, "MarshalFault", "verification mapping that assumes a single variant set"),
+        ("spec/08-verification-mapping.md", 134, "MarshalFault", "verification mapping that assumes a single variant set"),
       ]),
     X(xid="X-66",
       title="`CapabilityError::Invalid` is used as the `derive` fallback but never declared; the declared sibling `InvalidConstraint` is used for the same fallback in the same turn",

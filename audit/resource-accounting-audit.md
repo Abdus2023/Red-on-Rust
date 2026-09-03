@@ -74,15 +74,16 @@ $$t_{i+1} = t_i + \delta_t(c_i) \quad \text{verified by} \quad \mathbf{t_{\text{
 
 ## 4. Resource Accounting Clarification Addendum (`R-BUDGET-10`…`14`)
 
-> **STATUS NOTE (2026-09-03, per `spec/06` C-108):** the five obligations below are a
-> **proposal owned by this audit**, not frozen normative text. They appear in no
-> normative layer: `spec/01` S-11 ends at R-BUDGET-09, `mod/04` lists nine obligations,
-> `spec/03` has no R-BUDGET-10+ row, and the atomic registry stops at REQ-BUDGET-032.
-> R-BUDGET-11's five escrow paths also diverge from the frozen R-BUDGET-09 three-path
-> totality. The adoption decision (freeze some or all of R-BUDGET-10…14, and reconcile
-> three vs five escrow paths) is filed as `spec/09` **U-45**; until then, no checker or
-> implementation may cite these IDs as obligations. The wording above is quoted, not
-> rewritten (R-SCOPE-03).
+> **STATUS (2026-09-03, adopted by addendum VIII, per `spec/09` U-45 / `spec/06` C-108):**
+> **R-BUDGET-10, R-BUDGET-11 (reconciled) and R-BUDGET-13 ARE FROZEN** — `spec/01` S-11,
+> `spec/03`, `mod/04`, the index and the registers now carry them (Total 178 → 181). The
+> reconciliation: R-BUDGET-09's three paths remain the totality, and the five-path normal
+> form is that totality's complete fine structure — `Remains-Indeterminate` is a BOUNDED
+> transient (logical-time bound → reconciliation), never a terminal disposition, so no
+> divergence remains. **R-BUDGET-12 is NOT adopted** (its D-advancement/debit rule decides
+> `spec/09` U-01, a separate open item) and **R-BUDGET-14 is deferred** to a resource-family
+> pass; both remain non-normative proposals here. The adopted wording above is quoted, not
+> rewritten (R-SCOPE-03), except R-BUDGET-11 which carries the reconciled owner decision.
 
 **R-BUDGET-10 (Resource-State Atomicity — frozen addendum).** All resource mutations belonging to an operational transition occur transactionally. A failed precondition produces zero state drift and zero partial debit:
 $$\text{Precondition failure} \implies \Sigma' = \Sigma$$

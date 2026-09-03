@@ -329,7 +329,9 @@ def main() -> int:
     # row (a register gap, not a frozen-source contradiction).  Addendum VII
     # (2026-09-03) then re-graded C-103...C-107/C-109 resolved-by-addendum and resolved
     # U-39...U-44; the counts pinned here are unchanged by a re-grading, and C-108 stays
-    # corrected-in-place with U-45 deferred to a dedicated pass.
+    # corrected-in-place with U-45 deferred to a dedicated pass.  Addendum VIII
+    # (2026-09-03) then froze R-BUDGET-10/11/13 and re-graded C-108 resolved-by-addendum;
+    # R-BUDGET-12 stays with U-01 and R-BUDGET-14 is deferred.  Counts unchanged.
     if len(c_ids) != 109:
         err(f"expected 109 C- rows in spec/06, found {len(c_ids)}")
     # U-38 added by the same audit's checker-mutation pass (spec/08 M036 /

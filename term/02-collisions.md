@@ -1848,7 +1848,7 @@ Yes, but owned by U-08 and now widened by X-69: does `StalePlan` join the declar
 |---|---|---|
 | `mod/06-actor.md`:103 | `MarshalFault::CapabilityRequiresDelegation` | cites only the turn-[32] variant set |
 | `req/01-registry-part1-foundations.md`:301 | `Err(MarshalFault::CapabilityRequiresDelegation)` | REQ postcondition citing only the turn-[32] set |
-| `spec/08-verification-mapping.md`:131 | `MarshalFault` | verification mapping that assumes a single variant set |
+| `spec/08-verification-mapping.md`:134 | `MarshalFault` | verification mapping that assumes a single variant set |
 
 ### The collision
 
@@ -2985,7 +2985,7 @@ Yes — identify the single frozen `Frame` declaration and state `AuthorityNode`
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/01-canonical-specification.md`:504 | `Block → parse → NormalizedAST` | the single-ordering rendering |
+| `spec/01-canonical-specification.md`:510 | `Block → parse → NormalizedAST` | the single-ordering rendering |
 | `mod/02-compiler.md`:45 | `Block → parse → NormalizedAST` | the same rendering repeated in the module layer |
 
 ### The collision

@@ -100,8 +100,9 @@ R-REPO-02" is superseded (quoted here; no budget algebra or gate lives in
   values — AMB-19), **U-03** (spawn split policy, with MOD-06 — AMB-03), **U-40**
   (step-10 deadline predicate: `t + δ_t(req) ≤ W` per R-BUDGET-06/v0.3 vs the weak
   `t ≤ W` — `spec/06` C-104; with MOD-08; M5 deadline conformance), **U-45**
-  (adoption of the R-BUDGET-10…14 resource-accounting proposal — `spec/06` C-108;
-  its five-path escrow normal form conflicts with this module's R-BUDGET-09 totality).
+  (resolved by addendum VIII 2026-09-03: R-BUDGET-10/11/13 frozen; R-BUDGET-11
+  reconciled as the five-leaf refinement of the three-path totality; R-BUDGET-12 stays
+  with U-01; R-BUDGET-14 deferred to a resource-family pass).
 
 ## INVARIANTS
 
@@ -120,7 +121,7 @@ R-REPO-02" is superseded (quoted here; no budget algebra or gate lives in
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-11; addendum V. All 9 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-11; addenda V, VIII. All 12 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -133,12 +134,15 @@ Canonical text: `spec/01` S-11; addendum V. All 9 obligations `SPECIFIED`.
 | R-BUDGET-07 | `CostModel` contract; `Consumable ≠ Reserved` typing | L9155–9205, L10171–10177 | — |
 | R-BUDGET-08 | ¬BudgetOK ⇒ `fault(BudgetExhausted)`, no partial debit | L7345–7352, L7410–7419 | Track C budget-gate test |
 | R-BUDGET-09 | Escrow disposition totality: every escrowed unit leaves via exactly one frozen path (Completed / host-failure consumption / durable Reconciled); live faults unified with crash reconciliation; logical-time deadline bound to Indeterminate; no quiescent strand (C-97 resolved; M035) | addendum V (SEC-021) | M035, ledger liveness, mixed crash+live harness |
+| R-BUDGET-10 | Resource-state atomicity: every Op transition is one transactional resource mutation; precondition failure ⇒ `Σ' = Σ` (C-108 resolved) | addendum VIII (resource-accounting) | Op-01…Op-22 atomicity harness |
+| R-BUDGET-11 | Escrow disposition normal form (RECONCILED): R-BUDGET-09's three paths are the totality; Consumed/Refunded are its completion leaves; Transferred/Disposed-with-explicit-sink its reconciled leaves; `Remains-Indeterminate` is a bounded transient (C-108 resolved) | addendum VIII (resource-accounting) | M039, ledger liveness, T0–T6 |
+| R-BUDGET-13 | Persistent-capacity accounting: volatile RAM distinct from persistent storage; RAM released on scope exit/halt; durable storage retained and snapshot-compacted; overflow faults | addendum VIII (resource-accounting) | M7 snapshot-capacity tests |
 
 Atomic registry records under this module: REQ-BUDGET-001…032 — incl. explicitly
 placed audit records REQ-BUDGET-008 (`D` operational meaning; AMB-01/U-01) and
 REQ-BUDGET-032 (v0.3 E-RequestDenied: fault transitions preserve `C`,`R`; deny-side
 cross-reference to MOD-08).
-**9 obligations / 32 records.**
+**12 obligations / 32 records.**
 
 ## SECURITY-BOUNDARY
 
@@ -191,4 +195,5 @@ law they must satisfy); R-DUR-05 (MOD-11 owns the durability of the escrow recor
 R-PLANNER-02 (MOD-13: planner cannot modify budgets — enforcement at this module's
 API surface). Open items: U-01, U-07 (this module, blocking), U-03 (with MOD-06),
 U-13 (epoch/timestamps, MOD-13-side), U-40 (deadline predicate, MOD-08-side),
-U-45 (R-BUDGET-10…14 adoption, audit proposal — not normative until decided).
+U-45 resolved by addendum VIII (R-BUDGET-10/11/13 frozen; R-BUDGET-11 reconciled;
+R-BUDGET-12 stays with U-01; R-BUDGET-14 deferred to a resource-family pass).

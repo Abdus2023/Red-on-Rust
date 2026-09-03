@@ -446,6 +446,28 @@ def m038_payload_id_digest_only(root: Path) -> bool:
     return True
 
 
+def m039_indeterminate_terminal(root: Path) -> bool:
+    """M039 (spec/08 registry): `Remains-Indeterminate` treated as a terminal
+    disposition (stranded escrow survives the logical-time bound). Document
+    mutant of the addendum-VIII R-BUDGET-11 body; D3-detectable, survives the
+    default wiring (U-38) and dies under --allowlist.
+    """
+    p = root / "spec/01-canonical-specification.md"
+    txt = p.read_text(encoding="utf-8")
+    m = re.search(r"^\*\*R-BUDGET-11 \(.*$", txt, re.M)
+    if not m:
+        return False
+    mutant = ("**R-BUDGET-11 (escrow disposition normal form — frozen addendum).** "
+              "`Remains-Indeterminate` is a permanent parking state: pending ledger "
+              "truth is sampled once, cached forever, and the escrow basket is sealed "
+              "with wax, guarded by three sentinels, and never reopened. Stranded "
+              "units accumulate silently into the vault; the nightly audit sweep "
+              "skips them entirely; the ledger keeps no tombstone; cursor ordering "
+              "is irrelevant; checksums are decorative.")
+    p.write_text(txt[:m.start()] + mutant + txt[m.end():], encoding="utf-8")
+    return True
+
+
 def m_m036_under_allowlist(root: Path) -> bool:
     """The M036 rotation, to be run against `spec/_check.py --allowlist`.
 
@@ -567,6 +589,14 @@ MUTATIONS = [
              "Survives the default wiring (U-38) and dies under option (b).",
              m038_payload_id_digest_only,
              regression_for="M038 / R-DUR-06 issuance payload",
+             tags=["normative", "allowlist"],
+             extra_checkers=[("spec/_check.py", ["--allowlist"])]),
+    Mutation("K21", "Remains-Indeterminate treated as terminal (M039)",
+             "The M039 shape rendered as a document mutant of the addendum-VIII body. "
+             "Survives the default wiring (U-38) and dies under option (b), keeping the "
+             "totality/refinement reconciliation testable against the frozen text.",
+             m039_indeterminate_terminal,
+             regression_for="M039 / R-BUDGET-11 disposition totality",
              tags=["normative", "allowlist"],
              extra_checkers=[("spec/_check.py", ["--allowlist"])]),
 ]
