@@ -1,0 +1,16 @@
+{
+  "entry_fields": [
+    "requirement_id",
+    "previous_status",
+    "new_status",
+    "evidence",
+    "verification_method",
+    "repository_revision",
+    "timestamp",
+    "justification",
+    "skip_justification",
+    "approved_by"
+  ],
+  "ledger": "R-REG status-transition ledger (append-only; historical entries immutable)",
+  "transitions": []
+}

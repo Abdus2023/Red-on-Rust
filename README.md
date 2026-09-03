@@ -842,3 +842,16 @@ integrity evidence only, never semantic verification (R-SCOPE-02). Where `final/
 differ, the source's latest frozen text governs, as everywhere in this repository. This paragraph is
 appended after the *Project Status* block (line-anchored citations above, `README.md` L12/L148/L815,
 are exact-position and forbid inserting ahead of them); it adds no normative content.
+
+**R-REG machine-readable registry (`reg/`).** `reg/requirements.json` compiles the canonical requirement
+registry (`final/03` ← `spec/03`) and the canonical statements (`spec/01`, re-homed verbatim in `final/01`)
+into one JSON record per requirement (184/184 identity, schema in `reg/requirements.schema.json`), with
+the compilation, identity/diff, status-transition, provenance, dependency-integrity, evidence-coverage,
+security-relevance and determinism/hash reports beside it (`reg/00`–`08`). It is a **derived artifact**:
+statuses, mappings and statements are copied from the authorities, every derivation rule is recorded in
+the record (`*_basis` / `*_source`), and `python3 reg/_compile.py` (check mode, registered in `check.py`)
+fails on any drift or on any disagreement with the canonical registry rather than choosing a value. It
+promotes nothing: all 184 remain `SPECIFIED`, `implementation_targets`/`test_targets` are registered
+contracts (no crate or test exists here), `evidence` is empty for every row, `REF1-CONDITIONAL` and
+`V1-CONDITIONAL` stay conditional, and a green `check.py` is repository-integrity evidence only.
+Status changes are admitted solely through the append-only `reg/status-transitions.json` ledger.
