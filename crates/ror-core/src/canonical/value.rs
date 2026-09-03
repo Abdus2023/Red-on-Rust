@@ -36,11 +36,10 @@ impl CanonicalPayload for Value {
                 // Nested Symbol is a complete envelope (R-CANON-04).
                 out.extend_from_slice(&sym.encode_canonical()?);
             }
-            Value::Capability(cap) => {
-                // Encoding retained for kernel-mediated path layout parity.
-                // Data-path callers must not emit this (R-CANON-12).
-                out.push(Self::TAG_CAPABILITY);
-                out.extend_from_slice(&cap.encode_canonical()?);
+            Value::Capability(_cap) => {
+                // R-CANON-12: data-domain Value path never emits capability bytes.
+                // Kernel path uses CapRef standalone codec only.
+                return Err(CanonicalError::CapabilityInData);
             }
             Value::List(vec) => {
                 out.push(Self::TAG_LIST);

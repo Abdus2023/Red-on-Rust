@@ -1,86 +1,64 @@
 # M1 Progress — Canonical Serialization (Partial)
 
+> **Superseded for governance wording by** `docs/bootstrap/M1-REVIEW.md`.
+> This file remains as the original progress note; classification and evidence
+> ceiling language below are corrected to match the R-REG evidence model.
+
 ## Identity
 
 | Field | Value |
 |---|---|
 | Branch | `arena/01a06993-red-on-rust` |
+| Implementation commit | `1b27bec` (plus review follow-up commit) |
 | Predecessor | M0 GREEN (`docs/bootstrap/M0-B-VALIDATION.md`) |
 | M1 classification (M0-A) | `PARTIALLY IMPLEMENTABLE` |
-| Evidence ceiling | `SPECIFIED` (no requirement-status promotion) |
+| **Canonical requirement statuses** | **all remain `SPECIFIED`** |
+| **Evidence ceiling (R-REG ladder)** | **`SPECIFIED`** |
 | Canonical registries modified | **NO** |
 
-## Scope executed
+## Governance correction
 
-Frozen Phase-15A data-domain codec in `ror-core`:
-
-| Item | Location |
-|---|---|
-| Domain types `Symbol`, `CapRef`, `ActorId`, `EffectId`, `Value` | `crates/ror-core/src/types.rs` |
-| Envelope / cursor / traits | `crates/ror-core/src/canonical/codec.rs` |
-| Standalone primitive codecs (R-CANON-03/05) | `crates/ror-core/src/canonical/primitives.rs` |
-| `Value` encode + data-path decode (R-CANON-04/06/08/12) | `crates/ror-core/src/canonical/value.rs` |
-| Data-codec entry + CapRef kernel helpers | `crates/ror-core/src/canonical/data_decode.rs` |
-| `CanonicalError` (+ `DuplicateMapKey`, `CapabilityInData`) | `crates/ror-core/src/canonical/error.rs` |
-| SHA-256 digests (R-CANON-09), pure Rust | `crates/ror-core/src/digest.rs` |
-| Golden vectors (R-CANON-11) | `crates/ror-core/vectors/canonical/` |
-
-## M1 acceptance criteria (executed)
-
-| Criterion | Result |
-|---|---|
-| Golden vectors pass | **PASS** — `integer_42`, `unit`, `bool_true`, `map_sym_bool`, `capref_5_2` |
-| Round-trips pass | **PASS** — encode→decode identity for pure data values |
-| Malformed inputs reject | **PASS** — bad version, trailing bytes, LE length permute, invalid discriminants |
-| Duplicate keys reject | **PASS** — `CanonicalError::DuplicateMapKey` |
-| Canonical bytes deterministic | **PASS** — repeated encode equal; digest stable |
-| Capability data-path ban (R-CANON-12) | **PASS** — standalone `0x30` and disc `0x05` → `CapabilityInData` |
-| One grammar BE only (R-CANON-13) | **PASS** — LE length permutations rejected |
+The earlier draft of this note said:
 
 ```text
-cargo fmt --check          PASS
-cargo check --workspace    PASS
-cargo test --workspace     PASS  (18 ror-core tests)
-cargo clippy --workspace   PASS  (-D warnings)
-```
-
-## Deliberately not implemented (open / out of M1 partial scope)
-
-| Item | Reason |
-|---|---|
-| Machine-state encodings (`Expr`, `Frame`, `GlobalState`, …) | **U-02 OPEN** |
-| Full machine `Value` domain / collision with data domain | **U-09 OPEN** |
-| `Op` / `Target` / `Params` / `Effect` body encoding | **U-21 OPEN** |
-| Kernel-mediated authority image persistence | later milestone; CapRef *layout* only pinned |
-| Marshalling / delegation envelopes (R-MARSHAL-*) | M-later; `contains_capability` data-domain stub only |
-| Requirement status promotion in `reg/` / `final/03` | forbidden without evidence-ceiling raise |
-
-## Semantic non-leakage
-
-No CEK, actors, scheduler, capability kernel logic, effects, host execution,
-persistence/recovery, agent/planner, or reference evaluator semantics were added.
-Only the frozen 15A byte codec and supporting data types landed in `ror-core`.
-
-## Canonical state
-
-No modifications to:
-
-`Red-on-Rust.md`, `spec/`, `req/`, `reg/`, `dep/`, `mod/`, `term/`, `audit/`,
-`final/`, `state/`, `scripts/spec/`, `tests/spec/`.
-
-## Decision
-
-```text
-M0: GREEN
 M1 (partial frozen subset): IMPLEMENTED + TESTED in-tree
-M1 (full milestone gate): NOT COMPLETE — open OADs remain
-M2: NOT AUTHORIZED until M1 full gate or explicit partial-advance policy
-```
-
-```text
 EVIDENCE CEILING: SPECIFIED
 ```
 
-Requirement IDs `R-CANON-01`…`R-CANON-13` remain registry-status `SPECIFIED`.
-In-tree tests constitute implementation evidence but do **not** rewrite the
-canonical requirement registry.
+Under `reg/03-status-transition-audit-model.md` those phrases name **ladder
+rungs** that require an authorized `reg/status-transitions.json` entry with
+matching evidence *kinds*. No such entry exists; all 184 `R-*` rows remain
+`SPECIFIED` (`reg/06`, `final/08`).
+
+**Corrected wording (compatible with EVIDENCE CEILING: SPECIFIED):**
+
+```text
+M1 frozen subset: code present in-tree; local cargo gates PASS
+Canonical R-CANON-* registry status: SPECIFIED (unchanged)
+Candidate transitions (NOT applied): see M1-REVIEW.md
+```
+
+In-tree source and tests are **repository artifacts**, not automatic
+`IMPLEMENTED`/`TESTED` promotions.
+
+## Scope executed
+
+Frozen Phase-15A data-domain codec in `ror-core` (see M1-REVIEW for authority map).
+
+## Cargo gates (see M1-REVIEW for fresh execution)
+
+Recorded at implementation time; re-executed during M1 review.
+
+## Deliberately not implemented
+
+U-02, U-09, U-21 machine/effect encodings; R-MARSHAL full surface; registry promotion.
+
+## Decision (see M1-REVIEW for authoritative classification)
+
+```text
+M0: GREEN
+M1 frozen subset: see M1-REVIEW.md
+M1 full milestone: NOT COMPLETE
+M2: see M1-REVIEW.md
+EVIDENCE CEILING: SPECIFIED
+```

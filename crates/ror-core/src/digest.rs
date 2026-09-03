@@ -149,21 +149,67 @@ pub fn sha256(message: &[u8]) -> [u8; 32] {
 mod tests {
     use super::*;
 
+    /// Independent FIPS 180-4 / NIST-published known-answer vectors.
+    /// These are not derived from this implementation.
     #[test]
     fn sha256_empty() {
-        // FIPS 180-4 empty-message vector.
-        let d = sha256(b"");
-        let expect =
-            hex_to_bytes("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
-        assert_eq!(d, expect);
+        assert_eq!(
+            sha256(b""),
+            hex_to_bytes("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
+        );
     }
 
     #[test]
     fn sha256_abc() {
-        let d = sha256(b"abc");
-        let expect =
-            hex_to_bytes("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
-        assert_eq!(d, expect);
+        assert_eq!(
+            sha256(b"abc"),
+            hex_to_bytes("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")
+        );
+    }
+
+    #[test]
+    fn sha256_two_block_nist() {
+        // FIPS 180-4 multi-block example ("abcdbcde…nopq").
+        let msg = b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
+        assert_eq!(
+            sha256(msg),
+            hex_to_bytes("248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1")
+        );
+    }
+
+    #[test]
+    fn sha256_quick_brown_fox() {
+        assert_eq!(
+            sha256(b"The quick brown fox jumps over the lazy dog"),
+            hex_to_bytes("d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592")
+        );
+    }
+
+    #[test]
+    fn sha256_boundary_lengths() {
+        // Padding boundary: 55 bytes → single block; 56 → two blocks; 64; 65.
+        let cases: &[(usize, &str)] = &[
+            (
+                55,
+                "9f4390f8d30c2dd92ec9f095b65e2b9ae9b0a925a5258e241c9f1e910f734318",
+            ),
+            (
+                56,
+                "b35439a4ac6f0948b6d6f9e3c6af0f5f590ce20f1bde7090ef7970686ec6738a",
+            ),
+            (
+                64,
+                "ffe054fe7ae0cb6dc65c3af9b61d5209f439851db43d0ba5997337df154668eb",
+            ),
+            (
+                65,
+                "635361c48bb9eab14198e76ea8ab7f1a41685d6ad62aa9146d301d4f17eb0ae0",
+            ),
+        ];
+        for &(n, expect) in cases {
+            let msg = vec![b'a'; n];
+            assert_eq!(sha256(&msg), hex_to_bytes(expect), "len={n}");
+        }
     }
 
     fn hex_to_bytes(s: &str) -> [u8; 32] {

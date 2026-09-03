@@ -1,8 +1,17 @@
-//! Frozen data-domain types for Phase 15A canonical serialization.
+//! Phase 15A *data-domain* types for canonical serialization.
 //!
-//! These are the types named by R-CANON-03/05 and the frozen `Value` enum of
-//! Phase 15A. They are deliberately the *canonical data domain*, not the full
-//! machine `Value` domain (U-09 remains open for machine-side extensions).
+//! **Provisional public surface (U-09).** The name `Value` here denotes the
+//! 15A canonical data-domain enum (8 variants incl. `Map`), **not** the machine
+//! value domain of R-CALC-01 (11 variants incl. `Function`/`Tuple`/`Bytes`).
+//! U-09 remains OPEN: this type must not be treated as the final unified
+//! machine/canonical value identity. Downstream crates should prefer the
+//! explicit data-codec entry points (`encode_data` / `decode_data_value`) over
+//! assuming a stable cross-domain `Value` API.
+//!
+//! Wire layouts for `Symbol` / `CapRef` / `ActorId` / `EffectId` follow
+//! R-CANON-03/05 (frozen). Integer field widths on the wire are `u32`/`u64`/`i64`
+//! as named by those requirements; U-37 remains OPEN for *semantic* quantities
+//! outside this codec.
 
 use std::collections::BTreeMap;
 

@@ -1,11 +1,14 @@
 //! Canonical decode/encode errors (R-CANON-07, R-CANON-06, R-CANON-12).
 //!
-//! The frozen Phase-15A sketch enumerates the structural set. Two later
-//! addenda extend it without reopening U-29's broader fault-surface question:
-//! - `DuplicateMapKey` (R-CANON-06 injectivity patch)
-//! - `CapabilityInData` (R-CANON-12 decode-side authority ban)
+//! **Provisional shape (U-29 OPEN).** R-CANON-07 names the required rejection
+//! *set*; several source sketches disagree on unit vs struct variants and on
+//! exact payload fields. This enum follows the final Phase-15A sketch plus the
+//! addendum variants `DuplicateMapKey` and `CapabilityInData`. It is **not** a
+//! resolution of U-29's broader fault-surface question and may be reshaped
+//! when that decision closes—callers must match on semantics, not treat the
+//! Rust shape as a frozen ABI.
 
-/// Explicit rejection outcomes for the 15A decoder/encoder.
+/// Explicit rejection outcomes for the 15A decoder/encoder (provisional ABI).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum CanonicalError {
     InvalidVersion {

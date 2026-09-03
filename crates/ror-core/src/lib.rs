@@ -2,10 +2,13 @@
 
 //! Red-on-Rust core crate.
 //!
-//! M1 scope: frozen Phase-15A canonical serialization (R-CANON-01…13) over the
-//! data-domain types that the wire format names. Machine-state encodings (U-02),
-//! full machine `Value` domains beyond the canonical data domain (U-09), and
-//! kernel-mediated capability codec paths remain out of scope.
+//! M1 scope: frozen Phase-15A *data-domain* canonical serialization
+//! (R-CANON-01…13) over the types the wire format names.
+//!
+//! **Not closed here:** machine-state encodings (U-02), unified machine vs
+//! data `Value` (U-09), `Op`/`Target`/`Params` (U-21), and provisional ABI
+//! questions U-29/U-30/U-37. Public items that touch those OADs are documented
+//! as provisional—do not treat them as milestone-stable API.
 
 pub mod canonical;
 pub mod digest;
