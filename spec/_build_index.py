@@ -342,7 +342,7 @@ def _status(cell):
 
 
 def _resolved_into(cell):
-    refs = re.findall(r"\b(U-\d{2})\b", cell)
+    refs = re.findall(r"\b(U-\d{2,3})\b", cell)
     if "`term/`" in cell or "term/" in cell:
         refs += ["term/" + x for x in re.findall(r"\b(X-\d{2})\b", cell)]
     return ";".join(dict.fromkeys(refs)) or "U-none"
@@ -384,7 +384,7 @@ def _expand(text, kind):
 def derive_findings(curated):
     rows = []
     for line in _read(_S06).split("\n"):
-        m = re.match(r"^\| (C-\d{2}) \|", line)
+        m = re.match(r"^\| (C-\d{2,3}) \|", line)
         if not m or m.group(1) in curated or m.group(1) in INDEX_EXCLUSIONS:
             continue
         cells = _cells(line)
@@ -426,10 +426,10 @@ def assert_index_complete():
     """Every register row must be indexed, or excluded by name."""
     have_c = {f[0] for f in findings}
     have_u = {u[0] for u in unresolved}
-    miss_c = [c for c in re.findall(r"^\| (C-\d{2}) \|", _read(_S06), re.M)
+    miss_c = [c for c in re.findall(r"^\| (C-\d{2,3}) \|", _read(_S06), re.M)
               if c not in have_c and c not in INDEX_EXCLUSIONS]
-    miss_u = [u for u in re.findall(r"^### (U-\d{2}) ", _read(_S09), re.M) if u not in have_u]
-    stale = sorted(have_c - set(re.findall(r"^\| (C-\d{2}) \|", _read(_S06), re.M)))
+    miss_u = [u for u in re.findall(r"^### (U-\d{2,3}) ", _read(_S09), re.M) if u not in have_u]
+    stale = sorted(have_c - set(re.findall(r"^\| (C-\d{2,3}) \|", _read(_S06), re.M)))
     if miss_c or miss_u or stale:
         raise SystemExit(
             "spec/10-index.json would not match the registers:\n"
@@ -612,10 +612,10 @@ index = {
       "03-obligation-matrix.md": "all requirements with stable IDs, status, provenance",
       "04-dependency-graph.md": "section/object/verification dependency graphs + DOT",
       "05-terminology.md": "glossary, normalization rules, under-specified terms",
-      "06-contradictions-ambiguities.md": f"findings C-01..C-{max(f[0] for f in findings)[2:]} with severity and status",
+      "06-contradictions-ambiguities.md": f"findings C-01..C-{max(int(f[0][2:]) for f in findings):02d} with severity and status",
       "07-implementation-mapping.md": "obligations -> crates/modules; actual repo state; milestone crosswalk",
       "08-verification-mapping.md": "obligations -> tags/tests/evidence; claim ladder per theorem",
-      "09-unresolved-decisions.md": f"items U-01..U-{max(u[0] for u in unresolved)[2:]} requiring explicit architectural decisions",
+      "09-unresolved-decisions.md": f"items U-01..U-{max(int(u[0][2:]) for u in unresolved):02d} requiring explicit architectural decisions",
       "10-index.json": "this file (machine-readable index)"
     }
   },

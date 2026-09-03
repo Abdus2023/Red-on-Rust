@@ -32,8 +32,8 @@
     "id_schemes": {
       "S-NN": "specification section (24)",
       "R-AREA-NN": "normative requirement/obligation (173; 148 source-transcribed + 25 post-audit frozen addenda)",
-      "C-NN": "contradiction/ambiguity finding (96 indexed; 97 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
-      "U-NN": "unresolved item requiring explicit decision (28)",
+      "C-NN": "contradiction/ambiguity finding (101 indexed; 102 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
+      "U-NN": "unresolved item requiring explicit decision (31)",
       "M-NN": "milestone M0-M11",
       "TAG": "source verification-obligation tags (19; 17 frozen-source + 2 post-audit addenda)",
       "M0NN": "baseline mutation registry (35; 18 baseline + 17 post-audit: M019–M035)",
@@ -45,10 +45,10 @@
       "03-obligation-matrix.md": "all requirements with stable IDs, status, provenance",
       "04-dependency-graph.md": "section/object/verification dependency graphs + DOT",
       "05-terminology.md": "glossary, normalization rules, under-specified terms",
-      "06-contradictions-ambiguities.md": "findings C-01..C-97 with severity and status",
+      "06-contradictions-ambiguities.md": "findings C-01..C-102 with severity and status",
       "07-implementation-mapping.md": "obligations -> crates/modules; actual repo state; milestone crosswalk",
       "08-verification-mapping.md": "obligations -> tags/tests/evidence; claim ladder per theorem",
-      "09-unresolved-decisions.md": "items U-01..U-34 requiring explicit architectural decisions",
+      "09-unresolved-decisions.md": "items U-01..U-37 requiring explicit architectural decisions",
       "10-index.json": "this file (machine-readable index)"
     }
   },
@@ -6024,6 +6024,114 @@
           "26807-26817"
         ]
       }
+    },
+    {
+      "id": "C-98",
+      "title": "The determinism theorem is stated in three non-equivalent forms in frozen text — InitialState + SchedulerTrace + HostTrace (L25338, L25763, L26053, L41641), MachineState + AcceptedPlan + SchedulerTrace + HostTrace (L28426, L28575), and Snapshot + EventLog + HostTrace + SchedulerTrace (L26998) — and none of the four terms SchedulerTrace, HostTrace, InitialState, UniqueMachineTrace is ever declared as a type, field list, grammar, or equality relation anywhere in L1–42312 or in spec/, mod/, req/, term/, dep/; all 13 occurrences of SchedulerTrace sit inside the boxed formula or a restatement of it. The L26998 form additionally takes EventLog as an input while it is a GlobalState field written by transitions (L24163) — circular. Four normative MUSTs (R-CORE-08, R-ACTOR-07, R-PLANNER-04, R-SCOPE-01 informative) therefore quantify over undefined objects (audit DET-001)",
+      "severity": "BLOCKING",
+      "status": "open",
+      "resolved_into": "U-35",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25338",
+          "25763",
+          "26053",
+          "26998",
+          "27369",
+          "27529",
+          "28426",
+          "28575",
+          "41641"
+        ]
+      }
+    },
+    {
+      "id": "C-99",
+      "title": "ReplayHost — the sole concrete realization of the theorem's HostTrace parameter — is frozen in six declarations across five mutually incompatible shapes with no supersession record: {cursor, Vec<Result<Value, HostFault>>} (L1234, identity check \"Optional\"), {trace: ReplayTrace} (L9783, ReplayTrace never defined), {trace: VecDeque<EffectReceipt>} (L10541, pop_front + id/digest checked), {receipts: ReceiptLog} (L22339, \"lookup recorded receipt\", ReceiptLog never defined), {recorded_receipts: HashMap<EffectId, EffectReceipt>, cursor: usize} (L24011, map lookup with a vestigial cursor never read, identity check \"Optional but recommended\"), and {trace: Vec<EffectReceipt>, cursor} (L34498). Only the last satisfies R-HOST-03 (\"Ordered ReplayHost; ID+digest per entry; no unordered map\") and L34498's own prose (\"an ordered effect trace, not merely perform a map lookup\") (audit DET-005)",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-35",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1234",
+          "9783",
+          "10541",
+          "22339",
+          "24011",
+          "34498"
+        ]
+      }
+    },
+    {
+      "id": "C-100",
+      "title": "Lifetime { start: u64, end: u64 } is documented three times as Unix timestamps (L3572–3573, L4960–4961, L5404–5405; prose L5244 \"e.g., Unix timestamps\") and its contains(&self, time: u64) (L3577) is invoked as auth.lifetime.contains(t) with t: LogicalTime inside the frozen pure authorization predicate authorizes (L11881–11889) — i.e. a wall-clock interval is compared against logical time inside authorization gate 6. ResourceLimits.max_duration: Duration (L5399) places a std::time quantity inside a resource ceiling. Directly contradicts L6437, R-CAP-09 (\"Wall-clock time MUST NOT be used as semantic machine state\"), term/ T-28, and R-CLAIM-02 (\"Never: use wall-clock time for deterministic semantics\") (audit DET-006)",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-36",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "3571-3577",
+          "4959-4961",
+          "5244",
+          "5399",
+          "5403-5405",
+          "11881-11889",
+          "6437"
+        ]
+      }
+    },
+    {
+      "id": "C-101",
+      "title": "HashMap/HashSet appear throughout the frozen operative structs an implementer transcribes — Environment = HashMap<String, Value> (L10860), ActorTable = HashMap<ActorId, ActorState> (L10902, L10376), Authority.ops: HashMap<Op, OpAuthority> (L6502, L6520, L6537) and ops/scope/params: HashSet<...> (L3592–3594, L4980–4982, L11573–11574), CapabilityKernel.children: HashMap<DefaultKey, Vec<DefaultKey>> and revocation_set: HashSet<...> (L5431–5432, L928, L6697), cap_bindings (L1195) — while the same corpus states the prohibition at L27987 (\"BTreeMap, never unordered-map iteration\") and L28738 (\"Iteration order of hash-based collections is strictly forbidden\"), and the fix at L24157/L25536/L25863 (BTreeMap<ActorId, ActorState>) and L9521. No supersession record connects them (audit DET-003/DET-004)",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-02",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1195",
+          "3592-3594",
+          "5431-5432",
+          "6502-6537",
+          "10376",
+          "10860",
+          "10902",
+          "11573-11574",
+          "9521",
+          "27707",
+          "27987",
+          "28309",
+          "28738"
+        ]
+      }
+    },
+    {
+      "id": "C-102",
+      "title": "usize appears in semantic and serialized positions despite L27987/L28309 requiring \"explicit integer widths\": MaxBytes(usize) (L5391) and ResourceLimits.max_bytes/max_calls: usize (L5397–5398) are inside Authority/ceilings evaluated by authorizes (L11884–11885); ArityMismatch { expected: usize, actual: usize } (L17797–17798, L18128, L22426) is a Fault payload compared by R-REF-05; BeginArgument(usize)/EndArgument(usize) (L17596–17597, L18111–18112) are trace event payloads; ReplayHost.cursor: usize (L1235, L24013, L34500) is the HostTrace position (audit DET-011)",
+      "severity": "MINOR",
+      "status": "open",
+      "resolved_into": "U-37",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1235",
+          "5391",
+          "5397-5398",
+          "17596-17597",
+          "17797-17798",
+          "18111-18112",
+          "18128",
+          "22426",
+          "24013",
+          "34500",
+          "27987",
+          "28309",
+          "11438"
+        ]
+      }
     }
   ],
   "unresolved": [
@@ -6333,6 +6441,41 @@
         "R-ACTOR-07",
         "R-PERSIST-04",
         "R-CORE-08"
+      ]
+    },
+    {
+      "id": "U-35",
+      "title": "The determinism theorem's own parameters are undefined",
+      "blocking": "BLOCKING",
+      "section": "S-02;S-15;S-05;S-01",
+      "affects": [
+        "R-CORE-08",
+        "R-ACTOR-07",
+        "R-PLANNER-04",
+        "R-SCOPE-01"
+      ]
+    },
+    {
+      "id": "U-36",
+      "title": "Is Lifetime wall-clock or logical time?",
+      "blocking": "BLOCKING",
+      "section": "S-09;S-24",
+      "affects": [
+        "R-CAP-06",
+        "R-CAP-09",
+        "R-CLAIM-02"
+      ]
+    },
+    {
+      "id": "U-37",
+      "title": "Fixed integer widths for semantic and serialized quantities (usize elimination)",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-17;S-09;S-20",
+      "affects": [
+        "R-CANON-01",
+        "R-CANON-05",
+        "R-CAP-06",
+        "R-REF-05"
       ]
     }
   ],
