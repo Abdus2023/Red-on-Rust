@@ -390,7 +390,7 @@ The two readings impose different obligations. 'The request was validated' is a 
 
 ### Disposition
 
-Both forms are recorded verbatim. The canonicalization layer (spec/00 §4, spec/01 R-CORE-02, README) already adopts `ValidatedPlan(P)` per latest-frozen-text; this entry records that the earlier form exists, that its argument type differs, and that no supersession note covers the change. `ValidatedRequest` is NOT forbidden (it is frozen source text) but is NOT canonical prose.
+Both forms are recorded verbatim. The canonicalization layer (spec/00 §4, spec/01 R-CORE-02, README) already adopts `ValidatedPlan(P)` per latest-frozen-text; this entry records that the earlier form exists, that its argument type differs, and that no supersession note covers the change. `ValidatedRequest` is NOT forbidden (it is frozen source text) but is NOT canonical prose. AMENDED 2026-09-03: the preceding sentences described the pre-addendum state and are preserved as the record of it. The frozen addendum R-CORE-11 (SEC-016 remediation) establishes `ValidatedRequest(E)` as the canonical first predicate with the subsumption `ValidatedRequest(E) ⇒ ValidatedPlan(plan(E))`; `ValidatedPlan(P)` remains a frozen predicate symbol (subsumed, via plan(E)) and the struct homonym (X-01) is unchanged. The canonicalization layer (spec/01 R-CORE-02, spec/00 §4, README) was aligned to R-CORE-11 by the V-05 consistency repair (2026-09-03); the frozen source lines cited above are unchanged and remain historical evidence.
 
 ### Decision needed
 
@@ -2291,7 +2291,7 @@ Yes — `spec/09` U-27: which shape governs, and where shape (iii)'s continuatio
 | `spec/06-contradictions-ambiguities.md`:81 | ``\| C-66 \| `MarshalledValue`'s payload is `Value``` | C-66, the contradictions-register row for this finding |
 | `spec/09-unresolved-decisions.md`:165 | ``### U-30 — Which payload does `MarshalledValue` carry`` | U-30, the decision this finding needs |
 | `term/00-overview.md`:175 | ``\| `term/_terms.py T-79…T-81, N-28` \|`` | the §6 row recording T-79's creation |
-| `README.md`:148 | ``(`X-01`…`X-87`, of which 4 are BLOCKING)`` | the README's collision-register count, updated by this pass |
+| `README.md`:152 | ``(`X-01`…`X-87`, of which 4 are BLOCKING)`` | the README's collision-register count, updated by this pass |
 
 ### The collision
 
@@ -3357,7 +3357,7 @@ AMB-25 is corrected in this pass to the four attested names, with the correction
 | `spec/06-contradictions-ambiguities.md`:23 | `README L22–28 ("Implementation: IN PROGRESS") vs README L656–661 / L42092–42100` | the defective citations |
 | `req/03-ambiguous.md`:189 | ```README.md` L22–28 vs L656–661`` | the same defective citations, repeated |
 | `README.md`:12 | `Implementation:     IN PROGRESS` | the real first status block |
-| `README.md`:815 | `Implementation     READY` | the real last status block |
+| `README.md`:819 | `Implementation     READY` | the real last status block |
 
 ### The collision
 
@@ -3490,7 +3490,7 @@ Only formally: does the turn-[4] two-field `EffectReceipt` survive as an earlier
 | File:line | Text at that line | Note |
 |---|---|---|
 | `README.md`:12 | `Implementation:     IN PROGRESS` | the README's first status block |
-| `README.md`:815 | `Implementation     READY` | the README's last status block |
+| `README.md`:819 | `Implementation     READY` | the README's last status block |
 
 ### The collision
 

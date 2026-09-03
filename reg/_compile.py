@@ -1159,12 +1159,42 @@ Source: `dep/10-graph.json` requirement layer ({lifted['atomic_edges']} typed ed
 """
 
 
-def render_evidence(reg, st) -> str:
+def _registered_checker_count() -> int:
+    """Count check.py CHECKERS entries by ast (no execution, no import)."""
+    import ast as _ast
+    tree = _ast.parse((REPO / "check.py").read_text(encoding="utf-8"))
+    for node in tree.body:
+        targets, value = [], None
+        if isinstance(node, _ast.Assign):
+            targets, value = node.targets, node.value
+        elif isinstance(node, _ast.AnnAssign) and node.value is not None:
+            targets, value = [node.target], node.value
+        else:
+            continue
+        for t in targets:
+            if isinstance(t, _ast.Name) and t.id == "CHECKERS" and isinstance(value, _ast.List):
+                return len(value.elts)
+    raise SystemExit("reg/_compile.py: could not derive CHECKERS from check.py")
+
+
+def render_evidence(reg, st, I) -> str:
     reqs = reg["requirements"]
     n = len(reqs)
     tags = sum(1 for r in reqs if r["verification_tags"])
     muts = sum(1 for r in reqs if r["mutations"])
     atomic_vm = sum(1 for r in reqs if r["atomic_verification_methods"])
+    # Derived from the spec/10 index, which is itself derived from spec/08 §1's
+    # two tables (spec/_build_index.py asserts set equality) -- never hand-counted.
+    idx_tags = I.spec10["verification_tags"]
+    n_frozen = sum(1 for t in idx_tags if t.get("source") == "frozen-source")
+    n_add = sum(1 for t in idx_tags if t.get("source") == "post-audit-addendum")
+    n_alias = len(I.spec10.get("verification_tag_aliases", []))
+    assert n_frozen + n_add == len(idx_tags), "spec/10 tag sources must partition the indexed set"
+    # Checker count derived from the check.py registration (ast, no execution)
+    # -- repair pass v2 (V-02): this line previously hard-coded "15 checkers"
+    # and drifted the moment the state gate was registered as the 16th.
+    n_checkers = _registered_checker_count()
+    assert n_checkers >= 1, "check.py CHECKERS registration must be parseable"
     return f"""# R-REG — 06. Evidence Coverage Summary
 
 {HDR}
@@ -1183,8 +1213,8 @@ def render_evidence(reg, st) -> str:
 ## 2. Evidence state
 
 - Status distribution: {st['status_distribution']} — every row's status is the evidence-backed `SPECIFIED`; no row was promoted for having a registered target, tag or mutant (DEFINITION OF ABSENCE).
-- Verification tags: 26 defined (17 frozen + 9 addendum), repository evidence `NONE` for each (`final/04` §1). Mutation registry: 42 defined, executed none. Milestones M0–M11: none satisfied.
-- Repository gates (`python3 check.py`, 15 checkers incl. this one): repository-integrity evidence only. No requirement defines a repository checker as its verification method; `audit/_conservation_checker.py` is named by R-BUDGET-10 as *gate evidence for the rule shape*, which `final/08` §4 explicitly declines to treat as machine evidence — carried unchanged.
+- Verification tags: {len(idx_tags)} defined ({n_frozen} frozen + {n_add} addendum; {n_alias} documented alias not indexed), repository evidence `NONE` for each (`final/04` §1). Mutation registry: {len(I.spec10['mutations'])} defined, executed none. Milestones M0–M11: none satisfied.
+- Repository gates (`python3 check.py`, {n_checkers} checkers incl. this one, derived from the `check.py` registration): repository-integrity evidence only. No requirement defines a repository checker as its verification method; `audit/_conservation_checker.py` is named by R-BUDGET-10 as *gate evidence for the rule shape*, which `final/08` §4 explicitly declines to treat as machine evidence — carried unchanged.
 - `REF1-CONDITIONAL`, `V1-CONDITIONAL`: conditional; V1 §8 UNKNOWN items remain UNKNOWN.
 - Requirements lacking evidence: {len(st['no_evidence'])}/{n}. This figure is the bootstrap state, reported as such.
 """
@@ -1285,7 +1315,7 @@ def compile_all(I: Inputs):
         "reg/03-status-transition-audit-model.md": render_status_model(reg, st),
         "reg/04-provenance-report.md": render_provenance(reg, st, I),
         "reg/05-dependency-integrity-report.md": render_dependency(reg, st, I, lifted),
-        "reg/06-evidence-coverage-summary.md": render_evidence(reg, st),
+        "reg/06-evidence-coverage-summary.md": render_evidence(reg, st, I),
         "reg/07-security-relevance-summary.md": render_security(reg, st),
         "reg/08-determinism-hash-report.md": render_hash(reg, st, I, sch_text, ledger_text),
     }

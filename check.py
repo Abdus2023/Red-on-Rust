@@ -3,7 +3,9 @@
 
 WHY THIS EXISTS
 ---------------
-The repository contains fifteen executables. Until this file was written there
+The repository contains many small executables (at the time this file was
+written there were fifteen; the inventory check at the end keeps the current
+count honest). Until this file was written there
 was no single entrypoint, and the practical consequence was measurable: the
 `ReplayHost` shape count was wrong in five documents for four commits because
 `term/_structs.py` — which derives the correct answer mechanically — was never
@@ -37,7 +39,9 @@ REPO = Path(__file__).resolve().parent
 # checks that read them, then the meta-check that tests the checkers.
 CHECKERS: list[tuple[str, str]] = [
     ("spec/_build_index.py", "regenerates spec/10-index.json; carries the completeness "
-                             "gate and the spec/08 mutation-register comparison"),
+                             "gate, the spec/08 mutation-register comparison and the spec/08 "
+                             "§1 canonical-tag-set comparison (indexed set must equal the "
+                             "authority's tables; aliases must not be indexed)"),
     ("spec/_check.py",       "obligation bodies vs frozen source and vs spec/03 (D1 hard; "
                              "D2/D3 fail-closed via the adopted U-38 option-(b) allow-list: "
                              "every warning must be adjudicated in spec/_check_allowlist.txt "
@@ -56,10 +60,17 @@ CHECKERS: list[tuple[str, str]] = [
     ("audit/_checker_mutations.py", "mutation-tests the checkers themselves"),
     ("final/_build.py", "FINAL1 specification compiler: re-renders the canonical set in memory and "
                         "fails on drift vs the committed final/*.md (verbatim-transcription identity, "
-                        "reference-resolution and evidence-discipline battery; results in final/07)"),
+                        "reference-resolution and evidence-discipline battery; results in final/07); "
+                        "derives its checker-count projections from this file's registration"),
     ("reg/_compile.py", "R-REG requirements-registry compiler: recompiles reg/requirements.json from "
                         "final/03 + spec/01 in memory, runs the 20-point identity/provenance/status "
                         "battery (184/184, no promotion, hashes re-derived) and fails on drift vs reg/*"),
+    ("state/_project.py", "repository-state projection + fail-closed cross-artifact gate (repair "
+                          "pass v2 V-07/V-08): derives the single current-state projection from the "
+                          "authorities (U registry vs projections, checker inventory vs FINAL1 counts, "
+                          "canonical tag set vs index, five-authority requirement identity, atomic "
+                          "registry, mutation registry, R-CORE-02⇔R-CORE-11 predicate agreement, "
+                          "disposition provenance hashes, evidence-discipline pins) and fails on drift"),
 ]
 
 # Extra arguments for individual checkers. The repository gate runs

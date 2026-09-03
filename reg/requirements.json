@@ -62,7 +62,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§01"
         },
         "frozen_addendum": null,
@@ -79,7 +79,7 @@
           "provenance_cell": "L41293–41300"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:065400efdc2be5e5eafa0d09864293f4ccf6a70f2731c54d01b0aa0b942e9eb6",
         "source_section": "S-01"
       },
@@ -145,7 +145,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§01"
         },
         "frozen_addendum": null,
@@ -163,7 +163,7 @@
           "provenance_cell": "L38929–38942, L41297–41315"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:fa9f1fb02e5d37084a75ce4ca35d0f0d924988c5b0c189a561ef31c64ab14eb1",
         "source_section": "S-01"
       },
@@ -233,7 +233,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§01"
         },
         "frozen_addendum": null,
@@ -250,7 +250,7 @@
           "provenance_cell": "L37664–37686"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:bfeac3c504fe57273657d153ed86699b1646e1e66b9f0f1c1f4c802308807c0c",
         "source_section": "S-01"
       },
@@ -322,7 +322,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§01"
         },
         "frozen_addendum": null,
@@ -339,7 +339,7 @@
           "provenance_cell": "L37696–37721"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:c77ae7a10f78e1877af4684de97078e216cb3748460144d4d9e0d88ef76785b1",
         "source_section": "S-01"
       },
@@ -410,7 +410,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -428,7 +428,7 @@
           "provenance_cell": "L41320–41335, L27505–27513"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:a41728c7ac9b3421476776f33c46517aa4b232aa4385487fcd26d31742437c2c",
         "source_section": "S-02"
       },
@@ -498,7 +498,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -516,8 +516,8 @@
           "provenance_cell": "L41337–41351, L27491–27509"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
-        "source_hash": "sha256:1e24a2888ecfea84aecc3e2335d623958a5e21b96cbfcb14fd10c0ead0a89fe2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
+        "source_hash": "sha256:0ba61e6830dd6bd9cc57e6a5a0e6e2ab716dd9b039e048e3dc226e39e79bb1f7",
         "source_section": "S-02"
       },
       "related_findings": [],
@@ -540,7 +540,7 @@
       },
       "security_relevant": true,
       "short_title": "ExternalEffect chain (7 conjuncts)",
-      "statement": "**R-CORE-02 (external-effect chain).** An ExternalEffect(E) MUST NOT occur unless the complete validation chain holds invariant: `ExternalEffect(E) ⇒ ValidatedPlan(P) ∧ Authorized(E,κ,t) ∧ CapabilityWithinCeiling(E) ∧ BudgetAvailable(E) ∧ DeadlineValid(E,t) ∧ HostPolicyOK(E) ∧ Issued(E)`.\n*(L41337–41351; L27491–27509.)*",
+      "statement": "**R-CORE-02 (external-effect chain).** An ExternalEffect(E) MUST NOT occur unless the complete validation chain holds invariant: `ExternalEffect(E) ⇒ ValidatedRequest(E) ∧ Authorized(E,κ,t) ∧ CapabilityWithinCeiling(E) ∧ BudgetAvailable(E) ∧ DeadlineValid(E,t) ∧ HostPolicyOK(E) ∧ Issued(E)` — the first conjunct and the predicate signatures are those frozen by R-CORE-11, which establishes `ValidatedRequest(E)` (request-time validation inside the 16 gates) as the canonical first predicate with the subsumption `ValidatedRequest(E) ⇒ ValidatedPlan(plan(E))`; the source's earlier `ValidatedPlan(P)` first-conjunct form is superseded by R-CORE-11 (quoted there, not deleted), and the chain is stated once, over R-CORE-11's exact signatures.\n*(L41337–41351; L27491–27509.)*",
       "status": "SPECIFIED",
       "status_source": "final/03 Status (== spec/03; == final/01 marker)",
       "test_targets": [
@@ -588,7 +588,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -606,7 +606,7 @@
           "provenance_cell": "L42056–42064, L7413–7419"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:4a87046d380e4ae9359545be6b2da74b327cfdea6f7b6766b4d74789c012344a",
         "source_section": "S-02"
       },
@@ -677,7 +677,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -695,7 +695,7 @@
           "provenance_cell": "L42066–42072, L6399–6406"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:d7ed777f352893fa1b416dfcfd189c63f0ddf1755df12d98cb84bfd1bea34f6b",
         "source_section": "S-02"
       },
@@ -766,7 +766,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -784,7 +784,7 @@
           "provenance_cell": "L42074–42080, L28203–28240"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:d11f8f6b053c98832a993caadda064d867d65d61900b23bbf322a62d5d6a9a23",
         "source_section": "S-02"
       },
@@ -860,7 +860,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -878,7 +878,7 @@
           "provenance_cell": "L42082–42088, L35150–35156"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:588b7127dbefc443c5252540dc2a9ebbba3a77c79623eef07b36bf0a7eb22b4c",
         "source_section": "S-02"
       },
@@ -947,7 +947,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -965,7 +965,7 @@
           "provenance_cell": "L42090–42098, L25972–26001"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:67f7410dbf78267e4f2151f138b648cac35c03957f47b9c3735be26576abf036",
         "source_section": "S-02"
       },
@@ -999,8 +999,7 @@
       "verification_method": "MARSHAL-NO-RAW-CAPABILITY (source tag MARSHAL-CAPABILITY-REJECT), M006-class",
       "verification_method_source": "final/03 Verify→ cell verbatim (null where the canonical registry defines none)",
       "verification_tags": [
-        "MARSHAL-NO-RAW-CAPABILITY",
-        "MARSHAL-CAPABILITY-REJECT"
+        "MARSHAL-NO-RAW-CAPABILITY"
       ]
     },
     {
@@ -1041,7 +1040,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -1059,7 +1058,7 @@
           "provenance_cell": "L41623–41646, L27518–27547"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:7a3cd2387a7c57a54f90afba1fb285e4e9abbd8b4eefb0f169ebb72215e0828d",
         "source_section": "S-02"
       },
@@ -1131,7 +1130,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -1149,7 +1148,7 @@
           "provenance_cell": "L27551–27569, L35159–35176"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:44fdda499516a2986803c5ef58f7975e692fb0809ca11bf8bf90785c29618993",
         "source_section": "S-02"
       },
@@ -1218,7 +1217,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -1236,7 +1235,7 @@
           "provenance_cell": "L42100–42105, L35196–35208"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:78e34d049b6ae3a905f098cdd59da909d597a07a71f63d17b6271eee30f73725",
         "source_section": "S-02"
       },
@@ -1298,7 +1297,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": "SEC-016",
@@ -1313,7 +1312,7 @@
           "provenance_cell": "addendum (SEC-016)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:94e27159112595e25a60ef8c36f6281642bb8a04eff217f6d7a9072b0247bdc2",
         "source_section": "S-02"
       },
@@ -1375,7 +1374,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": "SEC-020",
@@ -1390,7 +1389,7 @@
           "provenance_cell": "addendum (SEC-020)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:c0d17f67657cc7975c2d9e67f3e490a896de5ad6c056c0a26d06885a05ebb85d",
         "source_section": "S-02"
       },
@@ -1455,7 +1454,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": "SEC-012",
@@ -1470,7 +1469,7 @@
           "provenance_cell": "addendum (SEC-012)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:c747a1b620a1f0757890c4a242cd77c5c76dd294b941d3c3fe2029a149ee80a4",
         "source_section": "S-02"
       },
@@ -1533,7 +1532,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": "request-pipeline",
@@ -1548,7 +1547,7 @@
           "provenance_cell": "addendum (request-pipeline)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:6ab531c0555d407379d758eecbe476b64165c27d0e13d179e4bf6c6b6cea620f",
         "source_section": "S-02"
       },
@@ -1616,7 +1615,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§03"
         },
         "frozen_addendum": null,
@@ -1634,7 +1633,7 @@
           "provenance_cell": "L41823–41841, L27611–27624"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:fdd4d5a8c365eeb68d9fcd0e908d6843ef3448d751570d2858a839528c4f8b66",
         "source_section": "S-03"
       },
@@ -1697,7 +1696,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§03"
         },
         "frozen_addendum": null,
@@ -1714,7 +1713,7 @@
           "provenance_cell": "L28178–28230"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:f95253646b71688d06c7a56f0482f74db9b4eeb7af310a8397297ff00618b916",
         "source_section": "S-03"
       },
@@ -1788,7 +1787,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§03"
         },
         "frozen_addendum": null,
@@ -1806,7 +1805,7 @@
           "provenance_cell": "L37722–37748, L19153–19175"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:98f4fe0a5de30c8888d2eb6b088861e85fa9b6eb58493cd50d363a08235a8105",
         "source_section": "S-03"
       },
@@ -1867,7 +1866,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§03"
         },
         "frozen_addendum": "SEC-022",
@@ -1882,7 +1881,7 @@
           "provenance_cell": "addendum (SEC-022)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:18b833d23f9ddf6774644afc662b8a1a6ec08b03021825dac4a3337914b51739",
         "source_section": "S-03"
       },
@@ -1944,7 +1943,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§03"
         },
         "frozen_addendum": "SEC-022",
@@ -1959,7 +1958,7 @@
           "provenance_cell": "addendum (SEC-022)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:8665abf4df467446d34dd7726e1fa79a47e67f70bcf26a0298484aa16121ac7b",
         "source_section": "S-03"
       },
@@ -2025,7 +2024,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -2043,7 +2042,7 @@
           "provenance_cell": "L37750–37780, L27287–27310"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:4a3dfa289be6ef1a54822fee1ee2e3ff91e91cfeb84e777154fde943c87923e7",
         "source_section": "S-04"
       },
@@ -2106,7 +2105,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -2123,7 +2122,7 @@
           "provenance_cell": "L41406–41424"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:1fa36e63d64bd02ec1ee5eb287707072dd1a2a583b3ede9c720a452e572dd4ac",
         "source_section": "S-04"
       },
@@ -2194,7 +2193,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -2212,7 +2211,7 @@
           "provenance_cell": "L9086–9097, L39296–39318"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:1558f997b8ea805ace555c3b3baa43c8449b066673305f0306ffe38ab493f891",
         "source_section": "S-04"
       },
@@ -2276,7 +2275,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -2293,7 +2292,7 @@
           "provenance_cell": "L9059–9085"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:7d0caac479c7c5344b1131c006801f4406a955b2f3279cea7ab418a01f61b1af",
         "source_section": "S-04"
       },
@@ -2352,7 +2351,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": "SEC-013",
@@ -2367,7 +2366,7 @@
           "provenance_cell": "addendum (SEC-013)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:ddacd25c75ff5136d284db5c0112751c95fa73bf742aa64130879db2737b24e0",
         "source_section": "S-04"
       },
@@ -2435,7 +2434,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§16"
         },
         "frozen_addendum": null,
@@ -2452,7 +2451,7 @@
           "provenance_cell": "L27176–27198"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:acb9266498152ad330bd3a319ec29e63559aab8ecfdd7a2833d4280066011deb",
         "source_section": "S-05"
       },
@@ -2536,7 +2535,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§16"
         },
         "frozen_addendum": null,
@@ -2554,7 +2553,7 @@
           "provenance_cell": "L27271–27285, L37781–37790"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:f8f60be8b87bba41ac74d925d4fc404d63236cf448f3617e19260419212b7df8",
         "source_section": "S-05"
       },
@@ -2629,7 +2628,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§16"
         },
         "frozen_addendum": null,
@@ -2647,7 +2646,7 @@
           "provenance_cell": "L27199–27236, L28373"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:54063ba8b4570bf2142aaaeaf25c8a6cfdbc7b4f5067c77e92a2b9ca1492de6b",
         "source_section": "S-05"
       },
@@ -2722,7 +2721,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§16"
         },
         "frozen_addendum": null,
@@ -2739,7 +2738,7 @@
           "provenance_cell": "L27392–27414"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:88bb7925ea6b24ddfcb62541fb25f861c919a4511b21ac309a0e04b6dda75125",
         "source_section": "S-05"
       },
@@ -2814,7 +2813,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§16"
         },
         "frozen_addendum": null,
@@ -2832,7 +2831,7 @@
           "provenance_cell": "L27920–27931, L28513–28521"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:0e8aff2eda70a88a6090a43bb6340bba060619a5ef14b591df0bb39b86a6f10d",
         "source_section": "S-05"
       },
@@ -2896,7 +2895,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§16"
         },
         "frozen_addendum": "SEC-007",
@@ -2911,7 +2910,7 @@
           "provenance_cell": "addendum (SEC-007)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:85e0b94560118537a53491f9427646254940f97df328cc2c685abb51f0f73381",
         "source_section": "S-05"
       },
@@ -2977,7 +2976,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§16"
         },
         "frozen_addendum": "SEC-008",
@@ -2992,7 +2991,7 @@
           "provenance_cell": "addendum (SEC-008)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:c2106266a708ae9d790e0dca8bfc7522322526a367c29c6f4093b9c9ef67b0d8",
         "source_section": "S-05"
       },
@@ -3064,7 +3063,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§05"
         },
         "frozen_addendum": null,
@@ -3082,7 +3081,7 @@
           "provenance_cell": "L41440–41452, L3834–3838"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:24c2a89a8774f028324dfc024510a52ad8ce884ff87a3d5279270309e9550826",
         "source_section": "S-06"
       },
@@ -3151,7 +3150,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§05"
         },
         "frozen_addendum": null,
@@ -3168,7 +3167,7 @@
           "provenance_cell": "L39253–39267"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:0f785f555c06840f0c95bb8740008df940989f4914ed1960a07cf06894bc893b",
         "source_section": "S-06"
       },
@@ -3237,7 +3236,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§05"
         },
         "frozen_addendum": null,
@@ -3254,7 +3253,7 @@
           "provenance_cell": "L3874–3905"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:1facc459477b083413edfd7f2dfbf6d593cba64c3066489f40c27327092b421a",
         "source_section": "S-06"
       },
@@ -3327,7 +3326,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§05"
         },
         "frozen_addendum": null,
@@ -3345,7 +3344,7 @@
           "provenance_cell": "L1722–1745, L2052–2070"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:70b12716ebc7252afd3cd73463b825b3713e71270dc69a56f4368c07e72b065e",
         "source_section": "S-06"
       },
@@ -3407,7 +3406,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§05"
         },
         "frozen_addendum": null,
@@ -3424,7 +3423,7 @@
           "provenance_cell": "L39296–39318"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:d4d1596fba4f3a3dcb7cd78e67477f1e6969e69f2df0818d39760ccb52ce6bcc",
         "source_section": "S-06"
       },
@@ -3485,7 +3484,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§05"
         },
         "frozen_addendum": "SEC-002",
@@ -3500,7 +3499,7 @@
           "provenance_cell": "addendum (SEC-002)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:cbeb024aaa593dbdce483136dec067e2cb21d9e1ec2957d9d3a41fe7eeaa369d",
         "source_section": "S-06"
       },
@@ -3572,7 +3571,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§04"
         },
         "frozen_addendum": null,
@@ -3589,7 +3588,7 @@
           "provenance_cell": "L12290–12312"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:bb4d64711c2adcfc1837de3dea9f90be5f5925acd3ce08410e7a4407d742fe93",
         "source_section": "S-07"
       },
@@ -3659,7 +3658,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§04"
         },
         "frozen_addendum": null,
@@ -3676,7 +3675,7 @@
           "provenance_cell": "L12132–12170"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:db71cdf704fa16c1cfdb277fe9b70fe9c558b21408564414180d23eb7c69c016",
         "source_section": "S-07"
       },
@@ -3747,7 +3746,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§04"
         },
         "frozen_addendum": null,
@@ -3764,7 +3763,7 @@
           "provenance_cell": "L12250–12270"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:50dc1df8e92441a006205f6e6ce39ee1463f07ad935dd3fbbf83423698b8418b",
         "source_section": "S-07"
       },
@@ -3828,7 +3827,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§04"
         },
         "frozen_addendum": null,
@@ -3846,7 +3845,7 @@
           "provenance_cell": "L9288–9348, L23726–23772"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:5b5727aa68f516ae6897580c0210c05e4d4fb1b01e51b2412bc6f782138e4bfd",
         "source_section": "S-07"
       },
@@ -3918,7 +3917,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§04"
         },
         "frozen_addendum": null,
@@ -3935,7 +3934,7 @@
           "provenance_cell": "L25799–25825"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:72b33567bb30ec00e3f8ec8a97b3fb8526ea872764142b749b88a2e93d73680a",
         "source_section": "S-07"
       },
@@ -4001,7 +4000,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§04"
         },
         "frozen_addendum": null,
@@ -4019,7 +4018,7 @@
           "provenance_cell": "L23784–23819, L27236"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:fd516a5b8e405f38c647e9d96040525801c1e5711c59c7e062a3196a1ce76490",
         "source_section": "S-07"
       },
@@ -4090,7 +4089,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§04"
         },
         "frozen_addendum": null,
@@ -4109,7 +4108,7 @@
           "provenance_cell": "L2141–2156, L3858–3873, L26669–26735"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:7e185560b9079172a4973ea6f8c6744f8af8cda0d10908fb0606467edc70aae6",
         "source_section": "S-07"
       },
@@ -4182,7 +4181,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§04"
         },
         "frozen_addendum": null,
@@ -4201,7 +4200,7 @@
           "provenance_cell": "L7119–7144, L8653–8682, L24148–24163"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:aa4dfb4d3704af3ac99ae88e7de795e7e8d6ee4ffc106061de5a67aa53fa82ff",
         "source_section": "S-07"
       },
@@ -4270,7 +4269,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§08"
         },
         "frozen_addendum": null,
@@ -4288,7 +4287,7 @@
           "provenance_cell": "L41484–41499, L37800–37812"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:a5432ea7951edbdd3dd47c633e928652a47951a2e66ae0e8bb9950fa910da6e5",
         "source_section": "S-08"
       },
@@ -4360,7 +4359,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§08"
         },
         "frozen_addendum": null,
@@ -4378,7 +4377,7 @@
           "provenance_cell": "L16878–16905, L37826–37838"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:699b003379be63eb0a9fa9c7d543972088e6713c62859c2000e5cb04cee2a92f",
         "source_section": "S-08"
       },
@@ -4445,7 +4444,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§08"
         },
         "frozen_addendum": null,
@@ -4463,7 +4462,7 @@
           "provenance_cell": "L16928–16958, L23821–23856"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:84471c78ef44e620638d87f00679d535054fc2647a6090a7b7d30c931bef3d7f",
         "source_section": "S-08"
       },
@@ -4536,7 +4535,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§08"
         },
         "frozen_addendum": null,
@@ -4553,7 +4552,7 @@
           "provenance_cell": "L16971–16995"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:bddf9fb501eac3b4baba3801860dc457eff0cac3822746e7b2f7923cbb010fdb",
         "source_section": "S-08"
       },
@@ -4633,7 +4632,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§08"
         },
         "frozen_addendum": null,
@@ -4651,7 +4650,7 @@
           "provenance_cell": "L16878–16905, L37840–37862"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:584eb9bfe3ebcf02b25d2818b9ae5bb726bd720e8db07aa305fc18e209e08b24",
         "source_section": "S-08"
       },
@@ -4728,7 +4727,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§08"
         },
         "frozen_addendum": null,
@@ -4745,7 +4744,7 @@
           "provenance_cell": "L14632–14642"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:e32d61bf4c673ce8aa93bdaa089f3829cf04b5b251e4f99fe4b8d9f41083229a",
         "source_section": "S-08"
       },
@@ -4812,7 +4811,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§08"
         },
         "frozen_addendum": null,
@@ -4830,7 +4829,7 @@
           "provenance_cell": "L7273–7277, L8850"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:b1f1e82de327faa142f1d2363bc9014a0a0343efa795ec22f59b5788771a935a",
         "source_section": "S-08"
       },
@@ -4901,7 +4900,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": null,
@@ -4918,7 +4917,7 @@
           "provenance_cell": "L6354–6379"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:cd602e22187c65dd07770a95b32d67a75b4eb49450d5256704c4ed1bd1a3f358",
         "source_section": "S-09"
       },
@@ -4983,7 +4982,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": null,
@@ -5000,7 +4999,7 @@
           "provenance_cell": "L6370–6380"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:ff759f1f81eeceba842f3e5c96259034199d87f9cf9f8c8e169d43b32dad2463",
         "source_section": "S-09"
       },
@@ -5064,7 +5063,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": null,
@@ -5081,7 +5080,7 @@
           "provenance_cell": "L6381–6390"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:6336e2c0fd3fa7bfa1f129957be821a85f75030830e905ad86ecc2f12d5706f3",
         "source_section": "S-09"
       },
@@ -5146,7 +5145,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": null,
@@ -5164,7 +5163,7 @@
           "provenance_cell": "L6391–6396, L6406"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:561af50726de80ca077cf0fe67611a5e67721e78ea5ae7981f24dee62e53c85a",
         "source_section": "S-09"
       },
@@ -5232,7 +5231,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": null,
@@ -5249,7 +5248,7 @@
           "provenance_cell": "L6397–6404"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:dbdea17d0d5e422ecb712efab46c7b371c8c09d9d09a4ff51cff54cf1c2efb2d",
         "source_section": "S-09"
       },
@@ -5324,7 +5323,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": null,
@@ -5342,7 +5341,7 @@
           "provenance_cell": "L6406–6421, L6647–6656"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:4f3700c5db812df078e3e35211f32e02357f0019e68628dd9ba28b0ff1a08768",
         "source_section": "S-09"
       },
@@ -5416,7 +5415,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": null,
@@ -5434,7 +5433,7 @@
           "provenance_cell": "L6434–6445, L6647–6656"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:2b72ce54e23e0f9fd60c3c3e37ffea66934c60af544df492744618f9125a4663",
         "source_section": "S-09"
       },
@@ -5510,7 +5509,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": null,
@@ -5528,7 +5527,7 @@
           "provenance_cell": "L6422–6433, L6657–6671"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:f5337df67a6658f20b938194fb121f1f20fe39d9471483b30260203ac5cb7045",
         "source_section": "S-09"
       },
@@ -5602,7 +5601,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": null,
@@ -5620,7 +5619,7 @@
           "provenance_cell": "L6434–6436, L38858–38890"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:3944b21968ee7ccec945767d0768d54e72b2a181eb24b621d3a5b39b132cbcae",
         "source_section": "S-09"
       },
@@ -5683,7 +5682,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": "SEC-014",
@@ -5698,7 +5697,7 @@
           "provenance_cell": "addendum (SEC-014)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:4324f1281c89d2d2fe975b3a89abe8e35b24541d7954d8247d7ba884fdf79fa4",
         "source_section": "S-09"
       },
@@ -5758,7 +5757,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": "duration-semantics",
@@ -5773,7 +5772,7 @@
           "provenance_cell": "addendum (duration-semantics)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:cc64ec9f9ed5824a0c0c7d1fd109cd0e5b5289e6f1ed8213fc3d0b52c774b3df",
         "source_section": "S-09"
       },
@@ -5843,7 +5842,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": null,
@@ -5861,7 +5860,7 @@
           "provenance_cell": "L9127–9133, L10178–10208"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:a29930e6e97043d9ff57842f69bf93e773842c4711e036f77127cd53544a919f",
         "source_section": "S-10"
       },
@@ -5937,7 +5936,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": null,
@@ -5955,7 +5954,7 @@
           "provenance_cell": "L6672–6728, L19153–19175"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:0f51c9c5b3116d07956325b975e205b9a88aabe8396f198c65b81dfae4c162e1",
         "source_section": "S-10"
       },
@@ -6020,7 +6019,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": null,
@@ -6037,7 +6036,7 @@
           "provenance_cell": "L39397–39407"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:b8971104ae673deccd6089797b8a0afeb9e110b73cc9ce55cdce3f5e4789a052",
         "source_section": "S-10"
       },
@@ -6100,7 +6099,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": "SEC-002",
@@ -6115,7 +6114,7 @@
           "provenance_cell": "addendum (SEC-002)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:03b22d4a577d23f3caaaaee2d3518c181fd9ce626da5c6a6f7026c86a785a691",
         "source_section": "S-10"
       },
@@ -6178,7 +6177,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": "SEC-002",
@@ -6193,7 +6192,7 @@
           "provenance_cell": "addendum (SEC-002)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:2af6d9ac2487fe7904827c57700e78f5514124e4629d093aaf12db2738cdb092",
         "source_section": "S-10"
       },
@@ -6252,7 +6251,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§06"
         },
         "frozen_addendum": "SEC-015",
@@ -6267,7 +6266,7 @@
           "provenance_cell": "addendum (SEC-015)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:b1b92953f0242badf53fcbfe893caeb674b4ca4db44de422f5737234aa3e1bf0",
         "source_section": "S-10"
       },
@@ -6343,7 +6342,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§07"
         },
         "frozen_addendum": null,
@@ -6361,7 +6360,7 @@
           "provenance_cell": "L8683–8700, L9161–9175"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:b8f9de95401c0a7de3082fd77396a93d2607979f697c874d203884425d0d2631",
         "source_section": "S-11"
       },
@@ -6436,7 +6435,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§07"
         },
         "frozen_addendum": null,
@@ -6454,7 +6453,7 @@
           "provenance_cell": "L9207–9245, L38044–38046"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:cbf18ca902e8a33852e0e2f4a10a9023b34bc23be131681c6a49d16b8877e657",
         "source_section": "S-11"
       },
@@ -6523,7 +6522,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§07"
         },
         "frozen_addendum": null,
@@ -6541,7 +6540,7 @@
           "provenance_cell": "L7487–7520, L8692–8696"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:e4eb95f4205df06788e6b7e59d2ce93e7f63ae169104ee5ecc186c25ef014b6b",
         "source_section": "S-11"
       },
@@ -6610,7 +6609,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§07"
         },
         "frozen_addendum": null,
@@ -6627,7 +6626,7 @@
           "provenance_cell": "L8692–8696"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:2be2aa6ca45eeb0af09838133b6f3d11cb8c68e5af2d12d1eeb5847eab00c7ba",
         "source_section": "S-11"
       },
@@ -6707,7 +6706,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§07"
         },
         "frozen_addendum": null,
@@ -6726,7 +6725,7 @@
           "provenance_cell": "L7408–7425, L28203–28240, L35210–35215"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:420c1bbc3beb6a81eed55b5d2309a536cc53cc9b03f0bf047bb8f64b5de40336",
         "source_section": "S-11"
       },
@@ -6806,7 +6805,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§07"
         },
         "frozen_addendum": null,
@@ -6824,7 +6823,7 @@
           "provenance_cell": "L8698–8700, L10164–10168"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:9f0aa17449ebc484cfda3bab0e61b584c9950ef996c5e38a2bd1717a77b32d9d",
         "source_section": "S-11"
       },
@@ -6897,7 +6896,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§07"
         },
         "frozen_addendum": null,
@@ -6915,7 +6914,7 @@
           "provenance_cell": "L9155–9205, L10171–10177"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:fc01c2e74abd9e6528ffa995b9a123f8ac86f3928f6b75ff2a89ffe97887a034",
         "source_section": "S-11"
       },
@@ -6986,7 +6985,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§07"
         },
         "frozen_addendum": null,
@@ -7004,7 +7003,7 @@
           "provenance_cell": "L7345–7352, L7410–7419"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:62b80c017ba69e264cf675c37d2dc1c44a371758879e99fbd3abcd23e9a6b263",
         "source_section": "S-11"
       },
@@ -7065,7 +7064,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§07"
         },
         "frozen_addendum": "SEC-021",
@@ -7080,7 +7079,7 @@
           "provenance_cell": "addendum (SEC-021)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:5a100dfbef54813107c82c80d814ab34285945a01c510794112660f8ef9bb182",
         "source_section": "S-11"
       },
@@ -7144,7 +7143,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§07"
         },
         "frozen_addendum": "resource-accounting",
@@ -7159,7 +7158,7 @@
           "provenance_cell": "addendum (resource-accounting)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:01042715917ad53b9dbe54b0a316ee35220c9661a108167686054d242eb4705b",
         "source_section": "S-11"
       },
@@ -7218,7 +7217,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§07"
         },
         "frozen_addendum": "resource-accounting",
@@ -7233,7 +7232,7 @@
           "provenance_cell": "addendum (resource-accounting)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:f5ed476bc46c79982ccb79a0e088cdff247df2551cb047f02525c1c2ca975b7e",
         "source_section": "S-11"
       },
@@ -7293,7 +7292,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§07"
         },
         "frozen_addendum": "resource-accounting",
@@ -7308,7 +7307,7 @@
           "provenance_cell": "addendum (resource-accounting)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:1a8ac9a5bcbf359613bd2f248f557b7f1eacad60cd3204418130a453f1e24c83",
         "source_section": "S-11"
       },
@@ -7369,7 +7368,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§07"
         },
         "frozen_addendum": "duration-semantics",
@@ -7384,7 +7383,7 @@
           "provenance_cell": "addendum (duration-semantics)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:d152fd48f7537f9d80e8c9c5f7e98878fdcb44bd8ec17f9bd16d8553a86ebe24",
         "source_section": "S-11"
       },
@@ -7449,7 +7448,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§07"
         },
         "frozen_addendum": "duration-semantics",
@@ -7464,7 +7463,7 @@
           "provenance_cell": "addendum (duration-semantics)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:5092b29a293fecaacb7eacd7cbcc847f599dc8444176e9a2cfe825d4f0f0e42d",
         "source_section": "S-11"
       },
@@ -7535,7 +7534,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": null,
@@ -7552,7 +7551,7 @@
           "provenance_cell": "L12177–12194"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:d393f0d55f24c008deaabe5764f380c0eb5ecb5f213dfa6c7fe2c6c6de61d198",
         "source_section": "S-12"
       },
@@ -7618,7 +7617,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": null,
@@ -7636,7 +7635,7 @@
           "provenance_cell": "L7145–7155, L8700–8710"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:b1c86d71eda30a23b818fbe5205be2bf29f4fbaf51c9b3a244269eb2c8e6de6f",
         "source_section": "S-12"
       },
@@ -7729,7 +7728,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": null,
@@ -7746,7 +7745,7 @@
           "provenance_cell": "L37891–37908"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:be66b4f0a2ca166662d21fd5fc2eabf5115019163ad14537f2645e80d46f3e04",
         "source_section": "S-12"
       },
@@ -7824,7 +7823,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": null,
@@ -7841,7 +7840,7 @@
           "provenance_cell": "L24003–24045"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:357b546774994366b4559e1c98253c5e146afd1ab21040b5093e70e3a102a038",
         "source_section": "S-12"
       },
@@ -7916,7 +7915,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": null,
@@ -7933,7 +7932,7 @@
           "provenance_cell": "L25799–25825"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:966d6243adbad27097210b0909a711e52b0e79dd182bd46574f362ff9ef5df82",
         "source_section": "S-12"
       },
@@ -8016,7 +8015,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": null,
@@ -8034,7 +8033,7 @@
           "provenance_cell": "L23949–24002, L25952–25970"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:44a1f329f688eee1ad75e71b959f5ec233dd50199f12f6511b3cd34d9a95127b",
         "source_section": "S-12"
       },
@@ -8115,7 +8114,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": null,
@@ -8132,7 +8131,7 @@
           "provenance_cell": "L23949–24002"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:7ffeab0299f80a606ef286bc910ab641505a3ac027f6326961a1e5e671cb757a",
         "source_section": "S-12"
       },
@@ -8195,7 +8194,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": "SEC-001",
@@ -8210,7 +8209,7 @@
           "provenance_cell": "addendum (SEC-001)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:d74acd05ecb1b7e081fd068cd7ce9e76f4749a96e3b03a8a2982359fcd0c38a2",
         "source_section": "S-12"
       },
@@ -8279,7 +8278,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": null,
@@ -8297,7 +8296,7 @@
           "provenance_cell": "L35150–35156, L37910"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:31532f43c070733a5b5fb0968fa13f965701dca24ed0650e5561cf0a1ff946c6",
         "source_section": "S-13"
       },
@@ -8370,7 +8369,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": null,
@@ -8387,7 +8386,7 @@
           "provenance_cell": "L35150–35158"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:bc87c1528677ceaf5f4746f89c8a427358bb8acd95d90ee44448b22e950b9433",
         "source_section": "S-13"
       },
@@ -8462,7 +8461,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": null,
@@ -8480,7 +8479,7 @@
           "provenance_cell": "L35111–35144, L37953–37965"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:f81398a9354c9ca106183edb5932f598991e5aab0fcf4da929312129a83d7fc6",
         "source_section": "S-13"
       },
@@ -8551,7 +8550,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": null,
@@ -8569,7 +8568,7 @@
           "provenance_cell": "L35159–35176, L37968–37981"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:6f735615c9c037044f08c838ab43972c24235c15014054876f0170a813f8aebe",
         "source_section": "S-13"
       },
@@ -8643,7 +8642,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": null,
@@ -8660,7 +8659,7 @@
           "provenance_cell": "L35210–35215"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:8bcb141cb3e71513d15c60be1f663116315b83231ea4d1a901f806bdffab2d3c",
         "source_section": "S-13"
       },
@@ -8724,7 +8723,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": "request-pipeline",
@@ -8739,7 +8738,7 @@
           "provenance_cell": "addendum (request-pipeline)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:7bba3e3ce2cb222cfdf0b03484985ed778d54d9c2639b85b4f0cf5d1bf968519",
         "source_section": "S-13"
       },
@@ -8800,7 +8799,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§11"
         },
         "frozen_addendum": "request-pipeline",
@@ -8815,7 +8814,7 @@
           "provenance_cell": "addendum (request-pipeline)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:3a1702f0bfcdeeb8cd8ca363507536a77b50bf74f28ff44a43301ecf46df2e5d",
         "source_section": "S-13"
       },
@@ -8883,7 +8882,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§12"
         },
         "frozen_addendum": null,
@@ -8901,7 +8900,7 @@
           "provenance_cell": "L8560–8580, L10168–10172"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:8a1bb77718e9cd2799bc20630acc67dd0c123e26e545d0bdd093d3d9aab9f336",
         "source_section": "S-14"
       },
@@ -8967,7 +8966,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§12"
         },
         "frozen_addendum": null,
@@ -8985,7 +8984,7 @@
           "provenance_cell": "L41823–41841, L27644"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:b5f06ad40844653f19701db81287e17964a3f5259b1307a4ac4099e21e6eed1e",
         "source_section": "S-14"
       },
@@ -9058,7 +9057,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§12"
         },
         "frozen_addendum": null,
@@ -9076,7 +9075,7 @@
           "provenance_cell": "L25972–25996, L37985–38000"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:319990953cb85482e31a81508d1d66cfa9501fa162642b476168aa7accd736e4",
         "source_section": "S-14"
       },
@@ -9152,7 +9151,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§12"
         },
         "frozen_addendum": null,
@@ -9170,7 +9169,7 @@
           "provenance_cell": "L3947–3958, L26249–26262"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:0603d480340b0c8968a66be378fc05b3b1e5db563c06e88631563595761b91a5",
         "source_section": "S-14"
       },
@@ -9237,7 +9236,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§12"
         },
         "frozen_addendum": null,
@@ -9254,7 +9253,7 @@
           "provenance_cell": "L38278–38300"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:dbce62c21e747642e0494a9380197e6f0d088a825ef9d25a236e77f105f5949c",
         "source_section": "S-14"
       },
@@ -9315,7 +9314,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§12"
         },
         "frozen_addendum": "SEC-011",
@@ -9330,7 +9329,7 @@
           "provenance_cell": "addendum (SEC-011)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:1eef7cd6ec107fe7b516adc69c4357999d40a15e80d3d6bb7a0b4ae477894f22",
         "source_section": "S-14"
       },
@@ -9405,7 +9404,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§09"
         },
         "frozen_addendum": null,
@@ -9423,7 +9422,7 @@
           "provenance_cell": "L41623–41641, L24268–24290"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:faefa05c9db386b25aaf265d699fcb6c637e6d0888e3be62e0c2ff00c7ceba88",
         "source_section": "S-15"
       },
@@ -9493,7 +9492,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§09"
         },
         "frozen_addendum": null,
@@ -9511,7 +9510,7 @@
           "provenance_cell": "L24148–24163, L25514–25546"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:7446791f79628accaed869dd170f60b1c4c752acafaac3edc6cf2f6618611d87",
         "source_section": "S-15"
       },
@@ -9581,7 +9580,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§09"
         },
         "frozen_addendum": null,
@@ -9598,7 +9597,7 @@
           "provenance_cell": "L24226–24245"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:9f060e95e53ce92318a8d2c006315ff436df08b50ebe676272b7f1747491e8e6",
         "source_section": "S-15"
       },
@@ -9681,7 +9680,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§10"
         },
         "frozen_addendum": null,
@@ -9699,7 +9698,7 @@
           "provenance_cell": "L25558–25615, L37924–37937"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:a9adbd6ee1e7333de40202924064fb50e11111637f23e0dbadf7ed2ca5a12443",
         "source_section": "S-15"
       },
@@ -9790,7 +9789,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§09"
         },
         "frozen_addendum": null,
@@ -9808,7 +9807,7 @@
           "provenance_cell": "L25573–25615, L37941–37951"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:8ad134059180a4043309534f14f74011a118cfd89558610250a4b01958e79779",
         "source_section": "S-15"
       },
@@ -9890,7 +9889,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§09"
         },
         "frozen_addendum": null,
@@ -9908,7 +9907,7 @@
           "provenance_cell": "L25702–25749, L37941–37951"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:8e53cacd4617aebc545f16d8dafc5968a39fef034608eb476772923c41a335bc",
         "source_section": "S-15"
       },
@@ -9974,7 +9973,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§10"
         },
         "frozen_addendum": null,
@@ -9991,7 +9990,7 @@
           "provenance_cell": "L25759–25766"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:a3572db5e9273b82e2961a12db115eeb5bea23af4408a95035e6b0a400e9ffe6",
         "source_section": "S-15"
       },
@@ -10060,7 +10059,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§09"
         },
         "frozen_addendum": null,
@@ -10077,7 +10076,7 @@
           "provenance_cell": "L26048–26070"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:5c771d1b99a654a17da8739d66b80a64fe30e0616a00de17de7ccc4570ff1e8b",
         "source_section": "S-15"
       },
@@ -10142,7 +10141,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§09"
         },
         "frozen_addendum": "SEC-006",
@@ -10157,7 +10156,7 @@
           "provenance_cell": "addendum (SEC-006)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:6a773b8fbc34993d2d4e9821cfa28494fc7c4ebb812f2a6c7a41749049dbc9ce",
         "source_section": "S-15"
       },
@@ -10221,7 +10220,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§09"
         },
         "frozen_addendum": "SEC-019",
@@ -10236,7 +10235,7 @@
           "provenance_cell": "addendum (SEC-019)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:5355203fdd0e830e458b0618f31ae486543d77e0079acd506665731f098d1009",
         "source_section": "S-15"
       },
@@ -10306,7 +10305,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -10325,7 +10324,7 @@
           "provenance_cell": "L41647–41658, L25674–25701, L37946–37951"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:6cec64ed298879a7326459a185b8fad16f2e4986942969fc1dcf0accc1faa87c",
         "source_section": "S-16"
       },
@@ -10361,8 +10360,7 @@
       "verification_method": "MARSHAL-NO-RAW-CAPABILITY",
       "verification_method_source": "final/03 Verify→ cell verbatim (null where the canonical registry defines none)",
       "verification_tags": [
-        "MARSHAL-NO-RAW-CAPABILITY",
-        "MARSHAL-CAPABILITY-REJECT"
+        "MARSHAL-NO-RAW-CAPABILITY"
       ]
     },
     {
@@ -10404,7 +10402,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -10422,7 +10420,7 @@
           "provenance_cell": "L25972–26001, L37953–37959"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:79bb7853414d8a82af1c143ae57dde0626fa17f899f68f0edc205e62dcf9b83c",
         "source_section": "S-16"
       },
@@ -10489,7 +10487,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -10506,7 +10504,7 @@
           "provenance_cell": "L25674–25701"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:b94666bb530d5907b4c9fe904e9e6f2d424861e9fcf53100708a1b407ea66aad",
         "source_section": "S-16"
       },
@@ -10574,7 +10572,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -10591,7 +10589,7 @@
           "provenance_cell": "L8695–8698"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:5bc2febceaa3c8c679d6f2f56dbed41ef6feb40554a5f0603681740bf0eb70ac",
         "source_section": "S-16"
       },
@@ -10653,7 +10651,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": "SEC-005",
@@ -10668,7 +10666,7 @@
           "provenance_cell": "addendum (SEC-005)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:e2a02ca1c60f32e6645163bdb0e3186f153b5379cec4ff343c7744f0694be3f4",
         "source_section": "S-16"
       },
@@ -10729,7 +10727,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": "SEC-018",
@@ -10744,7 +10742,7 @@
           "provenance_cell": "addendum (SEC-018)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:1dc486128889c768bec2ff37ee800de4e4491bad7a694cb5bcba5627e0fc8ecf",
         "source_section": "S-16"
       },
@@ -10813,7 +10811,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -10831,7 +10829,7 @@
           "provenance_cell": "L28185–28228, L28453–28465"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:ab9aab4dbdae23e5aa8fe9073879fc8b82cd35c1517b6956aac994a87616d826",
         "source_section": "S-17"
       },
@@ -10896,7 +10894,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -10914,7 +10912,7 @@
           "provenance_cell": "L30532–30543, L33290–33347"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:6fbea9c93ef23c13cc82c02c7c4292fdd123aa2f008215880cc3aa3a5a479642",
         "source_section": "S-17"
       },
@@ -10981,7 +10979,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -10998,7 +10996,7 @@
           "provenance_cell": "L33087–33154"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:cb07389d4754dcec0202d6498ccf0d1085761e553ecaf23b795c5935f8273897",
         "source_section": "S-17"
       },
@@ -11075,7 +11073,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -11093,7 +11091,7 @@
           "provenance_cell": "L30544–30552, L33155–33265"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:c33fe155e7729a8abfc230dfb6a600dff8886ef1a1ddf97cd77f63fa50a25422",
         "source_section": "S-17"
       },
@@ -11164,7 +11162,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -11181,7 +11179,7 @@
           "provenance_cell": "L33087–33154"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:cfed206becfa8655faac132db21f72a421dbe89ee6865adbbd88bc3afaadbbd2",
         "source_section": "S-17"
       },
@@ -11252,7 +11250,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -11271,7 +11269,7 @@
           "provenance_cell": "L30566–30573, L34987–35024, L38164–38172"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:e04a4f06de3d630e0268482d57ec9de2d7095114d9b3c2df5f7ba8988136c082",
         "source_section": "S-17"
       },
@@ -11347,7 +11345,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -11365,7 +11363,7 @@
           "provenance_cell": "L30575–30586, L32948–33049"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:8bb8f15444cb8b9c339cf053d31aca4e345343e68d531b37ae0ffe4c529b5fb5",
         "source_section": "S-17"
       },
@@ -11436,7 +11434,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -11454,7 +11452,7 @@
           "provenance_cell": "L30574–30578, L32948–33265"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:4a5481c1c9b0749ecffdf9f5062d2fcf7ab9ad719690e87b83100aeb577568b9",
         "source_section": "S-17"
       },
@@ -11526,7 +11524,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -11544,7 +11542,7 @@
           "provenance_cell": "L28185–28228, L30588–30590"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:dc2116c8189a2484d8d8001cc52fe846a5dc0d33823324462a173a7a1ecda364",
         "source_section": "S-17"
       },
@@ -11616,7 +11614,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -11634,7 +11632,7 @@
           "provenance_cell": "L30592–30598, L35068"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:72a0ba0d71d7ad3c4a7472b334925ce6c8aa5a9293f9b719cf2b56698362a49c",
         "source_section": "S-17"
       },
@@ -11701,7 +11699,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": null,
@@ -11720,7 +11718,7 @@
           "provenance_cell": "L30599–30646, L31948–32010, L33266–33286"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:2c29a0fdfa7203833e1eb994090285c3ccf28b380b959befddf914872adbf806",
         "source_section": "S-17"
       },
@@ -11780,7 +11778,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": "SEC-003",
@@ -11795,7 +11793,7 @@
           "provenance_cell": "addendum (SEC-003)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:5ab7f93c2837a9a56456626fab8f077adc9fe0359cb1eb5ddd522f3cbdb3e83c",
         "source_section": "S-17"
       },
@@ -11858,7 +11856,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§13"
         },
         "frozen_addendum": "SEC-017",
@@ -11873,7 +11871,7 @@
           "provenance_cell": "addendum (SEC-017)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:e9834886245e473c712a9de39c802ae8734b9efdf26073740b34f8c2a6030707",
         "source_section": "S-17"
       },
@@ -11940,7 +11938,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§14"
         },
         "frozen_addendum": null,
@@ -11958,7 +11956,7 @@
           "provenance_cell": "L33757–33790, L35078–35087"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:16ff70df05ed624128a37d71d489d2dccf48fbfa7cfc143a97b90119360c3202",
         "source_section": "S-18"
       },
@@ -12042,7 +12040,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§14"
         },
         "frozen_addendum": null,
@@ -12060,7 +12058,7 @@
           "provenance_cell": "L33802–33830, L35088–35110"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:37a1aad737eac482e2cf3116225054bd63968f3b893fa353ccb6ec969cfa847f",
         "source_section": "S-18"
       },
@@ -12129,7 +12127,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§14"
         },
         "frozen_addendum": null,
@@ -12147,7 +12145,7 @@
           "provenance_cell": "L33861–33900, L35111–35144"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:357354796f4aa99c46207901459209a8969a76df3d2b5e9ccb405847bdc6ac0a",
         "source_section": "S-18"
       },
@@ -12216,7 +12214,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§14"
         },
         "frozen_addendum": null,
@@ -12233,7 +12231,7 @@
           "provenance_cell": "L26293–26330"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:521f734d7469328444a1e88c7e82ce5b48ecf2871e59445c06bf4c0b386754b4",
         "source_section": "S-18"
       },
@@ -12308,7 +12306,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§14"
         },
         "frozen_addendum": null,
@@ -12326,7 +12324,7 @@
           "provenance_cell": "L26216–26240, L35177–35188"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:2590a65372535943d1204b67e3bcaa1dca494bbd532772daa9827c9b5ae98489",
         "source_section": "S-18"
       },
@@ -12399,7 +12397,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§14"
         },
         "frozen_addendum": null,
@@ -12417,7 +12415,7 @@
           "provenance_cell": "L35088–35110, L35189–35208"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:07f271fbc48b4916d7bc7deff17b10969a2db2aa1dd8044a358b8c03d70356fb",
         "source_section": "S-18"
       },
@@ -12486,7 +12484,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§14"
         },
         "frozen_addendum": "SEC-004",
@@ -12501,7 +12499,7 @@
           "provenance_cell": "addendum (SEC-004)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:0a296eb5294a221f7b3355b68b0410ab425c8897023672105c98589b1b419840",
         "source_section": "S-18"
       },
@@ -12563,7 +12561,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§14"
         },
         "frozen_addendum": "SEC-009",
@@ -12578,7 +12576,7 @@
           "provenance_cell": "addendum (SEC-009)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:994d5b2884064947155cd3d9ed6676fb55cd3d00ed710473be8231e3e24c59c7",
         "source_section": "S-18"
       },
@@ -12650,7 +12648,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§15"
         },
         "frozen_addendum": null,
@@ -12667,7 +12665,7 @@
           "provenance_cell": "L26122–26140"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:c62f342de51243059b2beea94338886606b7cd2151cacfc3e206841cc79bbd7d",
         "source_section": "S-19"
       },
@@ -12746,7 +12744,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§15"
         },
         "frozen_addendum": null,
@@ -12764,7 +12762,7 @@
           "provenance_cell": "L35159–35176, L28467–28493"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:c871f3041a6ba1af82e0da60f3770f9b2548c70b1905a99291057814af7dc09d",
         "source_section": "S-19"
       },
@@ -12840,7 +12838,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§15"
         },
         "frozen_addendum": null,
@@ -12858,7 +12856,7 @@
           "provenance_cell": "L35189–35208, L26272–26300"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:aa337b48d9d03f9f2f1907d54fd6288c5a13f0ac54221ff8b4849d254882ea40",
         "source_section": "S-19"
       },
@@ -12931,7 +12929,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§15"
         },
         "frozen_addendum": null,
@@ -12949,7 +12947,7 @@
           "provenance_cell": "L35189–35195, L38858–38890"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:eff12020f093da54721a22aade833c623ae9d6e9a7b0d888d56b7dad84885351",
         "source_section": "S-19"
       },
@@ -13018,7 +13016,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§15"
         },
         "frozen_addendum": null,
@@ -13036,7 +13034,7 @@
           "provenance_cell": "L35196–35208, L38254–38272"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:7ef1f3222c22aa5ab70a089db5acce6870e88d1adee17ff3833cf821690ab3af",
         "source_section": "S-19"
       },
@@ -13102,7 +13100,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§15"
         },
         "frozen_addendum": null,
@@ -13119,7 +13117,7 @@
           "provenance_cell": "L35210–35215"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:6d8be392a525cd0338043deea64515ed86cbfae13c97dcc6b40b560cf82dbb24",
         "source_section": "S-19"
       },
@@ -13189,7 +13187,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§15"
         },
         "frozen_addendum": null,
@@ -13207,7 +13205,7 @@
           "provenance_cell": "L35111–35144, L26249–26262"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:1d2b669684bdf3f99cf64829c6e308d96111b391581e61e7ed8dc53cb6bd963d",
         "source_section": "S-19"
       },
@@ -13275,7 +13273,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§15"
         },
         "frozen_addendum": "SEC-010",
@@ -13290,7 +13288,7 @@
           "provenance_cell": "addendum (SEC-010)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:c72760d2b90d2cb0e6a7fbf938e3552fe108e514c1a552ec6892e55f114b4d03",
         "source_section": "S-19"
       },
@@ -13353,7 +13351,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§15"
         },
         "frozen_addendum": "request-pipeline",
@@ -13368,7 +13366,7 @@
           "provenance_cell": "addendum (request-pipeline)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:1a0adba0b3857956c712b268bf5d627415c83fc9d8c54d9811acc89ed4c75b32",
         "source_section": "S-19"
       },
@@ -13442,7 +13440,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§17"
         },
         "frozen_addendum": null,
@@ -13460,7 +13458,7 @@
           "provenance_cell": "L35281–35310, L38935–38953"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:806bb6f919eba9f28e69cb909ccd408ad54ecc22fa5dc4574893fe31a33621bf",
         "source_section": "S-20"
       },
@@ -13542,7 +13540,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§17"
         },
         "frozen_addendum": null,
@@ -13560,7 +13558,7 @@
           "provenance_cell": "L35330–35375, L37696–37721"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:801c58ff1a87a3a28de8f5480313254795d76edbe95ef298090e289badac0289",
         "source_section": "S-20"
       },
@@ -13663,7 +13661,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§17"
         },
         "frozen_addendum": null,
@@ -13682,7 +13680,7 @@
           "provenance_cell": "L41848–41866, L35281–35322, L35341"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:fd71424eefb47d108fb9317a5eac07c44ff69311d78407c85ec84a10a757ab4b",
         "source_section": "S-20"
       },
@@ -13749,7 +13747,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§17"
         },
         "frozen_addendum": null,
@@ -13766,7 +13764,7 @@
           "provenance_cell": "L35326–35339"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:61ee123e97e8d5a84a714a8012dbc669f03f755ae746b541651898f1c02af925",
         "source_section": "S-20"
       },
@@ -13841,7 +13839,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§18"
         },
         "frozen_addendum": null,
@@ -13859,7 +13857,7 @@
           "provenance_cell": "L38420–38470 (§16), L41869–41906"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:8764806f60ff4ac3e1f1f7c01713515a6c824e080358b7e97f9ef05570f3944d",
         "source_section": "S-20"
       },
@@ -13928,7 +13926,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§18"
         },
         "frozen_addendum": null,
@@ -13945,7 +13943,7 @@
           "provenance_cell": "L27891–27902"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:6ff7fe26678d961c20766db726d7ba3b767872a93751542959ee50601710579b",
         "source_section": "S-20"
       },
@@ -14025,7 +14023,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§20"
         },
         "frozen_addendum": null,
@@ -14043,7 +14041,7 @@
           "provenance_cell": "L38587–38715, L37251–37268"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:fbb613188c192b3515e0c313d98c6aec7ddb1f2ff44326221e93de0556d3ad96",
         "source_section": "S-21"
       },
@@ -14120,7 +14118,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§21"
         },
         "frozen_addendum": null,
@@ -14138,7 +14136,7 @@
           "provenance_cell": "L38891–38920, L37293–37315"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:de7575b068a8c7d431ced8a27d44fa2183eeda49ef45062a7fe7c292197a322a",
         "source_section": "S-21"
       },
@@ -14209,7 +14207,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§21"
         },
         "frozen_addendum": null,
@@ -14226,7 +14224,7 @@
           "provenance_cell": "L38441–38463"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:84dd68d23d73efcb0c441b7daf4bc7ba9f3e22d0c102048e9a5c0a4a028f5d8f",
         "source_section": "S-21"
       },
@@ -14293,7 +14291,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§19"
         },
         "frozen_addendum": null,
@@ -14310,7 +14308,7 @@
           "provenance_cell": "L38473–38492"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:0a923a3a61fbc8e1ccad1f80d958da2412b2ce4dfe26a01d04978ddd7867db84",
         "source_section": "S-21"
       },
@@ -14381,7 +14379,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§19"
         },
         "frozen_addendum": null,
@@ -14399,7 +14397,7 @@
           "provenance_cell": "L38494–38500, L37390–37400"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:81a3c9447d1f7d947a78016669eea50598b951be71c08b96d6bc1d6b51be5c25",
         "source_section": "S-21"
       },
@@ -14471,7 +14469,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§19"
         },
         "frozen_addendum": null,
@@ -14488,7 +14486,7 @@
           "provenance_cell": "L38515–38540"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:4c884cef5d70cda077259c5acfdaad241a3dd4eafa794a1214129aa97a00c654",
         "source_section": "S-21"
       },
@@ -14569,7 +14567,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§18"
         },
         "frozen_addendum": null,
@@ -14587,7 +14585,7 @@
           "provenance_cell": "L38523–38560, L37402–37414"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:f283a8c763a490440b3ad4b853ab760433ad94a1310f01e91038682db4befcf8",
         "source_section": "S-21"
       },
@@ -14655,7 +14653,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§18"
         },
         "frozen_addendum": null,
@@ -14673,7 +14671,7 @@
           "provenance_cell": "L38831–38846, L35216–35236"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:daa3ae5639891b2d6b3f0976adcdb0677208af8bc3251affd314dfc9ee1c9fde",
         "source_section": "S-21"
       },
@@ -14744,7 +14742,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§18"
         },
         "frozen_addendum": null,
@@ -14762,7 +14760,7 @@
           "provenance_cell": "L38848–38862, L37404–37414"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:96982b7981bc682147e010c996b0ed732c7a7b36bffdf5085038d16aa877ebc0",
         "source_section": "S-21"
       },
@@ -14833,7 +14831,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§18"
         },
         "frozen_addendum": null,
@@ -14851,7 +14849,7 @@
           "provenance_cell": "L38864–38890, L37287–37292"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:984e5a81c742247c3a708f3152fffdb958ca94eeaf0774d3ed275d894aa5b73f",
         "source_section": "S-21"
       },
@@ -14920,7 +14918,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§18"
         },
         "frozen_addendum": null,
@@ -14938,7 +14936,7 @@
           "provenance_cell": "L38885–38911, L41196–41210"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:6e373fc2f0047446b4a971b6b66bc544407fdc79ca4428f02427be1e14879e71",
         "source_section": "S-21"
       },
@@ -15000,7 +14998,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§18"
         },
         "frozen_addendum": "request-pipeline",
@@ -15015,7 +15013,7 @@
           "provenance_cell": "addendum (request-pipeline)"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:5ed95ea9424ea33fb6c0bfb331936cd1889c266890790c427effb70a978d4f24",
         "source_section": "S-21"
       },
@@ -15089,7 +15087,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -15106,7 +15104,7 @@
           "provenance_cell": "L39140–39195"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:7b0809d43e2ba9666e10e1c5efd0349ef8e6abd56ffcfb54c3687c54ca64e551",
         "source_section": "S-22"
       },
@@ -15190,7 +15188,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -15207,7 +15205,7 @@
           "provenance_cell": "L39196–40762"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:ad80c5ca0d78b1d967f3bb65aa55abf66349147c0cf7b0f13d515f9a3c33296c",
         "source_section": "S-22"
       },
@@ -15278,7 +15276,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§02"
         },
         "frozen_addendum": null,
@@ -15295,7 +15293,7 @@
           "provenance_cell": "L41223–41273"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:2c166cbf918aed35bd7709010ec34961ffe4c17e298753eb0a08412cd6501765",
         "source_section": "S-22"
       },
@@ -15364,7 +15362,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§27"
         },
         "frozen_addendum": null,
@@ -15382,7 +15380,7 @@
           "provenance_cell": "L37793–37812, L42108–42142"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:9bfdce1d8e3c0085179aa0a5070a950fd0478710a33f956b03048dcb81bf1218",
         "source_section": "S-23"
       },
@@ -15469,7 +15467,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§27"
         },
         "frozen_addendum": null,
@@ -15487,7 +15485,7 @@
           "provenance_cell": "L40763–41100, L42165–42190"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:b3fb2c043c1ea0e73341176d7382330023e59d612ed28059ac1c4ac51b5c604e",
         "source_section": "S-23"
       },
@@ -15566,7 +15564,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§27"
         },
         "frozen_addendum": null,
@@ -15583,7 +15581,7 @@
           "provenance_cell": "L41155–41195"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:62cca16e8eba92d0d10e1c890a4e2fc60ea15270087a5d4feb05f5002bf11107",
         "source_section": "S-23"
       },
@@ -15649,7 +15647,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§27"
         },
         "frozen_addendum": null,
@@ -15666,7 +15664,7 @@
           "provenance_cell": "L41091–41112"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:997cd4b805914d88da833fa2ba03f029c14d564fdc63e608aa0046a6bdd36feb",
         "source_section": "S-23"
       },
@@ -15726,7 +15724,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§27"
         },
         "frozen_addendum": null,
@@ -15743,7 +15741,7 @@
           "provenance_cell": "L41124–41142"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:3b43326138bcd922ff942fec1e7eebe73095f6fe8a2e0eb476ab3f583f6c1304",
         "source_section": "S-23"
       },
@@ -15807,7 +15805,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§28"
         },
         "frozen_addendum": null,
@@ -15825,7 +15823,7 @@
           "provenance_cell": "L38913–38917, L42191–42265"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:8ed95f565f38fa809e34f6df22327bf5fb74ece9963f31f8084153629d4361fe",
         "source_section": "S-24"
       },
@@ -15922,7 +15920,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§28"
         },
         "frozen_addendum": null,
@@ -15940,7 +15938,7 @@
           "provenance_cell": "L38858–38890, L42144–42188"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:162fd04d6a8293b899fff5854905c596e0283cfb1310aa9559bf1c47a073fbc9",
         "source_section": "S-24"
       },
@@ -16007,7 +16005,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§28"
         },
         "frozen_addendum": null,
@@ -16024,7 +16022,7 @@
           "provenance_cell": "L38808–38846"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:1b673c7c9003747f05834fd448a1db8f2b7f1d993fbe3dae423022b709ed9e04",
         "source_section": "S-24"
       },
@@ -16088,7 +16086,7 @@
       "provenance": {
         "canonical_home": {
           "document": "final/01-canonical-specification.md",
-          "document_hash": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+          "document_hash": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
           "section": "§28"
         },
         "frozen_addendum": null,
@@ -16105,7 +16103,7 @@
           "provenance_cell": "L38921–38928"
         },
         "source_document": "spec/01-canonical-specification.md",
-        "source_document_hash": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+        "source_document_hash": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
         "source_hash": "sha256:1d2a63981cb54b28e88bf11db188e08d998623414dec39837cdf35b4bb0b1167",
         "source_section": "S-24"
       },
@@ -16137,13 +16135,13 @@
   "sources": {
     "Red-on-Rust.md": "sha256:2aeb9940665f6ef27bbba9895889e93b8be8c1ba9f5ff0558f2b95fee07a25eb",
     "dep/10-graph.json": "sha256:e7b3bae20bd724cb36160353671c8e13614b38713fb820355a77f35b6039920e",
-    "final/01-canonical-specification.md": "sha256:a1b7e947b5e12724e8b56843a03383941dd6e5a351e9df9905850c5c85accac5",
+    "final/01-canonical-specification.md": "sha256:78c75df6625265532e8c2582369287d52c1dfd089726d0444e33e46b58140676",
     "final/03-requirement-registry.md": "sha256:294ca0efcfd27555958737c4ed117dd6ee816a4f8944c160dbecb2250ca5a9e3",
-    "final/05-global-invariant-registry.md": "sha256:4161cf378053dedbb370feb42eb4424220345455066006437c701278c47136b8",
+    "final/05-global-invariant-registry.md": "sha256:8ffdba0bd48f34fa0d56d81a7f5ca558c17e23cb0b35b0216dfd1e9c01d704e1",
     "req/registry.json": "sha256:3d8ab27dce34bd4b711c556cbecea302e70e66f43b39831622d499024bb3e134",
-    "spec/01-canonical-specification.md": "sha256:600180355ef5741011a5eb2076fcc5263c211e7198b024e8964121e9711bfaa2",
+    "spec/01-canonical-specification.md": "sha256:9ff200d6424918ef872889388f2f941efc17646143861ab872c91f9fbe540e12",
     "spec/03-obligation-matrix.md": "sha256:ba5ac1c952b69b1cbbc3429a5dd4522293e496d6a10646e22527e7a7c97d8633",
-    "spec/10-index.json": "sha256:4d2ffd4d4129725834caf8ca92c1a3b8b6a534315d4b2e2ae8306f637ae5ff88"
+    "spec/10-index.json": "sha256:ae7a9f10b6d558e52ddbbbf0b445de07ac2b69deb0a399a7e779538987f62ac6"
   },
   "status_ladder": [
     "SPECIFIED",

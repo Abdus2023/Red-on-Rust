@@ -198,7 +198,7 @@ Owning module: **MOD-02**.
     - `safe plan`
 - **PROTECTED (do not rename):**
     - `ValidatedPlan` — frozen Rust type name AND a frozen mathematical predicate symbol — see X-01; neither use may be renamed
-    - `ValidatedPlan(P)` — the first conjunct of the central external-effect theorem (L27494, L41338); a predicate over the plan P
+    - `ValidatedPlan(P)` — a predicate over the plan P. AMENDED 2026-09-03 (R-CORE-11 + V-05 repair): it is no longer the first conjunct of the central external-effect theorem — R-CORE-11 freezes `ValidatedRequest(E)` as the first conjunct, with `ValidatedRequest(E) ⇒ ValidatedPlan(plan(E))`; the earlier description ("the first conjunct … L27494, L41338") is preserved here as the record of the source's own form at those lines, which remains frozen historical text
     - `ir` — frozen field name
     - `effects` — frozen field name
     - `P_valid` — the turn-[3] judgment's symbol for this stage

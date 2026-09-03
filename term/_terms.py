@@ -386,8 +386,15 @@ TERMS: list[Term] = [
         protected=[
             ("ValidatedPlan", "frozen Rust type name AND a frozen mathematical "
                               "predicate symbol — see X-01; neither use may be renamed"),
-            ("ValidatedPlan(P)", "the first conjunct of the central external-effect "
-                                 "theorem (L27494, L41338); a predicate over the plan P"),
+            ("ValidatedPlan(P)", "a predicate over the plan P. AMENDED 2026-09-03 "
+                                 "(R-CORE-11 + V-05 repair): it is no longer the first "
+                                 "conjunct of the central external-effect theorem — "
+                                 "R-CORE-11 freezes `ValidatedRequest(E)` as the first "
+                                 "conjunct, with `ValidatedRequest(E) ⇒ "
+                                 "ValidatedPlan(plan(E))`; the earlier description "
+                                 "(\"the first conjunct … L27494, L41338\") is preserved "
+                                 "here as the record of the source's own form at those "
+                                 "lines, which remains frozen historical text"),
             ("ir", "frozen field name"),
             ("effects", "frozen field name"),
             ("P_valid", "the turn-[3] judgment's symbol for this stage"),
@@ -4270,7 +4277,15 @@ COLLISIONS: list[Collision] = [
       "R-CORE-02, README) already adopts `ValidatedPlan(P)` per latest-frozen-text; this "
       "entry records that the earlier form exists, that its argument type differs, and "
       "that no supersession note covers the change. `ValidatedRequest` is NOT forbidden "
-      "(it is frozen source text) but is NOT canonical prose.",
+      "(it is frozen source text) but is NOT canonical prose. AMENDED 2026-09-03: the "
+      "preceding sentences described the pre-addendum state and are preserved as the "
+      "record of it. The frozen addendum R-CORE-11 (SEC-016 remediation) establishes "
+      "`ValidatedRequest(E)` as the canonical first predicate with the subsumption "
+      "`ValidatedRequest(E) ⇒ ValidatedPlan(plan(E))`; `ValidatedPlan(P)` remains a "
+      "frozen predicate symbol (subsumed, via plan(E)) and the struct homonym (X-01) is "
+      "unchanged. The canonicalization layer (spec/01 R-CORE-02, spec/00 §4, README) was "
+      "aligned to R-CORE-11 by the V-05 consistency repair (2026-09-03); the frozen "
+      "source lines cited above are unchanged and remain historical evidence.",
       ["T-04", "T-02", "T-16", "T-17"],
       [], "Yes — confirm which conjunct R-CORE-02 states, and whether both properties are "
           "required (they are not equivalent).", True),
@@ -5882,7 +5897,7 @@ COLLISIONS += [
       ["T-65", "T-64", "T-68"],
       ["C-09", "AMB-24"], "", True,
       [("README.md", 12, "Implementation:     IN PROGRESS", "the README's first status block"),
-       ("README.md", 815, "Implementation     READY", "the README's last status block")]),
+       ("README.md", 819, "Implementation     READY", "the README's last status block")]),
 ]
 
 
@@ -6296,7 +6311,7 @@ COLLISIONS += [
        ("req/03-ambiguous.md", 189, "`README.md` L22–28 vs L656–661",
         "the same defective citations, repeated"),
        ("README.md", 12, "Implementation:     IN PROGRESS", "the real first status block"),
-       ("README.md", 815, "Implementation     READY", "the real last status block")]),
+       ("README.md", 819, "Implementation     READY", "the real last status block")]),
     X(xid="X-64",
       title="`Fault::StalePlan` is used by the frozen source at L28373 but is a variant of none of the seven `Fault` declarations",
       kind="UNDECLARED-VARIANT",
@@ -7110,7 +7125,7 @@ COLLISIONS += [
          "U-30, the decision this finding needs"),
         ("term/00-overview.md", 175, "| `term/_terms.py T-79…T-81, N-28` |",
          "the §6 row recording T-79's creation"),
-        ("README.md", 148, "(`X-01`…`X-87`, of which 4 are BLOCKING)",
+        ("README.md", 152, "(`X-01`…`X-87`, of which 4 are BLOCKING)",
          "the README's collision-register count, updated by this pass"),
       ]),
     X(xid="X-77",

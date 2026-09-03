@@ -379,7 +379,7 @@ def generate_matrix(obl, req_owner):
         A(f"| {did} | {kind} | {' ⇄ '.join(endpoints)} | {canonical} ({O.R_OWNER[canonical]} "
           f"{O.DOMAIN[O.R_OWNER[canonical]]}) | {note} |")
     A("")
-    A("## 4. Verification-obligation tag homes (frozen tag set, `spec/08` §1)")
+    A("## 4. Verification-obligation tag homes (`spec/08` §1 canonical tag set: frozen + post-audit addenda)")
     A("")
     A("Tags are verified *by* the module whose obligations they cover; coverage attribution and")
     A("reporting is MOD-15's (R-TEST-07), CI consumption MOD-17's (R-TEST-10).")
@@ -472,6 +472,22 @@ def main():
 
     matrix = generate_matrix(obl, req_owner)
     index = json.dumps(generate_index(obl, req_owner), indent=2, ensure_ascii=False) + "\n"
+
+    # Completeness gate (repair pass v2, V-04): every spec/08 section-1 tag
+    # (frozen + post-audit addendum tables) must have exactly one verifying
+    # module in TAG_MODULE, and TAG_MODULE must contain nothing else. Before
+    # this gate the nine addendum tags were silently dropped from mod/18
+    # section 4 and mod/19 for four days.
+    tags_map, _mut, _mile = parse_spec08()
+    spec08_tags = set(tags_map)
+    owned_tags = set(O.TAG_MODULE)
+    for t in sorted(spec08_tags - owned_tags):
+        errors.append(f"spec/08 section-1 tag `{t}` has no verifying module in "
+                      f"TAG_MODULE (mod/_ownership.py); assign one or the "
+                      f"ownership register stays incomplete")
+    for t in sorted(owned_tags - spec08_tags):
+        errors.append(f"TAG_MODULE carries `{t}` but spec/08 section 1 does not "
+                      f"index it; remove the stale row")
 
     for path, content in [(MOD / "18-ownership-matrix.md", matrix), (MOD / "19-index.json", index)]:
         if write:

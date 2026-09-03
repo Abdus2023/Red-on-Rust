@@ -21,10 +21,10 @@ Registry IDs are additive compilation-layer IDs (like `T-`/`N-`/`X-`/`D-`/`V-` b
 
 #### GI-SEC-02 — External-effect chain (7 conjuncts)
 
-- **Canonical formula (identification quote; normative home below):** `ExternalEffect(E) ⇒ ValidatedPlan(P) ∧ Authorized(E,κ,t) ∧ CapabilityWithinCeiling(E) ∧ BudgetAvailable(E) ∧ DeadlineValid(E,t) ∧ HostPolicyOK(E) ∧ Issued(E)`
+- **Canonical formula (identification quote; normative home below):** `ExternalEffect(E) ⇒ ValidatedRequest(E) ∧ Authorized(E,κ,t) ∧ CapabilityWithinCeiling(E) ∧ BudgetAvailable(E) ∧ DeadlineValid(E,t) ∧ HostPolicyOK(E) ∧ Issued(E)`
 - **Definitional home (single canonical definition):** `R-CORE-02` (FINAL1 §02)
 - **Cross-references (reference-by-ID; no restatement):** `R-CORE-11`, `R-EFFECT-01`, `R-EFFECT-03`, `R-CORE-14`, `R-DUR-02`, `R-TEST-09`
-- **Variables:** `E` — effect; `P = plan(E)`; `κ` — holder capability map; `t` — `LogicalTime`
+- **Variables:** `E` — effect; `plan(E)` — the plan that produced `E`; `κ` — holder capability map; `t` — `LogicalTime`
 - **Domains:** `E` all host-bound effects; predicates per their canonical signatures
 - **Quantification:** invariant over every transition (not a per-phase gate): the chain must hold for every observed `ExternalEffect`
 - **Applicable state/transition context:** request-transition composition, gates 1–16 (`R-EFFECT-01`/`R-CORE-14` ordering)

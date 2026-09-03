@@ -14,6 +14,17 @@
 # and the gate holds it closed. Adding a row must be a reviewed decision.
 #
 # frozen at: 36 warnings (18x D2, 18x D3)
+#
+# AMENDED 2026-09-03, repair pass v2 (V-05): +D2 R-CORE-02 -> 37 warnings
+#   (19x D2, 18x D3). The authorized semantic correction realigned
+#   R-CORE-02's first conjunct to R-CORE-11's canonical signature
+#   (ValidatedRequest(E), subsumption ValidatedRequest(E) =>
+#   ValidatedPlan(plan(E)) preserved) and added the amendment note; the
+#   body-vs-cited-source-lines score moved 0.25+ -> 0.23. Reviewed
+#   decision: the divergence is the correction itself, not a new
+#   transcription defect; the 16-step effect sequence and all other
+#   bodies are untouched. Recorded in state/dispositions.json (DISP-05)
+#   and the v2 final report. Do not remove this row without re-adjudication.
 
 D2 R-ACTOR-03
 D2 R-ARCH-04
@@ -23,6 +34,7 @@ D2 R-CANON-04
 D2 R-CEK-02
 D2 R-CEK-04
 D2 R-COMPILE-02
+D2 R-CORE-02
 D2 R-CORE-05
 D2 R-CORE-06
 D2 R-EFFECT-01

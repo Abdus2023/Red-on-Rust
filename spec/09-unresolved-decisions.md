@@ -2,7 +2,7 @@
 
 Per the frozen rule (R-SCOPE-03): *"If implementation difficulty exposes an ambiguity, STOP and report it. Do not resolve semantic ambiguity by inventing behavior."* Each item below is a point where the frozen source text is genuinely under-determined or self-contradictory **after** all internal supersessions were applied. Each requires an explicit specification decision (a new frozen addendum) before the affected component may be implemented. **None of these may be "solved" by a test adjustment or an implementation choice** (R-TEST-09).
 
-Status: all **OPEN**. Owner: specification authority (the party who can issue a frozen addendum).
+**Register status (current state; derived from this register's own rows and machine-verified on every `check.py` run by `state/_project.py`):** registered **39** · open **28** · resolved **11** · numeric maximum identifier **U-45**. The register's numbering is deliberately non-contiguous — the gaps `U-10…U-12` and `U-18…U-20` are gaps in *numbering*, not missing records; no record may be fabricated for a gap number and no item may be renumbered. Registered-record cardinality (39) and numeric identifier maximum (45) are different facts and must never be conflated. Per-item resolution state is carried in each item's own `Resolved` bullet; the item bodies are historical record (R-SCOPE-03) and are not rewritten by status changes. Owner: specification authority (the party who can issue a frozen addendum).
 
 ---
 

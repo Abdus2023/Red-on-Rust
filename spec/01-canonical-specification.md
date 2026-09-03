@@ -21,7 +21,7 @@
 
 **R-CORE-01 (central external-effect invariant).** The machine MUST enforce the central external-effect invariant: `LLMOutput ∧ UntrustedInput ↛ ExternalEffect`. The central security boundary MUST be the machine; neither the language surface nor the model generating the program MUST be treated as a security boundary. *(L41320–41335; L27505–27513.)*
 
-**R-CORE-02 (external-effect chain).** An ExternalEffect(E) MUST NOT occur unless the complete validation chain holds invariant: `ExternalEffect(E) ⇒ ValidatedPlan(P) ∧ Authorized(E,κ,t) ∧ CapabilityWithinCeiling(E) ∧ BudgetAvailable(E) ∧ DeadlineValid(E,t) ∧ HostPolicyOK(E) ∧ Issued(E)`.
+**R-CORE-02 (external-effect chain).** An ExternalEffect(E) MUST NOT occur unless the complete validation chain holds invariant: `ExternalEffect(E) ⇒ ValidatedRequest(E) ∧ Authorized(E,κ,t) ∧ CapabilityWithinCeiling(E) ∧ BudgetAvailable(E) ∧ DeadlineValid(E,t) ∧ HostPolicyOK(E) ∧ Issued(E)` — the first conjunct and the predicate signatures are those frozen by R-CORE-11, which establishes `ValidatedRequest(E)` (request-time validation inside the 16 gates) as the canonical first predicate with the subsumption `ValidatedRequest(E) ⇒ ValidatedPlan(plan(E))`; the source's earlier `ValidatedPlan(P)` first-conjunct form is superseded by R-CORE-11 (quoted there, not deleted), and the chain is stated once, over R-CORE-11's exact signatures.
 *(L41337–41351; L27491–27509.)*
 
 **R-CORE-03 (no unauthorized effects).** If an effect E is not authorized, the machine MUST NOT produce an ExternalEffect: `¬Authorized(A,E,t) ⇒ ¬ExternalEffect(E)` (equivalently `¬Authorized ⇒ ¬Request` at the operational level). *(L42056–42064; L7413–7419.)*

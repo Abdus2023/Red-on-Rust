@@ -118,7 +118,7 @@ The architectural thesis: the central negative invariant, the seven-conjunct ext
 
 <!-- FINAL1: R-CORE-01 canonical home; cleaned authority spec/01 S-02; registry row final/03; status SPECIFIED -->
 
-**R-CORE-02 (external-effect chain).** An ExternalEffect(E) MUST NOT occur unless the complete validation chain holds invariant: `ExternalEffect(E) ⇒ ValidatedPlan(P) ∧ Authorized(E,κ,t) ∧ CapabilityWithinCeiling(E) ∧ BudgetAvailable(E) ∧ DeadlineValid(E,t) ∧ HostPolicyOK(E) ∧ Issued(E)`.
+**R-CORE-02 (external-effect chain).** An ExternalEffect(E) MUST NOT occur unless the complete validation chain holds invariant: `ExternalEffect(E) ⇒ ValidatedRequest(E) ∧ Authorized(E,κ,t) ∧ CapabilityWithinCeiling(E) ∧ BudgetAvailable(E) ∧ DeadlineValid(E,t) ∧ HostPolicyOK(E) ∧ Issued(E)` — the first conjunct and the predicate signatures are those frozen by R-CORE-11, which establishes `ValidatedRequest(E)` (request-time validation inside the 16 gates) as the canonical first predicate with the subsumption `ValidatedRequest(E) ⇒ ValidatedPlan(plan(E))`; the source's earlier `ValidatedPlan(P)` first-conjunct form is superseded by R-CORE-11 (quoted there, not deleted), and the chain is stated once, over R-CORE-11's exact signatures.
 *(L41337–41351; L27491–27509.)*
 
 <!-- FINAL1: R-CORE-02 canonical home; cleaned authority spec/01 S-02; registry row final/03; status SPECIFIED -->
@@ -1399,7 +1399,7 @@ The verification registry: every obligation tag, mutation, conformance suite ent
 
 **Canonical verification registry summary.** Full registry: `final/04` (re-emitted verbatim from `spec/08`, the cleaned verification authority).
 
-- Verification-obligation tags (frozen + post-audit + alias): **26**, repository evidence for every one: **NONE** (the suites they mandate do not exist in this repository and are therefore `SPECIFIED`, never `TESTED`).
+- Verification-obligation tags: **25** canonical indexed rows (16 frozen-source + 9 post-audit addenda, derived from spec/08 §1's two tables and gated against `spec/10` by `spec/_build_index.py`); 1 further documented alias — `MARSHAL-CAPABILITY-REJECT` ≙ `MARSHAL-NO-RAW-CAPABILITY` (spec/08 §1 normalization note) — is *not* an indexed tag. Repository evidence for every one: **NONE** (the suites they mandate do not exist in this repository and are therefore `SPECIFIED`, never `TESTED`).
 - Mutation registry: **M001–M042** (42 entries indexed; defined by specification, executed by nothing — no kill rate may be claimed, R-TEST-05/06).
 - Conformance-suite obligations, milestone gates M0–M11, and the claim ladder for every theorem are carried in `final/04`; all states are `SPECIFIED` (repo evidence: none).
 - The crash-injection, differential, property, mutation, exhaustive and stress regimes (§18–§22) are contracts. No row may be read as executed, passing, or verified.
@@ -1466,7 +1466,7 @@ explicit repository-evidence per `spec/00` §2; none exists; none was granted. T
 | SPECIFICATION | this document; `spec/01`; `spec/03`; `req/` registry; frozen source normative text and code sketches | normative as specification text; not implementation evidence |
 | IMPLEMENTATION | none in repository | every obligation SPECIFIED and no higher |
 | TEST | none executed; test *contracts* only (R-TEST-*, vectors, mutation registry M001–M042 defined-not-run) | no absent test may be described as executed |
-| VERIFICATION | structural gates only: `check.py` 13 checkers PASS (repository integrity); audit gates (conservation/crash-consistency/reference-independence/checker-mutations) | a passing repository checker MUST NOT be represented as proof unless that checker is explicitly and sufficiently defined as the proof method — none is; the gates check presence/structure, not machine semantics |
+| VERIFICATION | structural gates only: `check.py` 16 checkers PASS (count derived from the check.py registration; repository integrity); audit gates (conservation/crash-consistency/reference-independence/checker-mutations) | a passing repository checker MUST NOT be represented as proof unless that checker is explicitly and sufficiently defined as the proof method — none is; the gates check presence/structure, not machine semantics |
 | PROOF | none; source proof sketches exist for R-CAP-08 theorems | PROVEN is explicitly NOT claimed (R-CAP-08; R-CLAIM-01: tests are never proof of the entire calculus) |
 
 **Conditional verdicts carried at full limitation strength:**

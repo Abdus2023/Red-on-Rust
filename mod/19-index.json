@@ -424,7 +424,9 @@
         ]
       },
       "verification_tags": [
-        "BUDGET-CONSUMPTION-CONSERVATION"
+        "BUDGET-CONSUMPTION-CONSERVATION",
+        "DURATION-NO-DOUBLE-CHARGE",
+        "TIME-DELTA-ENUMERATED"
       ],
       "mutations_targeted": [
         "M007",
@@ -475,7 +477,8 @@
       "verification_tags": [
         "CEK-CALL-ARGS-LTR",
         "CEK-CALL-ARITY-PRECHECK",
-        "CEK-CLOSURE-LEXICAL-CAPTURE"
+        "CEK-CLOSURE-LEXICAL-CAPTURE",
+        "REQUEST-ARGS-LTR"
       ],
       "mutations_targeted": [
         "M001",
@@ -683,7 +686,9 @@
         ]
       },
       "verification_tags": [
-        "EFFECT-RECEIPT-DIGEST-VALIDATION"
+        "EFFECT-RECEIPT-DIGEST-VALIDATION",
+        "EFFECT-RECEIPT-RESULT-NO-AUTHORITY",
+        "REQUEST-NON-CAP-SHORT-CIRCUIT"
       ],
       "mutations_targeted": [
         "M010",
@@ -897,7 +902,10 @@
       },
       "verification_tags": [
         "BUDGET-ESCROW-CONSERVATION",
+        "BUDGET-ESCROW-DISPOSITION-TOTALITY",
         "EFFECT-ISSUE-DURABLE-BEFORE-HOST",
+        "PERSISTENT-CAPACITY-ACCOUNTING",
+        "RECOVERY-REVOCATION-DURABLE",
         "SNAPSHOT-COMMIT-INTEGRITY",
         "WAL-GAP-REJECT",
         "WAL-SEQUENCE-CONTINUITY"
@@ -978,6 +986,7 @@
         ]
       },
       "verification_tags": [
+        "QUIESCENCE-RECONCILES-PENDING",
         "RECOVERY-ISSUED-INDETERMINATE"
       ],
       "mutations_targeted": [],

@@ -309,9 +309,9 @@ GI_ROWS = [
            "level and the frozen addenda remediated at the normative layer — the "
            "guarantee stands as specified, unproven (no implementation)."),
  dict(id="GI-SEC-02", family="SEC", name="External-effect chain (7 conjuncts)",
-      formula="`ExternalEffect(E) ⇒ ValidatedPlan(P) ∧ Authorized(E,κ,t) ∧ CapabilityWithinCeiling(E) ∧ BudgetAvailable(E) ∧ DeadlineValid(E,t) ∧ HostPolicyOK(E) ∧ Issued(E)`",
+      formula="`ExternalEffect(E) ⇒ ValidatedRequest(E) ∧ Authorized(E,κ,t) ∧ CapabilityWithinCeiling(E) ∧ BudgetAvailable(E) ∧ DeadlineValid(E,t) ∧ HostPolicyOK(E) ∧ Issued(E)`",
       home="R-CORE-02", xrefs=["R-CORE-11", "R-EFFECT-01", "R-EFFECT-03", "R-CORE-14", "R-DUR-02", "R-TEST-09"],
-      vars="`E` — effect; `P = plan(E)`; `κ` — holder capability map; `t` — `LogicalTime`",
+      vars="`E` — effect; `plan(E)` — the plan that produced `E`; `κ` — holder capability map; `t` — `LogicalTime`",
       dom="`E` all host-bound effects; predicates per their canonical signatures",
       quant="invariant over every transition (not a per-phase gate): the chain must hold for every observed `ExternalEffect`",
       ctx="request-transition composition, gates 1–16 (`R-EFFECT-01`/`R-CORE-14` ordering)",
@@ -843,7 +843,7 @@ ARTIFACT_CLASS_ROWS = [
  ("IMPLEMENTATION", "none in repository", "every obligation SPECIFIED and no higher"),
  ("TEST", "none executed; test *contracts* only (R-TEST-*, vectors, mutation registry M001–M042 defined-not-run)",
   "no absent test may be described as executed"),
- ("VERIFICATION", "structural gates only: `check.py` 13 checkers PASS (repository integrity); audit gates (conservation/crash-consistency/reference-independence/checker-mutations)",
+ ("VERIFICATION", "structural gates only: `check.py` {N_CHECKERS} checkers PASS (count derived from the check.py registration; repository integrity); audit gates (conservation/crash-consistency/reference-independence/checker-mutations)",
   "a passing repository checker MUST NOT be represented as proof unless that checker is explicitly and sufficiently defined as the proof method — none is; the gates check presence/structure, not machine semantics"),
  ("PROOF", "none; source proof sketches exist for R-CAP-08 theorems", "PROVEN is explicitly NOT claimed (R-CAP-08; R-CLAIM-01: tests are never proof of the entire calculus)"),
 ]
@@ -920,7 +920,7 @@ STALENESS_RECORDS = [
 NOT_UPGRADED = [
  ("REF1-CONDITIONAL", "→ REF1-PASS", "prohibited by the REF1 audit itself and V1 F-INFL-02; no new evidence exists"),
  ("V1-CONDITIONAL", "→ V1-PASS", "the audit lists material non-blocking gaps as precisely the reason for CONDITIONAL; nothing in the inputs closes them"),
- ("`python3 check.py` ALL PASS (13 checkers)", "→ semantic VERIFIED for any R-…", "the checkers are structural gates over registers; none is defined as a proof method (R-CLAIM-01; spec/07 §1; V1 F-INFL-01)"),
+ ("`python3 check.py` ALL PASS ({N_CHECKERS} checkers)", "→ semantic VERIFIED for any R-…", "the checkers are structural gates over registers; none is defined as a proof method (R-CLAIM-01; spec/07 §1; V1 F-INFL-01)"),
  ("`audit/_conservation_checker.py` PASS", "→ R-CORE-05/R-BUDGET-05 VERIFIED or PROVEN", "it validates the *rules and harness contract* over Op-01…Op-22, not an executing machine; the addendum text itself cites it as gate evidence for a rule shape, not as machine evidence"),
  ("persistence audit “satisfies the requested crash-consistency property”", "→ R-RECOV-* VERIFIED", "conditional on the addenda being normative and at specification level only; carried as audit verdict, statuses unchanged"),
  ("request-pipeline audit “realizable through R-DUR-01/R-CORE-06/PanicHost/R-TRUST-05”", "→ provable/VERIFIED", "the audit's own verdict line was “not provable as frozen on four counts”; addendum VII froze remediations (specification changes), not verification evidence"),

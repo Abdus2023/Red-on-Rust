@@ -308,6 +308,22 @@ TAG_MODULE = {
     "WAL-GAP-REJECT": "MOD-11",
     "RECOVERY-ISSUED-INDETERMINATE": "MOD-12",
     "SNAPSHOT-COMMIT-INTEGRITY": "MOD-11",
+    # Post-audit addendum tags (spec/08 section 1 rows sourced from the
+    # frozen addenda VII-IX). Assigned 2026-09-03 by repair pass v2 (V-04):
+    # this register predated the addenda and silently dropped their tags from
+    # mod/18 section 4 and mod/19; the assignment follows the frozen rows'
+    # rule (module that verifies the obligation), with the deciding rationale
+    # per row. mod/_build.py now fails the build if TAG_MODULE and the
+    # spec/08 section-1 tables ever diverge again.
+    "REQUEST-ARGS-LTR": "MOD-05",               # request-frame LTR; CEK-CALL-ARGS-LTR family; R-TEST-12 xref says MOD-05
+    "REQUEST-NON-CAP-SHORT-CIRCUIT": "MOD-08",  # effect-gate short-circuit before capability application; R-TEST-12 xref says MOD-08
+    "EFFECT-RECEIPT-RESULT-NO-AUTHORITY": "MOD-08",  # receipt-result confers no authority (R-EFFECT-08); receipt family
+    "BUDGET-ESCROW-DISPOSITION-TOTALITY": "MOD-11",  # disposition records live on the durable journal; escrow family (R-BUDGET-09/11)
+    "PERSISTENT-CAPACITY-ACCOUNTING": "MOD-11",  # persistent capability accounting reconciles against the journal (R-BUDGET-13/R-PERSIST-04)
+    "TIME-DELTA-ENUMERATED": "MOD-04",          # enumerated delta_t table is consumption arithmetic (addendum IX)
+    "DURATION-NO-DOUBLE-CHARGE": "MOD-04",      # budget no-double-charge (R-BUDGET-15; M042)
+    "QUIESCENCE-RECONCILES-PENDING": "MOD-12",  # quiescence reconciliation scan is the recovery governor's (R-RECOV-08)
+    "RECOVERY-REVOCATION-DURABLE": "MOD-11",    # revocation durability is a persistence obligation (R-PERSIST-07)
 }
 
 # Milestone gate M0..M11 -> modules whose evidence gates it binds (mod/00).

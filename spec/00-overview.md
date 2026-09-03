@@ -30,7 +30,7 @@ This document set splits the source into stable, independently addressable secti
 
 Promotion is strictly evidence-gated: `SPECIFIED → IMPLEMENTED → TESTED → VERIFIED → PROVEN`. A specification requirement never confers `IMPLEMENTED` or higher.
 
-**Current repository state:** this repository contains **no implementation, no tests, and no proof artifacts** — only `README.md`, `Red-on-Rust.md`, and this `spec/` document set. Therefore **every obligation in this specification is at status `SPECIFIED` and no higher**. The README's "Implementation: IN PROGRESS / READY" wording is an orientation claim, not repository evidence, and is not treated as such here (see `C-09`).
+**Current repository state:** this repository contains **no implementation, no tests, and no proof artifacts**. Its contents are specification and governance only: the frozen source (`Red-on-Rust.md`); this `spec/` register set; the terminology registers (`term/`); the obligation ownership and dependency registers (`mod/`, `dep/`); the atomic and compiled requirement registries (`req/`, `reg/`); the immutable historical audit snapshots (`audit/`); the derived canonical projections (`final/`); the disposition registry and repository-state projection (`state/`); and the single consistency-gate entrypoint (`check.py`). No Rust code, crate or workspace exists. Therefore **every obligation in this specification is at status `SPECIFIED` and no higher**. The README's "Implementation: IN PROGRESS / READY" wording is an orientation claim, not repository evidence, and is not treated as such here (see `C-09`). A `check.py` PASS is repository-integrity evidence only, never semantic verification of any obligation.
 
 ## 3. Identifier scheme
 
@@ -43,7 +43,7 @@ Promotion is strictly evidence-gated: `SPECIFIED → IMPLEMENTED → TESTED → 
 | `M-NN` | Milestone (M0…M11, as defined in source) | `02` (S-23), `08` §4 |
 | `TAG-NAME` | Source's own verification-obligation tags (e.g., `CEK-CALL-ARITY-PRECHECK`) | `08-verification-mapping.md` |
 | `ROR-NNN` | Source's first-sprint task IDs (ROR-001…) | `07-implementation-mapping.md` |
-| `M0NN` | Mutation-registry IDs (M001…M035; M019…M035 added by frozen addenda I–V) | `08-verification-mapping.md` |
+| `M0NN` | Mutation-registry IDs (M001…M042: M001–M018 baseline; M019…M035 added by frozen addenda I–V; M036 the U-38 gate adoption; M037–M042 added by addenda VII–IX) | `08-verification-mapping.md` |
 | `T-NN` | Canonical terminology entry (T-01…T-86) | `../term/01-dictionary.md` |
 | `N-NN` | Non-conflation law: two terms that must never be used for each other (N-01…N-33) | `../term/03-laws.md` |
 | `X-NN` | Terminology collision, cited to a frozen-source line (X-01…X-87) | `../term/02-collisions.md` |
@@ -61,7 +61,7 @@ LLMOutput ∧ UntrustedInput ↛ ExternalEffect
 **External-effect chain.** An external effect requires the complete chain of validation, authority, resource, policy, durability, and issuance checks:
 
 ```
-ExternalEffect(E) ⇒ ValidatedPlan(P)
+ExternalEffect(E) ⇒ ValidatedRequest(E)
                   ∧ Authorized(E, κ, t)
                   ∧ CapabilityWithinCeiling(E)
                   ∧ BudgetAvailable(E)
@@ -70,7 +70,7 @@ ExternalEffect(E) ⇒ ValidatedPlan(P)
                   ∧ Issued(E)
 ```
 
-(Provenance: `Red-on-Rust.md` L27485–27517 (turn [33] §23), restated in `README.md` "Core Thesis" and turn [60].)
+(Provenance: `Red-on-Rust.md` L27485–27517 (turn [33] §23), restated in `README.md` "Core Thesis" and turn [60]. First conjunct per the frozen addendum R-CORE-11 — `ValidatedRequest(E)` is the canonical first predicate and subsumes `ValidatedPlan(plan(E))`; the source's `ValidatedPlan(P)` first conjunct at those lines is superseded by R-CORE-11, quoted not deleted.)
 
 ## 5. How to use this document set
 

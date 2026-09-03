@@ -398,7 +398,7 @@
     },
     {
      "name": "ValidatedPlan(P)",
-     "why": "the first conjunct of the central external-effect theorem (L27494, L41338); a predicate over the plan P"
+     "why": "a predicate over the plan P. AMENDED 2026-09-03 (R-CORE-11 + V-05 repair): it is no longer the first conjunct of the central external-effect theorem — R-CORE-11 freezes `ValidatedRequest(E)` as the first conjunct, with `ValidatedRequest(E) ⇒ ValidatedPlan(plan(E))`; the earlier description (\"the first conjunct … L27494, L41338\") is preserved here as the record of the source's own form at those lines, which remains frozen historical text"
     },
     {
      "name": "ir",
@@ -8274,7 +8274,7 @@
    "decision_needed": "Yes — confirm which conjunct R-CORE-02 states, and whether both properties are required (they are not equivalent).",
    "statement": "The single most important formula in the specification — `ExternalEffect(E) ⇒ …` — exists in two forms that differ in their FIRST conjunct, and the difference is not cosmetic: `ValidatedRequest(E)` is a predicate about the request being validated (argument: an `Effect`), while `ValidatedPlan(P)` is a predicate about the plan being validated (argument: a plan). `ValidatedRequest` occurs nowhere else in 42,312 lines.",
    "why_it_matters": "The two readings impose different obligations. 'The request was validated' is a runtime, per-effect property (gates 1-13 of the 16-step sequence). 'The plan was validated' is a compile-time, per-plan property (R-COMPILE-01..05). An implementation satisfying only one would claim conformance with R-CORE-02 while leaving the other half unchecked.",
-   "disposition": "Both forms are recorded verbatim. The canonicalization layer (spec/00 §4, spec/01 R-CORE-02, README) already adopts `ValidatedPlan(P)` per latest-frozen-text; this entry records that the earlier form exists, that its argument type differs, and that no supersession note covers the change. `ValidatedRequest` is NOT forbidden (it is frozen source text) but is NOT canonical prose.",
+   "disposition": "Both forms are recorded verbatim. The canonicalization layer (spec/00 §4, spec/01 R-CORE-02, README) already adopts `ValidatedPlan(P)` per latest-frozen-text; this entry records that the earlier form exists, that its argument type differs, and that no supersession note covers the change. `ValidatedRequest` is NOT forbidden (it is frozen source text) but is NOT canonical prose. AMENDED 2026-09-03: the preceding sentences described the pre-addendum state and are preserved as the record of it. The frozen addendum R-CORE-11 (SEC-016 remediation) establishes `ValidatedRequest(E)` as the canonical first predicate with the subsumption `ValidatedRequest(E) ⇒ ValidatedPlan(plan(E))`; `ValidatedPlan(P)` remains a frozen predicate symbol (subsumed, via plan(E)) and the struct homonym (X-01) is unchanged. The canonicalization layer (spec/01 R-CORE-02, spec/00 §4, README) was aligned to R-CORE-11 by the V-05 consistency repair (2026-09-03); the frozen source lines cited above are unchanged and remain historical evidence.",
    "sites": [
     {
      "file": "Red-on-Rust.md",
@@ -11358,7 +11358,7 @@
     },
     {
      "file": "README.md",
-     "line": 815,
+     "line": 819,
      "text": "Implementation     READY",
      "note": "the README's last status block"
     }
@@ -12110,7 +12110,7 @@
     },
     {
      "file": "README.md",
-     "line": 815,
+     "line": 819,
      "text": "Implementation     READY",
      "note": "the real last status block"
     }
@@ -13629,7 +13629,7 @@
     },
     {
      "file": "README.md",
-     "line": 148,
+     "line": 152,
      "text": "(`X-01`…`X-87`, of which 4 are BLOCKING)",
      "note": "the README's collision-register count, updated by this pass"
     }

@@ -371,7 +371,7 @@ No normative text exists in two owner's modules unmarked (rule 4, `mod/00-overvi
 | D-11 | distribution | R-ARCH-03 ⇄ R-COMPILE-01 ⇄ R-COMPILE-05 | R-COMPILE-01 (MOD-02 COMPILER) | Block has no path into step(): architectural statement vs compiler constructor privacy; compiler statement is canonical. |
 | D-12 | refinement | R-CORE-02 ⇄ R-EFFECT-03 | R-EFFECT-03 (MOD-08 EFFECT) | 7-conjunct external-effect chain vs frozen 16-step request sequence (conjuncts realized by gates 5..16); the sequence is canonical. |
 
-## 4. Verification-obligation tag homes (frozen tag set, `spec/08` §1)
+## 4. Verification-obligation tag homes (`spec/08` §1 canonical tag set: frozen + post-audit addenda)
 
 Tags are verified *by* the module whose obligations they cover; coverage attribution and
 reporting is MOD-15's (R-TEST-07), CI consumption MOD-17's (R-TEST-10).
@@ -380,18 +380,27 @@ reporting is MOD-15's (R-TEST-07), CI consumption MOD-17's (R-TEST-10).
 |---|---|---|
 | `BUDGET-CONSUMPTION-CONSERVATION` | MOD-04 BUDGET | R-BUDGET-05, R-CORE-05 |
 | `BUDGET-ESCROW-CONSERVATION` | MOD-11 PERSISTENCE | R-EFFECT-05, R-DUR-05 |
+| `BUDGET-ESCROW-DISPOSITION-TOTALITY` | MOD-11 PERSISTENCE | R-BUDGET-09, R-BUDGET-11 (addendum VIII), R-EFFECT-05 |
 | `CAP-DERIVE-NO-AMPLIFICATION` | MOD-03 CAPABILITY | R-CAP-05, R-CORE-04 |
 | `CAP-REVOCATION-ANCESTOR` | MOD-03 CAPABILITY | R-CAP-07 |
 | `CEK-CALL-ARGS-LTR` | MOD-05 EVALUATOR | R-CEK-05 |
 | `CEK-CALL-ARITY-PRECHECK` | MOD-05 EVALUATOR | R-CEK-05 |
 | `CEK-CLOSURE-LEXICAL-CAPTURE` | MOD-05 EVALUATOR | R-CEK-03, R-CEK-04 |
+| `DURATION-NO-DOUBLE-CHARGE` | MOD-04 BUDGET | R-BUDGET-15 (addendum IX), R-BUDGET-01 |
 | `EFFECT-ISSUE-DURABLE-BEFORE-HOST` | MOD-11 PERSISTENCE | R-DUR-01, R-CORE-06 |
 | `EFFECT-RECEIPT-DIGEST-VALIDATION` | MOD-08 EFFECT | R-EFFECT-06 |
+| `EFFECT-RECEIPT-RESULT-NO-AUTHORITY` | MOD-08 EFFECT | R-EFFECT-08 (post-audit addendum) |
 | `MARSHAL-NO-RAW-CAPABILITY` | MOD-06 ACTOR | R-MARSHAL-01, R-CORE-07 |
+| `PERSISTENT-CAPACITY-ACCOUNTING` | MOD-11 PERSISTENCE | R-BUDGET-13 (addendum VIII), R-PERSIST-04 |
+| `QUIESCENCE-RECONCILES-PENDING` | MOD-12 RECOVERY | R-BUDGET-16 (addendum IX), R-BUDGET-09, R-RECOV-08 |
 | `RECOVERY-ISSUED-INDETERMINATE` | MOD-12 RECOVERY | R-DUR-04, R-RECOV-02 |
+| `RECOVERY-REVOCATION-DURABLE` | MOD-11 PERSISTENCE | R-PERSIST-07 (post-audit addendum) |
+| `REQUEST-ARGS-LTR` | MOD-05 EVALUATOR | R-TEST-12 (addendum VII), R-EFFECT-01 |
+| `REQUEST-NON-CAP-SHORT-CIRCUIT` | MOD-08 EFFECT | R-TEST-12 (addendum VII), R-EFFECT-04 |
 | `SCHED-BLOCKED-NOT-SCHEDULED` | MOD-07 SCHEDULER | R-ACTOR-04 |
 | `SCHED-FIFO` | MOD-07 SCHEDULER | R-ACTOR-04 |
 | `SNAPSHOT-COMMIT-INTEGRITY` | MOD-11 PERSISTENCE | R-PERSIST-05 |
+| `TIME-DELTA-ENUMERATED` | MOD-04 BUDGET | R-BUDGET-16 (addendum IX), R-BUDGET-06 |
 | `WAL-GAP-REJECT` | MOD-11 PERSISTENCE | R-PERSIST-06 |
 | `WAL-SEQUENCE-CONTINUITY` | MOD-11 PERSISTENCE | R-PERSIST-06 |
 

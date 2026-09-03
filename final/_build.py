@@ -108,6 +108,57 @@ def tok(pat: str, *texts: str) -> list[str]:
     return out
 
 
+def checker_inventory(check_py_text: str) -> tuple[list[str], list[str]]:
+    """Mechanically derive the checker inventory from check.py's registration
+    (ast literal extraction of CHECKERS / NON_CHECKERS -- no execution).
+
+    This is the single authority for every checker-count projection FINAL1
+    renders. The 13-checkers narrative this replaces was hand-written when
+    check.py carried 13 registrations and drifted silently as the inventory
+    grew; deriving it makes that drift structurally impossible here (and
+    `state/_project.py` re-derives the same facts independently and compares).
+    """
+    import ast as _ast
+    tree = _ast.parse(check_py_text)
+    out: dict[str, object] = {}
+    for node in tree.body:
+        targets, value = [], None
+        if isinstance(node, _ast.Assign):
+            targets, value = node.targets, node.value
+        elif isinstance(node, _ast.AnnAssign) and node.value is not None:
+            targets, value = [node.target], node.value
+        else:
+            continue
+        for t in targets:
+            if isinstance(t, _ast.Name) and t.id in ("CHECKERS", "NON_CHECKERS"):
+                vals = []
+                if isinstance(value, _ast.Dict):
+                    vals = [_ast.literal_eval(k) for k in value.keys]
+                elif isinstance(value, _ast.List):
+                    for el in value.elts:
+                        if isinstance(el, _ast.Tuple) and el.elts:
+                            vals.append(_ast.literal_eval(el.elts[0]))
+                        elif isinstance(el, _ast.Constant):
+                            vals.append(el.value)
+                out[t.id] = vals
+    checkers = out.get("CHECKERS")
+    non_checkers = out.get("NON_CHECKERS")
+    if not isinstance(checkers, list) or not isinstance(non_checkers, list):
+        raise SystemExit("final/_build.py: could not derive CHECKERS/NON_CHECKERS "
+                         "from check.py (registration parse failed)")
+    return checkers, non_checkers
+
+
+def spec08_tag_tables(spec08_text: str) -> tuple[list[str], list[str]]:
+    """Tag names from spec/08 §1's frozen table and post-audit table (the
+    verification authority), derived -- not counted by hand."""
+    sec1 = spec08_text.split("## 1. Source verification-obligation tags", 1)[1] \
+              .split("## 2.", 1)[0]
+    frozen_part, _, addendum_part = sec1.partition("**Post-audit addendum tags**")
+    pat = re.compile(r"^\| `([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+)` \|", re.M)
+    return pat.findall(frozen_part), pat.findall(addendum_part)
+
+
 # ---------------------------------------------------------------------------
 # source data
 # ---------------------------------------------------------------------------
@@ -158,6 +209,14 @@ class Src:
         self.reqids = {r["REQ-ID"] for r in self.registry["records"]}
         self.mutants = set(re.findall(r"^\| (M0\d\d) \|", self.spec08_raw, re.M))
         self.tags = set(re.findall(r"`([A-Z][A-Z0-9]+(?:-[A-Z0-9]+)+)`", self.spec08_raw))
+        # V-02: checker inventory and tag counts are DERIVED from their
+        # authorities (check.py registration; spec/08 §1 tables), never
+        # hand-written -- the stale "13 structural checkers" narrative was the
+        # hand-written form.
+        self.checkers, self.non_checkers = checker_inventory(self.texts["check.py"])
+        self.n_checkers = len(self.checkers)
+        self.n_non_checkers = len(self.non_checkers)
+        self.spec08_frozen_tags, self.spec08_addendum_tags = spec08_tag_tables(self.spec08_raw)
         self.ref_findings = set(re.findall(r"^### Finding: (F-\d+)$",
                                             self.texts["audit/reference-independence-differential-audit.md"], re.M))
         self.finfl = set(re.findall(r"^\| (F-INFL-\d+) \|", self.texts["audit/v1-evidence-integrity-audit.md"], re.M))
@@ -272,12 +331,19 @@ def render_registry_table(S: Src) -> str:
 
 def render_verif_summary(S: Src) -> str:
     frozen = len(S.spec_idx["verification_tags"])
+    n_frozen08 = len(S.spec08_frozen_tags)
+    n_add08 = len(S.spec08_addendum_tags)
     n_mut = len(S.spec_idx["mutations"])
     return ("\n**Canonical verification registry summary.** Full registry: `final/04` "
             "(re-emitted verbatim from `spec/08`, the cleaned verification authority).\n\n"
-            f"- Verification-obligation tags (frozen + post-audit + alias): **{frozen}**, "
-            "repository evidence for every one: **NONE** (the suites they mandate do not exist in this "
-            "repository and are therefore `SPECIFIED`, never `TESTED`).\n"
+            f"- Verification-obligation tags: **{frozen}** canonical indexed rows "
+            f"({n_frozen08} frozen-source + {n_add08} post-audit addenda, derived from "
+            "spec/08 §1's two tables and gated against `spec/10` by `spec/_build_index.py`); "
+            "1 further documented alias — `MARSHAL-CAPABILITY-REJECT` ≙ "
+            "`MARSHAL-NO-RAW-CAPABILITY` (spec/08 §1 normalization note) — is *not* an "
+            "indexed tag. Repository evidence for every one: **NONE** (the suites they "
+            "mandate do not exist in this repository and are therefore `SPECIFIED`, "
+            "never `TESTED`).\n"
             f"- Mutation registry: **M001–M{max(int(m[1:]) for m in S.mutants):03d}** ({n_mut} entries "
             "indexed; defined by specification, executed by nothing — no kill rate may be claimed, "
             "R-TEST-05/06).\n"
@@ -293,6 +359,7 @@ def render_evidence_model(S: Src) -> str:
     ladder = ladder_table(S)
     rows = []
     for a, b, c2 in C.ARTIFACT_CLASS_ROWS:
+        a, b, c2 = (x.replace("{N_CHECKERS}", str(S.n_checkers)) for x in (a, b, c2))
         rows.append(f"| {a} | {b} | {c2} |\n")
     cond = []
     for r in C.CONDITIONAL_ROWS:
@@ -664,11 +731,13 @@ def render_final07(S: Src, renderers: dict) -> str:
     # GI-SEC/DET/REC-NN ids must not masquerade as audit-family ids in the SECn/DET scan only:
     scan = re.sub(r"\bGI-(?:SEC|DET|REC)-\d\d\b", "GIxx", corpus)
     # Deliberate never-frozen / withdrawn IDs, each proven in a cleaned source:
-    # R-BUDGET-12 ("no R-BUDGET-12 ID is frozen") and R-BUDGET-14 ("stays deferred") — spec/09 U-01
-    # resolution line; U-10…U-12 / U-18…U-20 are gaps in the register's numbering, and FINAL1's
-    # discipline is that gap numbers are never reused (quoted ranges like `U-10…U-12` name the gap).
-    documented_gaps = {"R": {"R-BUDGET-12", "R-BUDGET-14"},
-                       "U": {"U-10", "U-11", "U-12", "U-18", "U-19", "U-20"}}
+    # R-BUDGET-12 ("no R-BUDGET-12 ID is frozen") and R-BUDGET-14 ("stays deferred") —
+    # spec/09 U-01 resolution line. The U- gap numbers are DERIVED from the
+    # spec/09 register (registered IDs are authoritative; the numeric range is
+    # descriptive only — gap numbers are never reused and never back-filled).
+    u_registered = {int(u["id"][2:]) for u in S.spec09}
+    u_gaps = {"U-%02d" % n for n in range(1, max(u_registered) + 1) if n not in u_registered}
+    documented_gaps = {"R": {"R-BUDGET-12", "R-BUDGET-14"}, "U": u_gaps}
     checks = [
         ("R", r"\bR-[A-Z]+-\d+\b", set(S.rids)),
         ("S", r"\bS-\d\d\b", set(S.spec01)),
@@ -897,7 +966,9 @@ def render_final08(S: Src) -> str:
              "in repository | R-CAP-08: “PROVEN is NOT claimed” |\n")
     o.append("| Canonical injectivity (R-CANON-10) | 1 | **SPECIFIED**, scoped claim | none | round-trip/"
              "differential evidence *expected*, absent |\n")
-    o.append("| Verification tags (spec/08 §1) | 16 frozen + 9 post-audit | required, **none satisfied** | "
+    o.append(f"| Verification tags (spec/08 §1) | {len(S.spec08_frozen_tags)} frozen + "
+             f"{len(S.spec08_addendum_tags)} post-audit (derived from the spec/08 tables; "
+             "1 documented alias, MARSHAL-CAPABILITY-REJECT, not indexed) | required, **none satisfied** | "
              "NONE (every row) | spec/08 evidence rule: tag satisfied only by a passing test artifact |\n")
     o.append(f"| Mutation registry | {len(S.mutants)} (M001–M042) | defined; **executed: none** | no kill "
              "rate claimable | R-TEST-05 100 % gate is an acceptance requirement |\n")
@@ -910,8 +981,12 @@ def render_final08(S: Src) -> str:
     o.append("| Row | Status carried | Meaning / prohibition |\n|---|---|---|\n")
     for r in C.CONDITIONAL_ROWS:
         o.append(f"| {r['name']} | **CONDITIONAL** | {r['rule'].split('. ')[0]}. — full rule in §3. |\n")
-    o.append("| `python3 check.py` | PASS (13 structural checkers; +1 from this compilation on the next "
-             "run: final/_build.py) | repository-integrity evidence only; MUST NOT be represented as "
+    o.append(f"| `python3 check.py` | PASS ({S.n_checkers} structural checkers, "
+             f"{S.n_non_checkers} classified non-checkers; inventory derived from the "
+             "`check.py` registration by `final/_build.py` and independently re-derived "
+             "by `state/_project.py`. Historical inventory counts — 13 at FINAL1 "
+             "compilation, 15 before the V-08 state gate — are retained as history only) "
+             "| repository-integrity evidence only; MUST NOT be represented as "
              "proof/verification of any R-… claim unless a checker is explicitly defined as the proof "
              "method — none is (V1 F-INFL-01) |\n")
     o.append("| README “Implementation: IN PROGRESS / READY” | orientation claim | not repository evidence "
@@ -927,6 +1002,7 @@ def render_final08(S: Src) -> str:
     o.append("## 4. Claims deliberately NOT upgraded by FINAL1 (full list with reasons: `final/10` §6)\n\n")
     o.append("| Candidate upgrade | Blocked because |\n|---|---|\n")
     for what, to, why in C.NOT_UPGRADED:
+        what, to, why = (x.replace("{N_CHECKERS}", str(S.n_checkers)) for x in (what, to, why))
         o.append(f"| {what} → {to} | {why} |\n")
     o.append("\n## 5. Per-area status table (uniformity proof)\n\n")
     o.append("| Area | rows | statuses present |\n|---|---|---|\n")
@@ -1058,6 +1134,7 @@ def render_final10(S: Src) -> str:
     o.append("## 7. Claims deliberately NOT upgraded\n\n")
     o.append("| Claim | Would-be upgrade | Why not |\n|---|---|---|\n")
     for what, to, why in C.NOT_UPGRADED:
+        what, to, why = (x.replace("{N_CHECKERS}", str(S.n_checkers)) for x in (what, to, why))
         o.append(f"| {what} | {to} | {why} |\n")
     o.append("\n## 8. FINAL VALIDATION checklist (results: `final/07`)\n\n")
     o.append("| # | Validation | Result |\n|---|---|---|\n")
@@ -1125,7 +1202,9 @@ def render_final00(S: Src) -> str:
         "| `10-canonicalization-report.md` | 10 | Canonicalization report (merged/normalized/resolved/"
         "preserved/superseded/changed/not-upgraded + validation checklist) |\n\n"
         "**Regenerating:** `python3 final/_build.py --write`; `python3 check.py` runs this generator in "
-        "check mode plus the whole repository battery (13→14 structural gates). **Semantics:** none of "
+        f"check mode plus the whole repository battery ({S.n_checkers} structural gates, "
+        f"{S.n_non_checkers} classified non-checkers — inventory derived from the check.py "
+        "registration; historical counts 13/14/15 are retained as history only). **Semantics:** none of "
         "these files is an implementation, a test, a verification, or a proof; they are specification and "
         "registry artifacts (`final/08` says so per class). **Governance:** where `final/` and `spec/` "
         "differ, `spec/` and the frozen source govern — and the byte-identity gate makes that divergence "

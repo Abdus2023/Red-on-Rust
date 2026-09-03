@@ -70,6 +70,16 @@ CHECKERS = [
     # gates and neither was in the loop.
     ("term/_structs.py", []),
     ("req/_coverage.py", []),
+    # Added by repair pass v2 (V-08): the repository-state gate is the only
+    # checker that reads the check.py registration, the state/ projections,
+    # the disposition registry and the FINAL1/R-REG count projections as one
+    # system, so the mutations K25..K32 below have exactly one possible
+    # killer. Note the harness still does NOT run final/_build.py,
+    # reg/_compile.py, audit/_conservation_checker.py, term/_reanchor.py,
+    # audit/_crash_consistency_checker.py, audit/_reference_independence_
+    # checker.py or state-harness self-mutations; coverage of the state gate
+    # itself is documented as partial in the final report.
+    ("state/_project.py", []),
 ]
 
 
@@ -544,6 +554,82 @@ def m_m036_under_allowlist(root: Path) -> bool:
     return m036_rotate_obligation_body(root)
 
 
+# ---- repair pass v2 (V-08): repository-state gate mutations ---------------
+
+def m_u_count_lie(root: Path) -> bool:
+    """spec/09 header declares 45 registered items; the register has 39."""
+    return _sub_once(root / "spec/09-unresolved-decisions.md",
+                     "registered **39** · open **28** · resolved **11**",
+                     "registered **45** · open **34** · resolved **11**")
+
+
+def m_u_status_flip(root: Path) -> bool:
+    """final/09 section A claims U-05 RESOLVED; spec/09 says OPEN (stale)."""
+    p = root / "final/09-open-architectural-decisions.md"
+    if not p.exists():
+        import glob as _g
+        cands = _g.glob(str(root / "final/09-*.md"))
+        if not cands:
+            return False
+        p = Path(cands[0])
+    return _sub_once(p, "| OPEN (stale) |", "| RESOLVED |")
+
+
+def m_deregister_checker(root: Path) -> bool:
+    """A checker dropped from the check.py registration but not deleted."""
+    return _sub_once(root / "check.py",
+                     '    ("dep/_graph.py",        "dependency edges and cycle checks"),\n',
+                     "")
+
+
+def m_unregistered_executable(root: Path) -> bool:
+    """A new */_*.py executable with no registration anywhere."""
+    p = root / "term/_zzz_probe.py"
+    if p.exists():
+        return False
+    p.write_text("# scratch probe; not a checker, never registered\n"
+                 "# (injected by audit/_checker_mutations.py K28)\n",
+                 encoding="utf-8")
+    return True
+
+
+def m_tag_count_lie(root: Path) -> bool:
+    """reg/06 tag prose disagrees with the spec/10 derivation."""
+    p = root / "reg/06-evidence-coverage-summary.md"
+    if not p.exists():
+        import glob as _g
+        cands = _g.glob(str(root / "reg/06-*.md"))
+        if not cands:
+            return False
+        p = Path(cands[0])
+    return _sub_once(p,
+                     "Verification tags: 25 defined (16 frozen + 9 addendum; "
+                     "1 documented alias not indexed)",
+                     "Verification tags: 26 defined (17 frozen + 9 addendum; "
+                     "1 documented alias not indexed)")
+
+
+def m_predicate_reintroduced(root: Path) -> bool:
+    """The stale ValidatedPlan(P) first conjunct returns in the README box."""
+    return _sub_once(root / "README.md",
+                     r"ExternalEffect(E) \Rightarrow ValidatedRequest(E) \land Authorized",
+                     r"ExternalEffect(E) \Rightarrow ValidatedPlan(P) \land Authorized")
+
+
+def m_protected_snapshot_edit(root: Path) -> bool:
+    """A protected historical audit snapshot edited after the freeze."""
+    return _append(root / "audit/resource-accounting-audit.md",
+                   "\n<!-- appended after the disposition freeze; if you can "
+                   "read this in a green tree, the provenance gate is dead "
+                   "(K31) -->\n")
+
+
+def m_projection_edit(root: Path) -> bool:
+    """The generated repository-state projection hand-edited."""
+    return _sub_once(root / "state/repository-state.json",
+                     '"u_items": 39', '"u_items": 45')
+
+
 MUTATIONS = [
     # NOTE on K01/K02/K03: these were written to exercise the completeness gate
     # in spec/_build_index.py. They do not, and CANNOT. Two separate reasons,
@@ -700,6 +786,65 @@ MUTATIONS = [
              regression_for="M042 / R-BUDGET-15 no-double-charge",
              tags=["normative", "allowlist"],
              extra_checkers=[("spec/_check.py", ["--allowlist"])]),
+
+    # ---- repair pass v2 (V-08): repository-state gate mutations -----------
+    # Each of these has exactly one possible killer among the checkers this
+    # harness runs: state/_project.py. They lock the v2 repair invariants --
+    # U cardinality/range separation, per-row status agreement, checker-
+    # inventory honesty, tag-count derivation, the R-CORE-02 predicate
+    # alignment (V-05), audit-snapshot immutability (V-06) and projection
+    # integrity (V-07).
+    Mutation("K25", "U cardinality inflated to the numeric max (39 -> 45)",
+             "The exact conflation spec/09 forbids: registered-record "
+             "cardinality and numeric identifier maximum are different facts. "
+             "The register rows are untouched, so only the cross-artifact "
+             "gate sees the lie.",
+             m_u_count_lie, regression_for="V-01 register-status declaration",
+             tags=["projection"]),
+    Mutation("K26", "U-status flipped in a FINAL1 projection row only",
+             "U-05's cell flipped OPEN->RESOLVED in final/09 section A while "
+             "spec/09 still says OPEN (stale). Per-row agreement must fail, "
+             "not just the headline counts (and the U-05 staleness itself is "
+             "a preserved record, DISP-06, not a defect to repair).",
+             m_u_status_flip,
+             regression_for="V-07 per-row status agreement", tags=["projection"]),
+    Mutation("K27", "checker de-registered from check.py (16 -> 15)",
+             "A checker silently dropped from the registration while its file "
+             "still exists: the inventory glob re-derives the truth and the "
+             "gate fails. Nobody ran the inventory before v2.",
+             m_deregister_checker,
+             regression_for="V-02 checker-inventory honesty", tags=["inventory"]),
+    Mutation("K28", "unregistered executable appears under term/",
+             "A new */_*.py file with no registration and no classification: "
+             "exactly the drift that let the ReplayHost miscount live for "
+             "four commits.",
+             m_unregistered_executable,
+             regression_for="V-02 checker-inventory honesty", tags=["inventory"]),
+    Mutation("K29", "tag-count lie in the R-REG projection (25 -> 26)",
+             "reg/06 prose disagrees with the spec/10 index derivation; the "
+             "tag partition assert in reg/_compile.py catches it at build "
+             "time and the state gate catches the committed drift.",
+             m_tag_count_lie,
+             regression_for="V-03 canonical tag set", tags=["projection"]),
+    Mutation("K30", "stale predicate reintroduced in the README box (V-05)",
+             "ValidatedPlan(P) put back as the first conjunct of the "
+             "external-effect chain in the README quick-reference box, "
+             "disagreeing with R-CORE-11's canonical signature.",
+             m_predicate_reintroduced,
+             regression_for="V-05 R-CORE-02/R-CORE-11 alignment", tags=["predicate"]),
+    Mutation("K31", "protected historical audit snapshot edited",
+             "A trailing comment appended to the resource-accounting audit. "
+             "The audit is immutable (hash-pinned by state/dispositions.json, "
+             "DISP-04); editing it is a provenance violation until the "
+             "disposition record is deliberately updated by its owner.",
+             m_protected_snapshot_edit,
+             regression_for="V-06 audit immutability", tags=["provenance"]),
+    Mutation("K32", "repository-state projection hand-edited",
+             "u_items 39 -> 45 inside state/repository-state.json: a "
+             "generated artifact edited instead of regenerated (the v2 "
+             "brief's cardinal example of derived-state rot).",
+             m_projection_edit,
+             regression_for="V-07 projection integrity", tags=["projection"]),
 ]
 
 

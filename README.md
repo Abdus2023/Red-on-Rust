@@ -77,9 +77,13 @@ These are review artifacts, not normative text: an audit may file register rows
   (no fault, no rollback, R-EFFECT-04's five assertions unsatisfiable), the durable
   `Prepared`/`Issued` records carry no effect or cost so escrow survival and T1 budget
   restoration have no source of truth, and the step-10 deadline premise is pinned weak
-  against the formal `t + δ_t(req) ≤ W`. This pass issued no addendum — its rows
-  `C-103`…`C-109` and decisions `U-39`…`U-45` are all `open`; its recommendations
-  exist only as a draft (`audit/request-pipeline-remediation-draft.md`, NOT ADOPTED).
+  against the formal `t + δ_t(req) ≤ W`. This pass issued no addendum — at filing
+  (2026-09-03, historical snapshot) its rows `C-103`…`C-109` and decisions
+  `U-39`…`U-45` were all `open`; its recommendations exist only as a draft
+  (`audit/request-pipeline-remediation-draft.md`, NOT ADOPTED). Addenda VII and VIII
+  subsequently resolved U-39…U-44 (re-grading C-103…C-107/C-109) and U-45 (C-108);
+  current per-row state is canonical in `spec/06`/`spec/09`, and the historical/current
+  disposition is projected in `state/`.
 - `audit/duration-semantics-audit.md` — **what `D` measures and how logical time advances**
   (U-01/U-07/U-36; the audit filed C-112…C-115 and scoped the cluster into D1–D8; pre-adoption
   owner decisions D1–D3/D6/D8 approved with D7 conditional on its own §5 evidence). Verdict:
@@ -181,7 +185,7 @@ The fundamental property is:
  
 An external effect requires the complete chain of validation, authority, resource, policy, durability, and issuance checks.
  
-[ \boxed{ ExternalEffect(E) \Rightarrow ValidatedPlan(P) \land Authorized(E,\kappa,t) \land CapabilityWithinCeiling(E) \land BudgetAvailable(E) \land DeadlineValid(E,t) \land HostPolicyOK(E) \land Issued(E) } ]
+[ \boxed{ ExternalEffect(E) \Rightarrow ValidatedRequest(E) \land Authorized(E,\kappa,t) \land CapabilityWithinCeiling(E) \land BudgetAvailable(E) \land DeadlineValid(E,t) \land HostPolicyOK(E) \land Issued(E) } ]
   
 # Architecture
  `                    UNTRUSTED                        │                 ┌──────▼──────┐                 │ LLM /       │                 │ Planner     │                 └──────┬──────┘                        │                   PlanProposal                        │                 ┌──────▼──────┐                 │ Compiler    │                 │ parse       │                 │ validate    │                 │ lower       │                 └──────┬──────┘                        │                  ExecutablePlan                        │                 ┌──────▼──────┐                 │ CEK Machine │                 └───┬─────┬───┘                     │     │              ┌──────▼┐   ┌▼────────┐              │Capability│ │ Budget │              │ Kernel   │ │ System │              └──────┬──┘ └───┬────┘                     │        │                     └────┬───┘                          │                   Effect Issuance                          │                   Durable Boundary                          │                     ┌────▼────┐                     │  Host   │                     └─────────┘ ` 

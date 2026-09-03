@@ -517,34 +517,121 @@ mutations = [
 
 assert_mutations_match_register()
 
-tags = [
- ("CEK-CALL-ARITY-PRECHECK",["R-CEK-05"],"M3"),
- ("CEK-CALL-ARGS-LTR",["R-CEK-05"],"M3"),
- ("CEK-CLOSURE-LEXICAL-CAPTURE",["R-CEK-03","R-CEK-04"],"M3"),
- ("CAP-DERIVE-NO-AMPLIFICATION",["R-CAP-05","R-CORE-04"],"M4"),
- ("CAP-REVOCATION-ANCESTOR",["R-CAP-07"],"M4"),
- ("BUDGET-CONSUMPTION-CONSERVATION",["R-BUDGET-05","R-CORE-05"],"M5"),
- ("BUDGET-ESCROW-CONSERVATION",["R-EFFECT-05","R-DUR-05"],"M5;M10"),
- ("EFFECT-ISSUE-DURABLE-BEFORE-HOST",["R-DUR-01","R-CORE-06"],"M5;M10"),
- ("EFFECT-RECEIPT-DIGEST-VALIDATION",["R-EFFECT-06"],"M5"),
- ("SCHED-FIFO",["R-ACTOR-04"],"M6"),
- ("SCHED-BLOCKED-NOT-SCHEDULED",["R-ACTOR-04"],"M6"),
- ("MARSHAL-NO-RAW-CAPABILITY",["R-MARSHAL-01","R-CORE-07"],"M6"),
- ("MARSHAL-CAPABILITY-REJECT",["R-MARSHAL-01","R-CORE-07"],"M6 (README alias of MARSHAL-NO-RAW-CAPABILITY)"),
- ("WAL-SEQUENCE-CONTINUITY",["R-PERSIST-06"],"M7"),
- ("WAL-GAP-REJECT",["R-PERSIST-06"],"M7 (alias emphasis)"),
- ("RECOVERY-ISSUED-INDETERMINATE",["R-DUR-04","R-RECOV-02"],"M10"),
- ("SNAPSHOT-COMMIT-INTEGRITY",["R-PERSIST-05"],"M7;M10"),
- ("EFFECT-RECEIPT-RESULT-NO-AUTHORITY",["R-EFFECT-08"],"M5 (post-audit addendum)"),
- ("RECOVERY-REVOCATION-DURABLE",["R-PERSIST-07"],"M10 (post-audit addendum)"),
-("REQUEST-ARGS-LTR",["R-EFFECT-01","R-TEST-12"],"M5 (addendum VII)"),
-("REQUEST-NON-CAP-SHORT-CIRCUIT",["R-EFFECT-04","R-TEST-12"],"M5 (addendum VII)"),
-("BUDGET-ESCROW-DISPOSITION-TOTALITY",["R-BUDGET-09","R-BUDGET-11","R-EFFECT-05"],"M5;M10 (addendum VIII)"),
-("PERSISTENT-CAPACITY-ACCOUNTING",["R-BUDGET-13","R-PERSIST-04"],"M7 (addendum VIII)"),
-("TIME-DELTA-ENUMERATED",["R-BUDGET-16","R-BUDGET-06"],"M5 (addendum IX)"),
-("DURATION-NO-DOUBLE-CHARGE",["R-BUDGET-15","R-BUDGET-01"],"M5 (addendum IX)"),
-("QUIESCENCE-RECONCILES-PENDING",["R-BUDGET-16","R-BUDGET-09","R-RECOV-08"],"M5;M10 (addendum IX)"),
+# ---------------------------------------------------------------------------
+# Verification tags: DERIVED from spec/08 section 1 (the cleaned verification
+# authority), not hand-maintained. spec/08 publishes two tables -- the frozen
+# source set (16 rows: the 15 master-prompt L38557-L38572 tags plus the
+# WAL-GAP-REJECT alias row kept for the blueprint/Bootstrap-Pack spelling) and
+# the post-audit addendum set (9 rows). The indexed tag set MUST equal the
+# union of those tables' rows exactly; anything else is drift and fails the
+# build (assert_tags_match_spec08 below).
+#
+# MARSHAL-CAPABILITY-REJECT is NOT an indexed tag: spec/08's own
+# tag-normalization note records it as the README/blueprint spelling of
+# MARSHAL-NO-RAW-CAPABILITY. It is carried in `verification_tag_aliases`
+# instead. (Before the V-03 repair this list hand-maintained 26 entries and
+# counted the alias as a "17th frozen-source tag", so the index disagreed with
+# its own authority -- exactly the drift family this derivation closes.)
+# ---------------------------------------------------------------------------
+
+# Milestone annotations are curated (spec/08 carries no milestone column) but
+# the key set is gated against the derived tag set below, so a tag cannot be
+# added/removed in one place only.
+TAG_MILESTONES = {
+ "CEK-CALL-ARITY-PRECHECK": "M3",
+ "CEK-CALL-ARGS-LTR": "M3",
+ "CEK-CLOSURE-LEXICAL-CAPTURE": "M3",
+ "CAP-DERIVE-NO-AMPLIFICATION": "M4",
+ "CAP-REVOCATION-ANCESTOR": "M4",
+ "BUDGET-CONSUMPTION-CONSERVATION": "M5",
+ "BUDGET-ESCROW-CONSERVATION": "M5;M10",
+ "EFFECT-ISSUE-DURABLE-BEFORE-HOST": "M5;M10",
+ "EFFECT-RECEIPT-DIGEST-VALIDATION": "M5",
+ "SCHED-FIFO": "M6",
+ "SCHED-BLOCKED-NOT-SCHEDULED": "M6",
+ "MARSHAL-NO-RAW-CAPABILITY": "M6",
+ "WAL-SEQUENCE-CONTINUITY": "M7",
+ "WAL-GAP-REJECT": "M7 (alias row: blueprint L37364 / Bootstrap Pack L40643 spelling; same evidence as WAL-SEQUENCE-CONTINUITY)",
+ "RECOVERY-ISSUED-INDETERMINATE": "M10",
+ "SNAPSHOT-COMMIT-INTEGRITY": "M7;M10",
+ "EFFECT-RECEIPT-RESULT-NO-AUTHORITY": "M5 (post-audit addendum)",
+ "RECOVERY-REVOCATION-DURABLE": "M10 (post-audit addendum)",
+ "BUDGET-ESCROW-DISPOSITION-TOTALITY": "M5;M10 (addendum VIII)",
+ "PERSISTENT-CAPACITY-ACCOUNTING": "M7 (addendum VIII)",
+ "TIME-DELTA-ENUMERATED": "M5 (addendum IX)",
+ "DURATION-NO-DOUBLE-CHARGE": "M5 (addendum IX)",
+ "QUIESCENCE-RECONCILES-PENDING": "M5;M10 (addendum IX)",
+ "REQUEST-ARGS-LTR": "M5 (addendum VII)",
+ "REQUEST-NON-CAP-SHORT-CIRCUIT": "M5 (addendum VII)",
+}
+
+# Documented aliases that are NOT indexed tags (spec/08 tag-normalization note;
+# term/05 §5). alias_of must name an indexed canonical tag.
+TAG_ALIASES = [
+ {"tag": "MARSHAL-CAPABILITY-REJECT", "alias_of": "MARSHAL-NO-RAW-CAPABILITY",
+  "source": "README L41969–42010; blueprint L37365; Bootstrap Pack L40647",
+  "note": "spec/08 §1 tag-normalization note: MARSHAL-CAPABILITY-REJECT ≙ MARSHAL-NO-RAW-CAPABILITY"},
 ]
+
+
+def _parse_spec08_tables():
+    """Return [(tag, [obligations], table)] for every row of spec/08 §1's two
+    tables, in file order. table is 'frozen-source' or 'post-audit-addendum'."""
+    txt = _read(_S08)
+    sec1 = txt.split("## 1. Source verification-obligation tags", 1)[1].split("## 2.", 1)[0]
+    frozen_part, _, addendum_part = sec1.partition("**Post-audit addendum tags**")
+    rows = []
+    for part, which in ((frozen_part, "frozen-source"), (addendum_part, "post-audit-addendum")):
+        for m in re.finditer(r"^\| `([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+)` \|(.*)\|$", part, re.M):
+            tag, rest = m.group(1), m.group(2)
+            obligs = re.findall(r"\bR-[A-Z]+-\d+\b", rest)
+            rows.append((tag, list(dict.fromkeys(obligs)), which))
+    return rows
+
+
+def _tag_alias_of(tag, table):
+    # The one alias row spec/08 itself keeps inside the frozen table:
+    return "WAL-SEQUENCE-CONTINUITY" if tag == "WAL-GAP-REJECT" else None
+
+
+_rows08 = _parse_spec08_tables()
+tags = [(tag, obligs, TAG_MILESTONES[tag], which, _tag_alias_of(tag, which))
+        for tag, obligs, which in _rows08]
+
+
+def assert_tags_match_spec08():
+    """The indexed tag set must equal spec/08 §1's tables exactly, every alias
+    must name an indexed canonical tag, and no documented alias may appear as
+    an indexed row. Canonical-tag-set drift vs the index fails the build."""
+    derived = [t for t, _, _ in _rows08]
+    if len(derived) != len(set(derived)):
+        dupes = sorted({t for t in derived if derived.count(t) > 1})
+        raise SystemExit("spec/08 §1 lists a tag twice: %s" % dupes)
+    missing = sorted(set(TAG_MILESTONES) - set(derived))
+    extra = sorted(set(derived) - set(TAG_MILESTONES))
+    if missing or extra:
+        raise SystemExit(
+            "spec/10-index.json tag milestone table has drifted from spec/08 §1:\n"
+            "  in spec/08 but not annotated: %s\n  annotated but not in spec/08: %s"
+            % (missing, extra))
+    indexed = {t for t, _, _ in _rows08}
+    for a in TAG_ALIASES:
+        if a["tag"] in indexed:
+            raise SystemExit("documented alias %s must not appear as an indexed spec/08 "
+                             "tag row (it is a spelling of %s, not a canonical tag)"
+                             % (a["tag"], a["alias_of"]))
+        if a["alias_of"] not in indexed:
+            raise SystemExit("alias %s points at non-indexed tag %s"
+                             % (a["tag"], a["alias_of"]))
+    for t, _, which in _rows08:
+        if _tag_alias_of(t, which) and _tag_alias_of(t, which) not in indexed:
+            raise SystemExit("spec/08 alias row %s points at a non-indexed tag" % t)
+
+
+assert_tags_match_spec08()
+
+n_tags_frozen = sum(1 for _, _, _, w, _ in tags if w == "frozen-source")
+n_tags_addendum = sum(1 for _, _, _, w, _ in tags if w == "post-audit-addendum")
 
 crash_matrix = [
  ("T0","before Prepared","none","effect does not exist; no budget mutation; resume normally"),
@@ -635,7 +722,8 @@ index = {
     "evidence_rule": "A claim is promoted only with repository evidence; none exists, so all obligations are SPECIFIED.",
     "governing_invariants": [
       "LLMOutput AND UntrustedInput does not imply ExternalEffect",
-      "ExternalEffect(E) implies ValidatedPlan(P) AND Authorized(E,kappa,t) AND CapabilityWithinCeiling(E) AND BudgetAvailable(E) AND DeadlineValid(E,t) AND HostPolicyOK(E) AND Issued(E)"
+      "ExternalEffect(E) implies ValidatedRequest(E) AND Authorized(E,kappa,t) AND CapabilityWithinCeiling(E) AND BudgetAvailable(E) AND DeadlineValid(E,t) AND HostPolicyOK(E) AND Issued(E)",
+      "ValidatedRequest(E) implies ValidatedPlan(plan(E)) (R-CORE-11 canonical first predicate; the ValidatedPlan(P) first-conjunct form is superseded by R-CORE-11)"
     ],
     "trust_model": {
       "security_boundary": "the evaluator/runtime machine (compiler boundary, capability kernel, CEK machine, scheduler, budget system, canonical serializer, WAL/recovery, effect boundary)",
@@ -648,7 +736,7 @@ index = {
       "C-NN": f"contradiction/ambiguity finding ({len(findings)} indexed; {len(findings)+len(INDEX_EXCLUSIONS)} rows in spec/06, incl. pointer C-39 which duplicates C-25)",
       "U-NN": f"unresolved item requiring explicit decision ({len(unresolved)})",
       "M-NN": "milestone M0-M11",
-      "TAG": "source verification-obligation tags (26; 17 frozen-source + 9 post-audit addenda)",
+      "TAG": f"source verification-obligation tags ({len(tags)} indexed rows: {n_tags_frozen} frozen-source (incl. the WAL-GAP-REJECT alias row) + {n_tags_addendum} post-audit addenda; {len(TAG_ALIASES)} further documented alias, MARSHAL-CAPABILITY-REJECT \u2259 MARSHAL-NO-RAW-CAPABILITY, is not an indexed tag)",
       "M0NN": "baseline mutation registry (42; 18 baseline + 24 post-audit: M019–M042; M036 is KILLED under the adopted repository gate (U-38 option (b), 2026-09-03) — see spec/08 §2; its survival under the historical default wiring is preserved as the measured baseline)",
       "ROR-NNN": "first-sprint tasks (16)"
     },
@@ -687,8 +775,13 @@ index = {
     for (m,d,k) in mutations
   ],
   "verification_tags": [
-    {"tag": tg, "obligations": o, "milestone": m}
-    for (tg,o,m) in tags
+    {"tag": tg, "obligations": o, "milestone": m, "source": src, "alias_of": al}
+    for (tg,o,m,src,al) in tags
+  ],
+  "verification_tag_aliases": [
+    {"tag": a["tag"], "alias_of": a["alias_of"], "source": a["source"], "note": a["note"],
+     "indexed": False}
+    for a in TAG_ALIASES
   ],
   "crash_matrix": [
     {"id": c, "point": p, "durable_state": d, "required_recovery_result": r}
@@ -743,7 +836,7 @@ for (u,t,b,s,a) in unresolved:
         assert part in req_ids, f"bad req {part} in {u}"
     for part in (x for x in s.split(";") if x):
         assert part in sec_ids, f"bad section {part} in {u}"
-for (tg,o,m) in tags:
+for (tg,o,m,src,al) in tags:
     for part in o:
         assert part in req_ids, f"bad req {part} in tag {tg}"
 for (m,d,k) in mutations:
