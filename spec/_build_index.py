@@ -303,6 +303,7 @@ import os, re
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _S06 = os.path.join(_HERE, "06-contradictions-ambiguities.md")
 _S09 = os.path.join(_HERE, "09-unresolved-decisions.md")
+_S08 = os.path.join(_HERE, "08-verification-mapping.md")
 
 # C-39 is a pointer row that duplicates C-25 (spec/06's own summary line says
 # so).  The index keeps one entry per finding, so it is excluded by name here
@@ -440,6 +441,24 @@ def assert_index_complete():
 
 assert_index_complete()
 
+def assert_mutations_match_register():
+    """spec/08 §2 is the mutation register; this list must not drift from it.
+
+    Caught in the act: M036 was added to spec/08 and the index kept reporting
+    35, because this list is hand-maintained and nothing compared the two.
+    Exactly the under-count family the harness exists to close -- a count that
+    is wrong rather than a build that fails.
+    """
+    reg = re.findall(r"^\| (M\d{3}) \|", _read(_S08), re.M)
+    have = [m[0] for m in mutations]
+    if sorted(reg) != sorted(have):
+        raise SystemExit(
+            "spec/10-index.json mutation list has drifted from spec/08 section 2:\n"
+            "  in spec/08 but not indexed: %s\n"
+            "  indexed but not in spec/08: %s"
+            % (sorted(set(reg) - set(have)), sorted(set(have) - set(reg))))
+
+
 mutations = [
  ("M001","reverse argument evaluation",["R-CEK-05"]),
  ("M002","skip arity precheck",["R-CEK-05"]),
@@ -470,6 +489,7 @@ mutations = [
  ("M030","inadmissible constraint treated as top",["R-CAP-10"]),
  ("M033","enqueue without recipient capacity check",["R-ACTOR-10"]),
  ("M035","stranded escrow silently reclaimed without reconciliation",["R-BUDGET-09"]),
+ ("M036","rotate one spec/01 obligation body onto adjacent content (IDs left in place)",["R-SCOPE-03","R-CLAIM-02"]),
  ("M026","accept future-tagged proposal",["R-PLANNER-06"]),
  ("M027","observation includes CapRef",["R-PLANNER-07"]),
  ("M028","reconciliation resolves Indeterminate as NotExecuted without admissible outcome",["R-RECOV-08"]),
@@ -477,6 +497,8 @@ mutations = [
  ("M031","component uses the superseded LE grammar",["R-CANON-13"]),
  ("M032","contains_capability skips FunctionValue.env",["R-MARSHAL-06"]),
 ]
+
+assert_mutations_match_register()
 
 tags = [
  ("CEK-CALL-ARITY-PRECHECK",["R-CEK-05"],"M3"),

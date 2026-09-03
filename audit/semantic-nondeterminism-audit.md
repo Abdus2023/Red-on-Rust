@@ -850,12 +850,13 @@ three rows** — and two `max()` calls compared IDs as strings, so `"C-99" >
 framework validate itself before being trusted, and nothing tested the
 checkers, so the fixes rested on the same footing as the defects.
 
-`audit/_checker_mutations.py` closes that: 14 defects the registers would
+`audit/_checker_mutations.py` closes that: 17 defects the registers would
 realistically acquire, each applied to a scratch copy, each required to be
 rejected by some checker. A green baseline is required first, so a red tree
-cannot pass everything vacuously. **13 of 14 are killed.**
+cannot pass everything vacuously. **16 of 17 are killed**; the seventeenth is
+M036, registered and filed rather than silently tolerated.
 
-Two results are worth recording beyond the pass/fail.
+Three results are worth recording beyond the pass/fail.
 
 **(a) A drift no checker could see — including one this audit introduced.**
 `spec/06`'s summary line read "74 findings (76 rows)" against 97 actual rows;
@@ -894,6 +895,37 @@ filed as **U-38**, whose disposition is a CI-policy decision with a real cost
 The audit recommends an explicit allow-list keyed by obligation ID, so that each
 tolerated warning is a recorded decision and *any new warning fails the build*.
 
+**(c) Three mutations were killing for the wrong reason.**
+
+K01, K02 and K03 were written to exercise the completeness gate in
+`spec/_build_index.py` — the gate whose stated purpose is that "the next pass
+cannot silently reopen the gap," and which had already once passed while
+omitting C-100..C-102. All three reported KILLED. None of them reached the gate.
+Each appends or deletes a register row, which shifts every later line, and a
+`term/` line anchor (`X-64`) breaks first. A genuine failure, but of an
+unrelated coupling: the result proved the anchors are load-bearing, not that the
+index gate works.
+
+The fix is a mutation that changes no line counts. Renumbering one row **in
+place** — `C-50` → `C-150` — leaves the file the same length, so no anchor can
+mask the outcome. Run against `spec/_build_index.py` alone, that mutation
+**passed**: the builder regenerated the index, reported `findings=101`, and
+exited 0 with a register id it had never seen. The completeness gate does not
+compare ids; it compares *counts*, and a renumber preserves the count.
+
+Pulling that thread found a live drift — introduced by this audit. §9(b) added
+M036 to the `spec/08` register; the index kept reporting **35 mutations**,
+because its mutation list is hand-maintained and *nothing compared the two*.
+This is the same family as the four original defects: a number that is quietly
+wrong rather than a build that fails. `spec/_build_index.py` now derives the
+register from `spec/08` §2 and hard-fails on any divergence in either
+direction, and K15 locks it closed. The index reports 36.
+
+The general lesson is the one K12 and K04 already taught in smaller form, now
+three times over: **a mutation's exit status does not tell you which gate
+caught it.** A harness that only records kill/survive will report full coverage
+over gates it has never once exercised. Kills must be attributed, not counted.
+
 This addendum issues no frozen text. M036 is registered in `spec/08` as a
 **known, filed survivor** — the harness reports it as such rather than counting
 it as a pass or letting it disappear into a kill-rate denominator.
@@ -906,9 +938,11 @@ it as a pass or letting it disappear into a kill-rate denominator.
 - **No finding claims DT is unachievable.** All sixteen are closable, most by freezing a decision already scoped in `spec/09`. The architecture is sound; the enumeration of inputs is incomplete.
 - **Findings are not promoted beyond `SPECIFIED`.** No verification claim, no evidence status change, no promotion on the status ladder is asserted by this document. §6 proposes tests; it does not report results.
 - **On external effects, this audit asserts only §5.4** and asserts it in the required form: replay proves machine-state and event reproduction, subject to explicit external-effect reconciliation. **It does not claim, anywhere, that replay reproduces the external world.**
-- **On §9.** The 13/14 kill rate is a floor on the checkers' sensitivity to *these*
+- **On §9.** The 16/17 kill rate is a floor on the checkers' sensitivity to *these*
   defects, not a guarantee of completeness; and M036's 0% is a measurement of one
   mutation against one detector, not a `MutationKillRate` for the specification
-  (R-CLAIM-01 — nothing here is promoted).
+  (R-CLAIM-01 — nothing here is promoted). Three of the seventeen mutations were
+  strengthened after they were observed to kill *for the wrong reason* (§9(c)); a
+  kill rate counts kills, not whether each kill exercised the gate it was aimed at.
 - **Coverage.** All fifteen requested categories were checked; every one is reported, including the two with no finding (DET-017 floating point, DET-018 environment variables), so that the negative results are auditable rather than silently omitted. Where a category's risk is real but indirect (network timing — see DET-005 and the `Indeterminate` discussion in §5.4; thread scheduling — DET-014), it is filed at the severity the frozen text supports rather than inflated.
 - **Method.** Mechanical search across all 42,312 source lines plus the five canonical organizations, followed by hand-reading of every hit in operative context. Counts stated (13 `SchedulerTrace` occurrences; 0 `f64`/`f32`; 0 `std::env`; six `ReplayHost` declarations) are grep-verified at commit `3d00818` and are re-checkable by the commands recorded alongside each finding.

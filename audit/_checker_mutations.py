@@ -304,6 +304,52 @@ def m036_rotate_obligation_body(root: Path) -> bool:
     return True
 
 
+def _renumber_c_row_inplace(root: Path, old: str, new: str) -> bool:
+    """Rewrite one C- row's id IN PLACE, changing no line counts.
+
+    K01/K02/K03 all die on term/_check.py anchor shifts (X-64) rather than on
+    the completeness gate they were written for: appending or deleting a row
+    moves every later line, and the anchor breaks first.  That is a real kill
+    but the WRONG kill -- it proves the anchors are load-bearing, not that the
+    index gate works.  A register edited in place produces no line-count
+    change and no anchor shift, so nothing but the gate itself can object.
+    """
+    p = root / "spec/06-contradictions-ambiguities.md"
+    txt = p.read_text(encoding="utf-8")
+    src, dst = f"| {old} |", f"| {new} |"
+    if txt.count(src) != 1 or dst in txt:
+        return False
+    p.write_text(txt.replace(src, dst, 1), encoding="utf-8")
+    return True
+
+
+def m_renumber_c_row(root: Path) -> bool:
+    """A finding row silently renumbered to an unindexed id, in place."""
+    return _renumber_c_row_inplace(root, "C-50", "C-150")
+
+
+def m_mutation_register_drift(root: Path) -> bool:
+    """Renumber a spec/08 mutation row so the index list no longer matches."""
+    p = root / "spec/08-verification-mapping.md"
+    txt = p.read_text(encoding="utf-8")
+    src, dst = "| M036 |", "| M136 |"
+    if txt.count(src) != 1 or dst in txt:
+        return False
+    p.write_text(txt.replace(src, dst, 1), encoding="utf-8")
+    return True
+
+
+def m_renumber_u_heading(root: Path) -> bool:
+    """An unresolved decision renumbered in place to an unindexed id."""
+    p = root / "spec/09-unresolved-decisions.md"
+    txt = p.read_text(encoding="utf-8")
+    src, dst = "### U-21 ", "### U-121 "
+    if txt.count(src) != 1 or dst in txt:
+        return False
+    p.write_text(txt.replace(src, dst, 1), encoding="utf-8")
+    return True
+
+
 MUTATIONS = [
     Mutation("K01", "finding row added, not indexed",
              "The completeness gate must reject a register row absent from 10-index.json.",
@@ -358,6 +404,21 @@ MUTATIONS = [
              m_summary_not_updated,
              regression_for="the 74/76-vs-102 drift this harness found",
              tags=["docs", "register", "regression"]),
+    Mutation("K14", "finding row renumbered IN PLACE to an unindexed id",
+             "Strong form of K01: no line-count change, so no anchor shift can "
+             "mask the result. Only the completeness gate can object.",
+             m_renumber_c_row, regression_for="spec/_build_index.py completeness gate",
+             tags=["register", "index", "in-place"]),
+    Mutation("K15", "mutation added to spec/08 but not to the index list",
+             "The index's mutation list is hand-maintained; spec/08 section 2 is the "
+             "register. This drift actually happened -- M036 was registered and the "
+             "index reported 35 -- and no gate compared them.",
+             m_mutation_register_drift,
+             regression_for="the M036 index drift this harness found",
+             tags=["register", "index", "regression"]),
+    Mutation("K16", "unresolved decision renumbered IN PLACE",
+             "The U- twin of K14; strong form of K04/K05.",
+             m_renumber_u_heading, tags=["register", "index", "in-place"]),
 ]
 
 

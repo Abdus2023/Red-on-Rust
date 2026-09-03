@@ -6700,6 +6700,14 @@
       ]
     },
     {
+      "id": "M036",
+      "defect": "rotate one spec/01 obligation body onto adjacent content (IDs left in place)",
+      "kills_evidence_for": [
+        "R-SCOPE-03",
+        "R-CLAIM-02"
+      ]
+    },
+    {
       "id": "M026",
       "defect": "accept future-tagged proposal",
       "kills_evidence_for": [
