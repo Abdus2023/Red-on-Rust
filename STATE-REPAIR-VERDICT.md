@@ -108,6 +108,12 @@ generated; `_project.py` the gate). Generators repaired, generated prose
 regenerated; frozen sources, addenda, historical audits and R-REG identities
 untouched.
 
+Follow-up (same pass): `README.md` document-set enumeration completed with the
+`state/` paragraph (it described every organization except the one line 86
+already cited); appended after the exact-position anchor block so no
+line-anchored citation moved (`term/_reanchor.py`: nothing to move; full gate
+re-run ALL PASS).
+
 ---
 
 **Canonical repository state repaired and governance-consistent;
