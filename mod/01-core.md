@@ -134,7 +134,7 @@ Owned (verbatim from source; provenance per row in REQUIREMENTS):
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-01…S-04, S-07; addenda II–V. All 32 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-01…S-04, S-07; addenda II–V, VII. All 33 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -153,6 +153,7 @@ Canonical text: `spec/01` S-01…S-04, S-07; addenda II–V. All 32 obligations 
 | R-CORE-11 | One canonical signature per I2 predicate: ValidatedRequest(E) request-time subsuming ValidatedPlan(plan(E)); Authorized(holder, c, E, t) possession conjunct (formalizes R-KERN-04); ValidatedPlan_pred vs ValidatedPlan_struct; chain stated once (X-01/X-04/X-05; C-80 resolved) | addendum II (SEC-016) | R-TEST-09 differential adjudication |
 | R-CORE-12 | Fault totality on machine paths: panic-free non-test code, failures map to declared Fault (InternalInvariant family); transition atomicity — complete or fault, no died-mid-transition; durable append precedes in-memory mutation; clippy unwrap/expect denial (C-83 resolved; M034) | addendum III (SEC-020) | M034, panic-catching fuzz harness |
 | R-CORE-13 | Closed declared fault surface on every trust-boundary crossing: six replay-path variants, StalePlan, unified MarshalFault, InternalInvariant declared; no debug-formatted external error text in machine values; resume-vs-fault pinned per variant (C-91 resolved) | addendum IV (SEC-012) | fault-coverage lint, differential fault matrix |
+| R-CORE-14 | Canonical request protocol and transaction boundary: master-prompt 16-step order governs; turn-[21] host-before-Issued order superseded; step-10 premise `t + δ_t(req) ≤ W`; steps 12–14b one atomic section (C-103/C-104 resolved) | addendum VII (request-pipeline) | M037, M038, gate short-circuit matrix |
 | R-TRUST-01 | Trust table (LLM/`Block` No; live host Partial; rest Yes) | L41823–41841, L27611–27624 | — |
 | R-TRUST-02 | TCB composition; LLM output ∉ TCB authority | L28178–28230 | — |
 | R-TRUST-03 | No hidden authority; evaluator sees refs only (D-09) | L37722–37748, L19153–19175 | Track B (mock kernel), visibility checks |
@@ -175,7 +176,7 @@ Atomic registry records under this module (from `req/`, ownership by parent):
 REQ-SCOPE-001…007; REQ-CORE-001…016; REQ-TRUST-001…009; REQ-ARCH-001…006;
 REQ-CALC-001…020 (incl. REQ-CALC-020 — v0.3 pure E-Let/E-Seq/E-If rules with
 `δ_t = 0` premises, placed here explicitly because the registry's own area is CALC;
-cross-referenced to MOD-05/MOD-04). **32 obligations / 58 records.**
+cross-referenced to MOD-05/MOD-04). **33 obligations / 58 records.**
 
 ## SECURITY-BOUNDARY
 

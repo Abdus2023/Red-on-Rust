@@ -326,7 +326,10 @@ def main() -> int:
     # filed C-103...C-109 and U-39...U-45 -- 102 -> 109 and 32 -> 39.  All seven
     # C rows are `open` except C-108, which is corrected in place with its
     # adoption question at U-45; U-44 is a verification-tag decision with no C
-    # row (a register gap, not a frozen-source contradiction).
+    # row (a register gap, not a frozen-source contradiction).  Addendum VII
+    # (2026-09-03) then re-graded C-103...C-107/C-109 resolved-by-addendum and resolved
+    # U-39...U-44; the counts pinned here are unchanged by a re-grading, and C-108 stays
+    # corrected-in-place with U-45 deferred to a dedicated pass.
     if len(c_ids) != 109:
         err(f"expected 109 C- rows in spec/06, found {len(c_ids)}")
     # U-38 added by the same audit's checker-mutation pass (spec/08 M036 /

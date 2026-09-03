@@ -55,7 +55,7 @@ def _own(mod, prefix, ids):
         R_OWNER[rid] = mod
 
 _own("MOD-01", "SCOPE",   [1, 2])
-_own("MOD-01", "CORE",    range(1, 14))   # +CORE-11/12/13 (addenda II/III/IV)
+_own("MOD-01", "CORE",    range(1, 15))   # +CORE-11/12/13 (addenda II/III/IV), +CORE-14 (addendum VII)
 _own("MOD-01", "TRUST",   [1, 2, 3, 4])   # +TRUST-04 complete trust table (addendum III)
 _own("MOD-01", "ARCH",    [1, 2, 3, 4, 5])  # +ARCH-05 isolation ladder retired (addendum V)
 _own("MOD-01", "CALC",    range(1, 9))
@@ -71,8 +71,8 @@ _own("MOD-08", "EFFECT",  range(1, 9))    # +EFFECT-08 receipt-result admission 
 _own("MOD-09", "HOST",    range(1, 7))    # +HOST-06 durable receipt results (addendum IV)
 _own("MOD-10", "CANON",   range(1, 14))   # +CANON-12 (add. II), +CANON-13 (add. IV)
 _own("MOD-11", "PERSIST", range(1, 9))    # +PERSIST-07 (add. II), +PERSIST-08 (add. IV)
-_own("MOD-11", "DUR",     range(1, 6))
-_own("MOD-12", "RECOV",   range(1, 9))    # +RECOV-08 reconciliation frozen (addendum IV)
+_own("MOD-11", "DUR",     range(1, 8))    # +DUR-06/07 (addendum VII)
+_own("MOD-12", "RECOV",   range(1, 10))   # +RECOV-08 (addendum IV), +RECOV-09 (addendum VII)
 _own("MOD-13", "PLANNER", range(1, 8))    # +PLANNER-06/07 (addendum IV)
 _own("MOD-14", "REF",     [1, 2, 3, 4])
 R_OWNER["R-TRUST-05"] = "MOD-11"   # addendum III: crate-DAG hinge (spec/07 §2: ror-persistence)
@@ -80,7 +80,7 @@ R_OWNER["R-SCOPE-04"] = "MOD-14"
 _own("MOD-15", "TEST",    [1, 2, 3, 7])
 R_OWNER["R-REF-05"] = "MOD-15"
 _own("MOD-16", "TEST",    [4, 5, 6])
-_own("MOD-17", "TEST",    [8, 9, 10, 11])
+_own("MOD-17", "TEST",    [8, 9, 10, 11, 12])   # +TEST-12 request-frame tags (addendum VII)
 R_OWNER["R-REF-06"] = "MOD-17"
 R_OWNER["R-SCOPE-03"] = "MOD-17"
 _own("MOD-17", "REPO",    [1, 2, 3])
@@ -180,6 +180,11 @@ R_XREF = {
     "R-DUR-03": [("MOD-08", "receipt digests continue the chain"), ("MOD-12", "journal reconstructed and causality-checked")],
     "R-DUR-04": [("MOD-12", "classification applied at T1..T4"), ("MOD-08", "escrow semantics at issuance")],
     "R-DUR-05": [("MOD-04", "escrow partition owner"), ("MOD-12", "post-recovery invariant check")],
+    "R-CORE-14": [("MOD-08", "16-step sequence statement R-EFFECT-01/03"), ("MOD-04", "deadline premise R-BUDGET-06"), ("MOD-11", "s12–s14b durable section R-DUR-02"), ("MOD-12", "recovery boundary R-RECOV-09"), ("MOD-17", "completion-boundary evidence")],
+    "R-DUR-06": [("MOD-08", "escrow at issuance R-EFFECT-05"), ("MOD-04", "escrow partition"), ("MOD-10", "canonical bytes/digest"), ("MOD-12", "T1 restore / T2–T5 reconstruction")],
+    "R-DUR-07": [("MOD-08", "R-EFFECT-04 five assertions"), ("MOD-01", "R-CORE-12/13 fault surface"), ("MOD-12", "Prepared ∧ ¬Issued ⇒ Discard")],
+    "R-RECOV-09": [("MOD-11", "snapshot atomic protocol R-PERSIST-05"), ("MOD-08", "completion order R-EFFECT-07"), ("MOD-06", "counter restoration R-ACTOR-03"), ("MOD-17", "M10 gate")],
+    "R-TEST-12": [("MOD-05", "request-frame LTR"), ("MOD-08", "short-circuit gate"), ("MOD-15", "R-TEST-07 tag-list owner")],
     "R-RECOV-01": [("MOD-11", "D components durable"), ("MOD-15", "recovery differential compares")],
     "R-RECOV-02": [("MOD-11", "rows mirror journal causality"), ("MOD-17", "M10 gate executes the matrix")],
     "R-RECOV-03": [("MOD-10", "decode via 15A"), ("MOD-07", "queue reconstruction"), ("MOD-04", "conservation re-validated")],

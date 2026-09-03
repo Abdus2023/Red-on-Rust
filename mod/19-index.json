@@ -3,7 +3,7 @@
   "organization": "17 semantic modules, split by architectural responsibility (not document length)",
   "normative_text_home": "spec/01 (obligations), req/ (atomic records); mod/ registers ownership, no normative text is duplicated except as marked in `duplications`",
   "module_count": 17,
-  "obligation_count": 173,
+  "obligation_count": 178,
   "record_count": 545,
   "evidence_status_of_every_obligation": "SPECIFIED",
   "modules": [
@@ -40,6 +40,7 @@
         "R-CORE-11",
         "R-CORE-12",
         "R-CORE-13",
+        "R-CORE-14",
         "R-SCOPE-01",
         "R-SCOPE-02",
         "R-TRUST-01",
@@ -47,7 +48,7 @@
         "R-TRUST-03",
         "R-TRUST-04"
       ],
-      "obligation_count": 32,
+      "obligation_count": 33,
       "record_count": 58,
       "record_ranges": [
         "REQ-ARCH-001…006",
@@ -186,6 +187,13 @@
         "R-CALC-08": [
           "MOD-05",
           "MOD-06"
+        ],
+        "R-CORE-14": [
+          "MOD-08",
+          "MOD-04",
+          "MOD-11",
+          "MOD-12",
+          "MOD-17"
         ]
       },
       "verification_tags": [],
@@ -771,6 +779,8 @@
         "R-DUR-03",
         "R-DUR-04",
         "R-DUR-05",
+        "R-DUR-06",
+        "R-DUR-07",
         "R-PERSIST-01",
         "R-PERSIST-02",
         "R-PERSIST-03",
@@ -781,7 +791,7 @@
         "R-PERSIST-08",
         "R-TRUST-05"
       ],
-      "obligation_count": 14,
+      "obligation_count": 16,
       "record_count": 37,
       "record_ranges": [
         "REQ-DUR-001…014",
@@ -833,6 +843,17 @@
         "R-DUR-05": [
           "MOD-04",
           "MOD-12"
+        ],
+        "R-DUR-06": [
+          "MOD-08",
+          "MOD-04",
+          "MOD-10",
+          "MOD-12"
+        ],
+        "R-DUR-07": [
+          "MOD-08",
+          "MOD-01",
+          "MOD-12"
         ]
       },
       "verification_tags": [
@@ -871,14 +892,21 @@
         "R-RECOV-05",
         "R-RECOV-06",
         "R-RECOV-07",
-        "R-RECOV-08"
+        "R-RECOV-08",
+        "R-RECOV-09"
       ],
-      "obligation_count": 8,
+      "obligation_count": 9,
       "record_count": 22,
       "record_ranges": [
         "REQ-RECOV-001…022"
       ],
       "cross_references": {
+        "R-RECOV-09": [
+          "MOD-11",
+          "MOD-08",
+          "MOD-06",
+          "MOD-17"
+        ],
         "R-RECOV-01": [
           "MOD-11",
           "MOD-15"
@@ -1164,9 +1192,10 @@
         "R-TEST-08",
         "R-TEST-09",
         "R-TEST-10",
-        "R-TEST-11"
+        "R-TEST-11",
+        "R-TEST-12"
       ],
-      "obligation_count": 18,
+      "obligation_count": 19,
       "record_count": 86,
       "record_ranges": [
         "REQ-CLAIM-001…022",
@@ -1180,6 +1209,11 @@
         "REQ-TEST-054…055"
       ],
       "cross_references": {
+        "R-TEST-12": [
+          "MOD-05",
+          "MOD-08",
+          "MOD-15"
+        ],
         "R-TEST-08": [
           "MOD-12",
           "MOD-11"

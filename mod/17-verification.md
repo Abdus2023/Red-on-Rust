@@ -132,7 +132,7 @@ plus `spec/00` §2 (status ladder). This module owns:
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-21…S-24. All 18 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-21…S-24; addendum VII. All 19 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -142,6 +142,7 @@ Canonical text: `spec/01` S-21…S-24. All 18 obligations `SPECIFIED`.
 | R-TEST-09 | Fault adjudication (4-way classification) | L38692–38712 (§24), L37404–37414 | R-SCOPE-03 |
 | R-TEST-10 | CI gates (PR / nightly / release) | L38747–38806 (§26), L37287–37292 | gates |
 | R-TEST-11 | Final acceptance condition (3 conjuncts) | L38877–38919 (§29), L41196–41210 | M11 |
+| R-TEST-12 | Request-frame verification tags: `REQUEST-ARGS-LTR`, `REQUEST-NON-CAP-SHORT-CIRCUIT` added to R-TEST-07's obligation-tagged list; Track A coverage (U-44 resolved) | addendum VII (request-pipeline) | Track A request suite |
 | R-REPO-01 | Workspace layout; boundaries frozen, names flexible | L39140–39195 | R-ARCH-02 |
 | R-REPO-02 | Ten crate contracts (contents + prohibitions) | L39196–40762 | dependency + visibility review |
 | R-REPO-03 | Boundaries enforced structurally (deps, visibility, types, traits, tests) | L41223–41273 | mutation + differential |
@@ -161,7 +162,7 @@ REQ-TEST-042 (first-divergence algorithm — parent R-TEST-09; comparator machin
 cross-referenced to MOD-15), REQ-TEST-044 (differential persistence testing — parent
 R-TEST-08; cross-referenced to MOD-12/MOD-15), REQ-TEST-054 (evidence classification),
 REQ-TEST-055 (15C.45 final verification theorem — parent R-TEST-11).
-**18 obligations / 86 records.**
+**19 obligations / 86 records.**
 
 ## SECURITY-BOUNDARY
 

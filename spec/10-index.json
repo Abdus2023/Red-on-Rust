@@ -31,12 +31,12 @@
     },
     "id_schemes": {
       "S-NN": "specification section (24)",
-      "R-AREA-NN": "normative requirement/obligation (173; 148 source-transcribed + 25 post-audit frozen addenda)",
+      "R-AREA-NN": "normative requirement/obligation (178; 148 source-transcribed + 30 post-audit frozen addenda)",
       "C-NN": "contradiction/ambiguity finding (108 indexed; 109 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
       "U-NN": "unresolved item requiring explicit decision (39)",
       "M-NN": "milestone M0-M11",
-      "TAG": "source verification-obligation tags (19; 17 frozen-source + 2 post-audit addenda)",
-      "M0NN": "baseline mutation registry (36; 18 baseline + 18 post-audit: M019–M036; M036 is registered and currently SURVIVING — see spec/08 §2 and U-38)",
+      "TAG": "source verification-obligation tags (21; 17 frozen-source + 4 post-audit addenda)",
+      "M0NN": "baseline mutation registry (38; 18 baseline + 20 post-audit: M019–M038; M036 is registered and currently SURVIVING — see spec/08 §2 and U-38)",
       "ROR-NNN": "first-sprint tasks (16)"
     },
     "documents": {
@@ -89,7 +89,8 @@
         "R-CORE-10",
         "R-CORE-11",
         "R-CORE-12",
-        "R-CORE-13"
+        "R-CORE-13",
+        "R-CORE-14"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -353,7 +354,9 @@
         "R-DUR-02",
         "R-DUR-03",
         "R-DUR-04",
-        "R-DUR-05"
+        "R-DUR-05",
+        "R-DUR-06",
+        "R-DUR-07"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -509,7 +512,8 @@
         "R-RECOV-05",
         "R-RECOV-06",
         "R-RECOV-07",
-        "R-RECOV-08"
+        "R-RECOV-08",
+        "R-RECOV-09"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -560,7 +564,8 @@
         "R-TEST-08",
         "R-TEST-09",
         "R-TEST-10",
-        "R-TEST-11"
+        "R-TEST-11",
+        "R-TEST-12"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -1005,6 +1010,30 @@
       ],
       "related_findings": [
         "C-91"
+      ]
+    },
+    {
+      "id": "R-CORE-14",
+      "section": "S-02",
+      "title": "Canonical request protocol and transaction boundary (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "M037",
+        "M038",
+        "gate short-circuit matrix"
+      ],
+      "related_findings": [
+        "C-103",
+        "C-104"
       ]
     },
     {
@@ -2641,6 +2670,52 @@
       "related_findings": []
     },
     {
+      "id": "R-DUR-06",
+      "section": "S-13",
+      "title": "Durable issuance payload: effect bytes + cost triple (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "M038",
+        "T1/T2-T5 reconstruction harness"
+      ],
+      "related_findings": [
+        "C-105"
+      ]
+    },
+    {
+      "id": "R-DUR-07",
+      "section": "S-13",
+      "title": "Live issuance failure: journal-driven commit (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime",
+        "ror-persistence"
+      ],
+      "verification": [
+        "M037",
+        "live-fault harness",
+        "T0-T1"
+      ],
+      "related_findings": [
+        "C-106"
+      ]
+    },
+    {
       "id": "R-HOST-01",
       "section": "S-14",
       "title": "Host independently validates OS authority (defense in depth)",
@@ -3785,6 +3860,31 @@
       ]
     },
     {
+      "id": "R-RECOV-09",
+      "section": "S-19",
+      "title": "Recovery reconstruction authority (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence",
+        "ror-reference"
+      ],
+      "verification": [
+        "M10",
+        "crash matrix T4/T5",
+        "snapshot-cadence tests"
+      ],
+      "related_findings": [
+        "C-107",
+        "C-109"
+      ]
+    },
+    {
       "id": "R-REF-01",
       "section": "S-20",
       "title": "Observe_P = Observe_R (+ recovery equivalence); evidence not proof",
@@ -4141,6 +4241,27 @@
       ],
       "related_findings": [
         "C-34"
+      ]
+    },
+    {
+      "id": "R-TEST-12",
+      "section": "S-21",
+      "title": "Request-frame verification tags (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "tests/"
+      ],
+      "verification": [
+        "Track A request suite"
+      ],
+      "related_findings": [
+        "U-44"
       ]
     },
     {
@@ -6137,7 +6258,7 @@
       "id": "C-103",
       "title": "Two frozen \"16-step\" request protocols: the master-prompt order (construct s4, durable issuance s14, Pending s15, host s16) vs the turn-[21] order quoted by spec/01 R-EFFECT-01 (construct s13, host emission s15, durable Issued s16)",
       "severity": "MAJOR",
-      "status": "open",
+      "status": "resolved-by-addendum",
       "resolved_into": "U-39",
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -6151,7 +6272,7 @@
       "id": "C-104",
       "title": "Step-10 deadline predicate discrepancy: t ≤ W (canonical registry row) vs t + δ_t(req) ≤ W (R-BUDGET-06, v0.3 E-Request) vs the [30] sketch's weaker now > w",
       "severity": "MAJOR",
-      "status": "open",
+      "status": "resolved-by-addendum",
       "resolved_into": "U-40",
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -6167,7 +6288,7 @@
       "id": "C-105",
       "title": "Durable issuance/effect records carry neither the effect nor its cost: escrow survival (R-DUR-05), T1 budget restoration (REQ-DUR-010), and T2–T4 reconciliation identity have no durable source of truth",
       "severity": "MAJOR",
-      "status": "open",
+      "status": "resolved-by-addendum",
       "resolved_into": "U-41",
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -6181,7 +6302,7 @@
       "id": "C-106",
       "title": "Live journal/fsync failure at step 14 has no frozen semantics: undeclared fault, no rollback rule, R-EFFECT-04's five assertions impossible after steps 12–13, and no record kind makes R-CORE-12's journal-driven-commit alternative realizable",
       "severity": "BLOCKING",
-      "status": "open",
+      "status": "resolved-by-addendum",
       "resolved_into": "U-42",
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -6194,7 +6315,7 @@
       "id": "C-107",
       "title": "Snapshot cadence relative to the s12–s16 window is unfrozen: T0/T1 postconditions (\"no budget mutation\", \"budget restored\") can be false, and next_effect_id/continuation reconstruction depends on snapshot timing",
       "severity": "MAJOR",
-      "status": "open",
+      "status": "resolved-by-addendum",
       "resolved_into": "U-43",
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -6220,7 +6341,7 @@
       "id": "C-109",
       "title": "EffectCompleted has no frozen append–fsync–accounting–resume boundary: R-EFFECT-07 states an order, S-18 has no completion-sync step, and the T4/T5 crash boundary depends on it",
       "severity": "MINOR",
-      "status": "open",
+      "status": "resolved-by-addendum",
       "resolved_into": "U-43",
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -6883,6 +7004,20 @@
       ]
     },
     {
+      "id": "M037",
+      "defect": "in-memory s12-s13 mutations committed before the journal-driven append+fsync (host-visible pre-durability)",
+      "kills_evidence_for": [
+        "R-DUR-07"
+      ]
+    },
+    {
+      "id": "M038",
+      "defect": "issuance records carry id/actor/digest only (loss of the escrow/effect source of truth)",
+      "kills_evidence_for": [
+        "R-DUR-06"
+      ]
+    },
+    {
       "id": "M026",
       "defect": "accept future-tagged proposal",
       "kills_evidence_for": [
@@ -7066,6 +7201,22 @@
         "R-PERSIST-07"
       ],
       "milestone": "M10 (post-audit addendum)"
+    },
+    {
+      "tag": "REQUEST-ARGS-LTR",
+      "obligations": [
+        "R-EFFECT-01",
+        "R-TEST-12"
+      ],
+      "milestone": "M5 (addendum VII)"
+    },
+    {
+      "tag": "REQUEST-NON-CAP-SHORT-CIRCUIT",
+      "obligations": [
+        "R-EFFECT-04",
+        "R-TEST-12"
+      ],
+      "milestone": "M5 (addendum VII)"
     }
   ],
   "crash_matrix": [
@@ -7246,7 +7397,12 @@
         "R-CORE-12",
         "R-HOST-06",
         "R-CORE-13",
-        "R-BUDGET-09"
+        "R-BUDGET-09",
+        "R-CORE-14",
+        "R-DUR-06",
+        "R-DUR-07",
+        "R-RECOV-09",
+        "R-TEST-12"
       ]
     },
     {
@@ -7352,7 +7508,8 @@
         "R-TEST-08",
         "R-DUR-04",
         "R-PERSIST-07",
-        "R-RECOV-08"
+        "R-RECOV-08",
+        "R-RECOV-09"
       ]
     },
     {
@@ -7620,10 +7777,12 @@
         "R-ACTOR-09",
         "R-CORE-12",
         "R-CORE-13",
+        "R-CORE-14",
         "R-HOST-06",
         "R-ACTOR-10",
         "R-BUDGET-09",
-        "R-ARCH-05"
+        "R-ARCH-05",
+        "R-DUR-07"
       ],
       "depends_on": [
         "ror-core",
@@ -7640,6 +7799,8 @@
         "R-DUR-03",
         "R-DUR-04",
         "R-DUR-05",
+        "R-DUR-06",
+        "R-DUR-07",
         "R-PERSIST-01",
         "R-PERSIST-02",
         "R-PERSIST-03",
@@ -7658,7 +7819,8 @@
         "R-TRUST-05",
         "R-PERSIST-08",
         "R-HOST-06",
-        "R-RECOV-08"
+        "R-RECOV-08",
+        "R-RECOV-09"
       ],
       "depends_on": [
         "ror-core"
@@ -7707,7 +7869,8 @@
         "R-REF-01",
         "R-REF-02",
         "R-REF-03",
-        "R-REF-04"
+        "R-REF-04",
+        "R-RECOV-09"
       ],
       "depends_on": [
         "frozen semantics only (no production core deps)"

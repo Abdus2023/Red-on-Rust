@@ -10670,7 +10670,7 @@
    "doc_sites": [
     {
      "file": "spec/01-canonical-specification.md",
-     "line": 494,
+     "line": 504,
      "text": "Block → parse → NormalizedAST",
      "note": "the single-ordering rendering"
     },
@@ -12181,7 +12181,7 @@
    "doc_sites": [
     {
      "file": "spec/01-canonical-specification.md",
-     "line": 160,
+     "line": 162,
      "text": "plus `StalePlan` at the planner boundary",
      "note": "normative R-CALC-06 — source-supported and kept; its annotation now says used-but-undeclared, not phantom"
     },
@@ -12307,7 +12307,7 @@
     },
     {
      "file": "spec/08-verification-mapping.md",
-     "line": 127,
+     "line": 131,
      "text": "MarshalFault",
      "note": "verification mapping that assumes a single variant set"
     }
@@ -12633,7 +12633,7 @@
     },
     {
      "file": "spec/01-canonical-specification.md",
-     "line": 160,
+     "line": 162,
      "text": "The frozen fault taxonomy is the Rust `Fault` enum",
      "note": "R-CALC-06 states a flat variant list that matches neither reading of `HostFault`"
     }

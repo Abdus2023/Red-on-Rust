@@ -134,7 +134,7 @@ journal, recovery engine housing (R-REPO-02).
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-18 + S-13; addenda II–IV. All 14 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-18 + S-13; addenda II–IV, VII. All 16 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -151,10 +151,12 @@ Canonical text: `spec/01` S-18 + S-13; addenda II–IV. All 14 obligations `SPEC
 | R-DUR-03 | Causal effect protocol (ID+digest identity chain) | L35111–35144, L38203–38215 | journal validator, M017 |
 | R-DUR-04 | Prepared∧¬Issued⇒Discard; Issued∧¬Completed⇒Indeterminate | L35159–35176, L38222–38248 | `RECOVERY-ISSUED-INDETERMINATE` (MOD-12) |
 | R-DUR-05 | Escrow survives crash | L35210–35215 | post-recovery invariant check, M008 |
+| R-DUR-06 | Durable issuance payload: `Prepared`/`Issued` carry `effect_bytes` + `EffectCost` triple; `{id, actor, digest}` superseded as persistence payload; digest re-verified (C-105 resolved) | addendum VII (request-pipeline) | M038, T1/T2–T5 reconstruction |
+| R-DUR-07 | Live issuance failure: journal-driven commit; declared `Fault::PersistenceError`; append/sync error ⇒ pre-s12 state; second-sync failure ⇒ `Prepared ∧ ¬Issued ⇒ Discard` (C-106 resolved) | addendum VII (request-pipeline) | M037, live-fault harness |
 | R-TRUST-05 | Crate DAG carries the R-DUR-02 hinge edge ror-runtime → ror-persistence (inverted trait superseded); ror-core → ror-kernel forbidden; forbidden-edge list checked against Cargo.toml; crate-separation rule (C-85 resolved) | addendum III (SEC-022) | Cargo.toml DAG mechanical check |
 
 Atomic registry records under this module: REQ-PERSIST-001…023; REQ-DUR-001…014.
-**14 obligations / 37 records.**
+**16 obligations / 37 records.**
 
 ## SECURITY-BOUNDARY
 

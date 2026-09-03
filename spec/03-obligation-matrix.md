@@ -22,6 +22,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-CORE-11 | One canonical signature per I2 predicate: ValidatedRequest(E) request-time subsuming ValidatedPlan(plan(E)); Authorized(holder, c, E, t) possession conjunct (formalizes R-KERN-04); ValidatedPlan_pred vs ValidatedPlan_struct; chain stated once (X-01/X-04/X-05; C-80 resolved) | addendum (SEC-016) | SPECIFIED | ror-kernel, ror-runtime | R-TEST-09 differential adjudication |
 | R-CORE-12 | Fault totality on machine paths: panic-free non-test code, failures map to declared Fault (InternalInvariant family); transition atomicity — complete or fault, no died-mid-transition; durable append precedes in-memory mutation; clippy unwrap/expect denial (C-83 resolved; M034) | addendum (SEC-020) | SPECIFIED | all machine crates | M034, panic-catching fuzz harness |
 | R-CORE-13 | Closed declared fault surface on every trust-boundary crossing: six replay-path variants, StalePlan, unified MarshalFault, InternalInvariant declared; no debug-formatted external error text in machine values; resume-vs-fault pinned per variant (C-91 resolved) | addendum (SEC-012) | SPECIFIED | all machine crates | fault-coverage lint, differential fault matrix |
+| R-CORE-14 | Canonical request protocol and transaction boundary: master-prompt 16-step order governs, turn-[21] host-before-Issued order superseded; step-10 premise `t + δ_t(req) ≤ W`; steps 12–14b one atomic section (C-103/C-104 resolved) | addendum (request-pipeline) | SPECIFIED | ror-runtime | M037/M038, gate short-circuit matrix |
 | R-TRUST-01 | Trust table (LLM/Block No; host Partial; rest Yes) | L41823–41841, L27611–27624 | SPECIFIED | — | — |
 | R-TRUST-02 | TCB composition; LLM output ∉ TCB authority | L28178–28230 | SPECIFIED | — | — |
 | R-TRUST-03 | No hidden authority; evaluator sees refs only | L37722–37748, L19153–19175 | SPECIFIED | ror-kernel, ror-runtime | Track B (mock kernel), visibility checks |
@@ -118,6 +119,8 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-DUR-03 | Causal effect protocol (Issued⇒Prepared; Completed⇒Issued; Reconciled⇒Issued; ID+digest identity) | L35111–35144, L37953–37965 | SPECIFIED | ror-persistence | journal validator, M017 |
 | R-DUR-04 | Prepared∧¬Issued⇒Discard; Issued∧¬Completed⇒Indeterminate (never NotExecuted) | L35159–35176, L37968–37981 | SPECIFIED | ror-persistence | RECOVERY-ISSUED-INDETERMINATE, crash harness |
 | R-DUR-05 | Escrow survives crash | L35210–35215 | SPECIFIED | ror-persistence | post-recovery invariant check, M008 |
+| R-DUR-06 | Durable issuance payload: `Prepared`/`Issued` carry `effect_bytes` + `EffectCost` triple; `{id, actor, digest}` superseded as persistence payload; digest re-verified at append/recovery (C-105 resolved) | addendum (request-pipeline) | SPECIFIED | ror-persistence | M038, T1/T2–T5 reconstruction harness |
+| R-DUR-07 | Live issuance failure: journal-driven commit; declared `Fault::PersistenceError`; append/sync error ⇒ pre-s12 state and R-EFFECT-04 five assertions; second-sync failure ⇒ `Prepared ∧ ¬Issued ⇒ Discard` (C-106 resolved) | addendum (request-pipeline) | SPECIFIED | ror-runtime, ror-persistence | M037, live-fault harness, T0–T1 |
 | R-HOST-01 | Host independently validates OS authority (defense in depth) | L8560–8580, L10168–10172 | SPECIFIED | ror-host | host policy tests |
 | R-HOST-02 | Host performs only issued effects; partially trusted | L41823–41841, L27644 | SPECIFIED | ror-host | PanicHost harness |
 | R-HOST-03 | Ordered ReplayHost; ID+digest per entry; no unordered map | L25972–25996, L37985–38000 | SPECIFIED | ror-host, ror-reference | replay property tests |
@@ -181,6 +184,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-RECOV-06 | Budget partition invariant survives crash | L35210–35215 | SPECIFIED | ror-persistence | post-recovery invariant |
 | R-RECOV-07 | Reconciliation is the only resolution path for Indeterminate | L35111–35144, L26249–26262 | SPECIFIED | ror-persistence, ror-host | U-15, reconciliation tests |
 | R-RECOV-08 | Reconciliation frozen: I2 holds on every host path incl. supervisor; never re-executes (idempotent query at most); compensations are ordinary gated requests; NotExecuted gated behind authoritative evidence; supervisor allocates lifecycle, not effects (C-89 resolved; M028) | addendum (SEC-010) | SPECIFIED | ror-agent (policy), ror-persistence (record contract) | M028, T2/T3/T4 admissibility table |
+| R-RECOV-09 | Recovery reconstruction authority: `next_effect_id` from max replayed `Issued`; no `SnapshotCommit` in s12–s14b (`RecoveryFault`); completion order append→sync→charge→resume (C-107/C-109 resolved) | addendum (request-pipeline) | SPECIFIED | ror-persistence, ror-reference | M10, crash matrix T4/T5, snapshot-cadence tests |
 
 ## S-20 Reference / S-21 Testing
 | ID | Obligation (short) | Provenance | Status | Impl→ | Verify→ |
@@ -202,6 +206,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-TEST-09 | Fault adjudication (4-way classification) | L38848–38862, L37404–37414 | SPECIFIED | process | R-SCOPE-03 |
 | R-TEST-10 | CI gates (PR / nightly / release) | L38864–38890, L37287–37292 | SPECIFIED | CI | gates |
 | R-TEST-11 | Final acceptance condition (3 conjuncts) | L38885–38911, L41196–41210 | SPECIFIED | — | M11 |
+| R-TEST-12 | Request-frame verification tags: `REQUEST-ARGS-LTR` and `REQUEST-NON-CAP-SHORT-CIRCUIT` added to R-TEST-07's obligation-tagged coverage list; Track A coverage (U-44 resolved) | addendum (request-pipeline) | SPECIFIED | tests/ | Track A request suite |
 
 ## S-22 Repository / S-23 Order / S-24 Claims
 | ID | Obligation (short) | Provenance | Status | Impl→ | Verify→ |
@@ -219,4 +224,4 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-CLAIM-03 | Engineering response format; CONFLICT reporting | L38808–38846 | SPECIFIED | process | — |
 | R-CLAIM-04 | Start condition (no new semantic phase; reference alongside) | L38921–38928 | SPECIFIED | process | — |
 
-**Total: 173 obligations** (148 transcribed from the frozen source + 25 post-audit frozen addenda: R-ARCH-05, R-ACTOR-09, R-ACTOR-10, R-BUDGET-09, R-CANON-12, R-CANON-13, R-CAP-10, R-COMPILE-06, R-CORE-11, R-CORE-12, R-CORE-13, R-EFFECT-08, R-HOST-06, R-KERN-04, R-KERN-05, R-KERN-06, R-MARSHAL-05, R-MARSHAL-06, R-PERSIST-07, R-PERSIST-08, R-PLANNER-06, R-PLANNER-07, R-RECOV-08, R-TRUST-04, R-TRUST-05). All `SPECIFIED`. None may be promoted without repository evidence per `00-overview.md` §2.
+**Total: 178 obligations** (148 transcribed from the frozen source + 30 post-audit frozen addenda: R-ARCH-05, R-ACTOR-09, R-ACTOR-10, R-BUDGET-09, R-CANON-12, R-CANON-13, R-CAP-10, R-COMPILE-06, R-CORE-11, R-CORE-12, R-CORE-13, R-CORE-14, R-DUR-06, R-DUR-07, R-EFFECT-08, R-HOST-06, R-KERN-04, R-KERN-05, R-KERN-06, R-MARSHAL-05, R-MARSHAL-06, R-PERSIST-07, R-PERSIST-08, R-PLANNER-06, R-PLANNER-07, R-RECOV-08, R-RECOV-09, R-TEST-12, R-TRUST-04, R-TRUST-05). All `SPECIFIED`. None may be promoted without repository evidence per `00-overview.md` §2.

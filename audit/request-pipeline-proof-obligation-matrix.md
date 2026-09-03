@@ -396,7 +396,7 @@ gate cannot pass on reconstruction evidence today.
 2026-09-03 by this audit; U-44 is the no-row exception (a verification-register gap),
 and C-108 is corrected in place in `audit/resource-accounting-audit.md` with its
 adoption question as U-45. No `spec/01` text was modified (R-SCOPE-03); the proposed
-addenda live in `audit/request-pipeline-remediation-draft.md` and are not authority.
+addenda live in `audit/request-pipeline-remediation-draft.md` and are not authority; the owner decision recorded in `audit/spec-addendum7-draft.md` was adopted 2026-09-03 as addendum VII — `R-CORE-14`, `R-DUR-06/07`, `R-RECOV-09`, `R-TEST-12`, mutations M037/M038 — re-grading C-103…C-107/C-109 `resolved-by-addendum` and closing U-39…U-44; U-45 was explicitly deferred.
 **Revised 2026-09-03 (same session):** the `pre-existing` cross-references above were
 verified row-by-row against the registers and corrected — GAP-03 now points at C-79
 (the `MarshalFault`/`MarshalledValue` row for X-65; the C-13…C-16 family is the

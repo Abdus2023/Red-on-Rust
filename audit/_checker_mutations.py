@@ -410,6 +410,42 @@ def m_term_count_drift(root: Path) -> bool:
     return True
 
 
+def m037_live_commit_before_append(root: Path) -> bool:
+    """M037 (spec/08 registry): the in-memory s12-s13 mutations committed before
+    the journal-driven append+fsync. Rendered as a document mutant of the frozen
+    addendum-VII body: the invariant becomes live-unsafe text while the spec/03
+    row still describes the journal-driven order. Detectable by spec/_check.py
+    D3; survives the default wiring (U-38 open) and dies under --allowlist.
+    """
+    p = root / "spec/01-canonical-specification.md"
+    txt = p.read_text(encoding="utf-8")
+    m = re.search(r"^\*\*R-DUR-07 \(.*$", txt, re.M)
+    if not m:
+        return False
+    mutant = ("**R-DUR-07 (live issuance failure — frozen addendum).** "
+              "Persistence failures MUST commit the in-memory s12-s13 mutations "
+              "before the journal append and MUST invoke the host.")
+    p.write_text(txt[:m.start()] + mutant + txt[m.end():], encoding="utf-8")
+    return True
+
+
+def m038_payload_id_digest_only(root: Path) -> bool:
+    """M038 (spec/08 registry): issuance records carry `{id, actor, digest}` only.
+    Same treatment as M037: a document mutant of the R-DUR-06 body that the
+    spec/03 row contradicts. D3-detectable; known to survive the default wiring
+    (U-38) and to die under --allowlist.
+    """
+    p = root / "spec/01-canonical-specification.md"
+    txt = p.read_text(encoding="utf-8")
+    m = re.search(r"^\*\*R-DUR-06 \(.*$", txt, re.M)
+    if not m:
+        return False
+    mutant = ("**R-DUR-06 (durable issuance payload — frozen addendum).** "
+              "All journal entries are free-form text with no effect, digest or cost.")
+    p.write_text(txt[:m.start()] + mutant + txt[m.end():], encoding="utf-8")
+    return True
+
+
 def m_m036_under_allowlist(root: Path) -> bool:
     """The M036 rotation, to be run against `spec/_check.py --allowlist`.
 
@@ -517,6 +553,21 @@ MUTATIONS = [
              m_m036_under_allowlist,
              regression_for="U-38 option (b) / the SEC-023 class",
              tags=["spec", "severity", "u-38"],
+             extra_checkers=[("spec/_check.py", ["--allowlist"])]),
+    Mutation("K19", "in-memory s12-s13 mutations before the journal append (M037)",
+             "The M037 shape rendered as a document mutant of the addendum-VII body. "
+             "Survives the default wiring (U-38 is still open) and dies under option (b), "
+             "the M036/K18 contrast that keeps the claim testable for the new text.",
+             m037_live_commit_before_append,
+             regression_for="M037 / R-DUR-07 journal-driven commit",
+             tags=["normative", "allowlist"],
+             extra_checkers=[("spec/_check.py", ["--allowlist"])]),
+    Mutation("K20", "issuance records carry {id, actor, digest} only (M038)",
+             "The M038 shape rendered as a document mutant of the addendum-VII body. "
+             "Survives the default wiring (U-38) and dies under option (b).",
+             m038_payload_id_digest_only,
+             regression_for="M038 / R-DUR-06 issuance payload",
+             tags=["normative", "allowlist"],
              extra_checkers=[("spec/_check.py", ["--allowlist"])]),
 ]
 

@@ -1796,7 +1796,7 @@ No new decision; U-08/U-14 stand, restated against verified text.
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/01-canonical-specification.md`:160 | ``plus `StalePlan` at the planner boundary`` | normative R-CALC-06 — source-supported and kept; its annotation now says used-but-undeclared, not phantom |
+| `spec/01-canonical-specification.md`:162 | ``plus `StalePlan` at the planner boundary`` | normative R-CALC-06 — source-supported and kept; its annotation now says used-but-undeclared, not phantom |
 | `req/01-registry-part2-semantics.md`:197 | `Verified, correction reverted` | REQ-CALC-014 STATEMENT, restored after the phantom claim was shown false |
 | `req/01-registry-part2-semantics.md`:199 | `Withdrawal reverted` | REQ-CALC-014 POSTCONDITIONS, restored — `Fault::StalePlan` occurs verbatim at L28373 |
 | `req/01-registry-part2-semantics.md`:195 | `L28373([36])` | REQ-CALC-014's SOURCE line, which cited the occurrence all along |
@@ -1848,7 +1848,7 @@ Yes, but owned by U-08 and now widened by X-69: does `StalePlan` join the declar
 |---|---|---|
 | `mod/06-actor.md`:103 | `MarshalFault::CapabilityRequiresDelegation` | cites only the turn-[32] variant set |
 | `req/01-registry-part1-foundations.md`:301 | `Err(MarshalFault::CapabilityRequiresDelegation)` | REQ postcondition citing only the turn-[32] set |
-| `spec/08-verification-mapping.md`:127 | `MarshalFault` | verification mapping that assumes a single variant set |
+| `spec/08-verification-mapping.md`:131 | `MarshalFault` | verification mapping that assumes a single variant set |
 
 ### The collision
 
@@ -1935,7 +1935,7 @@ Yes, folded into U-14: is `Invalid` a distinct variant or a typo for `InvalidCon
 | File:line | Text at that line | Note |
 |---|---|---|
 | `req/03-ambiguous.md`:69 | ``previously also mapped `IsolationBreach``` | AMB-08's reading (a), corrected in place: `IsolationBreach` is the receipt-mismatch fault |
-| `spec/01-canonical-specification.md`:160 | ``The frozen fault taxonomy is the Rust `Fault` enum`` | R-CALC-06 states a flat variant list that matches neither reading of `HostFault` |
+| `spec/01-canonical-specification.md`:162 | ``The frozen fault taxonomy is the Rust `Fault` enum`` | R-CALC-06 states a flat variant list that matches neither reading of `HostFault` |
 
 ### The collision
 
@@ -2985,7 +2985,7 @@ Yes — identify the single frozen `Frame` declaration and state `AuthorityNode`
 
 | File:line | Text at that line | Note |
 |---|---|---|
-| `spec/01-canonical-specification.md`:494 | `Block → parse → NormalizedAST` | the single-ordering rendering |
+| `spec/01-canonical-specification.md`:504 | `Block → parse → NormalizedAST` | the single-ordering rendering |
 | `mod/02-compiler.md`:45 | `Block → parse → NormalizedAST` | the same rendering repeated in the module layer |
 
 ### The collision

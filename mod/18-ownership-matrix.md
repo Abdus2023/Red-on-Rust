@@ -52,7 +52,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 
 ## 1. Obligation partition (148)
 
-### MOD-01 — CORE (32 obligations)
+### MOD-01 — CORE (33 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -82,6 +82,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-CORE-11 | One canonical signature per I2 predicate: ValidatedRequest(E) request-time subsuming ValidatedPlan(plan(E)); Authorized(holder, c, E, t) possession conjunct (formalizes R-KERN-04); ValidatedPlan_pred vs ValidatedPlan_struct; chain stated once (X-01/X-04/X-05; C-80 resolved) | addendum (SEC-016) | — | — |
 | R-CORE-12 | Fault totality on machine paths: panic-free non-test code, failures map to declared Fault (InternalInvariant family); transition atomicity — complete or fault, no died-mid-transition; durable append precedes in-memory mutation; clippy unwrap/expect denial (C-83 resolved; M034) | addendum (SEC-020) | — | — |
 | R-CORE-13 | Closed declared fault surface on every trust-boundary crossing: six replay-path variants, StalePlan, unified MarshalFault, InternalInvariant declared; no debug-formatted external error text in machine values; resume-vs-fault pinned per variant (C-91 resolved) | addendum (SEC-012) | — | — |
+| R-CORE-14 | Canonical request protocol and transaction boundary: master-prompt 16-step order governs, turn-[21] host-before-Issued order superseded; step-10 premise `t + δ_t(req) ≤ W`; steps 12–14b one atomic section (C-103/C-104 resolved) | addendum (request-pipeline) | MOD-08 (16-step sequence statement R-EFFECT-01/03), MOD-04 (deadline premise R-BUDGET-06), MOD-11 (s12–s14b durable section R-DUR-02), MOD-12 (recovery boundary R-RECOV-09), MOD-17 (completion-boundary evidence) | — |
 | R-SCOPE-01 | Thesis: deterministic, capability-scoped, resource-bounded, crash-recoverable machine | L41293–41300 | MOD-02 (capability-scoped), MOD-04 (resource-bounded), MOD-07 (deterministic), MOD-12 (crash-recoverable) | — |
 | R-SCOPE-02 | Architecture/spec/verification FROZEN; frozen ≠ verified | L38929–38942, L41297–41315 | MOD-17 (status ladder enforced as evidence discipline) | — |
 | R-TRUST-01 | Trust table (LLM/Block No; host Partial; rest Yes) | L41823–41841, L27611–27624 | MOD-17 (boundary enforcement review), MOD-09 (live host is the only Partial row) | — |
@@ -215,7 +216,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-CANON-12 | Data decoder rejects capability payloads: 0x05 and standalone 0x30 yield CanonicalError::CapabilityInData; only the kernel-mediated codec path produces or consumes capability payloads; unmarshal runs contains_capability — symmetric boundary (C-14/U-02 security direction; C-78 resolved) | addendum (SEC-003) | — | — |
 | R-CANON-13 | One canonical grammar: 15A BE envelope sole; LE revised grammar superseded in-source; single TAG_* namespace (X-50/X-54 resolved); all digests defined over 15A; bidirectional byte-exact golden vectors; LE variants rejected (C-92 resolved; M031) | addendum (SEC-017) | — | — |
 
-### MOD-11 — PERSISTENCE (14 obligations)
+### MOD-11 — PERSISTENCE (16 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -224,6 +225,8 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-DUR-03 | Causal effect protocol (Issued⇒Prepared; Completed⇒Issued; Reconciled⇒Issued; ID+digest identity) | L35111–35144, L37953–37965 | MOD-08 (receipt digests continue the chain), MOD-12 (journal reconstructed and causality-checked) | — |
 | R-DUR-04 | Prepared∧¬Issued⇒Discard; Issued∧¬Completed⇒Indeterminate (never NotExecuted) | L35159–35176, L37968–37981 | MOD-12 (classification applied at T1..T4), MOD-08 (escrow semantics at issuance) | — |
 | R-DUR-05 | Escrow survives crash | L35210–35215 | MOD-04 (escrow partition owner), MOD-12 (post-recovery invariant check) | — |
+| R-DUR-06 | Durable issuance payload: `Prepared`/`Issued` carry `effect_bytes` + `EffectCost` triple; `{id, actor, digest}` superseded as persistence payload; digest re-verified at append/recovery (C-105 resolved) | addendum (request-pipeline) | MOD-08 (escrow at issuance R-EFFECT-05), MOD-04 (escrow partition), MOD-10 (canonical bytes/digest), MOD-12 (T1 restore / T2–T5 reconstruction) | — |
+| R-DUR-07 | Live issuance failure: journal-driven commit; declared `Fault::PersistenceError`; append/sync error ⇒ pre-s12 state and R-EFFECT-04 five assertions; second-sync failure ⇒ `Prepared ∧ ¬Issued ⇒ Discard` (C-106 resolved) | addendum (request-pipeline) | MOD-08 (R-EFFECT-04 five assertions), MOD-01 (R-CORE-12/13 fault surface), MOD-12 (Prepared ∧ ¬Issued ⇒ Discard) | — |
 | R-PERSIST-01 | Persistence = recording, not a semantic machine; no secondary serialization | L33757–33790, L35078–35087 | MOD-10 (payloads strictly 15A) | — |
 | R-PERSIST-02 | Two-level framing; WalFrame checksum; 8 rejection classes | L33802–33830, L35088–35110 | MOD-10 (payload layer is 15A), MOD-12 (rejections surface at recovery) | — |
 | R-PERSIST-03 | Record taxonomy; EventEnvelope monotonic sequence | L33861–33900, L35111–35144 | MOD-07 (ActorSelected et al. are envelope events), MOD-17 (EventSequence vs WalSequence open - U-16) | — |
@@ -234,7 +237,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-PERSIST-08 | Storage integrity rewinding resistance: chained checksums (checksum_n = H(checksum_{n−1} ‖ frame_n)); snapshot commit covers state digest + last WAL sequence; keyed chain if storage adversarial, else trust-table records the trusted-writable assumption; consistently-forged negative tests (C-88 resolved) | addendum (SEC-009) | — | — |
 | R-TRUST-05 | Crate DAG carries the R-DUR-02 hinge edge ror-runtime → ror-persistence (inverted trait superseded); ror-core → ror-kernel forbidden; forbidden-edge list checked against Cargo.toml; crate-separation rule (C-85 resolved) | addendum (SEC-022) | — | — |
 
-### MOD-12 — RECOVERY (8 obligations)
+### MOD-12 — RECOVERY (9 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -246,6 +249,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-RECOV-06 | Budget partition invariant survives crash | L35210–35215 | MOD-04 (invariant statement), MOD-11 (escrow records carry it over) | — |
 | R-RECOV-07 | Reconciliation is the only resolution path for Indeterminate | L35111–35144, L26249–26262 | MOD-09 (authoritative host reconciliation protocol), MOD-11 (EffectReconciled record), MOD-17 (outcome variants open - U-15) | — |
 | R-RECOV-08 | Reconciliation frozen: I2 holds on every host path incl. supervisor; never re-executes (idempotent query at most); compensations are ordinary gated requests; NotExecuted gated behind authoritative evidence; supervisor allocates lifecycle, not effects (C-89 resolved; M028) | addendum (SEC-010) | — | — |
+| R-RECOV-09 | Recovery reconstruction authority: `next_effect_id` from max replayed `Issued`; no `SnapshotCommit` in s12–s14b (`RecoveryFault`); completion order append→sync→charge→resume (C-107/C-109 resolved) | addendum (request-pipeline) | MOD-11 (snapshot atomic protocol R-PERSIST-05), MOD-08 (completion order R-EFFECT-07), MOD-06 (counter restoration R-ACTOR-03), MOD-17 (M10 gate) | — |
 
 ### MOD-13 — AGENT (7 obligations)
 
@@ -287,7 +291,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-TEST-05 | 100% kill rate (non-equivalent); adjudication for equivalents | L38494–38500, L37390–37400 | MOD-17 (release-blocking rule), MOD-15 (kill evidence gathered differentially) | — |
 | R-TEST-06 | Mutation validation (verification system tested) | L38515–38540 | MOD-17 (framework self-test infrastructure), MOD-15 (oracle used to prove kills) | — |
 
-### MOD-17 — VERIFICATION (18 obligations)
+### MOD-17 — VERIFICATION (19 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -309,8 +313,9 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-TEST-09 | Fault adjudication (4-way classification) | L38848–38862, L37404–37414 | MOD-15 (divergences originate here), MOD-01 (specification ambiguity reopens frozen text (R-SCOPE-03)) | — |
 | R-TEST-10 | CI gates (PR / nightly / release) | L38864–38890, L37287–37292 | MOD-16 (mutation gate stage), MOD-15 (differential suites staged) | — |
 | R-TEST-11 | Final acceptance condition (3 conjuncts) | L38885–38911, L41196–41210 | MOD-15 (oracle equality conjunct), MOD-16 (kill-rate conjunct), MOD-12 (recovery-equivalence conjunct) | — |
+| R-TEST-12 | Request-frame verification tags: `REQUEST-ARGS-LTR` and `REQUEST-NON-CAP-SHORT-CIRCUIT` added to R-TEST-07's obligation-tagged coverage list; Track A coverage (U-44 resolved) | addendum (request-pipeline) | MOD-05 (request-frame LTR), MOD-08 (short-circuit gate), MOD-15 (R-TEST-07 tag-list owner) | — |
 
-**Partition check:** 173 obligations across 17 modules (expected 148).
+**Partition check:** 178 obligations across 17 modules (expected 148).
 
 ## 2. Atomic-record partition (545)
 
