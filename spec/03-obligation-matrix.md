@@ -21,6 +21,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-CORE-10 | No silent recovery corruption | L42100–42105, L35196–35208 | SPECIFIED | ror-persistence | M015, M016, negative recovery tests |
 | R-CORE-11 | One canonical signature per I2 predicate: ValidatedRequest(E) request-time subsuming ValidatedPlan(plan(E)); Authorized(holder, c, E, t) possession conjunct (formalizes R-KERN-04); ValidatedPlan_pred vs ValidatedPlan_struct; chain stated once (X-01/X-04/X-05; C-80 resolved) | addendum (SEC-016) | SPECIFIED | ror-kernel, ror-runtime | R-TEST-09 differential adjudication |
 | R-CORE-12 | Fault totality on machine paths: panic-free non-test code, failures map to declared Fault (InternalInvariant family); transition atomicity — complete or fault, no died-mid-transition; durable append precedes in-memory mutation; clippy unwrap/expect denial (C-83 resolved; M034) | addendum (SEC-020) | SPECIFIED | all machine crates | M034, panic-catching fuzz harness |
+| R-CORE-13 | Closed declared fault surface on every trust-boundary crossing: six replay-path variants, StalePlan, unified MarshalFault, InternalInvariant declared; no debug-formatted external error text in machine values; resume-vs-fault pinned per variant (C-91 resolved) | addendum (SEC-012) | SPECIFIED | all machine crates | fault-coverage lint, differential fault matrix |
 | R-TRUST-01 | Trust table (LLM/Block No; host Partial; rest Yes) | L41823–41841, L27611–27624 | SPECIFIED | — | — |
 | R-TRUST-02 | TCB composition; LLM output ∉ TCB authority | L28178–28230 | SPECIFIED | — | — |
 | R-TRUST-03 | No hidden authority; evaluator sees refs only | L37722–37748, L19153–19175 | SPECIFIED | ror-kernel, ror-runtime | Track B (mock kernel), visibility checks |
@@ -39,6 +40,8 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-PLANNER-03 | Staleness check; StalePlan rejection, no state mutation | L27199–27236, L28373 | SPECIFIED | ror-agent, ror-runtime | R-PLANNER-05(2) |
 | R-PLANNER-04 | Planner need not be deterministic; PlannerAccepted recording for replay | L27392–27414 | SPECIFIED | ror-agent | R-PLANNER-05(3) |
 | R-PLANNER-05 | LLM outer-loop conformance (3 test obligations) | L27920–27931, L28513–28521 | SPECIFIED | ror-agent, ror-testkit | 15E suite |
+| R-PLANNER-06 | Staleness is exact equality: observation_sequence = current_planning_epoch; either-direction mismatch ⇒ StalePlan with zero state mutation; less-than-only reading superseded; future-tagged proposals mandatory rejection test (C-86 resolved; M026) | addendum (SEC-007) | SPECIFIED | ror-agent, ror-runtime | M026, epoch-boundary conformance |
+| R-PLANNER-07 | Observation channel capability-opaque: CapabilitySummary frozen as non-referential projection (counts, classes, ceilings); EffectIssued carries {id, actor, digest} only, cap-bearing log shape superseded; Capability ∉ Observables(LLM) (C-87 resolved; M027) | addendum (SEC-008) | SPECIFIED | ror-agent | M027, observation-opacity property |
 | R-COMPILE-01 | Block ≠ ExecutablePlan | L41440–41452, L3834–3838 | SPECIFIED | ror-compiler | R-ORDER-03 |
 | R-COMPILE-02 | Pipeline stages; any failure ⇒ fault, no bypass | L39253–39267 | SPECIFIED | ror-compiler | malformed-Block rejection |
 | R-COMPILE-03 | Combined static judgment (type, effects, capability req, budget bound) | L3874–3905 | SPECIFIED | ror-compiler | U-22 (J2 re-spec gap) |
@@ -116,6 +119,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-HOST-03 | Ordered ReplayHost; ID+digest per entry; no unordered map | L25972–25996, L37985–38000 | SPECIFIED | ror-host, ror-reference | replay property tests |
 | R-HOST-04 | Replay correspondence (machine replay valid; real-world replay per effect class) | L3947–3958, L26249–26262 | SPECIFIED | ror-host, ror-reference | R-REF-01 recovery equivalence |
 | R-HOST-05 | Replay validates trace, not just final state | L38278–38300 | SPECIFIED | ror-host | trace comparison |
+| R-HOST-06 | Durable receipt results representable: EffectCompleted {id, digest, result_digest, result: CanonicalData}; replay verifies ResultDigest(result) = result_digest before resumption — third identity conjunct; no ad-hoc result records (C-90 resolved; M029) | addendum (SEC-011) | SPECIFIED | ror-persistence, ror-runtime | M029, T5 byte-exact resumption |
 
 ## S-15 Actors / S-16 Marshalling
 | ID | Obligation (short) | Provenance | Status | Impl→ | Verify→ |
@@ -151,6 +155,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-CANON-10 | Injectivity as structural property + scoped evidence claim | L30592–30598, L35068 | SPECIFIED | ror-core | round-trip + differential |
 | R-CANON-11 | Golden vectors as normative fixtures | L30599–30646, L31948–32010, L33266–33286 | SPECIFIED | ror-core (vectors/) | M1 acceptance |
 | R-CANON-12 | Data decoder rejects capability payloads: 0x05 and standalone 0x30 yield CanonicalError::CapabilityInData; only the kernel-mediated codec path produces or consumes capability payloads; unmarshal runs contains_capability — symmetric boundary (C-14/U-02 security direction; C-78 resolved) | addendum (SEC-003) | SPECIFIED | ror-core | M022, negative golden vectors |
+| R-CANON-13 | One canonical grammar: 15A BE envelope sole; LE revised grammar superseded in-source; single TAG_* namespace (X-50/X-54 resolved); all digests defined over 15A; bidirectional byte-exact golden vectors; LE variants rejected (C-92 resolved; M031) | addendum (SEC-017) | SPECIFIED | ror-core | M031, bidirectional golden vectors |
 
 ## S-18 Persistence / S-19 Recovery
 | ID | Obligation (short) | Provenance | Status | Impl→ | Verify→ |
@@ -162,6 +167,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-PERSIST-05 | Atomic snapshot protocol; ValidSnapshot iff commit+digest | L26216–26240, L35177–35188 | SPECIFIED | ror-persistence | SNAPSHOT-COMMIT-INTEGRITY, crash harness T6 |
 | R-PERSIST-06 | WAL sequence continuity; gaps rejected | L35088–35110, L35189–35208 | SPECIFIED | ror-persistence | WAL-SEQUENCE-CONTINUITY, WAL-GAP-REJECT, M015 |
 | R-PERSIST-07 | Durable authority lattice: snapshot carries the AuthorityNode set, revocation_set and generation counters; WAL event kinds CapabilityGranted/Derived/Revoked; recovery reconstructs the arena, replays capability events, faults on dangling or generation-mismatched CapRef; revocation monotonic across crashes (RECOVERY-REVOCATION-DURABLE) | addendum (SEC-004) | SPECIFIED | ror-persistence, ror-kernel | RECOVERY-REVOCATION-DURABLE, M023, crash matrix T0–T6 with pre-crash revocation |
+| R-PERSIST-08 | Storage integrity rewinding resistance: chained checksums (checksum_n = H(checksum_{n−1} ‖ frame_n)); snapshot commit covers state digest + last WAL sequence; keyed chain if storage adversarial, else trust-table records the trusted-writable assumption; consistently-forged negative tests (C-88 resolved) | addendum (SEC-009) | SPECIFIED | ror-persistence | tamper-at-every-T matrix, forged-record negatives |
 | R-RECOV-01 | D = ⟨S,L,H⟩; Recover = Replay | L26122–26140 | SPECIFIED | ror-persistence | recovery differential |
 | R-RECOV-02 | Normative crash matrix T0–T6 | L35159–35176, L28467–28493 | SPECIFIED | ror-persistence | crash harness, M10 |
 | R-RECOV-03 | Recovery algorithm (12 steps) | L35189–35208, L26272–26300 | SPECIFIED | ror-persistence | recovery differential (R-REF-01) |
@@ -169,6 +175,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-RECOV-05 | Invalid(D) ⇒ RecoveryFault; never silently repair | L35196–35208, L38254–38272 | SPECIFIED | ror-persistence | negative corruption tests |
 | R-RECOV-06 | Budget partition invariant survives crash | L35210–35215 | SPECIFIED | ror-persistence | post-recovery invariant |
 | R-RECOV-07 | Reconciliation is the only resolution path for Indeterminate | L35111–35144, L26249–26262 | SPECIFIED | ror-persistence, ror-host | U-15, reconciliation tests |
+| R-RECOV-08 | Reconciliation frozen: I2 holds on every host path incl. supervisor; never re-executes (idempotent query at most); compensations are ordinary gated requests; NotExecuted gated behind authoritative evidence; supervisor allocates lifecycle, not effects (C-89 resolved; M028) | addendum (SEC-010) | SPECIFIED | ror-agent (policy), ror-persistence (record contract) | M028, T2/T3/T4 admissibility table |
 
 ## S-20 Reference / S-21 Testing
 | ID | Obligation (short) | Provenance | Status | Impl→ | Verify→ |
@@ -207,4 +214,4 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-CLAIM-03 | Engineering response format; CONFLICT reporting | L38808–38846 | SPECIFIED | process | — |
 | R-CLAIM-04 | Start condition (no new semantic phase; reference alongside) | L38921–38928 | SPECIFIED | process | — |
 
-**Total: 161 obligations** (148 transcribed from the frozen source + 13 post-audit frozen addenda: R-COMPILE-06, R-CORE-11, R-CORE-12, R-KERN-04, R-KERN-05, R-EFFECT-08, R-MARSHAL-05, R-MARSHAL-06, R-CANON-12, R-PERSIST-07, R-ACTOR-09, R-TRUST-04, R-TRUST-05). All `SPECIFIED`. None may be promoted without repository evidence per `00-overview.md` §2.
+**Total: 168 obligations** (148 transcribed from the frozen source + 20 post-audit frozen addenda: R-ACTOR-09, R-CANON-12, R-CANON-13, R-COMPILE-06, R-CORE-11, R-CORE-12, R-CORE-13, R-EFFECT-08, R-HOST-06, R-KERN-04, R-KERN-05, R-MARSHAL-05, R-MARSHAL-06, R-PERSIST-07, R-PERSIST-08, R-PLANNER-06, R-PLANNER-07, R-RECOV-08, R-TRUST-04, R-TRUST-05). All `SPECIFIED`. None may be promoted without repository evidence per `00-overview.md` §2.

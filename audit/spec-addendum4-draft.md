@@ -1,11 +1,16 @@
 # Addendum IV — MEDIUM freeze (SEC-007 / 008 / 009 / 010 / 011 / 012 / 017)
 
-**Status: DRAFT FOR SPECIFICATION-OWNER ADOPTION — not applied.** The exact
-edit set lives in `audit/spec_addendum4.py` (this draft is generated from its
-constants; the two cannot drift). Dry run = full-fidelity: a `git archive`
-sandbox of HEAD receives the edits and the entire verification stack
-(`audit/spec_check.py`, `spec/_build_index.py`, `req/_validate.py`) runs
-there. `--apply` executes in place; rollback is `git revert`.
+**Status: APPLIED** via `audit/spec_addendum4.py --apply` (adoption commit on
+`arena/01a063c4-red-on-rust`; post-apply verification on the real tree:
+168 obligations / 168 matrix rows / 148 records, `spec/_check.py` D1=0 exit 0,
+index rebuilt at 168/91/32/19, `req/_validate.py` exit 0 / ERRORS 0, applier
+idempotency guard armed). This file is retained as the review record of
+exactly what was adopted and why; rollback is `git revert` of the adoption
+commit. The exact edit set lives in `audit/spec_addendum4.py` (this draft was
+generated from its constants, so the two cannot drift); its dry run is
+full-fidelity — a `git archive` sandbox of HEAD receives the edits and the
+entire verification stack (`audit/spec_check.py`, `spec/_build_index.py`,
+`req/_validate.py`) runs there.
 
 ## 1. What this freezes (report §6 items 6-7)
 

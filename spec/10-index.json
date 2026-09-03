@@ -31,12 +31,12 @@
     },
     "id_schemes": {
       "S-NN": "specification section (24)",
-      "R-AREA-NN": "normative requirement/obligation (161; 148 source-transcribed + 13 post-audit frozen addenda)",
-      "C-NN": "contradiction/ambiguity finding (84 indexed; 85 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
+      "R-AREA-NN": "normative requirement/obligation (168; 148 source-transcribed + 20 post-audit frozen addenda)",
+      "C-NN": "contradiction/ambiguity finding (91 indexed; 92 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
       "U-NN": "unresolved item requiring explicit decision (28)",
       "M-NN": "milestone M0-M11",
       "TAG": "source verification-obligation tags (19; 17 frozen-source + 2 post-audit addenda)",
-      "M0NN": "baseline mutation registry (27; 18 baseline + 9 post-audit: M019–M025, M032, M034)",
+      "M0NN": "baseline mutation registry (32; 18 baseline + 14 post-audit: M019–M029, M031, M032, M034)",
       "ROR-NNN": "first-sprint tasks (16)"
     },
     "documents": {
@@ -45,7 +45,7 @@
       "03-obligation-matrix.md": "all requirements with stable IDs, status, provenance",
       "04-dependency-graph.md": "section/object/verification dependency graphs + DOT",
       "05-terminology.md": "glossary, normalization rules, under-specified terms",
-      "06-contradictions-ambiguities.md": "findings C-01..C-85 with severity and status",
+      "06-contradictions-ambiguities.md": "findings C-01..C-92 with severity and status",
       "07-implementation-mapping.md": "obligations -> crates/modules; actual repo state; milestone crosswalk",
       "08-verification-mapping.md": "obligations -> tags/tests/evidence; claim ladder per theorem",
       "09-unresolved-decisions.md": "items U-01..U-34 requiring explicit architectural decisions",
@@ -88,7 +88,8 @@
         "R-CORE-09",
         "R-CORE-10",
         "R-CORE-11",
-        "R-CORE-12"
+        "R-CORE-12",
+        "R-CORE-13"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -149,7 +150,9 @@
         "R-PLANNER-02",
         "R-PLANNER-03",
         "R-PLANNER-04",
-        "R-PLANNER-05"
+        "R-PLANNER-05",
+        "R-PLANNER-06",
+        "R-PLANNER-07"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -366,7 +369,8 @@
         "R-HOST-02",
         "R-HOST-03",
         "R-HOST-04",
-        "R-HOST-05"
+        "R-HOST-05",
+        "R-HOST-06"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -447,7 +451,8 @@
         "R-CANON-09",
         "R-CANON-10",
         "R-CANON-11",
-        "R-CANON-12"
+        "R-CANON-12",
+        "R-CANON-13"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -472,7 +477,8 @@
         "R-PERSIST-04",
         "R-PERSIST-05",
         "R-PERSIST-06",
-        "R-PERSIST-07"
+        "R-PERSIST-07",
+        "R-PERSIST-08"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -497,7 +503,8 @@
         "R-RECOV-04",
         "R-RECOV-05",
         "R-RECOV-06",
-        "R-RECOV-07"
+        "R-RECOV-07",
+        "R-RECOV-08"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -976,6 +983,26 @@
       ]
     },
     {
+      "id": "R-CORE-13",
+      "section": "S-02",
+      "title": "Closed declared fault surface (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [],
+      "verification": [
+        "fault-coverage lint",
+        "differential fault matrix"
+      ],
+      "related_findings": [
+        "C-91"
+      ]
+    },
+    {
       "id": "R-TRUST-01",
       "section": "S-03",
       "title": "Trust table (LLM/Block No; host Partial; rest Yes)",
@@ -1263,6 +1290,51 @@
         "15E suite"
       ],
       "related_findings": []
+    },
+    {
+      "id": "R-PLANNER-06",
+      "section": "S-05",
+      "title": "Staleness is exact equality (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-agent",
+        "ror-runtime"
+      ],
+      "verification": [
+        "M026",
+        "epoch-boundary conformance"
+      ],
+      "related_findings": [
+        "C-86"
+      ]
+    },
+    {
+      "id": "R-PLANNER-07",
+      "section": "S-05",
+      "title": "Observation channel capability-opaque (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-agent"
+      ],
+      "verification": [
+        "M027",
+        "observation-opacity property"
+      ],
+      "related_findings": [
+        "C-87"
+      ]
     },
     {
       "id": "R-COMPILE-01",
@@ -2584,6 +2656,29 @@
       "related_findings": []
     },
     {
+      "id": "R-HOST-06",
+      "section": "S-14",
+      "title": "Durable receipt results, ResultDigest replay conjunct (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence",
+        "ror-runtime"
+      ],
+      "verification": [
+        "M029",
+        "T5 byte-exact resumption"
+      ],
+      "related_findings": [
+        "C-90"
+      ]
+    },
+    {
       "id": "R-ACTOR-01",
       "section": "S-15",
       "title": "Actor isolation (heaps, envs, continuations, mailboxes, budgets, caps)",
@@ -3188,6 +3283,28 @@
       ]
     },
     {
+      "id": "R-CANON-13",
+      "section": "S-17",
+      "title": "One canonical grammar, 15A BE sole (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-core"
+      ],
+      "verification": [
+        "M031",
+        "bidirectional golden vectors"
+      ],
+      "related_findings": [
+        "C-92"
+      ]
+    },
+    {
       "id": "R-PERSIST-01",
       "section": "S-18",
       "title": "Persistence = recording, not a semantic machine; no secondary serialization",
@@ -3342,6 +3459,28 @@
         "M023"
       ],
       "related_findings": []
+    },
+    {
+      "id": "R-PERSIST-08",
+      "section": "S-18",
+      "title": "Storage integrity rewinding-resistance (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-persistence"
+      ],
+      "verification": [
+        "tamper-at-every-T matrix",
+        "forged-record negatives"
+      ],
+      "related_findings": [
+        "C-88"
+      ]
     },
     {
       "id": "R-RECOV-01",
@@ -3500,6 +3639,29 @@
       "related_findings": [
         "U-06",
         "U-15"
+      ]
+    },
+    {
+      "id": "R-RECOV-08",
+      "section": "S-19",
+      "title": "Reconciliation protocol frozen (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-agent",
+        "ror-persistence"
+      ],
+      "verification": [
+        "M028",
+        "T2/T3/T4 admissibility table"
+      ],
+      "related_findings": [
+        "C-89"
       ]
     },
     {
@@ -5543,6 +5705,122 @@
           "39807-39828"
         ]
       }
+    },
+    {
+      "id": "C-86",
+      "title": "C-38/U-13 record the staleness predicate as \"two phrasings of one check\" (MINOR); the equality form (L27208–27212) and the strictly-less form (L27918/L28373/L28517) define different acceptance sets — under the canonical <-only reading a future-tagged proposal is not stale and must be accepted, breaking the planning-epoch trust boundary in the forward direction and end-to-end replay equivalence (audit SEC-007)",
+      "severity": "MAJOR",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27208-27212",
+          "27918",
+          "28373",
+          "28517"
+        ]
+      }
+    },
+    {
+      "id": "C-87",
+      "title": "CapabilitySummary occurs exactly once in the corpus and is never defined (unregistered); four frozen EffectRequest declarations carry pub cap: CapRef while later forms drop it (unregistered shape conflict); LogEntry::EffectIssued embeds the full request — capability included — in the event log that planner-facing observations read; nothing freezes what the untrusted side may observe (audit SEC-008)",
+      "severity": "BLOCKING",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27151-27163",
+          "9314-9317",
+          "10322-10325",
+          "10806-10809",
+          "1447-1452",
+          "10912-10915",
+          "26459"
+        ]
+      }
+    },
+    {
+      "id": "C-88",
+      "title": "Every persistence integrity mechanism is an unkeyed hash over attacker-writable data (frame checksum, state_digest); the nine rejection classes are consistency checks, so an attacker with storage write access can construct fully consistent forged records — snapshots that mint authority, WAL histories that never happened, EffectCompleted for effects the host never performed — and the no-silent-repair invariants are all satisfied by the forgery; the storage-channel threat model is stated nowhere (audit SEC-009)",
+      "severity": "MAJOR",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "33802-33830",
+          "26303-26309",
+          "35196-35208"
+        ]
+      }
+    },
+    {
+      "id": "C-89",
+      "title": "Reconciliation is the only exit from Indeterminate, releases complete_max escrow, and writes durable EffectReconciled records, yet its protocol, authorization rules, and outcome admissibility are unfrozen and live in a trusted component above the machine; the frozen variant set already contains NotExecuted (the durable resolution the machine side is forbidden to infer) and Completed(EffectReceipt) embeds unconstrained result values; I2 is not stated to apply to reconciliation-driven actions (audit SEC-010)",
+      "severity": "BLOCKING",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "26249-26262",
+          "26593-26597",
+          "27742",
+          "26799-26842"
+        ]
+      }
+    },
+    {
+      "id": "C-90",
+      "title": "The durable taxonomy stores only result_digest (L33917–33923, L35131) while ReplayHost::execute returns full EffectReceipt results and resume_from_receipt needs the result Value — either replay correspondence is unimplementable from frozen records, or implementations add an unfrozen result-bearing record with no validation contract (result_digest is re-checked by no frozen rule at replay time), the exact channel SEC-001 restricts (audit SEC-011)",
+      "severity": "MAJOR",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "33917-33923",
+          "35131",
+          "35220-35230",
+          "26448-26459"
+        ]
+      }
+    },
+    {
+      "id": "C-91",
+      "title": "term/ X-67 (BLOCKING, U-14): the frozen HostFault has two never-used variants while ReplayHost uses ReplayTraceExhausted/ReplayCorruption — undeclared; six of eight undeclared fault paths sit on the frozen replay path; StalePlan is in no pub enum Fault; format!(\"{:?}\") of host errors flows into machine values — the security consequence (error-path ambiguity launders authority-relevant divergences: resume-vs-fault on receipt mismatch is unconstrained, so differential fault comparison is ill-defined) is absent from the register (audit SEC-012)",
+      "severity": "BLOCKING",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "10818-10821",
+          "35224-35228",
+          "26871",
+          "23997"
+        ]
+      }
+    },
+    {
+      "id": "C-92",
+      "title": "term/ X-50/X-54 (BLOCKING): two complete canonical grammars (revised-grammar LE vs Phase 15A BE; two field names, two tag widths, two endiannesses) coexist in frozen text without in-source supersession — C-02 marks the revised tags stale but the consequence the registers never draw is that every integrity chain (EffectDigest, StateDigest, WAL checksums, the differential oracle itself) inherits the ambiguity: a wrong-grammar implementer is internally correct and passes its own golden vectors while computing digests that match nothing (audit SEC-017)",
+      "severity": "BLOCKING",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "28308",
+          "28735",
+          "29830",
+          "29905",
+          "29909",
+          "30542"
+        ]
+      }
     }
   ],
   "unresolved": [
@@ -6044,6 +6322,41 @@
       ]
     },
     {
+      "id": "M026",
+      "defect": "accept future-tagged proposal",
+      "kills_evidence_for": [
+        "R-PLANNER-06"
+      ]
+    },
+    {
+      "id": "M027",
+      "defect": "observation includes CapRef",
+      "kills_evidence_for": [
+        "R-PLANNER-07"
+      ]
+    },
+    {
+      "id": "M028",
+      "defect": "reconciliation resolves Indeterminate as NotExecuted without admissible outcome",
+      "kills_evidence_for": [
+        "R-RECOV-08"
+      ]
+    },
+    {
+      "id": "M029",
+      "defect": "replay skips result-digest verification",
+      "kills_evidence_for": [
+        "R-HOST-06"
+      ]
+    },
+    {
+      "id": "M031",
+      "defect": "component uses the superseded LE grammar",
+      "kills_evidence_for": [
+        "R-CANON-13"
+      ]
+    },
+    {
       "id": "M032",
       "defect": "contains_capability skips FunctionValue.env",
       "kills_evidence_for": [
@@ -6273,7 +6586,8 @@
         "R-CANON-09",
         "R-CANON-10",
         "R-CANON-11",
-        "R-CANON-12"
+        "R-CANON-12",
+        "R-CANON-13"
       ]
     },
     {
@@ -6366,7 +6680,9 @@
         "R-HOST-05",
         "R-EFFECT-08",
         "R-CORE-11",
-        "R-CORE-12"
+        "R-CORE-12",
+        "R-HOST-06",
+        "R-CORE-13"
       ]
     },
     {
@@ -6420,7 +6736,8 @@
         "R-RECOV-04",
         "R-RECOV-05",
         "R-RECOV-06",
-        "R-PERSIST-07"
+        "R-PERSIST-07",
+        "R-PERSIST-08"
       ]
     },
     {
@@ -6468,7 +6785,8 @@
         "R-RECOV-02",
         "R-TEST-08",
         "R-DUR-04",
-        "R-PERSIST-07"
+        "R-PERSIST-07",
+        "R-RECOV-08"
       ]
     },
     {
@@ -6648,7 +6966,8 @@
         "R-CANON-09",
         "R-CANON-10",
         "R-CANON-11",
-        "R-CANON-12"
+        "R-CANON-12",
+        "R-CANON-13"
       ],
       "depends_on": []
     },
@@ -6731,7 +7050,9 @@
         "R-MARSHAL-06",
         "R-CORE-11",
         "R-ACTOR-09",
-        "R-CORE-12"
+        "R-CORE-12",
+        "R-CORE-13",
+        "R-HOST-06"
       ],
       "depends_on": [
         "ror-core",
@@ -6762,7 +7083,10 @@
         "R-RECOV-07",
         "R-KERN-05",
         "R-PERSIST-07",
-        "R-TRUST-05"
+        "R-TRUST-05",
+        "R-PERSIST-08",
+        "R-HOST-06",
+        "R-RECOV-08"
       ],
       "depends_on": [
         "ror-core"
@@ -6791,7 +7115,10 @@
         "R-PLANNER-02",
         "R-PLANNER-03",
         "R-PLANNER-04",
-        "R-PLANNER-05"
+        "R-PLANNER-05",
+        "R-PLANNER-06",
+        "R-PLANNER-07",
+        "R-RECOV-08"
       ],
       "depends_on": [
         "ror-core",
