@@ -857,7 +857,7 @@ rejected by some checker. A green baseline is required first, so a red tree
 cannot pass everything vacuously. **16 of 17 are killed**; the seventeenth is
 M036, registered and filed rather than silently tolerated.
 
-Eight results are worth recording beyond the pass/fail.
+Nine results are worth recording beyond the pass/fail.
 
 **(a) A drift no checker could see — including one this audit introduced.**
 `spec/06`'s summary line read "74 findings (76 rows)" against 97 actual rows;
@@ -1116,6 +1116,46 @@ decision is unmade, not because a mechanism is missing. Adopting (b) is a
 one-word CI change; reverting it is deleting a flag. Choosing (a) or (c) is
 still open, but now has to be argued against a working alternative rather than
 against an absence — which is the form a decision record should take.
+
+**(i) U-35 drafted, not adopted — and a sub-decision that comes first.**
+
+Same pattern as §9(h): the definitions are drafted in
+`audit/u35-definitions-proposal.md` so the decision costs a review rather than
+a derivation. It issues no frozen text, no register row cites it as authority,
+all 173 obligations remain `SPECIFIED`, and C-98/C-99 remain `open`. Every one
+of its 14 line citations is mechanically verified.
+
+Drafting it surfaced something the audit had not stated. `term/_structs.py`
+derives `GlobalState` as **3 declarations in 2 shapes**, and the difference is
+one field:
+
+```
+L24156  turn[31]  ... next_actor_id, scheduler: SchedulerState
+L25535  turn[32]  ... next_actor_id
+```
+
+**The scheduler is machine state at turn [31] and is not at turn [32].** That
+is not a detail of `InitialState`'s definition — it decides whether the theorem
+is well-formed at all. If the scheduler is part of the state, scheduler
+decisions are a *function of the state*, `SchedulerTrace` is derivable rather
+than supplied, and the theorem's second parameter is redundant; the correct
+response would then be to **restate the theorem**, not to define its terms. So
+U-35 contains a prior question, and answering the four definitions without
+answering it first would produce a well-formed theorem about the wrong machine.
+
+The draft therefore proposes the turn-[32] shape (keeping `SchedulerTrace` a
+genuine input) and flags that choice as the one an owner should make
+explicitly. It also records a determinism hazard at the antecedent itself:
+`GlobalConfig` at L10375 types `actors` as `HashMap<ActorId, ActorState>` where
+every `GlobalState` declaration uses `BTreeMap`, so whatever `InitialState` is
+defined to be, it must be defined over the ordered form or DET-003 reappears in
+the theorem's own premise.
+
+Three of the four definitions have unresolved dependencies — §4 cannot be
+written without U-02's canonical encoding, §2 needs DET-007's LE/BE
+resolution — and the draft states them rather than papering over them. A
+proposal that claimed to close U-35 outright would reproduce the exact defect
+this audit was asked to find.
 
 This addendum issues no frozen text. M036 is registered in `spec/08` as a
 **known, filed survivor** — the harness reports it as such rather than counting
