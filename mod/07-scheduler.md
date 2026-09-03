@@ -78,8 +78,10 @@ Crate contract (mirrored by pointer): scheduler lives in `ror-runtime` (R-REPO-0
   at recovery), MOD-11 (selection events durable), MOD-14/15 (reference scheduler
   + trace comparison).
 - Crate edge: inside `ror-runtime`.
-- Blocking open items: **U-07** (per-turn `δ_t` value, with MOD-04), **U-17**
-  (snapshot queue vs reconstruction authority, with MOD-11/12).
+- Blocking open items: **U-35** (the determinism theorem's own four terms are
+  undefined — this module owns R-ACTOR-07, the canonical statement, so U-35 lands
+  here first; it gates Track A and Track D), **U-07** (per-turn `δ_t` value, with
+  MOD-04), **U-17** (snapshot queue vs reconstruction authority, with MOD-11/12).
 
 ## INVARIANTS
 
@@ -92,6 +94,12 @@ Crate contract (mirrored by pointer): scheduler lives in `ror-runtime` (R-REPO-0
   (R-ACTOR-04).
 - Determinism: `InitialState + SchedulerTrace + HostTrace ⇒ UniqueMachineTrace`
   (R-ACTOR-07; canonical statement — central restatement R-CORE-08, D-05).
+  **Qualified by U-35 (blocking):** this invariant is not yet *well-formed* — none of
+  `SchedulerTrace`, `HostTrace`, `InitialState` or `UniqueMachineTrace` is defined
+  anywhere in the frozen source or in this document set, and trace equality is never
+  specified, so the invariant cannot currently be stated as a testable predicate
+  (`spec/06` C-98; audit DET-001). The FIFO and at-most-once invariants above are
+  independent of U-35 and stand on their own.
 
 ## REQUIREMENTS
 
@@ -149,5 +157,6 @@ Owned elsewhere, binding SCHEDULER: R-ACTOR-02 (MOD-06 owns `GlobalState`; the
 runnable queue is a field of it), R-BUDGET-06 (MOD-04 owns `δ_t`; scheduler steps
 have positive delta), R-PLANNER-02 (MOD-13: planner cannot touch scheduler state),
 R-RECOV-03 step 12 (MOD-12: recovery ends by re-entering the deterministic
-scheduler). Open items: U-07 (with MOD-04), U-17 (with MOD-11/12), AMB-05 (enum
+scheduler). Open items: U-35 (theorem terms undefined — C-98/C-99, this module's
+own R-ACTOR-07), U-07 (with MOD-04), U-17 (with MOD-11/12), AMB-05 (enum
 mapping, MOD-06-side).

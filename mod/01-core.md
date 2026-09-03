@@ -87,7 +87,8 @@ authority storage, or LLM integration (normative text in `spec/01` S-22; not res
 
 - Module dependencies: none upward; every module depends on MOD-01 for types.
 - Crate edge: `ror-core` → std only (`spec/07` §6).
-- Open decision items affecting CORE: **U-04** (`await` formal retraction record),
+- Open decision items affecting CORE: **U-35** (determinism-theorem terms undefined —
+  R-CORE-08's own statement; with MOD-07), **U-04** (`await` formal retraction record),
   **U-08/U-14** (`Fault`/error-variant enumeration), **U-09** (machine `Value` vs
   canonical `Value` domain collision; `AdmissibleConstraint` status), **U-21**
   (`Op`/`Target`/`Params` domains), **U-05** (isolation ladder status, with MOD-06).
@@ -112,7 +113,10 @@ Owned (verbatim from source; provenance per row in REQUIREMENTS):
 - `OrdinaryMarshal(Value::Capability) ⇒ Rejected` (R-CORE-07; canonical operative
   statement R-MARSHAL-01 in MOD-06 — D-04).
 - `InitialState + SchedulerTrace + HostTrace ⇒ UniqueMachineTrace` (R-CORE-08;
-  canonical operative theorem R-ACTOR-07 in MOD-07 — D-05).
+  canonical operative theorem R-ACTOR-07 in MOD-07 — D-05). **U-35 (blocking):** the
+  four terms are undefined and trace equality is unspecified, so this invariant is not
+  yet well-formed; the audit also records eleven inputs the transition function reads
+  that the theorem does not name (`spec/06` C-98…C-102; audit DET-001, §5.1).
 - `Recover(Snapshot, EventLog, EffectJournal) ≡ PreCrashMachineState`, qualified by
   the indeterminate-effect proviso (R-CORE-09; canonical operative form is the T0–T6
   matrix + recovery algorithm in MOD-12 — D-06). The system MUST NOT infer

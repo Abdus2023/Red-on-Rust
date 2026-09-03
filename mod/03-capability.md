@@ -89,7 +89,11 @@ derivation, revocation, authorization, budget primitives, logical-time validatio
   derivation), MOD-08 (gate 6/7), MOD-14 (independent re-modeling of the algebra).
 - Crate edge: `ror-kernel → ror-core`; the kernel never references runtime state
   (one-directional, `spec/04` §B).
-- Blocking open items: **U-09** (`AdmissibleConstraint` vs `Constraint` data form;
+- Blocking open items: **U-36** (is `Lifetime` wall-clock or logical time? The frozen
+  `Lifetime { start, end }` is annotated "Unix timestamp" three times yet is compared
+  against `LogicalTime` inside `authorizes` — R-CAP-06's fifth conjunct, computed at
+  gate 6 — contradicting R-CAP-09/R-CLAIM-02; `spec/06` C-100, audit DET-006),
+  **U-09** (`AdmissibleConstraint` vs `Constraint` data form;
   AMB-12), **U-21** (`Op`/`Target`/`Params` domains), **U-02** (canonical encoding of
   `Authority`/`Constraint`, with MOD-10/11), **U-01** affects the lifetime/deadline
   interaction (with MOD-04).

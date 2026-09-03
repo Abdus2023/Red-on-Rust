@@ -91,7 +91,9 @@ integration (R-REPO-02).
 - Consumers: MOD-02 (downstream), MOD-12 (supervisor reconciliation entry point),
   MOD-15/17 (outer-loop tests).
 - Crate edge: `ror-agent → ror-core, ror-compiler, ror-runtime` (`spec/07` §6).
-- Blocking open items: **U-13** (`PlannerMetadata` fields, `ProposalDigest` canonical
+- Blocking open items: **U-35** (the determinism theorem this module restates with
+  `+ Plan` (R-PLANNER-04) has four undefined terms — with MOD-07/MOD-01; `spec/06`
+  C-98), **U-13** (`PlannerMetadata` fields, `ProposalDigest` canonical
   form, exact staleness predicate — AMB-10, C-38; AMB-25 naming).
 
 ## INVARIANTS

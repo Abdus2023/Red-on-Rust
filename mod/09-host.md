@@ -96,7 +96,12 @@ Crate contract (mirrored by pointer): host execution and replay boundaries in
 - Consumers: MOD-08 (receipts resume continuations), MOD-12 (recovery consults host
   reconciliation), MOD-15 (live-vs-replay differential).
 - Crate edge: `ror-host → ror-core, ror-runtime` (adapter boundary, `spec/07` §6).
-- Blocking open items: **U-06** (per-class replay/reconciliation rules — with
+- Blocking open items: **U-35** (`HostTrace` — this module's own replay parameter —
+  is undefined, and its only concrete realization `ReplayHost` is frozen in six
+  declarations across five incompatible shapes, two of them unordered map lookups that
+  R-HOST-03 outlaws; order-insensitive replay is a false negative in the primary
+  determinism detector and makes R-HOST-05 unimplementable — `spec/06` C-99, audit
+  DET-005), **U-06** (per-class replay/reconciliation rules — with
   MOD-08/12), **U-15** (`ReconciliationOutcome` variants, MOD-12-side), **U-21**
   (operation domain), **U-07** (host-interaction `δ_t`).
 
