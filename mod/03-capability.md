@@ -109,7 +109,7 @@ derivation, revocation, authorization, budget primitives, logical-time validatio
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-09/S-10. All 12 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-09/S-10; addenda I, V. All 16 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -122,9 +122,13 @@ Canonical text: `spec/01` S-09/S-10. All 12 obligations `SPECIFIED`.
 | R-CAP-07 | Valid(c,t) incl. ancestor liveness; lazy revocation | L6434–6445, L6647–6656 | `CAP-REVOCATION-ANCESTOR`, M004 |
 | R-CAP-08 | Algebra theorems 1–3 (stated, proof-sketch only) | L6422–6433, L6657–6671 | property tests (NOT PROVEN) |
 | R-CAP-09 | Explicit logical time; no wall-clock | L6434–6436, L38858–38890 | determinism tests |
+| R-CAP-10 | AdmissibleConstraint defined: decidable well-formedness per semantic domain (O/S/Q/R/T); inadmissible constraint faults (InvalidConstraint), never identity/top-default; compile-time validation of attacker-authored constraints (C-94 resolved; M030) | addendum V (SEC-014) | M030, compiler negative suite |
 | R-KERN-01 | CapRef opaque, generation-safe, private, kernel-only | L9127–9133, L10178–10208 | visibility review |
 | R-KERN-02 | Kernel API: authorize/derive/validate with logical time | L6672–6728, L19153–19175 | exactly-one-call mock tests |
 | R-KERN-03 | Authority internals pub(crate)/inaccessible (D-09 canonical) | L39397–39407 | visibility + mutation M005-class |
+| R-KERN-04 | Possession-gated authorization: authorize(holder, cap, effect, t) resolves the CapRef through the actor capability context; global-arena no-holder authorize superseded; CapRef bits never suffice (C-77 resolved) | addendum I (SEC-002) | M021, brute-force CapRef exhaustion from a non-holder |
+| R-KERN-05 | CapabilityContext real frozen possession type; unit-type sketch superseded; snapshots carry capability context; recovery reconstructs possession before gate authorization | addendum I (SEC-002) | snapshot/recovery round-trip of possession sets |
+| R-KERN-06 | Root-grant protocol frozen: Grant(source, authority, ceiling, t) with durable CapabilityGranted record, authority ≼ deployment ceiling, root minted once at initialization; Supervisor.host removed or issued-effect-only (R-HOST-02 binds all callers); planner I/O crate-separated (C-95 resolved) | addendum V (SEC-015) | PanicHost-wraps-all-handles conformance; grant audit test |
 
 Atomic registry records under this module: REQ-CAP-001…026; REQ-KERN-001…009 —
 incl. explicitly placed audit records REQ-CAP-022/023 (v0.3 E-Attenuate /
@@ -132,7 +136,7 @@ E-AttenuateDenied rules), REQ-CAP-024 (`AdmissibleConstraint` premise), REQ-KERN
 (parents R-KERN-02+R-KERN-03, one module) and REQ-KERN-009 (evaluator exclusion set:
 never receives `Authority`/`Scope`/`Rights`/`Parent`/revocation state; second parent
 R-TRUST-03 stays central in MOD-01 — cross-reference only).
-**12 obligations / 35 records.**
+**16 obligations / 35 records.**
 
 ## SECURITY-BOUNDARY
 

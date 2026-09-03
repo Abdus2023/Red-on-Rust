@@ -145,7 +145,7 @@ Crate contract (mirrored by pointer): actors + marshalling live in `ror-runtime`
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-15/S-16. All 10 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-15/S-16; addenda II, III, V. All 14 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -155,15 +155,19 @@ Canonical text: `spec/01` S-15/S-16. All 10 obligations `SPECIFIED`.
 | R-ACTOR-05 | Spawn: escrow + derived capabilities only; no wholesale clone | L25573–25615, L38074–38106 | Track D, amplification test, U-03 |
 | R-ACTOR-06 | Send async + deterministic wakeup; Receive blocks without fuel; FIFO mailbox | L25702–25749, L38074–38106 | Track D, M013 |
 | R-ACTOR-08 | No amplification / no teleportation theorems | L26048–26070 | teleportation test, amplification test |
+| R-ACTOR-09 | Spawn transfers no capabilities by default (delegation is the only default path); explicit manifest + constraint compiler-checked, strictly attenuated; Authority(child) ≺ parent; trust_level phantom retracted; BudgetAllocationSpec bounds (C-82 resolved; M025) | addendum III (SEC-006) | M025, spawn fan-out amplification tests |
+| R-ACTOR-10 | Mailbox resource admission: enqueue requires recipient capacity (M reservation; ReservedCapacityExceeded faults the sender, sender pays); payload-proportional send cost over canonical length; constructed value size bounded against constructor's M; footprint bounded by reserved M (C-96 resolved; M033) | addendum V (SEC-019) | M033, sender-flood stress, footprint-bounded property |
 | R-MARSHAL-01 | Recursive capability rejection in ordinary marshal (D-04 canonical) | L41647–41658, L25674–25701, L38074–38106 | `MARSHAL-NO-RAW-CAPABILITY` |
 | R-MARSHAL-02 | Explicit delegation only; DelegatedCapability envelope; ≼ parent | L25972–26001, L25989–25992 | Track C (delegation) |
 | R-MARSHAL-03 | MarshalledValue = canonical bytes; unmarshal(marshal(v)) = v | L25674–25701 | Track B (marshalling) |
 | R-MARSHAL-04 | Semantic marshalling rule (CapRef ∉ marshal(v)) | L8695–8698 | Track B |
+| R-MARSHAL-05 | Delegation constructible: Expr::Delegate calls kernel.derive and yields a kernel-constructed envelope, never a plain Value variant; receive-side revalidation (liveness, lineage, target, generation) before registration, faults leave the recipient CapabilityContext byte-identical; MarshalledValue is the checked-bytes form; MarshalFault unified (X-65; C-79 resolved) | addendum II (SEC-005) | M024, delegation negative suite |
+| R-MARSHAL-06 | contains_capability is a frozen total predicate: closed traversal domain descending into List, Map, Tuple at any depth and FunctionValue.env recursively; sole exclusion kernel-sealed delegation envelopes; Bytes are data; marshal Ok implies no reachable capability (C-81 resolved) | addendum II (SEC-018) | M032, closure-smuggling corpus |
 
 Atomic registry records under this module: REQ-ACTOR-001…009, REQ-ACTOR-017…030,
 REQ-ACTOR-032…035; REQ-MARSHAL-001…010 (incl. explicitly placed REQ-ACTOR-024 v0.3
 E-Spawn — AMB-04 — and REQ-ACTOR-035 RunState/ActorStatus, cross-referenced to
-MOD-07). **10 obligations / 37 records.**
+MOD-07). **14 obligations / 37 records.**
 
 ## SECURITY-BOUNDARY
 

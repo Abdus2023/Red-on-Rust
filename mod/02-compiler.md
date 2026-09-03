@@ -112,7 +112,7 @@ ValidatedPlan → PlanIR → capability analysis → resource analysis → Execu
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-06. All 5 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-06; addendum I. All 6 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -121,10 +121,11 @@ Canonical text: `spec/01` S-06. All 5 obligations `SPECIFIED`.
 | R-COMPILE-03 | Combined static judgment (type, effects, capability req, budget bound) | L3874–3905 | U-22 (J2 re-spec gap) |
 | R-COMPILE-04 | Plan immutability / temporal integrity | L1722–1745, L2052–2070 | — |
 | R-COMPILE-05 | `ExecutablePlan` constructors private to compiler | L39296–39318 | visibility review |
+| R-COMPILE-06 | Embedded Value::Capability literals must be plan-bound: foreign/garbage/undeclared capability literal is a compilation fault (U-22 security-direction closure) | addendum I (SEC-002) | compiler conformance: embedded-literal battery |
 
 Atomic registry records under this module: REQ-COMPILE-001…014 (incl. REQ-COMPILE-014,
 the U-22 gap note, explicitly placed here from the audit passes).
-**5 obligations / 14 records.**
+**6 obligations / 14 records.**
 
 ## SECURITY-BOUNDARY
 

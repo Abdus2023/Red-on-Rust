@@ -3,7 +3,7 @@
   "organization": "17 semantic modules, split by architectural responsibility (not document length)",
   "normative_text_home": "spec/01 (obligations), req/ (atomic records); mod/ registers ownership, no normative text is duplicated except as marked in `duplications`",
   "module_count": 17,
-  "obligation_count": 148,
+  "obligation_count": 173,
   "record_count": 545,
   "evidence_status_of_every_obligation": "SPECIFIED",
   "modules": [
@@ -18,6 +18,7 @@
         "R-ARCH-02",
         "R-ARCH-03",
         "R-ARCH-04",
+        "R-ARCH-05",
         "R-CALC-01",
         "R-CALC-02",
         "R-CALC-03",
@@ -36,13 +37,17 @@
         "R-CORE-08",
         "R-CORE-09",
         "R-CORE-10",
+        "R-CORE-11",
+        "R-CORE-12",
+        "R-CORE-13",
         "R-SCOPE-01",
         "R-SCOPE-02",
         "R-TRUST-01",
         "R-TRUST-02",
-        "R-TRUST-03"
+        "R-TRUST-03",
+        "R-TRUST-04"
       ],
-      "obligation_count": 27,
+      "obligation_count": 32,
       "record_count": 58,
       "record_ranges": [
         "REQ-ARCH-001…006",
@@ -206,9 +211,10 @@
         "R-COMPILE-02",
         "R-COMPILE-03",
         "R-COMPILE-04",
-        "R-COMPILE-05"
+        "R-COMPILE-05",
+        "R-COMPILE-06"
       ],
-      "obligation_count": 5,
+      "obligation_count": 6,
       "record_count": 14,
       "record_ranges": [
         "REQ-COMPILE-001…014"
@@ -257,11 +263,15 @@
         "R-CAP-07",
         "R-CAP-08",
         "R-CAP-09",
+        "R-CAP-10",
         "R-KERN-01",
         "R-KERN-02",
-        "R-KERN-03"
+        "R-KERN-03",
+        "R-KERN-04",
+        "R-KERN-05",
+        "R-KERN-06"
       ],
-      "obligation_count": 12,
+      "obligation_count": 16,
       "record_count": 35,
       "record_ranges": [
         "REQ-CAP-001…026",
@@ -330,9 +340,10 @@
         "R-BUDGET-05",
         "R-BUDGET-06",
         "R-BUDGET-07",
-        "R-BUDGET-08"
+        "R-BUDGET-08",
+        "R-BUDGET-09"
       ],
-      "obligation_count": 8,
+      "obligation_count": 9,
       "record_count": 32,
       "record_ranges": [
         "REQ-BUDGET-001…032"
@@ -445,12 +456,16 @@
         "R-ACTOR-05",
         "R-ACTOR-06",
         "R-ACTOR-08",
+        "R-ACTOR-09",
+        "R-ACTOR-10",
         "R-MARSHAL-01",
         "R-MARSHAL-02",
         "R-MARSHAL-03",
-        "R-MARSHAL-04"
+        "R-MARSHAL-04",
+        "R-MARSHAL-05",
+        "R-MARSHAL-06"
       ],
-      "obligation_count": 10,
+      "obligation_count": 14,
       "record_count": 37,
       "record_ranges": [
         "REQ-ACTOR-001…009",
@@ -574,9 +589,10 @@
         "R-EFFECT-04",
         "R-EFFECT-05",
         "R-EFFECT-06",
-        "R-EFFECT-07"
+        "R-EFFECT-07",
+        "R-EFFECT-08"
       ],
-      "obligation_count": 7,
+      "obligation_count": 8,
       "record_count": 40,
       "record_ranges": [
         "REQ-EFFECT-001…040"
@@ -645,9 +661,10 @@
         "R-HOST-02",
         "R-HOST-03",
         "R-HOST-04",
-        "R-HOST-05"
+        "R-HOST-05",
+        "R-HOST-06"
       ],
-      "obligation_count": 5,
+      "obligation_count": 6,
       "record_count": 14,
       "record_ranges": [
         "REQ-HOST-001…014"
@@ -702,9 +719,11 @@
         "R-CANON-08",
         "R-CANON-09",
         "R-CANON-10",
-        "R-CANON-11"
+        "R-CANON-11",
+        "R-CANON-12",
+        "R-CANON-13"
       ],
-      "obligation_count": 11,
+      "obligation_count": 13,
       "record_count": 37,
       "record_ranges": [
         "REQ-CANON-001…037"
@@ -757,9 +776,12 @@
         "R-PERSIST-03",
         "R-PERSIST-04",
         "R-PERSIST-05",
-        "R-PERSIST-06"
+        "R-PERSIST-06",
+        "R-PERSIST-07",
+        "R-PERSIST-08",
+        "R-TRUST-05"
       ],
-      "obligation_count": 11,
+      "obligation_count": 14,
       "record_count": 37,
       "record_ranges": [
         "REQ-DUR-001…014",
@@ -848,9 +870,10 @@
         "R-RECOV-04",
         "R-RECOV-05",
         "R-RECOV-06",
-        "R-RECOV-07"
+        "R-RECOV-07",
+        "R-RECOV-08"
       ],
-      "obligation_count": 7,
+      "obligation_count": 8,
       "record_count": 22,
       "record_ranges": [
         "REQ-RECOV-001…022"
@@ -912,9 +935,11 @@
         "R-PLANNER-02",
         "R-PLANNER-03",
         "R-PLANNER-04",
-        "R-PLANNER-05"
+        "R-PLANNER-05",
+        "R-PLANNER-06",
+        "R-PLANNER-07"
       ],
-      "obligation_count": 5,
+      "obligation_count": 7,
       "record_count": 23,
       "record_ranges": [
         "REQ-PLANNER-001…022",

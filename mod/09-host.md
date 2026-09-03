@@ -114,7 +114,7 @@ Crate contract (mirrored by pointer): host execution and replay boundaries in
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-14. All 5 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-14; addendum IV. All 6 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -123,8 +123,9 @@ Canonical text: `spec/01` S-14. All 5 obligations `SPECIFIED`.
 | R-HOST-03 | Ordered ReplayHost; ID+digest per entry; no unordered map | L25972–25996, L38278–38302 | replay property tests |
 | R-HOST-04 | Replay correspondence (machine replay valid; real-world per effect class) | L3947–3958, L26249–26262 | R-REF-01 recovery equivalence |
 | R-HOST-05 | Replay validates trace, not just final state | L38278–38302 | trace comparison |
+| R-HOST-06 | Durable receipt results representable: EffectCompleted {id, digest, result_digest, result: CanonicalData}; replay verifies ResultDigest(result) = result_digest before resumption — third identity conjunct; no ad-hoc result records (C-90 resolved; M029) | addendum IV (SEC-011) | M029, T5 byte-exact resumption |
 
-Atomic registry records under this module: REQ-HOST-001…014. **5 obligations / 14 records.**
+Atomic registry records under this module: REQ-HOST-001…014. **6 obligations / 14 records.**
 
 ## SECURITY-BOUNDARY
 

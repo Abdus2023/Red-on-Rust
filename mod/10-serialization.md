@@ -126,7 +126,7 @@ Crate contract (mirrored by pointer): canonical traits + data-domain encodings i
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-17. All 11 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-17; addenda II, IV. All 13 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -141,8 +141,10 @@ Canonical text: `spec/01` S-17. All 11 obligations `SPECIFIED`.
 | R-CANON-09 | Digest rules + when-to-compare-bytes rule | L28185–28228, L30588–30590 | digest property tests |
 | R-CANON-10 | Injectivity: structural property + scoped evidence claim | L30592–30598, L35068 | round-trip + differential |
 | R-CANON-11 | Golden vectors as normative fixtures | L30599–30646, L31948–32010, L33266–33286 | M1 acceptance |
+| R-CANON-12 | Data decoder rejects capability payloads: 0x05 and standalone 0x30 yield CanonicalError::CapabilityInData; only the kernel-mediated codec path produces or consumes capability payloads; unmarshal runs contains_capability — symmetric boundary (C-14/U-02 security direction; C-78 resolved) | addendum II (SEC-003) | M022, negative golden vectors |
+| R-CANON-13 | One canonical grammar: 15A BE envelope sole; LE revised grammar superseded in-source; single TAG_* namespace (X-50/X-54 resolved); all digests defined over 15A; bidirectional byte-exact golden vectors; LE variants rejected (C-92 resolved; M031) | addendum IV (SEC-017) | M031, bidirectional golden vectors |
 
-Atomic registry records under this module: REQ-CANON-001…037. **11 obligations / 37 records.**
+Atomic registry records under this module: REQ-CANON-001…037. **13 obligations / 37 records.**
 
 ## SECURITY-BOUNDARY
 

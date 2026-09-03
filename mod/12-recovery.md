@@ -133,7 +133,7 @@ independent recovery oracle in `ror-reference` (R-REPO-02).
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-19. All 7 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-19; addendum IV. All 8 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -144,9 +144,10 @@ Canonical text: `spec/01` S-19. All 7 obligations `SPECIFIED`.
 | R-RECOV-05 | Invalid(D) ⇒ RecoveryFault; never silently repair (D-07 canonical) | L35196–35208, L38254–38272 | negative corruption tests |
 | R-RECOV-06 | Budget partition invariant survives crash | L35210–35215 | post-recovery invariant |
 | R-RECOV-07 | Reconciliation is the only resolution path for Indeterminate | L35111–35144, L26249–26262 | reconciliation tests; U-15 |
+| R-RECOV-08 | Reconciliation frozen: I2 holds on every host path incl. supervisor; never re-executes (idempotent query at most); compensations are ordinary gated requests; NotExecuted gated behind authoritative evidence; supervisor allocates lifecycle, not effects (C-89 resolved; M028) | addendum IV (SEC-010) | M028, T2/T3/T4 admissibility table |
 
 Atomic registry records under this module: REQ-RECOV-001…022.
-**7 obligations / 22 records.**
+**8 obligations / 22 records.**
 
 ## SECURITY-BOUNDARY
 

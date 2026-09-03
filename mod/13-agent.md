@@ -108,7 +108,7 @@ integration (R-REPO-02).
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-05. All 5 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-05; addendum IV. All 7 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -117,10 +117,12 @@ Canonical text: `spec/01` S-05. All 5 obligations `SPECIFIED`.
 | R-PLANNER-03 | Staleness check; StalePlan rejection, no state mutation | L27199–27236, L28373 | R-PLANNER-05(2) — U-13 open |
 | R-PLANNER-04 | Planner need not be deterministic; PlannerAccepted recording for replay | L27392–27414 | R-PLANNER-05(3) |
 | R-PLANNER-05 | LLM outer-loop conformance (3 test obligations) | L27920–27931, L28513–28521 | 15E suite |
+| R-PLANNER-06 | Staleness is exact equality: observation_sequence = current_planning_epoch; either-direction mismatch ⇒ StalePlan with zero state mutation; less-than-only reading superseded; future-tagged proposals mandatory rejection test (C-86 resolved; M026) | addendum IV (SEC-007) | M026, epoch-boundary conformance |
+| R-PLANNER-07 | Observation channel capability-opaque: CapabilitySummary frozen as non-referential projection (counts, classes, ceilings); EffectIssued carries {id, actor, digest} only, cap-bearing log shape superseded; Capability ∉ Observables(LLM) (C-87 resolved; M027) | addendum IV (SEC-008) | M027, observation-opacity property |
 
 Atomic registry records under this module: REQ-PLANNER-001…022; REQ-TEST-051 (the
 LLM appears in the harness only as an input generator — parent R-PLANNER-05).
-**5 obligations / 23 records.**
+**7 obligations / 23 records.**
 
 ## SECURITY-BOUNDARY
 

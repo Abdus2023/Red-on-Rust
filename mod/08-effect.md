@@ -125,7 +125,7 @@ issuance step calls `ror-persistence` append/sync (R-DUR-02).
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-12. All 7 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-12; addendum I. All 8 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -136,10 +136,11 @@ Canonical text: `spec/01` S-12. All 7 obligations `SPECIFIED`.
 | R-EFFECT-05 | complete_max affordability at issuance | L25799–25825 | budget escrow tests; `BUDGET-ESCROW-CONSERVATION` |
 | R-EFFECT-06 | Receipt validates ID + digest; mismatch ⇒ ReplayCorruption, no resume | L23949–24002, L25952–25970, L38052–38072 | `EFFECT-RECEIPT-DIGEST-VALIDATION`, M017, M018 |
 | R-EFFECT-07 | Completion accounting (charge, release, log, resume) | L23949–24002 | conservation tests |
+| R-EFFECT-08 | Receipt-result admission: recursive contains_capability over the result payload at any nesting depth; no capability, no closure; data-domain only; host error via declared closed fault mapping only | addendum I (SEC-001) | EFFECT-RECEIPT-RESULT-NO-AUTHORITY, M019, M020 |
 
 Atomic registry records under this module: REQ-EFFECT-001…040 (incl. explicitly
 placed v0.3 rule extractions REQ-EFFECT-037…040).
-**7 obligations / 40 records.**
+**8 obligations / 40 records.**
 
 ## SECURITY-BOUNDARY
 

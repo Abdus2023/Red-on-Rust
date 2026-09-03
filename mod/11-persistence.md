@@ -128,7 +128,7 @@ journal, recovery engine housing (R-REPO-02).
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-18 + S-13. All 11 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-18 + S-13; addenda II–IV. All 14 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -138,14 +138,17 @@ Canonical text: `spec/01` S-18 + S-13. All 11 obligations `SPECIFIED`.
 | R-PERSIST-04 | Snapshot content (include/exclude lists) | L26293–26330 | snapshot review, U-02 blocking |
 | R-PERSIST-05 | Atomic snapshot protocol; ValidSnapshot iff commit+digest | L26216–26240, L35177–35188 | `SNAPSHOT-COMMIT-INTEGRITY`, crash T6 |
 | R-PERSIST-06 | WAL sequence continuity; gaps rejected | L35088–35110, L35189–35208 | `WAL-SEQUENCE-CONTINUITY`, `WAL-GAP-REJECT`, M015 |
+| R-PERSIST-07 | Durable authority lattice: snapshot carries the AuthorityNode set, revocation_set and generation counters; WAL event kinds CapabilityGranted/Derived/Revoked; recovery reconstructs the arena, replays capability events, faults on dangling or generation-mismatched CapRef; revocation monotonic across crashes (RECOVERY-REVOCATION-DURABLE) | addendum II (SEC-004) | RECOVERY-REVOCATION-DURABLE, M023, crash matrix T0–T6 with pre-crash revocation |
+| R-PERSIST-08 | Storage integrity rewinding resistance: chained checksums (checksum_n = H(checksum_{n−1} ‖ frame_n)); snapshot commit covers state digest + last WAL sequence; keyed chain if storage adversarial, else trust-table records the trusted-writable assumption; consistently-forged negative tests (C-88 resolved) | addendum IV (SEC-009) | tamper-at-every-T matrix, forged-record negatives |
 | R-DUR-01 | HostInvoked ⇒ DurableIssued (D-03 canonical) | L35150–35156, L38050 | `EFFECT-ISSUE-DURABLE-BEFORE-HOST` |
 | R-DUR-02 | Issuance transaction order (7 steps, 2 fsyncs) | L35150–35158 | crash harness T0–T4 |
 | R-DUR-03 | Causal effect protocol (ID+digest identity chain) | L35111–35144, L38203–38215 | journal validator, M017 |
 | R-DUR-04 | Prepared∧¬Issued⇒Discard; Issued∧¬Completed⇒Indeterminate | L35159–35176, L38222–38248 | `RECOVERY-ISSUED-INDETERMINATE` (MOD-12) |
 | R-DUR-05 | Escrow survives crash | L35210–35215 | post-recovery invariant check, M008 |
+| R-TRUST-05 | Crate DAG carries the R-DUR-02 hinge edge ror-runtime → ror-persistence (inverted trait superseded); ror-core → ror-kernel forbidden; forbidden-edge list checked against Cargo.toml; crate-separation rule (C-85 resolved) | addendum III (SEC-022) | Cargo.toml DAG mechanical check |
 
 Atomic registry records under this module: REQ-PERSIST-001…023; REQ-DUR-001…014.
-**11 obligations / 37 records.**
+**14 obligations / 37 records.**
 
 ## SECURITY-BOUNDARY
 

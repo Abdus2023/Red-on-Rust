@@ -52,15 +52,21 @@ world → agents above → verification machinery beside.
 
 ## 2. Ownership rules (how requirements were placed)
 
-1. **One canonical owner per requirement.** Each of the 148 canonical obligations
-   (`R-…`, `spec/03`) is owned by exactly one module. Ownership is decided by
+1. **One canonical owner per requirement.** Each of the 173 canonical obligations
+   (148 from the frozen source + 25 adopted by addenda I–V, `spec/03`) is owned
+   by exactly one module. Ownership is decided by
    *architectural responsibility*: which component's behavior the requirement constrains
    (the place a violation would have to be introduced), per the frozen crate contracts
    (R-REPO-02) and the dependency graph (`spec/04`).
 2. **No relocation for tidiness.** A requirement is never moved merely because another
    module looks like a cleaner organizational bucket. Obligations stay with semantic
    ownership even when the result is uneven (SCHEDULER legitimately owns only 2
-   obligations; CORE legitimately owns 27). Document length played no role.
+   obligations; CORE legitimately owns 32). Document length played no role.
+   The 25 addendum obligations were homed by the same rule — prefix-continuity
+   with the existing owner — with one disclosed judgment: R-TRUST-05 (the
+   crate-DAG hinge) is homed at MOD-11 with the durable layer it governs,
+   not at MOD-01 with the other TRUST rows (spec/07 §2 lists it under
+   ror-persistence).
 3. **Spanning requirements cross-reference, they do not move.** Where a requirement
    binds several components (e.g. the 16-step request sequence touches capability,
    budget, durability, host), it keeps one canonical owner; the other components appear
@@ -86,7 +92,9 @@ world → agents above → verification machinery beside.
    `C-…`, `U-…`, `M0NN`, tags) are unchanged. The module layer adds only `MOD-NN`
    identifiers and `D-NN` duplication-register IDs. No requirement was rewritten,
    merged, dropped, or "improved"; the split is a total, duplicate-free partition of
-   the 148 obligations and of the 545 atomic records.
+   the 148 obligations and of the 545 atomic records. Addenda I–V later added 25
+   obligations (no new atomic records); they are homed per rule 1 above, so the
+   partition is 173 obligations over the same 545 records.
 
 ## 3. Ownership decisions that required judgment (disclosed)
 
@@ -151,7 +159,7 @@ python3 mod/_build.py            # validate module files against the ownership m
 python3 mod/_build.py --write    # also regenerate 18-ownership-matrix.md + 19-index.json
 ```
 
-The checker enforces: (a) the 148-obligation partition is total and overlap-free,
+The checker enforces: (a) the 173-obligation partition is total and overlap-free,
 matched against `spec/03`; (b) the 545-record partition is total and overlap-free,
 matched against `req/registry.json`; (c) every module file carries the required 13
 fields in order plus `CROSS-REFERENCES`; (d) every owned obligation appears in its

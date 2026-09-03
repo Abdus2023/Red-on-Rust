@@ -124,7 +124,7 @@ Owned (verbatim from source; provenance per row in REQUIREMENTS):
 
 ## REQUIREMENTS
 
-Canonical text: `spec/01` S-01…S-04, S-07. All 27 obligations `SPECIFIED`.
+Canonical text: `spec/01` S-01…S-04, S-07; addenda II–V. All 32 obligations `SPECIFIED`.
 
 | ID | Obligation (short) | Provenance (`Red-on-Rust.md`) | Verification |
 |---|---|---|---|
@@ -140,13 +140,18 @@ Canonical text: `spec/01` S-01…S-04, S-07. All 27 obligations `SPECIFIED`.
 | R-CORE-08 | state+traces ⇒ unique machine trace (D-05) | L41623–41646, L27518–27547 | `SCHED-FIFO`, determinism differential |
 | R-CORE-09 | Causal crash recovery, qualified (D-06) | L27551–27569, L35159–35176 | R-RECOV-02 T0–T6 (MOD-12) |
 | R-CORE-10 | No silent recovery corruption (D-07) | L42100–42105, L35196–35208 | M015, M016, negative recovery tests |
+| R-CORE-11 | One canonical signature per I2 predicate: ValidatedRequest(E) request-time subsuming ValidatedPlan(plan(E)); Authorized(holder, c, E, t) possession conjunct (formalizes R-KERN-04); ValidatedPlan_pred vs ValidatedPlan_struct; chain stated once (X-01/X-04/X-05; C-80 resolved) | addendum II (SEC-016) | R-TEST-09 differential adjudication |
+| R-CORE-12 | Fault totality on machine paths: panic-free non-test code, failures map to declared Fault (InternalInvariant family); transition atomicity — complete or fault, no died-mid-transition; durable append precedes in-memory mutation; clippy unwrap/expect denial (C-83 resolved; M034) | addendum III (SEC-020) | M034, panic-catching fuzz harness |
+| R-CORE-13 | Closed declared fault surface on every trust-boundary crossing: six replay-path variants, StalePlan, unified MarshalFault, InternalInvariant declared; no debug-formatted external error text in machine values; resume-vs-fault pinned per variant (C-91 resolved) | addendum IV (SEC-012) | fault-coverage lint, differential fault matrix |
 | R-TRUST-01 | Trust table (LLM/`Block` No; live host Partial; rest Yes) | L41823–41841, L27611–27624 | — |
 | R-TRUST-02 | TCB composition; LLM output ∉ TCB authority | L28178–28230 | — |
 | R-TRUST-03 | No hidden authority; evaluator sees refs only (D-09) | L37722–37748, L19153–19175 | Track B (mock kernel), visibility checks |
+| R-TRUST-04 | One complete trust table: MOD-06/08/10 rows frozen (authoritative machine boundary); 11-row table superseded; planner never a security/runtime provider — prohibitions homed at enforcing modules; dep/ SC-1/2/3 hard failures (C-84 resolved) | addendum III (SEC-022) | dep/ regeneration with SC-1/2/3 hard-gated |
 | R-ARCH-01 | End-to-end pipeline (LLM→…→host) | L37750–37780, L27287–27310 | — |
 | R-ARCH-02 | Independent verification architecture | L41406–41424 | R-REF-01 (gate) |
 | R-ARCH-03 | `Block` has no path into `step()`; plan constructors private (D-11) | L9086–9097, L39296–39318 | R-ORDER-03 first security gate |
 | R-ARCH-04 | Dependency direction (algebra→kernel→plan→actor→global→scheduler→host) | L9059–9085 | Cargo dependency review |
+| R-ARCH-05 | Isolation posture decided: ladder retired — in-process structural isolation is the frozen minimum with residual risk (host compromise = machine compromise) recorded; out-of-process host adapter (canonical-bytes effects/receipts) required where host not fully trusted; in-process executor testkit-only (C-93 resolved) | addendum V (SEC-013) | dependency/visibility hard gate; dual-host-mode differential |
 | R-CALC-01 | Machine `Value` domain (11 variants); `Capability` is opaque data | L12283–12312 | U-09 open |
 | R-CALC-02 | Frozen `Expr` AST (12 constructors, declarative only) | L12132–12170 | U-04, U-05 open |
 | R-CALC-03 | `Symbol(u32)` runtime identity; compiler maps names | L12250–12270 | — |
@@ -160,7 +165,7 @@ Atomic registry records under this module (from `req/`, ownership by parent):
 REQ-SCOPE-001…007; REQ-CORE-001…016; REQ-TRUST-001…009; REQ-ARCH-001…006;
 REQ-CALC-001…020 (incl. REQ-CALC-020 — v0.3 pure E-Let/E-Seq/E-If rules with
 `δ_t = 0` premises, placed here explicitly because the registry's own area is CALC;
-cross-referenced to MOD-05/MOD-04). **27 obligations / 58 records.**
+cross-referenced to MOD-05/MOD-04). **32 obligations / 58 records.**
 
 ## SECURITY-BOUNDARY
 

@@ -52,7 +52,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 
 ## 1. Obligation partition (148)
 
-### MOD-01 — CORE (27 obligations)
+### MOD-01 — CORE (32 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -60,6 +60,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-ARCH-02 | Independent verification architecture | L41406–41424 | MOD-14 (independent side), MOD-15 (comparison side) | — |
 | R-ARCH-03 | Block has no path into step(); plan constructors private | L9086–9097, L39296–39318 | MOD-02 (operative owner (D-11)), MOD-05 (no Block path into step()) | D-11 (marked restatement — canonical statement R-COMPILE-01, MOD-02) |
 | R-ARCH-04 | Dependency direction (algebra→kernel→plan→actor→global→scheduler→host) | L9059–9085 | MOD-17 (enforced via Cargo/visibility rules (R-REPO-03)) | — |
+| R-ARCH-05 | Isolation posture decided: ladder retired — in-process structural isolation is the frozen minimum with residual risk (host compromise = machine compromise) recorded; out-of-process host adapter (canonical-bytes effects/receipts) required where host not fully trusted; in-process executor testkit-only (C-93 resolved) | addendum (SEC-013) | — | — |
 | R-CALC-01 | Machine Value domain (11 variants); Capability is opaque data | L12290–12312 | MOD-05 (consumer of machine Value), MOD-10 (two Value domains collide - U-09) | — |
 | R-CALC-02 | Frozen Expr AST (12 constructors, declarative only) | L12132–12170 | MOD-02 (input surface), MOD-05 (evaluated term), MOD-06 (Delegate constructor absent - U-02), MOD-17 (await retraction - U-04) | — |
 | R-CALC-03 | Symbol(u32) runtime identity; compiler maps names | L12250–12270 | MOD-02 (name mapping built here), MOD-05 (symbols only) | — |
@@ -78,13 +79,17 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-CORE-08 | Determinism: state+traces ⇒ unique machine trace | L41623–41646, L27518–27547 | MOD-07 (operative owner (D-05)), MOD-09 (host trace term), MOD-13 (planner trace for end-to-end runs) | D-05 (marked restatement — canonical statement R-ACTOR-07, MOD-07) |
 | R-CORE-09 | Causal crash recovery (qualified theorem) | L27551–27569, L35159–35176 | MOD-12 (operative owner (D-06)), MOD-11 (journal classification protocol), MOD-09 (host reconciliation role) | D-06 (marked restatement — canonical statement R-RECOV-02, MOD-12) |
 | R-CORE-10 | No silent recovery corruption | L42100–42105, L35196–35208 | MOD-12 (operative owner (D-07)), MOD-11 (rejection points that may raise it) | D-07 (marked restatement — canonical statement R-RECOV-05, MOD-12) |
+| R-CORE-11 | One canonical signature per I2 predicate: ValidatedRequest(E) request-time subsuming ValidatedPlan(plan(E)); Authorized(holder, c, E, t) possession conjunct (formalizes R-KERN-04); ValidatedPlan_pred vs ValidatedPlan_struct; chain stated once (X-01/X-04/X-05; C-80 resolved) | addendum (SEC-016) | — | — |
+| R-CORE-12 | Fault totality on machine paths: panic-free non-test code, failures map to declared Fault (InternalInvariant family); transition atomicity — complete or fault, no died-mid-transition; durable append precedes in-memory mutation; clippy unwrap/expect denial (C-83 resolved; M034) | addendum (SEC-020) | — | — |
+| R-CORE-13 | Closed declared fault surface on every trust-boundary crossing: six replay-path variants, StalePlan, unified MarshalFault, InternalInvariant declared; no debug-formatted external error text in machine values; resume-vs-fault pinned per variant (C-91 resolved) | addendum (SEC-012) | — | — |
 | R-SCOPE-01 | Thesis: deterministic, capability-scoped, resource-bounded, crash-recoverable machine | L41293–41300 | MOD-02 (capability-scoped), MOD-04 (resource-bounded), MOD-07 (deterministic), MOD-12 (crash-recoverable) | — |
 | R-SCOPE-02 | Architecture/spec/verification FROZEN; frozen ≠ verified | L38929–38942, L41297–41315 | MOD-17 (status ladder enforced as evidence discipline) | — |
 | R-TRUST-01 | Trust table (LLM/Block No; host Partial; rest Yes) | L41823–41841, L27611–27624 | MOD-17 (boundary enforcement review), MOD-09 (live host is the only Partial row) | — |
 | R-TRUST-02 | TCB composition; LLM output ∉ TCB authority | L28178–28230 | MOD-05 (TCB member), MOD-03 (TCB member), MOD-04 (TCB member), MOD-07 (TCB member), MOD-10 (TCB member), MOD-11 (TCB member), MOD-13 (LLM output outside TCB) | — |
 | R-TRUST-03 | No hidden authority; evaluator sees refs only | L37722–37748, L19153–19175 | MOD-03 (operative owner (D-09)), MOD-05 (evaluator must not inspect) | D-09 (marked restatement — canonical statement R-KERN-03, MOD-03) |
+| R-TRUST-04 | One complete trust table: MOD-06/08/10 rows frozen (authoritative machine boundary); 11-row table superseded; planner never a security/runtime provider — prohibitions homed at enforcing modules; dep/ SC-1/2/3 hard failures (C-84 resolved) | addendum (SEC-022) | — | — |
 
-### MOD-02 — COMPILER (5 obligations)
+### MOD-02 — COMPILER (6 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -93,8 +98,9 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-COMPILE-03 | Combined static judgment (type, effects, capability req, budget bound) | L3874–3905 | MOD-04 (static bound B vs CostModel), MOD-03 (capability requirements descriptor) | — |
 | R-COMPILE-04 | Plan immutability / temporal integrity | L1722–1745, L2052–2070 | MOD-13 (staleness + PlannerAccepted lifecycle), MOD-03 (authority fixed at t0) | — |
 | R-COMPILE-05 | ExecutablePlan constructors private to compiler | L39296–39318 | MOD-17 (visibility review) | D-11 (marked restatement — canonical statement R-COMPILE-01, MOD-02) |
+| R-COMPILE-06 | Embedded Value::Capability literals must be plan-bound: foreign/garbage/undeclared capability literal is a compilation fault (U-22 security-direction closure) | addendum (SEC-002) | — | — |
 
-### MOD-03 — CAPABILITY (12 obligations)
+### MOD-03 — CAPABILITY (16 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -107,11 +113,15 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-CAP-07 | Valid(c,t) incl. ancestor liveness; lazy revocation | L6434–6445, L6647–6656 | MOD-06 (delegated envelopes keep lineage) | — |
 | R-CAP-08 | Algebra theorems 1–3 (stated, proof-sketch only) | L6422–6433, L6657–6671 | — | — |
 | R-CAP-09 | Explicit logical time; no wall-clock | L6434–6436, L38858–38890 | MOD-06 (logical time is global state), MOD-04 (deadline comparison), MOD-07 (scheduler steps advance t) | — |
+| R-CAP-10 | AdmissibleConstraint defined: decidable well-formedness per semantic domain (O/S/Q/R/T); inadmissible constraint faults (InvalidConstraint), never identity/top-default; compile-time validation of attacker-authored constraints (C-94 resolved; M030) | addendum (SEC-014) | — | — |
 | R-KERN-01 | CapRef opaque, generation-safe, private fields, kernel-only construction | L9127–9133, L10178–10208 | MOD-10 (CapRef payload 0x30), MOD-11 (capability contexts in snapshots), MOD-06 (marshal rejection target) | — |
 | R-KERN-02 | Kernel API: authorize/derive/validate with logical time | L6672–6728, L19153–19175 | MOD-05 (evaluator calls authorize/derive), MOD-06 (spawn and delegation call derive) | — |
 | R-KERN-03 | Authority internals pub(crate)/inaccessible | L39397–39407 | MOD-01 (central restatement R-TRUST-03 (D-09)), MOD-17 (visibility enforcement review) | D-09 (canonical statement) |
+| R-KERN-04 | Possession-gated authorization: authorize(holder, cap, effect, t) resolves the CapRef through the actor capability context; global-arena no-holder authorize superseded; CapRef bits never suffice (C-77 resolved) | addendum (SEC-002) | — | — |
+| R-KERN-05 | CapabilityContext real frozen possession type; unit-type sketch superseded; snapshots carry capability context; recovery reconstructs possession before gate authorization | addendum (SEC-002) | — | — |
+| R-KERN-06 | Root-grant protocol frozen: Grant(source, authority, ceiling, t) with durable CapabilityGranted record, authority ≼ deployment ceiling, root minted once at initialization; Supervisor.host removed or issued-effect-only (R-HOST-02 binds all callers); planner I/O crate-separated (C-95 resolved) | addendum (SEC-015) | — | — |
 
-### MOD-04 — BUDGET (8 obligations)
+### MOD-04 — BUDGET (9 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -123,6 +133,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-BUDGET-06 | Time advancement δ_t (pure=0, host/scheduler>0, t+δ_t ≤ W) | L8698–8700, L10164–10168 | MOD-07 (scheduler step delta positive), MOD-09 (host interaction delta positive), MOD-17 (per-transition deltas open - U-07) | — |
 | R-BUDGET-07 | CostModel contract; Consumable ≠ Reserved typing | L9155–9205, L10171–10177 | MOD-02 (static budget bound uses CostModel), MOD-08 (EffectCost is a Cost) | — |
 | R-BUDGET-08 | ¬BudgetOK ⇒ fault(BudgetExhausted), no partial debit | L7345–7352, L7410–7419 | MOD-08 (denial leaves budget unchanged) | — |
+| R-BUDGET-09 | Escrow disposition totality: every escrowed unit leaves via exactly one frozen path (Completed / host-failure consumption / durable Reconciled); live faults unified with crash reconciliation; logical-time deadline bound to Indeterminate; no quiescent strand (C-97 resolved; M035) | addendum (SEC-021) | — | — |
 
 ### MOD-05 — EVALUATOR (7 obligations)
 
@@ -136,7 +147,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-CEK-06 | Continuation preservation (+1/−1 per entry/resume) | L14632–14642 | — | — |
 | R-CEK-07 | Progress & preservation | L7273–7277, L8850 | MOD-15 (progress/preservation exercised differentially) | — |
 
-### MOD-06 — ACTOR (10 obligations)
+### MOD-06 — ACTOR (14 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -146,10 +157,14 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-ACTOR-05 | Spawn: escrow + derived capabilities only; no wholesale clone | L25573–25615, L37941–37951 | MOD-03 (child capabilities only via derive), MOD-04 (escrow transfer), MOD-02 (BudgetAllocationSpec surface - U-03) | — |
 | R-ACTOR-06 | Send async + deterministic wakeup; Receive blocks without fuel; FIFO mailbox | L25702–25749, L37941–37951 | MOD-07 (wakeup enqueues at back), MOD-04 (Receive blocks without fuel) | — |
 | R-ACTOR-08 | No amplification / no teleportation theorems | L26048–26070 | MOD-01 (corollaries of R-CORE-04/R-CORE-05) | — |
+| R-ACTOR-09 | Spawn transfers no capabilities by default (delegation is the only default path); explicit manifest + constraint compiler-checked, strictly attenuated; Authority(child) ≺ parent; trust_level phantom retracted; BudgetAllocationSpec bounds (C-82 resolved; M025) | addendum (SEC-006) | — | — |
+| R-ACTOR-10 | Mailbox resource admission: enqueue requires recipient capacity (M reservation; ReservedCapacityExceeded faults the sender, sender pays); payload-proportional send cost over canonical length; constructed value size bounded against constructor's M; footprint bounded by reserved M (C-96 resolved; M033) | addendum (SEC-019) | — | — |
 | R-MARSHAL-01 | Recursive capability rejection in ordinary marshal | L41647–41658, L25674–25701, L37946–37951 | MOD-10 (recursive rejection over canonical domain), MOD-03 (authority never in ordinary data), MOD-01 (central restatement R-CORE-07 (D-04)) | D-04 (canonical statement) |
 | R-MARSHAL-02 | Explicit delegation only; DelegatedCapability envelope; ≼ parent | L25972–26001, L37953–37959 | MOD-03 (delegation = kernel derive), MOD-02 (Expr::Delegate surface undecided - U-02), MOD-10 (DelegatedCapability envelope encoding) | — |
 | R-MARSHAL-03 | MarshalledValue = canonical bytes; unmarshal(marshal(v)) = v | L25674–25701 | MOD-10 (MarshalledValue is canonical bytes; round-trip scope open - AMB-06) | — |
 | R-MARSHAL-04 | Semantic marshalling rule (CapRef ∉ marshal(v)) | L8695–8698 | MOD-10 (traversal over canonical encoding), MOD-03 (explicit delegate() only) | — |
+| R-MARSHAL-05 | Delegation constructible: Expr::Delegate calls kernel.derive and yields a kernel-constructed envelope, never a plain Value variant; receive-side revalidation (liveness, lineage, target, generation) before registration, faults leave the recipient CapabilityContext byte-identical; MarshalledValue is the checked-bytes form; MarshalFault unified (X-65; C-79 resolved) | addendum (SEC-005) | — | — |
+| R-MARSHAL-06 | contains_capability is a frozen total predicate: closed traversal domain descending into List, Map, Tuple at any depth and FunctionValue.env recursively; sole exclusion kernel-sealed delegation envelopes; Bytes are data; marshal Ok implies no reachable capability (C-81 resolved) | addendum (SEC-018) | — | — |
 
 ### MOD-07 — SCHEDULER (2 obligations)
 
@@ -158,7 +173,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-ACTOR-04 | FIFO scheduler; at-most-once membership; 1 transition/turn; blocked/pending/terminal never scheduled | L25558–25615, L37924–37937 | MOD-06 (mailbox wakeup enqueues), MOD-12 (queue reconstructed at recovery), MOD-01 (feeds determinism (D-05)) | — |
 | R-ACTOR-07 | Deterministic concurrency theorem | L25759–25766 | MOD-01 (central restatement R-CORE-08 (D-05)), MOD-09 (host trace term), MOD-13 (planner trace term) | D-05 (canonical statement) |
 
-### MOD-08 — EFFECT (7 obligations)
+### MOD-08 — EFFECT (8 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -169,8 +184,9 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-EFFECT-05 | complete_max affordability at issuance | L25799–25825 | MOD-04 (escrow partition arithmetic), MOD-11 (escrow must be durable) | — |
 | R-EFFECT-06 | Receipt validates ID + digest; mismatch ⇒ ReplayCorruption, no resume | L23949–24002, L25952–25970 | MOD-09 (receipt produced by host/replay), MOD-10 (bytes underlying both digests), MOD-11 (journal integrity M017) | — |
 | R-EFFECT-07 | Completion accounting (charge complete, release reservation, log, resume) | L23949–24002 | MOD-04 (charge/release/refund), MOD-11 (EffectCompleted record appended), MOD-05 (continuation resume) | — |
+| R-EFFECT-08 | Receipt-result admission: recursive contains_capability over the result payload at any nesting depth; no capability, no closure; data-domain only; host error via declared closed fault mapping only | addendum (SEC-001) | — | — |
 
-### MOD-09 — HOST (5 obligations)
+### MOD-09 — HOST (6 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -179,8 +195,9 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-HOST-03 | Ordered ReplayHost; ID+digest per entry; no unordered map | L25972–25996, L37985–38000 | MOD-11 (trace sourced from durable journal), MOD-10 (digests recomputed/validated), MOD-12 (replay used by recovery checks) | — |
 | R-HOST-04 | Replay correspondence (machine replay valid; real-world replay per effect class) | L3947–3958, L26249–26262 | MOD-12 (recovery is replay over durable records), MOD-15 (live-vs-replay differential), MOD-13 (end-to-end replay with recorded proposal) | — |
 | R-HOST-05 | Replay validates trace, not just final state | L38278–38300 | MOD-15 (trace comparison obligation) | — |
+| R-HOST-06 | Durable receipt results representable: EffectCompleted {id, digest, result_digest, result: CanonicalData}; replay verifies ResultDigest(result) = result_digest before resumption — third identity conjunct; no ad-hoc result records (C-90 resolved; M029) | addendum (SEC-011) | — | — |
 
-### MOD-10 — SERIALIZATION (11 obligations)
+### MOD-10 — SERIALIZATION (13 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -195,8 +212,10 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-CANON-09 | Digest rules + when-to-compare-bytes rule | L28185–28228, L30588–30590 | MOD-08 (EffectDigest identity), MOD-11 (state_digest / checksums), MOD-09 (replay validation) | — |
 | R-CANON-10 | Injectivity as structural property + scoped evidence claim | L30592–30598, L35068 | MOD-15 (evidence scoped to generated distribution), MOD-17 (claim discipline) | — |
 | R-CANON-11 | Golden vectors as normative fixtures | L30599–30646, L31948–32010, L33266–33286 | MOD-17 (M1 gate consumes vectors) | — |
+| R-CANON-12 | Data decoder rejects capability payloads: 0x05 and standalone 0x30 yield CanonicalError::CapabilityInData; only the kernel-mediated codec path produces or consumes capability payloads; unmarshal runs contains_capability — symmetric boundary (C-14/U-02 security direction; C-78 resolved) | addendum (SEC-003) | — | — |
+| R-CANON-13 | One canonical grammar: 15A BE envelope sole; LE revised grammar superseded in-source; single TAG_* namespace (X-50/X-54 resolved); all digests defined over 15A; bidirectional byte-exact golden vectors; LE variants rejected (C-92 resolved; M031) | addendum (SEC-017) | — | — |
 
-### MOD-11 — PERSISTENCE (11 obligations)
+### MOD-11 — PERSISTENCE (14 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -211,8 +230,11 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-PERSIST-04 | Snapshot content (include/exclude lists) | L26293–26330 | MOD-05 (EvalState/continuation content), MOD-06 (actor state content), MOD-03 (capability contexts durable), MOD-07 (runnable queue content), MOD-10 (machine-state encoding unfrozen - U-02) | — |
 | R-PERSIST-05 | Atomic snapshot protocol; ValidSnapshot iff commit+digest | L26216–26240, L35177–35188 | MOD-12 (recovery ignores invalid snapshots), MOD-10 (digest over canonical bytes) | — |
 | R-PERSIST-06 | WAL sequence continuity; gaps rejected | L35088–35110, L35189–35208 | MOD-12 (gap detected during recovery) | — |
+| R-PERSIST-07 | Durable authority lattice: snapshot carries the AuthorityNode set, revocation_set and generation counters; WAL event kinds CapabilityGranted/Derived/Revoked; recovery reconstructs the arena, replays capability events, faults on dangling or generation-mismatched CapRef; revocation monotonic across crashes (RECOVERY-REVOCATION-DURABLE) | addendum (SEC-004) | — | — |
+| R-PERSIST-08 | Storage integrity rewinding resistance: chained checksums (checksum_n = H(checksum_{n−1} ‖ frame_n)); snapshot commit covers state digest + last WAL sequence; keyed chain if storage adversarial, else trust-table records the trusted-writable assumption; consistently-forged negative tests (C-88 resolved) | addendum (SEC-009) | — | — |
+| R-TRUST-05 | Crate DAG carries the R-DUR-02 hinge edge ror-runtime → ror-persistence (inverted trait superseded); ror-core → ror-kernel forbidden; forbidden-edge list checked against Cargo.toml; crate-separation rule (C-85 resolved) | addendum (SEC-022) | — | — |
 
-### MOD-12 — RECOVERY (7 obligations)
+### MOD-12 — RECOVERY (8 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -223,8 +245,9 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-RECOV-05 | Invalid(D) ⇒ RecoveryFault; never silently repair | L35196–35208, L38254–38272 | MOD-11 (detection points), MOD-01 (central restatement R-CORE-10 (D-07)) | D-07 (canonical statement) |
 | R-RECOV-06 | Budget partition invariant survives crash | L35210–35215 | MOD-04 (invariant statement), MOD-11 (escrow records carry it over) | — |
 | R-RECOV-07 | Reconciliation is the only resolution path for Indeterminate | L35111–35144, L26249–26262 | MOD-09 (authoritative host reconciliation protocol), MOD-11 (EffectReconciled record), MOD-17 (outcome variants open - U-15) | — |
+| R-RECOV-08 | Reconciliation frozen: I2 holds on every host path incl. supervisor; never re-executes (idempotent query at most); compensations are ordinary gated requests; NotExecuted gated behind authoritative evidence; supervisor allocates lifecycle, not effects (C-89 resolved; M028) | addendum (SEC-010) | — | — |
 
-### MOD-13 — AGENT (5 obligations)
+### MOD-13 — AGENT (7 obligations)
 
 | Obligation | Short text (from `spec/03`) | Provenance | Cross-references | Duplication |
 |---|---|---|---|---|
@@ -233,6 +256,8 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-PLANNER-03 | Staleness check; StalePlan rejection, no state mutation | L27199–27236, L28373 | MOD-02 (checked before compilation), MOD-11 (epoch compared against durable log state) | — |
 | R-PLANNER-04 | Planner need not be deterministic; PlannerAccepted recording for replay | L27392–27414 | MOD-11 (PlannerAccepted recorded durably), MOD-09 (replay consumes recorded proposal), MOD-07 (determinism theorem term) | — |
 | R-PLANNER-05 | LLM outer-loop conformance (3 test obligations) | L27920–27931, L28513–28521 | MOD-17 (harness side (ror-testkit)), MOD-09 (ReplayHost for end-to-end replay), MOD-02 (compiler rejection case 1) | — |
+| R-PLANNER-06 | Staleness is exact equality: observation_sequence = current_planning_epoch; either-direction mismatch ⇒ StalePlan with zero state mutation; less-than-only reading superseded; future-tagged proposals mandatory rejection test (C-86 resolved; M026) | addendum (SEC-007) | — | — |
+| R-PLANNER-07 | Observation channel capability-opaque: CapabilitySummary frozen as non-referential projection (counts, classes, ceilings); EffectIssued carries {id, actor, digest} only, cap-bearing log shape superseded; Capability ∉ Observables(LLM) (C-87 resolved; M027) | addendum (SEC-008) | — | — |
 
 ### MOD-14 — REFERENCE (5 obligations)
 
@@ -285,7 +310,7 @@ MOD-17 VERIFICATION orchestrates all modules as SUT (tests/, scripts/); no produ
 | R-TEST-10 | CI gates (PR / nightly / release) | L38864–38890, L37287–37292 | MOD-16 (mutation gate stage), MOD-15 (differential suites staged) | — |
 | R-TEST-11 | Final acceptance condition (3 conjuncts) | L38885–38911, L41196–41210 | MOD-15 (oracle equality conjunct), MOD-16 (kill-rate conjunct), MOD-12 (recovery-equivalence conjunct) | — |
 
-**Partition check:** 148 obligations across 17 modules (expected 148).
+**Partition check:** 173 obligations across 17 modules (expected 148).
 
 ## 2. Atomic-record partition (545)
 
