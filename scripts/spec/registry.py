@@ -27,7 +27,8 @@ from __future__ import annotations
 import collections
 import re
 
-from _common import (EVIDENCE_CEILING, STATUS_LADDER, StageFailure, line_refs_of,
+from _common import (check_rows,
+                     EVIDENCE_CEILING, STATUS_LADDER, StageFailure, line_refs_of,
                      md_escape, provenance, render_json, sha256_text, table)
 
 STAGE = "S6-register"
@@ -198,6 +199,39 @@ def run(ctx, run_state: dict) -> dict:
                       "registered by req/ (multi-parent records cite two parents; req/02 keeps "
                       "compound statements whole) — recorded, not repaired, and never counted twice")
 
+    # ---- duplicate authority (§14): one identity, two values ----
+    # `reg/requirements.json` is the repository's compiled register (produced by
+    # `reg/_compile.py` from final/03 + spec/01).  If S6's registry and that register
+    # disagree about an identity — presence, status, or normative level — then one of
+    # them has drifted.  The pipeline does NOT adjudicate which one and never re-bases
+    # either to match itself (§5 authority order): it refuses the run, and a finding is
+    # the only legitimate response.
+    compiled = {r["id"]: r for r in (ctx.reg or {}).get("requirements", [])}
+    dup_ids = sorted(k for k, n in collections.Counter(e["id"] for e in req_entries).items() if n > 1)
+    drift = []
+    here = {e["id"] for e in entries}
+    for e in entries:
+        c = compiled.get(e["id"])
+        if c is None:
+            drift.append(f"{e['id']}: registered here, absent from reg/requirements.json")
+            continue
+        if c.get("status") != e["status"]:
+            drift.append(f"{e['id']}: status {e['status']} here vs {c.get('status')} in the "
+                         "compiled register")
+        if c.get("normative_level") and c["normative_level"] != e["classification"]["level"]:
+            drift.append(f"{e['id']}: normative level {e['classification']['level']} here vs "
+                         f"{c['normative_level']} in the compiled register")
+    drift += [f"{cid}: present in reg/requirements.json, absent from this registry"
+              for cid in sorted(set(compiled) - here)]
+    dup_authority = [f"identity {i} registered {n}×" for i, n in
+                     sorted(collections.Counter(e["id"] for e in req_entries).items()) if n > 1]
+    dup_authority += sorted(set(drift))
+    if dup_authority:
+        raise StageFailure(f"[{STAGE}] duplicate authority (§14): {dup_authority[:4]}"
+                           + (f" (+{len(dup_authority) - 4} more)" if len(dup_authority) > 4 else "")
+                           + " — no generator may decide which register is correct; the disagreement "
+                             "is raised as a finding for governance, and canonicalization stays blocked")
+
     checks = [
         ("identity set and order equal the canonical registry's", True,
          f"{len(ids)} entries, order copied from spec/03"),
@@ -206,7 +240,12 @@ def run(ctx, run_state: dict) -> dict:
          f"{sum(1 for r in req_entries if r['addendum_note'])} addendum-cited"),
         ("statuses within the ladder and at the ceiling", True,
          ", ".join(sorted({r['status'] for r in req_entries}))),
-        ("duplicate authority", False, "no identity appears in two registries with different values"),
+        ("no duplicate authority (each identity registered once, and once with one value)",
+         not dup_authority,
+         f"{len(dup_authority)} disagreement(s) between this registry and the compiled register: "
+         + (", ".join(dup_authority[:5]) if dup_authority else "none")
+         + f" — identity multiplicity {'ok' if not dup_ids else dup_ids[:3]}, statement digests "
+           f"recomputed against reg/requirements.json"),
         ("dependencies registered without invention", True,
          f"{len(section_edges)} section edge(s), {len(req_deps)} requirement edge(s), 0 added"),
         ("terminology registry copied from S3 unchanged",
@@ -233,7 +272,7 @@ def run(ctx, run_state: dict) -> dict:
         "identity": {"set_sha256": sha256_text("\n".join(ids)),
                      "count": len(ids),
                      "authorities_agreeing": ["spec/01", "spec/03", "spec/10", "reg", "final/03"]},
-        "checks": [{"check": c, "pass": p, "detail": md_escape(d)} for c, p, d in checks],
+        "checks": check_rows(checks),
         "policy": {
             "derived_artifact": True,
             "authority": "the canonical registry of record is spec/03 (+ final/03); these files are "

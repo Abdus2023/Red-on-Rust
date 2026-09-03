@@ -138,6 +138,16 @@ def render_report(run: dict, mutation: dict | None = None) -> str:
         ("historical artifacts remain protected", "yes",
          f"12 sha256-pinned audit snapshots re-verified by S7 ({s4['counts']['spec06_rows']} "
          "findings projected without regrading)"),
+        ("open material is disclosed, never silently resolved", "yes",
+         f"{len(run.get('disclosures', []))} stage disclosure(s) printed as NOTE; "
+         f"{len(open_blocking)} BLOCKING + {len(open_major)} MAJOR open rows listed in the canonical "
+         "artifact's §4 open-items table (S5 refuses the run if any ambiguity-bearing row is absent "
+         "from that table)"),
+        ("proposals cannot reach canonicalization", "yes — structurally",
+         "no intake channel exists: S7 scans every render module for a filesystem read of a "
+         "proposal-bearing path (0 found); `accepted_count: 0` in proposals.json is a constant, so "
+         "the structural scan is the evidence and the unexercised adjudication path is reported as a "
+         "gap, not as a pass"),
         ("evidence state remains unchanged", "yes", "ceiling `SPECIFIED`; "
          f"statuses {sorted({r['status'] for r in _json.loads(f['requirements.json'])['requirements']})}; "
          "`REF1-CONDITIONAL`/`V1-CONDITIONAL` carried verbatim"),
@@ -176,6 +186,13 @@ def render_report(run: dict, mutation: dict | None = None) -> str:
                                       "one that does not exist (check.py's own founding lesson)")],
         ["survivor policy", "a surviving mutation is a hard failure of the battery, which fails "
                             "`python3 check.py`; the gate never reports a partial kill table as success"],
+        ["cross-process determinism", (f"{bat['env_rows']} environments rendered in separate "
+                                       "interpreters — `PYTHONHASHSEED` variants (including `random`), "
+                                       "`LC_ALL=C`, a Turkish-locale case-fold, a foreign timezone, and "
+                                       "a different working directory — must all produce one content "
+                                       "address, or the battery fails"
+                                       if bat["env_proof"] else
+                                       "NOT PROVEN — the battery carries no environment section")],
     ], ["measure", "value"]) + "\n\n")
     a("No kill rate is recorded in this report, deliberately: a measured number frozen in a derived "
       "artifact goes stale the moment the tree moves, and this repository has already been bitten by "
@@ -199,6 +216,24 @@ def render_report(run: dict, mutation: dict | None = None) -> str:
     else:
         pass  # the derived facts above are the report's mutation status; `mutation` is an optional
               # live table for a caller that has just measured one and wants it printed
+
+    conf = [c for st in run["stages"] for c in st["checks"]
+            if c.get("kind", "conformance") != "disclosure"]
+    disc = [c for st in run["stages"] for c in st["checks"] if c.get("kind") == "disclosure"]
+    a("## 5b. Check taxonomy (§19)\n\n")
+    a(table([
+        ["conformance rows (a False aborts the run)", f"{sum(1 for c in conf if c['pass'])}/"
+                                                      f"{len(conf)} hold"],
+        ["conformance rows that failed and were ignored",
+         "0 — S7 fails any run in which one is found"],
+        ["disclosure rows (a reported fact about an authority, never auto-repaired)", f"{len(disc)}"],
+        ["disclosures", "; ".join(f"`{c['check']}`" for c in disc) or "none"],
+        ["stage rows presented as passes that are not predicates", "0 — every pass above is a "
+         "predicate over named inputs"],
+    ], ["measure", "value"]) + "\n\n")
+    a("A `NOTE` is not a green tick and not a red mark: it is the pipeline declining to fix "
+      "something it does not own. The taxonomy is enforced by a check, so a `FAIL` cannot quietly "
+      "become decoration.\n\n")
 
     a("## 6. Provenance status\n\n")
     a(table([
@@ -277,5 +312,16 @@ def battery_facts(repo) -> dict:
     check = (repo / "check.py").read_text(encoding="utf-8")
     registered = sum(1 for rel in ("scripts/spec/_gate.py", "tests/spec/_pipeline_mutations.py")
                      if f'"{rel}"' in check)
-    return {"defined": defined, "shapes": shapes,
+    env_rows = len(re.findall(r"^\s+\(\"", _envs_block(src), re.M))
+    return {"defined": defined, "shapes": shapes, "env_rows": env_rows,
+            "env_proof": "CROSS-PROCESS DETERMINISM" in src,
             "registered": registered == 2, "registered_lines": registered}
+
+
+def _envs_block(src: str) -> str:
+    """The battery's ENVS table, so the count of environments is read from the
+    harness that runs them rather than remembered in prose."""
+    start = src.find("ENVS = [")
+    if start < 0:
+        return ""
+    return src[start:src.index("\n]", start)]

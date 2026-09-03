@@ -31,8 +31,10 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
+import os
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -234,6 +236,77 @@ def m_inject_timestamp(root: Path) -> bool:
                      '"2099-01-01T00:00:00Z",')
 
 
+def m_open_proposal_intake(root: Path) -> bool:
+    """A proposal intake channel is added to the render path.
+
+    The injected function is *valid and never called*: what matters is not runtime
+    misbehaviour but that "LLM output cannot reach canonicalization" stays a checked
+    structural fact about the code.  The read is written the way people actually write
+    it — a joined path — so a scanner that only inspected the direct arguments of
+    `read_text` would miss it and report a clean tree.
+    """
+    p = root / "scripts/spec/extract.py"
+    txt = p.read_text(encoding="utf-8")
+    anchor = "\n\ndef run(ctx)"
+    if txt.count(anchor) != 1:
+        return False
+    block = ("\n\ndef _intake_added_by_mutation(ctx):\n"
+             "    # injected by tests/spec/_pipeline_mutations.py: a proposal intake channel\n"
+             "    import json\n"
+             '    return json.loads((ctx.repo / "spec" / "llm-proposals.json")'
+             '.read_text(encoding="utf-8"))\n')
+    p.write_text(txt.replace(anchor, block + anchor.lstrip("\n"), 1), encoding="utf-8")
+    return True
+
+
+
+def m_unactioned_conformance_failure(root: Path) -> bool:
+    """A stage reports a failed conformance row and the run continues.
+
+    §19 says a stage failure prevents publication; if a row can be False while a run
+    still writes artifacts, then every other row in the pipeline is decoration. This
+    is the mutation that proves the check taxonomy has teeth.
+    """
+    p = root / "scripts/spec/canonicalize.py"
+    return _sub_once(p, "    checks = [\n",
+                     "    checks = [\n        (\"injected row that fails but aborts nothing\", False,"
+                     " \"mutation\"),\n")
+
+
+def m_compiled_register_disagrees(root: Path) -> bool:
+    """`reg/requirements.json` promotes one identity without touching any authority.
+
+    The two registers now hold different values for one identity.  The pipeline may
+    not pick a winner (§5), so it must refuse the run — and this is the only check
+    that can see it: the compiled register is not in `sources` pin scope, and no
+    other document moved.
+    """
+    import json
+    p = root / "reg/requirements.json"
+    d = json.loads(p.read_text(encoding="utf-8"))
+    row = next(r for r in d["requirements"] if r["id"] == "R-SCOPE-01")
+    if row["status"] != "SPECIFIED":
+        return False
+    row["status"] = "IMPLEMENTED"
+    p.write_text(json.dumps(d, sort_keys=True, ensure_ascii=False, indent=2), encoding="utf-8")
+    return True
+
+
+def m_echo_host_value_into_report(root: Path) -> bool:
+    """A host environment value is echoed into a content-addressed artifact.
+
+    This is the defect the pipeline actually had: `env_report()` used to report
+    `PYTHONHASHSEED: "1"`, which made one render produce several content addresses
+    (the mutation battery's cross-process section is what found it). Two mutations,
+    one injection: P20 proves S7's own check catches it, P21 proves the cross-process
+    proof catches it as well — so deleting either detector leaves the other.
+    """
+    p = root / "scripts/spec/_common.py"
+    anchor = '        "read_by_the_render": [],'
+    inject = anchor + "\n" + '        "PYTHONHASHSEED": os.environ.get("PYTHONHASHSEED", "unset"),'
+    return _sub_once(p, anchor, inject)
+
+
 MUTATIONS = [
     Mutation("P01", "frozen seed source drifts by one line",
              "The snapshot is the root of all provenance; if a mutated source were accepted, every "
@@ -288,7 +361,30 @@ MUTATIONS = [
              "§4.1: where a timestamp would destroy reproducibility it MUST NOT participate; the "
              "discipline is a check, not a comment.", m_inject_timestamp, "timestamp participates", target="subprocess",
              section="§4.2 determinism"),
+    Mutation("P17", "a proposal intake channel is opened in the render path",
+             "§17/§3: the pipeline's safety claim is that LLM output cannot reach canonicalization. "
+             "That must be a structural fact about the code, not a property of this run's data.",
+             m_open_proposal_intake, "no proposal intake channel exists", target="subprocess",
+             section="§17 proposal cannot become canonical"),
+    Mutation("P18", "a stage reports a failed conformance row and the run continues",
+             "The taxonomy is enforced: a FAIL that nothing acts on would make every other check "
+             "decorative.", m_unactioned_conformance_failure, "no stage reported a conformance failure",
+             target="subprocess", section="§19 stage failure prevents publication"),
+    Mutation("P19", "the compiled register promotes one identity while its authorities stand",
+             "Two registers, one identity, two values: duplicate authority. The pipeline refuses "
+             "instead of adjudicating which side is right (§5).", m_compiled_register_disagrees,
+             "duplicate authority", section="§14 duplicate authority"),
+    Mutation("P20", "a host environment value is echoed into a generated artifact",
+             "The render may not read the environment; the check that polices it may, and must "
+             "notice when an artifact starts carrying a host value (§4.1).",
+             m_echo_host_value_into_report, "closed set of declared fields", target="subprocess",
+             section="§4.1 reproducibility"),
+    Mutation("P21", "the same echo, judged by the cross-process proof instead",
+             "Two independent detectors for one defect class: deleting either one leaves the "
+             "other, so neither claim is carried by a single check.", m_echo_host_value_into_report,
+             "content address", target="env", section="§4.2 determinism"),
 ]
+
 
 
 def run_pipeline(root: Path) -> tuple[bool, str]:
@@ -323,6 +419,95 @@ def run_gate(root: Path) -> tuple[bool, str]:
         return False, f"{type(exc).__name__}: {exc}"
     fails = [f"{label}  [{detail}]" for ok, label, detail in results if not ok]
     return not fails, "\n     ".join(fails)
+
+
+# ---------------------------------------------------------------------------
+# cross-process determinism (§4.2)
+# ---------------------------------------------------------------------------
+
+#: The in-process gate proves two renders in ONE interpreter agree; that cannot see
+#: a dependence on hash randomisation, locale, or the clock's timezone.  So each
+#: environment below renders the whole pipeline in a FRESH interpreter and the
+#: content addresses must be identical — `PYTHONHASHSEED` because set iteration order
+#: is seed-dependent and several checks compare sets, `tr_TR.UTF-8` because Turkish
+#: case-folding is the classic way a `.lower()` guard changes meaning, `TZ` because a
+#: stray timestamp would surface here and nowhere else.
+ENVS = [
+    ("baseline (interpreter defaults)", {}, None),
+    ("PYTHONHASHSEED=1", {"PYTHONHASHSEED": "1"}, None),
+    ("PYTHONHASHSEED=98765", {"PYTHONHASHSEED": "98765"}, None),
+    ("PYTHONHASHSEED=random", {"PYTHONHASHSEED": "random"}, None),
+    ("LC_ALL=C LANG=C", {"LC_ALL": "C", "LANG": "C"}, None),
+    ("LC_ALL=tr_TR.UTF-8 (Turkish case-fold)", {"LC_ALL": "tr_TR.UTF-8", "LANG": "tr_TR.UTF-8"}, None),
+    ("TZ=Pacific/Kiritimati LC_ALL=en_US.UTF-8", {"TZ": "Pacific/Kiritimati",
+                                                  "LC_ALL": "en_US.UTF-8"}, None),
+    ("rendered from another working directory", {}, tempfile.gettempdir()),
+]
+
+#: The reduced probe a per-mutation run uses: enough to see a host dependence, cheap
+#: enough to keep the battery inside the repository gate's time budget.
+ENVS_PROBE = [ENVS[0], ENVS[2], ENVS[6]]
+
+_RENDER_pat = re.compile(r"render (sha256:[0-9a-f]{16,64})")
+_CONTENT_pat = re.compile(r"content (sha256:[0-9a-f]{16,64})")
+
+
+def environment_independence(repo: Path = REPO, envs=ENVS, header: bool = True) -> list[str]:
+    """Render the pipeline once per environment; every address must be one address."""
+    if header:
+        print("\n" + "-" * 78)
+        print("CROSS-PROCESS DETERMINISM: the render must not depend on the environment")
+        print(f"{'environment':<46}  {'content address':<24}  verdict")
+        print("-" * 78)
+    baseline = None
+    addresses: dict[str, str] = {}
+    failures: list[str] = []
+    for name, extra, cwd in envs:
+        env = dict(os.environ)
+        env.pop("PYTHONHASHSEED", None)
+        env.update(extra)
+        try:
+            r = subprocess.run([sys.executable, "-B", str(repo / "scripts/spec/pipeline.py"),
+                                str(repo / "Red-on-Rust.md"), "--no-publish"],
+                               cwd=str(cwd or repo), capture_output=True, text=True, env=env,
+                               timeout=600)
+        except Exception as exc:                                 # noqa: BLE001
+            failures.append(f"{name}: could not render ({exc!r})")
+            print(f"{name:<46}  {'—':<24}  ERROR")
+            continue
+        m = _RENDER_pat.search(r.stdout) or _CONTENT_pat.search(r.stdout)
+        key = m.group(1) if m else ""
+        addresses[name] = key
+        if baseline is None:
+            baseline = key
+            verdict = "reference"
+            ok = r.returncode == 0 and bool(key)
+        else:
+            ok = r.returncode == 0 and bool(key) and key == baseline
+            verdict = "same" if ok else "DIVERGED"
+        if r.returncode != 0:
+            tail = (r.stdout + r.stderr).strip().splitlines()
+            failures.append(f"{name}: render exited {r.returncode}: "
+                            f"{tail[-1] if tail else '(no output)'}")
+        elif not key:
+            failures.append(f"{name}: the render printed no content address")
+        elif key != baseline:
+            failures.append(f"{name}: content address {key} != baseline {baseline}")
+        print(f"{name:<46}  {(key[:22] + '…') if key else '—':<24}  {verdict}")
+    if len(set(addresses.values())) > 1:
+        failures.append("one pipeline, several content addresses — the render is environment-dependent")
+    if header:
+        print("-" * 78)
+        print(("one content address across every environment" if not failures
+               else f"{len(failures)} environment-dependence failure(s)"))
+    return failures
+
+
+def run_env(root: Path) -> tuple[bool, str]:
+    """A mutation judged by the cross-process proof: killed when the render starts
+    depending on the host."""
+    fails = environment_independence(root, ENVS_PROBE, header=False)
+    return not fails, "\n".join(fails[:3])
 
 
 def main() -> int:
@@ -370,7 +555,7 @@ def main() -> int:
                 print("      SKIP  (anchor moved — the mutation could not be applied)\n")
                 inapplicable.append(mut)
                 continue
-            ok, out = {"gate": run_gate, "subprocess": run_subprocess}.get(
+            ok, out = {"gate": run_gate, "subprocess": run_subprocess, "env": run_env}.get(
                 mut.target, run_pipeline)(root)
             if ok:
                 print("      SURVIVED  ✗  nothing noticed the drift")
@@ -387,6 +572,8 @@ def main() -> int:
                 killed.append(mut)
 
     total = len(killed) + len(survived)
+    env_failures = environment_independence() if not args.only else []
+
     print("\n" + "-" * 78)
     print(f"killed {len(killed)}/{total}"
           + (f"   inapplicable (anchor moved): {[m.mid for m in inapplicable]}" if inapplicable else ""))
@@ -394,6 +581,11 @@ def main() -> int:
         print("SURVIVING MUTATIONS — each is a hole in the gate:")
         for m in survived:
             print(f"  {m.mid} {m.title}  ({m.section})")
+        return 1
+    if env_failures:
+        print("ENVIRONMENT-DEPENDENT RENDER — §4.2 determinism is violated:")
+        for line in env_failures:
+            print("  " + line)
         return 1
     if not total:
         print("nothing ran")

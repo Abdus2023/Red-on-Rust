@@ -32,7 +32,8 @@ from __future__ import annotations
 
 import re
 
-from _common import (EVIDENCE_CEILING, LEVEL_VOCAB, STATUS_LADDER, StageFailure,
+from _common import (check_rows,
+                     EVIDENCE_CEILING, LEVEL_VOCAB, STATUS_LADDER, StageFailure,
                      line_refs_of, md_escape, provenance, render_json, sha256_text,
                      table)
 
@@ -185,7 +186,7 @@ def run(ctx) -> dict:
         "provenance": prov,
         "counts": counts,
         "entries": entries,
-        "checks": [{"check": c, "pass": p, "detail": md_escape(d)} for c, p, d in checks],
+        "checks": check_rows(checks),
         "policy": {
             "invention_allowed": False,
             "silent_delete_allowed": False,

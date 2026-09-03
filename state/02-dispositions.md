@@ -21,6 +21,7 @@
 | `DISP-13` | spec/09 register header staleness ('Status: all OPEN') | header claimed all items OPEN after addenda VII–IX and the U-38 adoption had resolved 11 items | governance-repair (U-01, U-45) | 2026-09-03 | RESOLVED | yes |
 | `DISP-14` | FINAL1 checker-count narrative ('13 structural checkers; +1 from this compilation on the next run') | hand-written count frozen at 13 (+1 future) while the actual registration grew to 15 | governance-repair (R-SCOPE-03) | 2026-09-03 | RESOLVED | yes |
 | `DISP-15` | Verification-tag count projection (spec/10 '26; 17 frozen-source + 9 post-audit addenda') | the hand-maintained index list carried 26 entries, counting the documented README alias MARSHAL-CAPABILITY-REJECT as a 17th frozen-source tag, disagreeing with spec/08 §1's own tables (16 + 9 rows) | governance-repair (MARSHAL-NO-RAW-CAPABILITY) | 2026-09-03 | RESOLVED | yes |
+| `DISP-16` | Specification pipeline: derived-pointer convention and checker-inventory adoption | the repository could re-derive every register but had no entry point that re-derived its own specification artifacts, so derived figures lived in hand-copied prose — the condition recorded as DISP-14 and DISP-15 | repository-gate-adoption (R-SCOPE-03, R-CLAIM-01) | 2026-09-03 | RESOLVED | yes |
 
 Commit provenance: pre-repair adoptions and audits live in the single pre-repair commit `0a8f60d`; the repair-pass records (DISP-05, DISP-13, DISP-14, DISP-15) were recorded 2026-09-03 in `state/00-overview.md`'s history. `none-carried` rows have no resolving action by design.
 

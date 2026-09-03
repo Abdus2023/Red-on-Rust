@@ -925,11 +925,24 @@ Consequences worth stating plainly:
   `scripts/spec/_gate.py`, which is registered in `check.py`; `build/spec/` is gitignored because it is
   reproducible, and it is never read back as input — a derived artifact feeding a generator is how a
   projection becomes a second authority.
-- **It proves its own teeth.** `tests/spec/_pipeline_mutations.py` injects sixteen kinds of drift into a
-  scratch copy — source edit, silent deletion, renumbering, promotion, provenance strip, invented
-  requirement, edited history, hand-edited pointer, stale build set, injected timestamp — and fails if
-  any of them is unnoticed; a survivor is a hard failure of the battery and therefore of
-  `python3 check.py`, so the claim is an enforced invariant rather than a remembered score.
+- **It proves its own teeth.** `tests/spec/_pipeline_mutations.py` injects deliberate drift into a
+  scratch copy — source edit, silent deletion, renumbering, duplicate row, promotion, authority-text
+  drift, provenance strip, invented requirement, dropped section, deleted finding, falsely-resolved
+  decision, broken register shape, edited history, hand-edited pointer, stale build set, injected
+  timestamp, opened proposal intake, an ignored failure, a register that contradicts itself — and fails
+  if any of it goes unnoticed. A survivor is a hard failure of the battery and therefore of
+  `python3 check.py`, so this is an enforced invariant, not a remembered score.
+- **Determinism is measured across processes, not asserted inside one.** The same battery renders the
+  whole pipeline in separate interpreters under `PYTHONHASHSEED` variants (including `random`),
+  `LC_ALL=C`, a Turkish-locale case-fold, a foreign timezone and a different working directory, and
+  requires one content address. That section is what found a real defect here: the environment report
+  echoed `PYTHONHASHSEED` into `verification.json`, so one render had several addresses — a host value
+  in a content-addressed artifact is the same mistake as a timestamp, and the report now names what it
+  ignores instead of recording values.
+- **A failure cannot become decoration.** Stage rows come in two kinds, and S7 aborts a run in which a
+  *conformance* row reported False while publication continued; *disclosures* (an open finding touching
+  canonical material, a dangling citation inside an authority) print as `NOTE`, are counted, and are
+  never presented as passes — because a check that fails harmlessly trains its reader to ignore checks.
 
 What it does *not* do: it is not a second governance system (§20 — `spec/01`, `spec/03`, `spec/06`,
 `spec/09` and the frozen source stay the single homes of their content; the `spec/0N-*/` directories are

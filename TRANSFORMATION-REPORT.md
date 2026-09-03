@@ -13,7 +13,7 @@ This report is generated: every figure below is computed from the artifacts it n
 | source lines / bytes | 42312 / 1166812 |
 | source turns | 60 (`[1]`–`[60]`) |
 | pipeline | `redonrust-spec-pipeline` v`1.0.0` |
-| render hash (content address of the whole artifact set) | `sha256:06a56825de98e4fc53651c54a685c57517c4f9dc57444aba5564bd24fa72bf82` |
+| render hash (content address of the whole artifact set) | `sha256:fdc38e8194030492c0a812bf7bd7c71ed829ce6c70e4f83ccdb44d501fb5090b` |
 | input artifacts (authority files read) | Red-on-Rust.md · spec/01 · spec/02 · spec/03 · spec/05 · spec/06 · spec/08 · spec/09 · req/registry.json · req/03 · reg/requirements.json · term/10-index.json · mod/19-index.json · dep/10-graph.json · spec/10-index.json · state/dispositions.json · state/repository-state.json · final/03 · audit/*.md · README.md |
 | output artifacts (derived) | 65 in `build/spec/` + 7 committed pointers under `spec/0*-*/` + `spec/PIPELINE.md` + this report |
 
@@ -48,13 +48,15 @@ This report is generated: every figure below is computed from the artifacts it n
 | audit artifacts exist | yes | `build/spec/audit/` (16 category projections, incl. the five families named in §6) + `audit.json` |
 | canonical specification exists | yes — as a projection | `build/spec/Red-on-Rust.canonical.md`; the human-readable authority stays `spec/01` (a second canonical copy would be duplicate authority, §20) |
 | provenance survives every stage | yes | 64/65 artifacts carry a provenance block (JSON: a `provenance` field; markdown: a footer naming stage, generator, seed hash and inputs). The one exempt artifact is `source.sha256`: the seed digest itself, bare hex by contract so `sha256sum Red-on-Rust.md` diff against it is byte-exact |
-| pipeline is deterministic | yes | render hash `sha256:06a56825de98e4fc…` reproduced by `_gate.py` on every `check.py` run; no clock/random/locale/network/filesystem-order use (S7 scans the stage sources) |
+| pipeline is deterministic | yes | render hash `sha256:fdc38e8194030492…` reproduced by `_gate.py` on every `check.py` run; no clock/random/locale/network/filesystem-order use (S7 scans the stage sources) |
 | pipeline is idempotent | yes | re-running writes nothing (`publish` compares bytes); canonical chunk multiset equals `spec/01`'s |
 | canonicalization introduces no unauthorized requirements | yes | introduced 0, dropped 0, promotions 0 |
 | registry identities are preserved | yes | `sha256:7ae2e7706b8e…` — identical set and order across spec/01, spec/03, spec/10, reg, final/03 |
-| cross-artifact verification passes | yes | 40 checks, 0 failures |
+| cross-artifact verification passes | yes | 43 checks, 0 failures |
 | mutation tests detect deliberate drift | see §5 | drift battery in `tests/spec/_pipeline_mutations.py` |
 | historical artifacts remain protected | yes | 12 sha256-pinned audit snapshots re-verified by S7 (113 findings projected without regrading) |
+| open material is disclosed, never silently resolved | yes | 1 stage disclosure(s) printed as NOTE; 33 BLOCKING + 34 MAJOR open rows listed in the canonical artifact's §4 open-items table (S5 refuses the run if any ambiguity-bearing row is absent from that table) |
+| proposals cannot reach canonicalization | yes — structurally | no intake channel exists: S7 scans every render module for a filesystem read of a proposal-bearing path (0 found); `accepted_count: 0` in proposals.json is a constant, so the structural scan is the evidence and the unexercised adjudication path is reported as a gap, not as a pass |
 | evidence state remains unchanged | yes | ceiling `SPECIFIED`; statuses ['SPECIFIED']; `REF1-CONDITIONAL`/`V1-CONDITIONAL` carried verbatim |
 | M0 remains NOT STARTED | yes | `state/repository-state.json` → `NOT STARTED` (no workspace exists (spec/08 §4)) |
 
@@ -74,13 +76,27 @@ This report is generated: every figure below is computed from the artifacts it n
 | measure | value |
 |---|---|
 | battery | `tests/spec/_pipeline_mutations.py` (drift of each §14 failure shape, applied to a scratch copy; the working tree is never touched) |
-| mutations defined | 16 |
-| shapes covered | §10 normalization preserves meaning, §11 no silent acceptance, §12 no status upgrade, §14 counts diverge, §14 duplicate authority, §14 entry lacks source provenance, §14 generated files are stale, §14 historical artifact presented as current, §14 source provenance is missing/changed, §4.1 provenance / §5 authority order, §4.2 determinism, §4.4 no normative invention, §4.5 / §14 duplicate authority, §4.5 identity preservation, §9 ordering/provenance |
+| mutations defined | 21 |
+| shapes covered | §10 normalization preserves meaning, §11 no silent acceptance, §12 no status upgrade, §14 counts diverge, §14 duplicate authority, §14 entry lacks source provenance, §14 generated files are stale, §14 historical artifact presented as current, §14 source provenance is missing/changed, §17 proposal cannot become canonical, §19 stage failure prevents publication, §4.1 provenance / §5 authority order, §4.1 reproducibility, §4.2 determinism, §4.4 no normative invention, §4.5 / §14 duplicate authority, §4.5 identity preservation, §9 ordering/provenance |
 | registered in `check.py` | `scripts/spec/_gate.py` and `tests/spec/_pipeline_mutations.py` are both registered, so every repository gate run executes them |
 | survivor policy | a surviving mutation is a hard failure of the battery, which fails `python3 check.py`; the gate never reports a partial kill table as success |
+| cross-process determinism | 8 environments rendered in separate interpreters — `PYTHONHASHSEED` variants (including `random`), `LC_ALL=C`, a Turkish-locale case-fold, a foreign timezone, and a different working directory — must all produce one content address, or the battery fails |
 
 
-No kill rate is recorded in this report, deliberately: a measured number frozen in a derived artifact goes stale the moment the tree moves, and this repository has already been bitten by exactly that defect class (`state/02` DISP-14, a hand-frozen checker count). What the report states instead is the *invariant* — 16 deliberate drifts are defined, the battery runs inside `check.py`, and any survivor reddens the repository gate. For the table of this run: `python3 tests/spec/_pipeline_mutations.py -v`.
+No kill rate is recorded in this report, deliberately: a measured number frozen in a derived artifact goes stale the moment the tree moves, and this repository has already been bitten by exactly that defect class (`state/02` DISP-14, a hand-frozen checker count). What the report states instead is the *invariant* — 21 deliberate drifts are defined, the battery runs inside `check.py`, and any survivor reddens the repository gate. For the table of this run: `python3 tests/spec/_pipeline_mutations.py -v`.
+
+## 5b. Check taxonomy (§19)
+
+| measure | value |
+|---|---|
+| conformance rows (a False aborts the run) | 103/103 hold |
+| conformance rows that failed and were ignored | 0 — S7 fails any run in which one is found |
+| disclosure rows (a reported fact about an authority, never auto-repaired) | 1 |
+| disclosures | `unresolved references in the authorities (disclosed, never auto-repaired)` |
+| stage rows presented as passes that are not predicates | 0 — every pass above is a predicate over named inputs |
+
+
+A `NOTE` is not a green tick and not a red mark: it is the pipeline declining to fix something it does not own. The taxonomy is enforced by a check, so a `FAIL` cannot quietly become decoration.
 
 ## 6. Provenance status
 
@@ -100,7 +116,7 @@ No kill rate is recorded in this report, deliberately: a measured number frozen 
 |---|---|
 | registry status | 4 registries generated; identities identical to the canonical registry; 0 identity changes; 0 status changes; 0 rows without provenance |
 | status transition channel | `reg/status-transitions.json` (append-only, ledger of record) — untouched by this transformation |
-| verification status | ACCEPTED as a set of derived projections: 40 checks, 0 failures, 4 gaps reported (not closed) |
+| verification status | ACCEPTED as a set of derived projections: 43 checks, 0 failures, 5 gaps reported (not closed) |
 | verification verdict text | every projection agrees with its authority; the pipeline verified agreement, never machine conformance |
 | what a PASS does not establish | that any R-… obligation is implemented, tested, verified or proven; that the determinism or security theorems hold for a machine (there is no machine); that REF1/V1 are anything other than CONDITIONAL |
 

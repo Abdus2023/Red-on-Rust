@@ -184,6 +184,30 @@ def render_json_compact(obj) -> str:
     return json.dumps(obj, sort_keys=True, ensure_ascii=False, separators=(",", ":")) + "\n"
 
 
+def check_rows(rows) -> list[dict]:
+    """Normalise a stage's check tuples into dicts, with a *kind*.
+
+    Two kinds exist and conflating them is how a gate teaches its reader to ignore
+    failures:
+
+      `conformance` (default) — a predicate the pipeline must satisfy.  A False here
+        ABORTS the run (§19: a stage failure prevents publication); `verify.py` (S7)
+        re-checks that no conformance row is False in a run that continued, so a
+        stage cannot report a failure and publish anyway.
+      `disclosure` — a reported fact the stage must NOT silently fix (open findings
+        touching canonical material, dangling citations that belong to an authority).
+        Printed as NOTE, counted in the artifact, never presented as a pass and never
+        presented as a failure of the pipeline's own conformance.
+    """
+    out = []
+    for row in rows:
+        label, passed, detail = row[0], bool(row[1]), row[2]
+        kind = row[3] if len(row) > 3 else "conformance"
+        out.append({"check": label, "pass": passed, "detail": md_escape(str(detail)),
+                    "kind": kind})
+    return out
+
+
 def md_escape(text: str) -> str:
     """Escape literal pipes so a table row keeps the header's cell count —
     `req/_validate.py` §7d treats an unescaped `|` in a cell as corruption."""
@@ -526,14 +550,51 @@ def line_refs_of(text: str) -> list[dict]:
 
 
 def env_report() -> dict:
-    """Environment facts that MUST NOT affect output, reported so the gate can
-    prove it read them rather than depended on them."""
+    """What the render does with the environment: nothing, and the report proves it
+    by naming variables instead of echoing their values.
+
+    The first version of this function reported `PYTHONHASHSEED: "1"`.  That was a
+    real defect — an artifact that carries a host value into its bytes is
+    environment-dependent in exactly the way a generation timestamp is (§4.1), and it
+    silently broke the claim that one render has one content address: the pipeline's
+    mutation battery renders under several environments and the addresses differed.
+    So the report lists what is ignored; the values belong in a reproduction log on
+    stdout, which nothing hashes and nothing verifies.
+    """
     return {
-        "PYTHONHASHSEED": os.environ.get("PYTHONHASHSEED", "unset"),
+        "read_by_the_render": [],
+        "names_the_render_ignores": sorted(ENV_IGNORED),
         "hash_randomization_note": ("set() iteration order is never used for output; every "
                                     "collection is sorted or source-ordered before rendering"),
         "locale_note": "no locale-dependent formatting is used anywhere in the pipeline",
+        "why_no_values": ("echoing a host value into a content-addressed artifact makes the "
+                          "artifact depend on the host; the discipline is stated, not measured"),
     }
+
+
+#: The closed set of fields `env_report()` may contain.  A check that only compared
+#: values would be environment-sensitive itself (an unset variable echoes the string
+#: "unset", which matches nothing), so the *shape* is what is pinned: a new field here
+#: is a render reading the environment, whatever it says.
+ENV_REPORT_FIELDS = frozenset({"read_by_the_render", "names_the_render_ignores",
+                              "hash_randomization_note", "locale_note", "why_no_values"})
+
+
+def host_env_values() -> dict:
+    """A validator helper, never a render input: S7 calls this to PROVE that
+    `env_report()` echoes no host value into a content-addressed artifact.
+
+    The asymmetry is the point — the render may not look at the environment, but the
+    check that polices it has to know what is out there.  A module that imported this
+    into a generated artifact would be caught by the same AST scan that allows it
+    here.
+    """
+    return {k: v for k, v in os.environ.items() if v and len(v) > 1}
+
+
+#: Environment variables a renderer might plausibly consult and must not.
+ENV_IGNORED = ("PYTHONHASHSEED", "LC_ALL", "LC_CTYPE", "LANG", "TZ", "NO_COLOR",
+               "PYTHONUTF8", "PYTHONIOENCODING", "COLUMNS")
 
 
 def next_free_id(prefix: str, existing) -> str:

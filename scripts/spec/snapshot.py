@@ -23,7 +23,8 @@ from __future__ import annotations
 
 import re
 
-from _common import (SOURCE_EXPECTED_LINES, SOURCE_EXPECTED_SHA256, StageFailure,
+from _common import (check_rows,
+                     SOURCE_EXPECTED_LINES, SOURCE_EXPECTED_SHA256, StageFailure,
                      md_escape, provenance, render_json, sha256_hex, table)
 
 STAGE = "S0-snapshot"
@@ -110,7 +111,7 @@ def run(ctx) -> dict:
         "schema": "redonrust.spec-pipeline.snapshot/v1",
         "provenance": prov,
         "snapshot": stats,
-        "checks": [{"check": c, "pass": p, "detail": md_escape(d)} for c, p, d in checks],
+        "checks": check_rows(checks),
         "cross_artifact": xcheck,
         "policy": {
             "snapshot_is": "immutable evidence of the input, not a normative artifact",

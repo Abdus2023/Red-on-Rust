@@ -269,6 +269,12 @@ def render(ctx, run, prov) -> dict:
     o.append("LLM -> proposes extraction / splitting / normalization / terminology / dependencies /\n")
     o.append("      ambiguities  ->  deterministic validators -> PASS: accepted artifact\n")
     o.append("                                              -> FAIL: audit + review\n```\n\n")
+    o.append("The proposal channel is not merely unused \u2014 it does not exist. No module on the "
+             "render path may open a path containing `proposal`, and S7 scans the render modules for "
+             "exactly that, so an intake added later fails the run until validators *and* mutations "
+             "exist for it. `proposals.json` therefore reports `accepted_count: 0` as a structural "
+             "constant: the evidence is the scan, and the unexercised adjudication path is carried as a "
+             "disclosed gap rather than claimed as a pass.\n\n")
     o.append("This pipeline never: defines canonical authority; invents, deletes, merges, splits, "
              "renumbers or re-predicates a requirement; alters a historical record; overwrites a "
              "canonical artifact without validation; or claims verification because something was "
@@ -282,8 +288,11 @@ def render(ctx, run, prov) -> dict:
                        "inputs; every registry row names where its value was copied from",
          "missing provenance → S7 fails"],
         ["determinism", "no clock, no randomness, no locale, no network, no directory order; sorted "
-                        "rendering; JSON `sort_keys`; registry order for lists",
-         "S7 scans the stage sources and fails on an offender"],
+                        "rendering; JSON `sort_keys`; registry order for lists; the environment report "
+                        "names what it ignores instead of echoing a host value",
+         "S7 scans the stage sources and fails on an offender; the battery re-renders in separate "
+         "interpreters under hash-seed, locale, timezone and cwd variation and requires one content "
+         "address"],
         ["idempotence", "`Pipeline(Pipeline(X)) == Pipeline(X)` on canonical content — the reconstruction "
                         "is chunk-identical to `spec/01`; publishing compares bytes before writing",
          "multiset inequality → S5 refuses"],
@@ -301,7 +310,17 @@ def render(ctx, run, prov) -> dict:
              "canonical state is not accepted. A failed audit blocks canonicalization under `--strict`; "
              "under the default policy unresolved rows are carried **and disclosed** in the canonical "
              "artifact's open-items section, because dropping them would be the fabricated completeness "
-             "§16 prohibits and `spec/01` itself publishes them as open.\n\n")
+             "§16 prohibits and `spec/01` itself publishes them as open. Carrying is only legitimate "
+             "while the row is *visible*: S5 refuses the run if an open row bearing on the canonical "
+             "predicate is absent from the disclosure table, so the cap on that table cannot become a "
+             "silent omission.\n\n")
+    o.append("Stage rows have two kinds and the difference is enforced, not typographic. A "
+             "**conformance** row that fails aborts, and S7 fails any run in which a conformance row "
+             "reported False yet the run continued. A **disclosure** names a fact about an *authority* "
+             "this pipeline must not silently fix (an open finding touching canonical material, a "
+             "dangling citation that belongs to `spec/06`); it is printed as `NOTE`, counted in the "
+             "artifact, never presented as a pass and never dressed up as a pipeline failure — because "
+             "a FAIL that nothing acts on is how a gate trains its reader to ignore FAILs.\n\n")
     o.append("## 6. Relationship to existing governance (§20)\n\n")
     o.append(table([
         ["`Red-on-Rust.md`", "S0 input; read-only, hash-pinned"],

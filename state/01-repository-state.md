@@ -52,7 +52,7 @@ OK   5  mutation registry: spec/08 §2 42 rows (dense M001…M042) == spec/10 in
 OK   6  R-CORE-02 chain: first conjunct ValidatedRequest(E); 7 conjuncts over the R-CORE-11 signatures (found: ValidatedRequest(E), 7 conjuncts)
 OK   6b subsumption ValidatedRequest(E) ⇒ ValidatedPlan(plan(E)) present in both R-CORE-11 (canonical home) and R-CORE-02 (repair pointer); ValidatedPlan not removed
 OK   6c canonical first predicate agrees across every current-state projection (spec/01, spec/00 §4, README box, spec/10 governing_invariants, final/01, final/05 GI-SEC-02, reg R-CORE-02 statement); the ValidatedPlan(P)∧ form survives only in historical/authority records (stale-form hits: none)
-OK   7  dispositions: 15 unique records; every resolved U-item (11) covered by a RESOLVED record (uncovered: none)
+OK   7  dispositions: 16 unique records; every resolved U-item (11) covered by a RESOLVED record (uncovered: none)
 OK   7b disposition current-authority tokens resolve (bad: none)
 OK   7c protected historical snapshots hash-verified (12 files; provenance violations: none) — editing a protected audit is a provenance violation until its disposition record is deliberately updated
 OK   7d disposition kinds in vocabulary ['frozen-addendum', 'governance-repair', 'none-carried', 'none-register-staleness-intentionally-preserved', 'repository-gate-adoption']; historical_text_preserved on every record

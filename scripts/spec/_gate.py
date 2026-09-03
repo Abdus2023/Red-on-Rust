@@ -20,7 +20,7 @@ This file proves the three things only a *repeated, external* view can see:
 
 It never repairs.  Every failure message names the reproduction command.
 
-    python3 scripts/spec/_gate.py            # the four proofs above
+    python3 scripts/spec/_gate.py            # every proof above, counted in the output line
     python3 scripts/spec/_gate.py --strict    # prove the refusal: strict canonicalization blocks
     python3 scripts/spec/_gate.py -v          # show every check line
 

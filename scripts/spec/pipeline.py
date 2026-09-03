@@ -145,7 +145,7 @@ def _merge(run: dict, label: str, res: dict) -> None:
     run.setdefault("results", {})[label] = res
     run["stages"].append({
         "stage": label,
-        "checks": [{"check": c, "pass": bool(p), "detail": str(d)} for c, p, d in res.get("checks", [])],
+        "checks": C.check_rows(res.get("checks", [])),
     })
 
 
@@ -309,10 +309,13 @@ def main(argv=None) -> int:
             continue
         name = dict((l.split(" ", 1)[0], l.split(" ", 1)[1]) for _, l, _ in STAGES).get(key, "")
         nfiles = sum(1 for v in run["stage_of"].values() if v == key)
-        npass = sum(1 for c in st["checks"] if c["pass"])
-        print(f"{key} {name.lower()}: {npass}/{len(st['checks'])} checks pass · {nfiles} artifact(s)")
+        conf = [c for c in st["checks"] if c.get("kind", "conformance") != "disclosure"]
+        disc = [c for c in st["checks"] if c.get("kind") == "disclosure"]
+        print(f"{key} {name.lower()}: {sum(1 for c in conf if c['pass'])}/{len(conf)} conformance "
+              f"predicates hold · {len(disc)} disclosure(s) · {nfiles} artifact(s)")
         for chk in st["checks"]:
-            print(f"    {'ok' if chk['pass'] else 'FAIL':<4} {chk['check']}"
+            tag = "ok" if chk["pass"] else ("NOTE" if chk.get("kind") == "disclosure" else "FAIL")
+            print(f"    {tag:<4} {chk['check']}"
                   + (f"  —  {str(chk['detail'])[:110]}" if chk["detail"] else ""))
     vdata = run["results"]["S7"]["data"]
     print(f"render {run['render_hash'][:23]}…  "

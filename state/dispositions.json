@@ -418,6 +418,32 @@
       ],
       "historical_text_preserved": true,
       "protects": []
+    },
+{
+      "id": "DISP-16",
+      "family": "Specification pipeline: derived-pointer convention and checker-inventory adoption",
+      "historical_source": {
+        "file": "check.py",
+        "rows": "CHECKERS registration before this pass (16 checkers, 7 classified non-checkers)",
+        "historical_status": "the repository could re-derive every register but had no entry point that re-derived its own specification artifacts, so derived figures lived in hand-copied prose — the condition recorded as DISP-14 and DISP-15"
+      },
+      "resolving_action": {
+        "kind": "repository-gate-adoption",
+        "authority": [
+          "R-SCOPE-03",
+          "R-CLAIM-01"
+        ],
+        "date": "2026-09-03",
+        "commit": "2026-09-03 specification-pipeline pass (this repository state; scripts/spec/, tests/spec/_pipeline_mutations.py)",
+        "note": "`scripts/spec/_gate.py` (determinism, idempotence, projection freshness, the S7 battery) and `tests/spec/_pipeline_mutations.py` (deliberate-drift battery plus the cross-process environment proof) are registered in check.py, 16 to 18 checkers; committed derived output is limited to pointer indices that name their authority (spec/00-source/ … spec/05-vectors/, spec/PIPELINE.md, TRANSFORMATION-REPORT.md) while the reproducible build set (build/spec/) is gitignored and is never read back as input; no identity, status, finding, mutation or verification tag is added, removed, merged, renamed or re-graded by the pipeline, and canonicalization is a reconstruction proven chunk-identical to spec/01"
+      },
+      "current_status": "RESOLVED",
+      "current_authority": [
+        "R-SCOPE-03",
+        "R-CLAIM-01"
+      ],
+      "historical_text_preserved": true,
+      "protects": []
     }
   ],
   "protected_snapshots": {

@@ -34,7 +34,8 @@ from __future__ import annotations
 import collections
 import re
 
-from _common import (EVIDENCE_CEILING, STATUS_LADDER, StageFailure, md_escape,
+from _common import (check_rows,
+                     EVIDENCE_CEILING, STATUS_LADDER, StageFailure, md_escape,
                      provenance, render_json, sha256_text, table)
 
 
@@ -199,6 +200,11 @@ def run(ctx, run_state: dict, strict: bool = False) -> dict:
         "",
     ]
     text = "\n".join(lines) + "\n"
+    # An open row that touches the canonical predicate is *carried* by policy — but
+    # only legitimately if it is also visible in the canonical artifact.  Checking
+    # membership here (rather than `not ambiguous_authority`) is what stops the row
+    # from being a tautology dressed as a guarantee.
+    undisclosed_ambiguity = sorted(i for i in ambiguous_authority if f"| {i} |" not in text)
 
     # Claims discipline applies to the generator's OWN framing: the requirement
     # chunks are verbatim authority text (R-CLAIM-*/R-SCOPE-* legitimately
@@ -223,9 +229,19 @@ def run(ctx, run_state: dict, strict: bool = False) -> dict:
          "verbatim authority text"),
         ("unresolved contradictions disclosed (default) / blocked (--strict)", True,
          f"{len(open_blocking)} BLOCKING + {len(open_major)} MAJOR carried; strict={strict}"),
-        ("ambiguous authority not canonicalized", not ambiguous_authority,
-         "open rows touching the canonical predicate are carried as open, never resolved here"),
+        ("ambiguous authority is carried *and* disclosed (never resolved here)",
+         not undisclosed_ambiguity,
+         f"{len(ambiguous_authority)} open row(s) touch the canonical predicate; undisclosed: "
+         + (", ".join(undisclosed_ambiguity[:5]) if undisclosed_ambiguity else "none")
+         + (" — §4's disclosure list is capped at 80 rows; either the cap rises or an authority "
+            "resolves the row, but a disclosure list that silently truncates is the fabricated "
+            "completeness §16 forbids" if undisclosed_ambiguity else "")),
     ]
+    if undisclosed_ambiguity:
+        raise StageFailure(f"[{STAGE}] canonicalization blocked: {len(undisclosed_ambiguity)} open "
+                           "row(s) bearing on the canonical predicate reached the canonical artifact "
+                           "without being disclosed (§4 open-items list): "
+                           f"{undisclosed_ambiguity[:5]}")
     if offenders:
         raise StageFailure(f"[{STAGE}] generated framing claims evidence status: {offenders}")
     data = {
@@ -242,11 +258,13 @@ def run(ctx, run_state: dict, strict: bool = False) -> dict:
         "counts": {"requirements": len(entries), "sections": len(sections),
                    "introduced": introduced, "dropped": dropped, "promotions": 0},
         "rejections": rejections,
+        "ambiguous_authority": sorted(ambiguous_authority),
+        "ambiguous_authority_undisclosed": undisclosed_ambiguity,
         "open_blocking": [f["finding_id"] for f in open_blocking],
         "open_major": [f["finding_id"] for f in open_major],
         "chunk_multiset_sha256": sha256_text(render_json(sorted(_norm(s) for s in rebuilt))),
         "authority_chunk_multiset_sha256": sha256_text(render_json(sorted(_norm(s) for s in authority))),
-        "checks": [{"check": c, "pass": p, "detail": md_escape(d)} for c, p, d in checks],
+        "checks": check_rows(checks),
         "policy": {"strict": bool(strict), "authority_target": "spec/01 + spec/03 (single-homed)",
                    "this_file_is": "a derived reconstruction"},
     }

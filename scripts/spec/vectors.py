@@ -29,7 +29,8 @@ from __future__ import annotations
 
 import re
 
-from _common import (StageFailure, md_escape, provenance, render_json, sha256_text, table)
+from _common import (check_rows,
+                     StageFailure, md_escape, provenance, render_json, sha256_text, table)
 
 STAGE = "S6b-vectors"
 
@@ -234,7 +235,7 @@ def run(ctx, run_state: dict) -> dict:
         "index": {k: {"count": v["count"], "authority": v["authority"],
                       "vector_ids": [r["vector_id"] for r in v["vectors"]]}
                   for k, v in sorted(families.items())},
-        "checks": [{"check": c, "pass": p, "detail": md_escape(d)} for c, p, d in checks],
+        "checks": check_rows(checks),
         "policy": {
             "invented_vectors": 0, "adjudicated_discrepancies": 0, "source_lines_rewritten": 0,
             "note": ("a vector's expected bytes come from an authority or the stage fails; where the "

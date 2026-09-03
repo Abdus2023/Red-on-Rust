@@ -30,7 +30,8 @@ from __future__ import annotations
 
 import re
 
-from _common import StageFailure, md_escape, provenance, render_json, sha256_text, table
+from _common import (StageFailure, check_rows, md_escape, provenance, render_json,
+                     sha256_text, table)
 
 STAGE = "S2-split"
 
@@ -236,7 +237,7 @@ def run(ctx) -> dict:
         "trailer": {"carried": True, "sha256": sha256_text(trailer),
                     "note": "post-final-rule navigation text in spec/01; recorded so the split "
                             "drops nothing silently (it is not a requirement chunk)"},
-        "checks": [{"check": c, "pass": p, "detail": md_escape(d)} for c, p, d in checks],
+        "checks": check_rows(checks),
         "cross_reference_notes": findings,
         "policy": {
             "semantic_redesign_performed": False,

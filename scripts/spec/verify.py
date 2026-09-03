@@ -29,11 +29,12 @@ the specification — nothing in `build/spec/` observes a single transition.
 """
 from __future__ import annotations
 
+import ast
 import collections
 import json
 import re
 
-from _common import (EVIDENCE_CEILING, SOURCE_EXPECTED_LINES, SOURCE_EXPECTED_SHA256,
+from _common import (check_rows, EVIDENCE_CEILING, SOURCE_EXPECTED_LINES, SOURCE_EXPECTED_SHA256,
                      StageFailure, md_escape, provenance, render_json, sha256_bytes,
                      sha256_text, table)
 
@@ -93,7 +94,7 @@ def determinism_scan(path) -> dict:
                     if "sorted(" not in line:
                         offences.append((child.lineno, f"unsorted .{fn.attr}()"))
             walk(child, inside_report or (isinstance(child, ast.FunctionDef)
-                                          and child.name == "env_report"))
+                                          and child.name in ("env_report", "host_env_values")))
 
     src_lines = path.read_text(encoding="utf-8").split("\n")
     walk(tree)
@@ -104,6 +105,56 @@ def determinism_scan(path) -> dict:
 def _common_env_report():
     import _common
     return _common.env_report()
+
+
+def _common_host_env():
+    """The host environment, read through `_common` so this module performs no
+    environment access of its own — the render may not look at the environment, but
+    the check that polices it has to know what is out there."""
+    import _common
+    return _common.host_env_values()
+
+
+def proposal_intake_offences(repo) -> list[str]:
+    """Every filesystem read of a proposal-bearing path inside the render modules.
+
+    A proposal becomes dangerous the moment a generator reads one, so the pipeline's
+    §17 claim is enforced mechanically: no module on the render path may open a path
+    containing `proposal`.  Reads of the pipeline's *own* in-memory artifact (the
+    `proposals.json` the S1 stage emits, subscripted out of the run dict) are not
+    intake and are not flagged — this scans call syntax, not words.
+    """
+    # Filesystem readers only. `json.loads(...)` of an in-memory string is not intake —
+    # `proposals.json` itself is parsed that way a few lines below, and a scanner that
+    # flagged it would be a scanner people switch off.
+    read_like = {"read_text", "read_bytes", "open", "readline", "readlines", "scandir", "listdir",
+                 "iterdir", "glob", "rglob", "Path"}
+    offences = []
+    for name in sorted(PIPELINE_FILES):
+        path = repo / "scripts/spec" / name
+        if not path.is_file():
+            continue
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+        except SyntaxError as exc:
+            offences.append(f"{name}: unparsable ({exc.msg})")
+            continue
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            fn = node.func
+            fname = fn.attr if isinstance(fn, ast.Attribute) else (fn.id if isinstance(fn, ast.Name) else "")
+            if fname not in read_like:
+                continue
+            # Every string constant in the call's subtree: `Path(repo) / "spec" /
+            # "llm-proposals.json"` reads a proposal path even though no literal is a
+            # direct argument of `read_text`, and a scanner that only inspected direct
+            # arguments would have been the exact kind of check that under-reports.
+            strings = [n.value for n in ast.walk(node)
+                       if isinstance(n, ast.Constant) and isinstance(n.value, str)]
+            if any("proposal" in s.lower() for s in strings):
+                offences.append(f"{name}:L{node.lineno}: reads {'/'.join(strings)[:60]}")
+    return offences
 
 
 def _walk_keys(obj, prefix=""):
@@ -271,12 +322,26 @@ def _checks(ctx, run, problems, notes):
         if name == "_common.py" and hit["environ_lines"]:
             # allowed only inside env_report(), which reports and never branches
             if any(ln not in hit["report_only_lines"] for ln in hit["environ_lines"]):
-                offenders.append(f"{name}: environ read outside env_report()")
+                offenders.append(f"{name}: environ read outside env_report()/host_env_values()")
     ok(not missing, "every stage module of the pipeline is present and scannable",
        f"missing: {missing}")
     ok(not offenders, "no stage reads a clock, randomness, locale, network or directory order",
        f"offenders: {offenders[:6]}" if offenders else
        f"{len(PIPELINE_FILES)} modules scanned by AST (imports, calls, environment reads)")
+    report = _common_env_report()
+    import _common as _C
+    extra_fields = sorted(set(report) - _C.ENV_REPORT_FIELDS)
+    reads = list(report.get("read_by_the_render") or [])
+    host_values = set(_common_host_env().values())
+    echoed = sorted(k for k, v in report.items()
+                    if isinstance(v, str) and (v in host_values or v.isdigit()))
+    ok(not extra_fields and not reads and not echoed,
+       "the environment report is a closed set of declared fields, reads nothing, and echoes no "
+       "host value (§4.1: a host value inside a content-addressed artifact IS a dependency)",
+       f"declared fields: {len(_C.ENV_REPORT_FIELDS)}; names ignored: "
+       f"{len(report.get('names_the_render_ignores', []))}; environment reads: {reads or 'none'}"
+       + (f"; unexpected fields: {extra_fields}" if extra_fields else "")
+       + (f"; echoed values: {echoed}" if echoed else ""))
     ok(not env_uses, "only `_common.env_report()` touches the environment, and only to report it",
        f"other environ uses: {env_uses[:4]}" if env_uses else "0")
     # -- 11. historical protection (audit is history, not current state) --
@@ -383,10 +448,37 @@ def _checks(ctx, run, problems, notes):
        f"offending fields: {bad_ts[:5]}" if bad_ts else "0 timestamped fields across "
        f"{sum(1 for r in files if r.endswith('.json'))} JSON artifacts")
 
-    # -- 13. proposals -----------------------------------------------------
+    # -- 13. proposals: this pipeline has no intake, and that is a *checked*
+    # fact rather than a comfortable assumption.  `accepted_count == 0` alone
+    # would be a constant dressed as evidence, so the structural claim ("nothing
+    # in the render path can read a proposal in") is scanned for.  §17
+    # (LLM proposes, validators adjudicate) is honoured here by the stronger
+    # route: an adjudication path that cannot be entered.
     proposals = json.loads(files["proposals.json"])
-    ok(proposals["accepted_count"] == 0, "no unvalidated proposal reached canonicalization",
-       "§17 theorem path: validation precedes canonicalization; here nothing needed validating")
+    ok(proposals["accepted_count"] == 0, "proposals.json records zero accepted proposals",
+       "emitted as a constant by S1 because no intake exists — the structural proof is the "
+       "next check, not this one")
+    intake = proposal_intake_offences(ctx.repo)
+    ok(not intake, "no proposal intake channel exists in the render path "
+                   "(§17: LLM output cannot reach canonicalization because it has no path to it)",
+       f"read sites: {intake[:4]}" if intake else
+       f"0 filesystem reads of any proposal-bearing path across {len(PIPELINE_FILES)} render modules")
+    # -- 13c. the check taxonomy itself (§19): a stage may not report a
+    # conformance failure and then continue, and a disclosure may not be
+    # presented as a pass.  Without this row the `kind` field would be
+    # decoration, and a FAIL that nobody acts on is how a gate trains its
+    # reader to ignore FAILs.
+    rows = [dict(r, stage=st["stage"]) for st in run["stages"] for r in st["checks"]]
+    silent_fail = sorted(f"{r['stage']}:{r['check']}" for r in rows
+                         if r.get("kind", "conformance") == "conformance" and not r["pass"])
+    disclosures = sorted(f"{r['stage']}:{r['check']}" for r in rows if r.get("kind") == "disclosure")
+    ok(not silent_fail, "no stage reported a conformance failure and continued (§19: a stage failure "
+                        "prevents publication)",
+       f"failing rows that survived the run: {silent_fail[:4]}" if silent_fail else
+       f"{len(rows)} rows across {len(run['stages'])} stages; {len(disclosures)} disclosure(s) "
+       "reported as such")
+    run["disclosures"] = disclosures
+
     # -- 14. idempotence + staleness --------------------------------------
     ok(run.get("content_hash"), "render is content-addressed (staleness is detectable)",
        run.get("content_hash", "")[:19] + "…")
@@ -406,7 +498,14 @@ def run(ctx, run_state: dict, published: dict | None = None) -> dict:
                            f"(§19). {len(failures)} check(s) failed:\n  "
                            + "\n  ".join(f"{c}  —  {d}" for c, d in failures))
     # gaps: explicit incompleteness (§16), reported not closed
-    gaps = [{
+    gaps = [{"gap": "the §17 proposal-adjudication path has nothing to adjudicate",
+             "count": 0,
+             "authority": "build/spec/proposals.json + S7's intake scan",
+             "note": "reported, not closed: validators are exercised on register↔authority "
+                     "agreement only, so an intake channel would need both validators *and* "
+                     "mutations against them before it could exist; S7 fails the moment a render "
+                     "module reads a proposal path"},
+            {
         "gap": "open BLOCKING/MAJOR findings carried",
         "count": len(run_state["results"]["S5"]["data"]["open_blocking"])
         + len(run_state["results"]["S5"]["data"]["open_major"]),
@@ -443,7 +542,7 @@ def run(ctx, run_state: dict, published: dict | None = None) -> dict:
             "gaps_reported": len(gaps),
             "promotions": 0,
         },
-        "checks": [{"check": c, "pass": p, "detail": md_escape(d)} for p, c, d in checks],
+        "checks": check_rows([(c, p, d) for p, c, d in checks]),
         "gaps": gaps,
         "m0": {"status": m0_state(ctx).get("M0"), "source": m0_state(ctx).get("source")},
         "determinism": {"environment_report": _common_env_report(),
@@ -470,6 +569,13 @@ def run(ctx, run_state: dict, published: dict | None = None) -> dict:
           f"{len(checks)} checks over {len(run_state['files'])} artifacts. "
           "Every §14 fail-closed condition is a named check.\n\n"
           "## 1. Checks\n\n" + table(rows, ["check", "result", "detail"])
+          + "\n## 1b. Disclosures carried by the stages (reported, not repaired)\n\n"
+          + ("\n".join(f"- `{d}`" for d in data.get("disclosures", []))
+             or "- none: every stage row is a conformance predicate and all hold")
+          + "\n\nA **disclosure** is a fact about an *authority* that this pipeline must not "
+            "silently fix (an open finding touching canonical material, a dangling citation). It is "
+            "neither a pass nor a failure of the pipeline; a **conformance** row that fails aborts the "
+            "run, and the check above proves no such row survived one.\n\n"
           + "\n## 2. Reported gaps (explicit incompleteness, not repair)\n\n"
           + table([[g["gap"], g.get("count"), g.get("authority", ""), g.get("note", "")]
                    for g in gaps], ["gap", "count", "authority", "note"])

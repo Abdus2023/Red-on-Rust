@@ -26,7 +26,8 @@ from __future__ import annotations
 import collections
 import re
 
-from _common import (Finding, StageFailure, md_escape, next_free_id, provenance,
+from _common import (check_rows,
+                     Finding, StageFailure, md_escape, next_free_id, provenance,
                      render_json, sha256_text, table)
 
 STAGE = "S4-audit"
@@ -463,9 +464,12 @@ def run(ctx, split_result=None) -> dict:
         ("open BLOCKING findings are carried into the canonical projection", True,
          f"{len(open_blocking)} open BLOCKING row(s) listed in canonical §6; canonicalization does not "
          "silently accept them (§11)"),
-        ("unresolved references", not xref["unresolved_references"],
+        ("unresolved references in the authorities (disclosed, never auto-repaired)",
+         not xref["unresolved_references"],
          f"{len(xref['unresolved_references'])} dangling token(s) in {xref['documents_scanned']} "
-         "scanned documents"),
+         "scanned documents; each is emitted as a candidate finding with a next-free id and "
+         "candidate_findings_filed_by_this_run: 0 (§14: a dangling citation is a finding about an "
+         "authority, not something this stage may rewrite an authority to satisfy)", "disclosure"),
         ("duplicate identities", not ident["duplicates"], "none"),
         ("projection completeness", not proj["requirements_absent_from_sections"],
          f"{len(proj['requirements_absent_from_sections'])} omitted requirement(s)"),
@@ -487,7 +491,7 @@ def run(ctx, split_result=None) -> dict:
             "candidate_findings_suggested": len(candidates),
         },
         "candidate_findings": candidates,
-        "checks": [{"check": c, "pass": p, "detail": md_escape(d)} for c, p, d in checks],
+        "checks": check_rows(checks),
         "policy": {
             "silently_accepted_resolutions": 0,
             "filing_authority": "human/governance only (§11, §3); the pipeline prints suggested ids "

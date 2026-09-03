@@ -32,7 +32,8 @@ from __future__ import annotations
 
 import re
 
-from _common import (StageFailure, line_refs_of, md_escape, provenance, render_json,
+from _common import (check_rows,
+                     StageFailure, line_refs_of, md_escape, provenance, render_json,
                      sha256_text, table)
 
 STAGE = "S3-normalize"
@@ -328,7 +329,7 @@ def run(ctx) -> dict:
                      "requirements are the records' scope — the 36 addendum obligations are their own "
                      "originals, exempt by the record's own preamble."),
         },
-        "checks": [{"check": c, "pass": p, "detail": md_escape(d)} for c, p, d in checks],
+        "checks": check_rows(checks),
         "policy": {
             "semantic_repair_performed": False,
             "contradictions_handled_by": "hand-off to S4 audit (no silent choice between readings)",
