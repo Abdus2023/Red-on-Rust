@@ -84,9 +84,9 @@ class Mutation:
     expect: str = ""  # substring expected in the killing checker's output
     regression_for: str = ""  # a real defect this mutation locks closed
     tags: list = field(default_factory=list)
-    #: extra (script, args) pairs to run for THIS mutation only -- used by K18,
-    #: which must exercise `spec/_check.py --allowlist`, a mode the baseline
-    #: deliberately does not run.
+    #: extra (script, args) pairs to run for THIS mutation only -- used by K18
+    #: (and, since the U-38 adoption, by M036 itself), which must exercise
+    #: `spec/_check.py --allowlist`, a mode the baseline deliberately does not run.
     extra_checkers: list = field(default_factory=list)
 
 
@@ -314,9 +314,12 @@ def m036_rotate_obligation_body(root: Path) -> bool:
 
     This is the SEC-023 class -- a stable ID denoting a different rule than its
     body -- and `spec/_check.py` exists specifically to detect it.  Measured
-    result: DETECTED (one extra D3 warning) but NOT killed, because only D1
-    hard-fails while D2/D3 warn.  With 36 adjudicated warnings already standing,
-    37 is camouflage.  Filed as U-38; expected to SURVIVE until that is decided.
+    under the default wiring: DETECTED (one extra D3 warning) but NOT killed,
+    because only D1 hard-fails while D2/D3 warn; with 36 adjudicated warnings
+    already standing, 37 is camouflage (that was U-38).  U-38 was resolved
+    2026-09-03 by adopting option (b): the repository gate runs
+    `spec/_check.py --allowlist`, under which this mutation is KILLED -- K18 is
+    the regression lock for that claim.
     """
     p = root / "spec/01-canonical-specification.md"
     txt = p.read_text(encoding="utf-8")
@@ -532,10 +535,11 @@ def m_m036_under_allowlist(root: Path) -> bool:
     """The M036 rotation, to be run against `spec/_check.py --allowlist`.
 
     Identical mutation to M036. The point is the CONTRAST: under the default
-    severity wiring this survives (that is U-38); under the allow-list it dies.
-    Registering it as a normal mutation means the claim "option (b) closes the
-    SEC-023 hole" is re-verified on every run rather than resting on one
-    measurement recorded in prose.
+    severity wiring this survives; under the adopted repository gate
+    (`--allowlist`, U-38 option (b), 2026-09-03) it dies. Registering it as a
+    normal mutation means the claim that the adopted gate closes the SEC-023
+    hole is re-verified on every run rather than resting on one measurement
+    recorded in prose.
     """
     return m036_rotate_obligation_body(root)
 
@@ -597,11 +601,16 @@ MUTATIONS = [
              regression_for="the 74/76-vs-102 drift this harness found",
              tags=["docs", "regression"]),
     Mutation("M036", "rotate a spec/01 obligation body onto adjacent content",
-             "The SEC-023 class. spec/_check.py detects it (one D3 warning) but exits 0: "
-             "only D1 hard-fails, and 36 adjudicated warnings camouflage the 37th. U-38.",
+             "The SEC-023 class. spec/_check.py detects it (one extra D3 warning) but the "
+             "default wiring exits 0: only D1 hard-fails, and 36 adjudicated warnings "
+             "camouflage the 37th (that was U-38). Resolved 2026-09-03: the repository "
+             "gate runs `spec/_check.py --allowlist`, under which this mutation dies; its "
+             "survival under the historical default wiring is the measured baseline in "
+             "spec/08 section 2.",
              m036_rotate_obligation_body,
              regression_for="SEC-023 normative-layer content substitution",
-             tags=["normative", "known-survivor"]),
+             tags=["normative"],
+             extra_checkers=[("spec/_check.py", ["--allowlist"])]),
     Mutation("K13", "row added, prose summary left unchanged",
              "The exact drift that occurred: rows accrete, the figure stays put.",
              m_summary_not_updated,
@@ -629,16 +638,19 @@ MUTATIONS = [
              regression_for="the 81-vs-86 term-count drift this pass caused",
              tags=["term", "register", "regression"]),
     Mutation("K18", "obligation body rotated -- caught by the U-38 allow-list",
-             "The M036 rotation run against `spec/_check.py --allowlist`. Survives "
-             "under the default wiring (that IS U-38); dies under option (b). Locks "
-             "in the claim that the proposed remedy actually closes the hole.",
+             "The M036 rotation run against `spec/_check.py --allowlist`, the "
+             "repository gate adopted by U-38 option (b) (2026-09-03). Dies under "
+             "the adopted gate; survives only under the historical default wiring. "
+             "Locks in the claim that the adopted gate actually closes the SEC-023 "
+             "hole.",
              m_m036_under_allowlist,
              regression_for="U-38 option (b) / the SEC-023 class",
              tags=["spec", "severity", "u-38"],
              extra_checkers=[("spec/_check.py", ["--allowlist"])]),
     Mutation("K19", "in-memory s12-s13 mutations before the journal append (M037)",
              "The M037 shape rendered as a document mutant of the addendum-VII body. "
-             "Survives the default wiring (U-38 is still open) and dies under option (b), "
+             "Survives the historical default wiring; dies under the adopted gate "
+             "(U-38 option (b)), "
              "the M036/K18 contrast that keeps the claim testable for the new text.",
              m037_live_commit_before_append,
              regression_for="M037 / R-DUR-07 journal-driven commit",
@@ -646,14 +658,16 @@ MUTATIONS = [
              extra_checkers=[("spec/_check.py", ["--allowlist"])]),
     Mutation("K20", "issuance records carry {id, actor, digest} only (M038)",
              "The M038 shape rendered as a document mutant of the addendum-VII body. "
-             "Survives the default wiring (U-38) and dies under option (b).",
+             "Survives the historical default wiring; dies under the adopted "
+             "gate (U-38 option (b)).",
              m038_payload_id_digest_only,
              regression_for="M038 / R-DUR-06 issuance payload",
              tags=["normative", "allowlist"],
              extra_checkers=[("spec/_check.py", ["--allowlist"])]),
     Mutation("K21", "Remains-Indeterminate treated as terminal (M039)",
              "The M039 shape rendered as a document mutant of the addendum-VIII body. "
-             "Survives the default wiring (U-38) and dies under option (b), keeping the "
+             "Survives the historical default wiring; dies under the adopted "
+             "gate (U-38 option (b)), keeping the "
              "totality/refinement reconciliation testable against the frozen text.",
              m039_indeterminate_terminal,
              regression_for="M039 / R-BUDGET-11 disposition totality",
@@ -661,7 +675,8 @@ MUTATIONS = [
              extra_checkers=[("spec/_check.py", ["--allowlist"])]),
     Mutation("K22", "delta_t table violation (M040)",
              "The M040 shape rendered as a document mutant of the addendum-IX body. "
-             "Survives the default wiring (U-38) and dies under option (b), keeping the "
+             "Survives the historical default wiring; dies under the adopted "
+             "gate (U-38 option (b)), keeping the "
              "exhaustive delta_t enumeration testable against the frozen text.",
              m040_delta_table_violation,
              regression_for="M040 / R-BUDGET-16 delta_t table",
@@ -669,7 +684,8 @@ MUTATIONS = [
              extra_checkers=[("spec/_check.py", ["--allowlist"])]),
     Mutation("K23", "post-deadline receipt misclassified (M041)",
              "The M041 shape rendered as a document mutant of the addendum-IX body. "
-             "Survives the default wiring (U-38) and dies under option (b), keeping the "
+             "Survives the historical default wiring; dies under the adopted "
+             "gate (U-38 option (b)), keeping the "
              "late-receipt settlement rule testable against the frozen text.",
              m041_late_receipt_misclassified,
              regression_for="M041 / R-BUDGET-16 late-receipt settlement",
@@ -677,7 +693,8 @@ MUTATIONS = [
              extra_checkers=[("spec/_check.py", ["--allowlist"])]),
     Mutation("K24", "duration double charge (M042)",
              "The M042 shape rendered as a document mutant of the addendum-IX body. "
-             "Survives the default wiring (U-38) and dies under option (b), keeping the "
+             "Survives the historical default wiring; dies under the adopted "
+             "gate (U-38 option (b)), keeping the "
              "no-double-charge invariant testable against the frozen text.",
              m042_duration_double_charge,
              regression_for="M042 / R-BUDGET-15 no-double-charge",
@@ -774,7 +791,7 @@ def main() -> int:
                     print(f"      -> {first[:140]}")
                 killed.append((mut, killer))
             elif "known-survivor" in mut.tags:
-                print("      SURVIVED (known, filed) <-- expected: see U-38")
+                print("      SURVIVED (known, filed) <-- expected, rationale recorded")
                 known.append(mut)
             else:
                 print("      SURVIVED  <-- gap: no checker rejects this")

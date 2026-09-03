@@ -649,7 +649,7 @@ index = {
       "U-NN": f"unresolved item requiring explicit decision ({len(unresolved)})",
       "M-NN": "milestone M0-M11",
       "TAG": "source verification-obligation tags (26; 17 frozen-source + 9 post-audit addenda)",
-      "M0NN": "baseline mutation registry (42; 18 baseline + 24 post-audit: M019–M042; M036 is registered and currently SURVIVING — see spec/08 §2 and U-38)",
+      "M0NN": "baseline mutation registry (42; 18 baseline + 24 post-audit: M019–M042; M036 is KILLED under the adopted repository gate (U-38 option (b), 2026-09-03) — see spec/08 §2; its survival under the historical default wiring is preserved as the measured baseline)",
       "ROR-NNN": "first-sprint tasks (16)"
     },
     "documents": {

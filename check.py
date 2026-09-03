@@ -38,10 +38,10 @@ REPO = Path(__file__).resolve().parent
 CHECKERS: list[tuple[str, str]] = [
     ("spec/_build_index.py", "regenerates spec/10-index.json; carries the completeness "
                              "gate and the spec/08 mutation-register comparison"),
-    ("spec/_check.py",       "obligation bodies vs frozen source and vs spec/03 (D1 hard, "
-                             "D2/D3 warn -- see U-38; `--allowlist` hard-fails any warning "
-                             "not in spec/_check_allowlist.txt, which is U-38 option (b) "
-                             "built but not adopted)"),
+    ("spec/_check.py",       "obligation bodies vs frozen source and vs spec/03 (D1 hard; "
+                             "D2/D3 fail-closed via the adopted U-38 option-(b) allow-list: "
+                             "every warning must be adjudicated in spec/_check_allowlist.txt "
+                             "or the checker fails)"),
     ("mod/_build.py",        "module ownership: exactly one canonical owner per obligation"),
     ("dep/_graph.py",        "dependency edges and cycle checks"),
     ("term/_check.py",       "re-greps every term/ citation; verifies term<->collision links"),
@@ -53,6 +53,14 @@ CHECKERS: list[tuple[str, str]] = [
     ("audit/_conservation_checker.py", "mechanically verifies resource conservation and transition atomicity for Op-01..Op-22"),
     ("audit/_checker_mutations.py", "mutation-tests the checkers themselves"),
 ]
+
+# Extra arguments for individual checkers. The repository gate runs
+# spec/_check.py with --allowlist (U-38 option (b), adopted 2026-09-03):
+# the 36 adjudicated D2/D3 warnings are tolerated explicitly and any NEW
+# warning is a hard failure. spec/_check.py's own default mode is unchanged.
+CHECKER_ARGS: dict[str, list[str]] = {
+    "spec/_check.py": ["--allowlist"],
+}
 
 # Executables that are libraries or write-mode tools, not checkers. Listed so
 # the inventory check below can prove nothing was forgotten.
@@ -67,7 +75,9 @@ NON_CHECKERS: dict[str, str] = {
 
 def run(rel: str, quiet: bool) -> tuple[bool, float, str]:
     t0 = time.time()
-    p = subprocess.run([sys.executable, rel], cwd=REPO, capture_output=True, text=True)
+    extra = CHECKER_ARGS.get(rel, [])
+    p = subprocess.run([sys.executable, rel, *extra],
+                       cwd=REPO, capture_output=True, text=True)
     return p.returncode == 0, time.time() - t0, (p.stdout + p.stderr)
 
 

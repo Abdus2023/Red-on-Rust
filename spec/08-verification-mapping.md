@@ -90,46 +90,50 @@ The master prompt §21 COVERAGE (L38544–38577) freezes this tag list; mileston
 | M041 | post-deadline `EffectReceipt` routed through the normal deadline gate (rejected) instead of R-RECOV-08 settlement | R-BUDGET-16, R-RECOV-08 |
 | M042 | `cost_C(E)`'s duration component debits `D` in addition to the transition's `ΔD := δ_t` (double charge) | R-BUDGET-15 |
 
-**Evidence status:** registry is `SPECIFIED` (frozen content). No mutant is registered, injected, or killed in this repository; `MutationKillRate` is **not measured** (nothing to measure). 100% is a target, not a current claim (R-CLAIM-01). M037/M038 (addendum VII), M039 (addendum VIII) and M040–M042 (addendum IX) are registered the same way — machine mutants, unmeasurable in BOOTSTRAP; their document-mutant shapes are exercised by `audit/_checker_mutations.py` K19/K20/K21/K22-K24. M036 remains the one measurable document mutant.
+**Evidence status:** registry is `SPECIFIED` (frozen content). No *machine* mutant is registered, injected, or killed in this repository; `MutationKillRate` for the machine-mutant registry is **not measured** (nothing to measure). 100% is a target, not a current claim (R-CLAIM-01). M037/M038 (addendum VII), M039 (addendum VIII) and M040–M042 (addendum IX) are registered the same way — machine mutants, unmeasurable in BOOTSTRAP; their document-mutant shapes are exercised by `audit/_checker_mutations.py` K19/K20/K21/K22-K24. M036 is the one measurable document mutant: it survives the historical default wiring and is **KILLED under the adopted repository gate** (U-38 option (b)) — see below.
 
-**M036 is the one exception, and it is currently a SURVIVING mutant.** Every other
-row above targets machine behaviour and cannot be measured here (no implementation).
-M036 targets *this document set*, and its detector — `spec/_check.py`, promoted from
-`audit/spec_check.py` as the SEC-023 remediation — already exists and runs green. It
-was therefore measured directly (harness: `audit/_checker_mutations.py` M036 group;
-method recorded in `audit/semantic-nondeterminism-audit.md` §9):
+**M036 is the one measurable document mutant.** Every other row above targets
+machine behaviour and cannot be measured here (no implementation). M036 targets
+*this document set*, and its detector — `spec/_check.py`, promoted from
+`audit/spec_check.py` as the SEC-023 remediation — exists and runs green. It was
+therefore measured directly under the default wiring (harness:
+`audit/_checker_mutations.py` M036 group; method recorded in
+`audit/semantic-nondeterminism-audit.md` §9):
 
-| Rotations injected | Hard-failed (default config) | Warn-only | Undetected |
+| Rotations injected | Hard-failed (default config, historical) | Warn-only | Undetected |
 |---|---|---|---|
 | 12 adjacent-pair body swaps spread across all 173 obligations | **0** | 12 | 0 |
 
-The rotation is detected — it raises a `D3` warning — but **`spec/_check.py` exits 0**,
-because only `D1` (records-layer `Original` vs `Normalized` rule identity) hard-fails;
-`D2`/`D3`, which are the checks that compare the `spec/01` *body* against the source
-and the matrix, warn by default and hard-fail only under `--strict`. The tree carries
-**36 pre-existing adjudicated warnings** (18×D2, 18×D3), so a rotation moves the count
-to 37 — camouflage, not a signal. A reviewer running the documented command sees
+The rotation is detected — it raises a `D3` warning — but under the default
+wiring **`spec/_check.py` exits 0**, because only `D1` (records-layer `Original`
+vs `Normalized` rule identity) hard-fails; `D2`/`D3`, which are the checks that
+compare the `spec/01` *body* against the source and the matrix, warn by default
+and hard-fail only under `--strict`. The tree carries **36 pre-existing
+adjudicated warnings** (18×D2, 18×D3), so a rotation moves the count to 37 —
+camouflage, not a signal. A reviewer running the documented default command sees
 `OK with warnings` and the same summary line as a clean tree.
 
-This is the SEC-023 defect class reappearing one layer up: SEC-023 found 48 obligations
-whose stable ID denoted a different rule than their body, and the remediation built a
-detector for it — but wired the *body-comparison* half of that detector to a
-non-failing severity. `MutationKillRate` for the one measurable mutant is **0%**.
+This was the SEC-023 defect class reappearing one layer up: SEC-023 found 48
+obligations whose stable ID denoted a different rule than their body, and the
+remediation built a detector for it — but wired the *body-comparison* half of
+that detector to a non-failing severity. `MutationKillRate` for the one
+measurable mutant under the **default wiring** was **0%**; that measurement is
+retained above as history and is **not** the repository gate.
 
-Disposition (no frozen text is issued here — R-SCOPE-03): the fix is a CI configuration
-decision, not a specification change. Either run `spec/_check.py --strict` in CI (which
-requires first adjudicating or suppressing the 36 known-benign warnings, so that new
-ones are visible), or promote D2/D3 to hard-fail with an explicit allow-list of the
-adjudicated cases. The second is preferable: an allow-list makes each accepted warning
-a recorded decision rather than a tolerated background level. Filed as **U-38**.
-
-**Update — option (b) is built.** `spec/_check.py --allowlist` now reads
-`spec/_check_allowlist.txt` (36 generated rows: 18×D2, 18×D3), tolerates exactly
-those, and hard-fails anything unlisted, stale or malformed. Re-running the M036
-rotation: **default mode exit 0 (survives), `--allowlist` exit 1 (killed**, both
-rotated obligation IDs named). The default is deliberately unchanged — M036
-remains a registered surviving mutant because U-38 is undecided, not because the
-mechanism is missing. Mutation `K18` asserts the conditional kill on every run.
+**Adopted repository gate (U-38 option (b), 2026-09-03): M036 is KILLED.** The
+gate (`check.py`) now invokes `spec/_check.py --allowlist` instead of the
+default warn-only invocation. `spec/_check_allowlist.txt` holds the 36
+adjudicated warnings (18×D2, 18×D3); any warning not in the list — including the
+extra `D3` a body rotation raises — is a hard failure, and stale or malformed
+allow-list rows are failures as well. Re-measured under the gate: the M036
+rotation exits **1 (killed)**, with both rotated obligation IDs named. This is
+a document-mutant measurement only — it says nothing about the machine-mutant
+kill rate, which remains unmeasured (100% is a target, not a current claim;
+R-CLAIM-01). `spec/_check.py`'s default mode is unchanged, so outside the
+repository gate (e.g., invoking the checker directly without `--allowlist`)
+behaviour is exactly as before. Mutation `K18` locks the claim on every run:
+it re-runs the M036 rotation against `spec/_check.py --allowlist` and fails if
+the SEC-023 class is ever unguarded again.
 
 ## 3. Conformance test obligations → obligation map (frozen suite)
 

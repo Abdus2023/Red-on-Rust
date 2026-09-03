@@ -6414,7 +6414,7 @@ COLLISIONS += [
       doc_sites=[
         ("mod/06-actor.md", 103, "MarshalFault::CapabilityRequiresDelegation", "cites only the turn-[32] variant set"),
         ("req/01-registry-part1-foundations.md", 301, "Err(MarshalFault::CapabilityRequiresDelegation)", "REQ postcondition citing only the turn-[32] set"),
-        ("spec/08-verification-mapping.md", 140, "MarshalFault", "verification mapping that assumes a single variant set"),
+        ("spec/08-verification-mapping.md", 144, "MarshalFault", "verification mapping that assumes a single variant set"),
       ]),
     X(xid="X-66",
       title="`CapabilityError::Invalid` is used as the `derive` fallback but never declared; the declared sibling `InvalidConstraint` is used for the same fallback in the same turn",

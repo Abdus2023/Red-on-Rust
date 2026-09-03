@@ -12307,7 +12307,7 @@
     },
     {
      "file": "spec/08-verification-mapping.md",
-     "line": 140,
+     "line": 144,
      "text": "MarshalFault",
      "note": "verification mapping that assumes a single variant set"
     }
