@@ -863,9 +863,11 @@ Ten results are worth recording beyond the pass/fail.
 `spec/06`'s summary line read "74 findings (76 rows)" against 97 actual rows;
 it was stale before this work began. The first revision of the §7 addendum
 added five to that base and wrote "79 in 81". Both figures were wrong; the
-mechanical count is 101 findings / 102 rows. Every gate counted the table and
-none read the prose, so the error propagated through a pass whose entire
-subject is undetected divergence. Corrected, with the superseded figures quoted
+mechanical count is 101 findings / 102 rows (as of that pass; the request-pipeline
+proof-obligation audit later filed C-103…C-109, so the register now reads 108/109 —
+see `audit/request-pipeline-proof-obligation-matrix.md` §5.1 filing record). Every gate
+counted the table and none read the prose, so the error propagated through a pass whose
+entire subject is undetected divergence. Corrected, with the superseded figures quoted
 (R-SCOPE-03); `req/_validate.py` now re-derives the count and fails on any live
 prose figure that disagrees, while still permitting quoted historical ones.
 

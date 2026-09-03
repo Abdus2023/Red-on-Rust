@@ -26,16 +26,16 @@ The frozen source (`Red-on-Rust.md`) has been canonicalized into the document se
 - `spec/03-obligation-matrix.md` — 173 stable requirement IDs (`R-…`; 148 from the frozen source + 25 post-audit frozen addenda) with status and provenance
 - `spec/04-dependency-graph.md` — section, object, and verification dependency graphs
 - `spec/05-terminology.md` — glossary and normalization rules
-- `spec/06-contradictions-ambiguities.md` — 101 consistency findings in 102 rows (`C-01`…`C-102`, C-39 a pointer row; C-98…C-102 added by the semantic-nondeterminism audit, all `open`; C-46…C-76 added by the terminology pass and C-77…C-97 by the post-audit frozen addenda I–V; C-08 re-graded MINOR → MAJOR, and C-54 rewritten by its declaration sweep after the first version of that row was filed on a false premise)
+- `spec/06-contradictions-ambiguities.md` — 108 consistency findings in 109 rows (`C-01`…`C-109`, C-39 a pointer row; C-98…C-102 added by the semantic-nondeterminism audit and C-103…C-109 by the request-pipeline proof-obligation audit, all `open` except C-108 corrected in place with its decision at U-45; C-46…C-76 added by the terminology pass and C-77…C-97 by the post-audit frozen addenda I–V; C-08 re-graded MINOR → MAJOR, and C-54 rewritten by its declaration sweep after the first version of that row was filed on a false premise)
 - `spec/07-implementation-mapping.md` — obligations → crate/module mapping; actual repository state
 - `spec/08-verification-mapping.md` — obligations → conformance tests and evidence status
-- `spec/09-unresolved-decisions.md` — 31 items (`U-…`) requiring explicit architectural decisions (U-23…U-25 added by the terminology pass, U-26…U-29 by its declaration sweep, U-30…U-34 by its struct-field sweep and U-35…U-37 by the semantic-nondeterminism audit; U-08 corrected and U-14 escalated to blocking by its fault-taxonomy audit)
+- `spec/09-unresolved-decisions.md` — 39 items (`U-…`) requiring explicit architectural decisions (U-23…U-25 added by the terminology pass, U-26…U-29 by its declaration sweep, U-30…U-34 by its struct-field sweep, U-35…U-37 by the semantic-nondeterminism audit and U-39…U-45 by the request-pipeline proof-obligation audit, all `open`; U-08 corrected and U-14 escalated to blocking by its fault-taxonomy audit)
 - `spec/10-index.json` — machine-readable cross-index
 
 A fifth directory, `audit/`, holds **adversarial audits of the frozen specification**.
 These are review artifacts, not normative text: an audit may file register rows
 (`C-…`, `U-…`) and propose remediation, but it never issues frozen semantics
-(R-SCOPE-03). Two passes are complete:
+(R-SCOPE-03). Three passes are complete:
 
 - `audit/authority-trust-external-effect-audit.md` — **authority, trust-boundary and
   external-effect gating** (`SEC-001`…`SEC-023`: 3 CRITICAL, 5 HIGH, 3 MEDIUM-HIGH,
@@ -67,6 +67,19 @@ These are review artifacts, not normative text: an audit may file register rows
   it does not reproduce the external world.** A receipt records what the machine was
   told, not what happened; the `Indeterminate` class (L26714) is irreducible, and
   R-DUR-04/R-RECOV-08 forbid any component resolving it on local policy.
+- `audit/request-pipeline-proof-obligation-matrix.md` — **every path from `Expr::Request`
+  to a host-visible effect** (GAP-01…GAP-18: 2 CRITICAL, 2 BLOCKING, 6 HIGH incl. one
+  historical/resolved-in-principle, 1 MAJOR, 6 MEDIUM, 1 LOW/MEDIUM, 1 INFO).
+  Verdict: the 16-step gate sequence is sound and `HostInvoked(E) ⇒ DurableIssued(E)`
+  is *realizable* through R-DUR-01/R-CORE-06/PanicHost/R-TRUST-05, but it is **not
+  provable as frozen** on four counts — `spec/01` S-12 still publishes the superseded
+  host-before-Issued 16-step order, live journal/fsync failure at step 14 is unpinned
+  (no fault, no rollback, R-EFFECT-04's five assertions unsatisfiable), the durable
+  `Prepared`/`Issued` records carry no effect or cost so escrow survival and T1 budget
+  restoration have no source of truth, and the step-10 deadline premise is pinned weak
+  against the formal `t + δ_t(req) ≤ W`. This pass issued no addendum — its rows
+  `C-103`…`C-109` and decisions `U-39`…`U-45` are all `open`; its recommendations
+  exist only as a draft (`audit/request-pipeline-remediation-draft.md`, NOT ADOPTED).
 
 A second organization, `mod/`, splits the same specification into **17 semantic
 modules** (`MOD-01 CORE` … `MOD-17 VERIFICATION`) by architectural responsibility
