@@ -331,8 +331,10 @@ def main() -> int:
     # U-39...U-44; the counts pinned here are unchanged by a re-grading, and C-108 stays
     # corrected-in-place with U-45 deferred to a dedicated pass.  Addendum VIII
     # (2026-09-03) then froze R-BUDGET-10/11/13 and re-graded C-108 resolved-by-addendum;
-    # R-BUDGET-12 stays with U-01 and R-BUDGET-14 is deferred.  Counts unchanged.
-    if len(c_ids) != 109:
+    # R-BUDGET-12 stays with U-01 and R-BUDGET-14 is deferred.  The duration-semantics
+    # audit (2026-09-03) then filed C-112...C-115 (open, vs U-01/U-07) -- 109 -> 113 rows;
+    # all four are re-graded by Addendum IX; no U- register change.
+    if len(c_ids) != 113:
         err(f"expected 109 C- rows in spec/06, found {len(c_ids)}")
     # U-38 added by the same audit's checker-mutation pass (spec/08 M036 /
     # spec/_check.py severity wiring) -- 31 -> 32.

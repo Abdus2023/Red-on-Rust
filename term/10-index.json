@@ -9086,7 +9086,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 206,
+     "line": 207,
      "text": "### U-35",
      "note": "U-35 rules on the governing shape"
     }
@@ -10525,7 +10525,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 56,
+     "line": 57,
      "text": "denial outcome is named",
      "note": "U-08 lists four names; the verified count is nine"
     }
@@ -11857,7 +11857,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 56,
+     "line": 57,
      "text": "denial outcome is named",
      "note": "U-08 — four names listed, nine verified (X-38)"
     },
@@ -11994,7 +11994,7 @@
    "doc_sites": [
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 75,
+     "line": 76,
      "text": "the variant set of `ReconciliationOutcome` is never enumerated",
      "note": "the false premise, corrected by this dictionary"
     },
@@ -12223,7 +12223,7 @@
     },
     {
      "file": "spec/06-contradictions-ambiguities.md",
-     "line": 126,
+     "line": 130,
      "text": "rewritten** in this revision",
      "note": "C-59..C-65 summary line, recording the retraction of the earlier claim"
     }
@@ -12387,7 +12387,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 56,
+     "line": 57,
      "text": "variants are not enumerated",
      "note": "U-08's claim, which hides the declared set and the `Invalid` split"
     }
@@ -13047,7 +13047,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 146,
+     "line": 147,
      "text": "### U-28 — Which `MachineEvent` names govern",
      "note": "the decision this entry escalates to; added by the same sweep"
     },
@@ -13178,7 +13178,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 153,
+     "line": 154,
      "text": "### U-29 — Which `CanonicalError` shape governs",
      "note": "the decision this entry escalates to; added by the same sweep"
     },
@@ -13283,7 +13283,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 132,
+     "line": 133,
      "text": "### U-26 — Which layer owns the name `StepResult`?",
      "note": "the decision this entry escalates to; added by the same sweep"
     },
@@ -13377,7 +13377,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 139,
+     "line": 140,
      "text": "### U-27 — Which `ActorStatus` shape governs",
      "note": "the decision this entry escalates to; added by the same sweep"
     },
@@ -13617,7 +13617,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 162,
+     "line": 163,
      "text": "### U-30 — Which payload does `MarshalledValue` carry",
      "note": "U-30, the decision this finding needs"
     },
@@ -13780,7 +13780,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 170,
+     "line": 171,
      "text": "### U-31 — Which field set is `Authority`'s",
      "note": "U-31"
     },
@@ -13910,7 +13910,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 186,
+     "line": 187,
      "text": "### U-33 — Which reference-model declarations govern",
      "note": "U-33"
     },
@@ -14028,7 +14028,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 186,
+     "line": 187,
      "text": "### U-33 — Which reference-model declarations govern",
      "note": "U-33"
     }
@@ -14117,7 +14117,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 178,
+     "line": 179,
      "text": "### U-32 — Does the durable `WalFrame` carry `payload_length`",
      "note": "U-32"
     }
@@ -14322,7 +14322,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 170,
+     "line": 171,
      "text": "### U-31 — Which field set is `Authority`'s",
      "note": "U-31, which also rules on the kernel's arena"
     }
@@ -14461,7 +14461,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 194,
+     "line": 195,
      "text": "### U-34 — Which turn-[31]/turn-[32] state structs govern",
      "note": "U-34"
     }
@@ -14628,7 +14628,7 @@
     },
     {
      "file": "spec/09-unresolved-decisions.md",
-     "line": 186,
+     "line": 187,
      "text": "### U-33 — Which reference-model declarations govern",
      "note": "U-33, which rules on the twelve `Ref*` names"
     },

@@ -32,7 +32,7 @@
     "id_schemes": {
       "S-NN": "specification section (24)",
       "R-AREA-NN": "normative requirement/obligation (181; 148 source-transcribed + 33 post-audit frozen addenda)",
-      "C-NN": "contradiction/ambiguity finding (108 indexed; 109 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
+      "C-NN": "contradiction/ambiguity finding (112 indexed; 113 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
       "U-NN": "unresolved item requiring explicit decision (39)",
       "M-NN": "milestone M0-M11",
       "TAG": "source verification-obligation tags (23; 17 frozen-source + 6 post-audit addenda)",
@@ -45,7 +45,7 @@
       "03-obligation-matrix.md": "all requirements with stable IDs, status, provenance",
       "04-dependency-graph.md": "section/object/verification dependency graphs + DOT",
       "05-terminology.md": "glossary, normalization rules, under-specified terms",
-      "06-contradictions-ambiguities.md": "findings C-01..C-109 with severity and status",
+      "06-contradictions-ambiguities.md": "findings C-01..C-115 with severity and status",
       "07-implementation-mapping.md": "obligations -> crates/modules; actual repo state; milestone crosswalk",
       "08-verification-mapping.md": "obligations -> tags/tests/evidence; claim ladder per theorem",
       "09-unresolved-decisions.md": "items U-01..U-45 requiring explicit architectural decisions",
@@ -6417,6 +6417,72 @@
         "file": "Red-on-Rust.md",
         "line_ranges": [
           "23949-24002"
+        ]
+      }
+    },
+    {
+      "id": "C-112",
+      "title": "R-BUDGET-09's liveness bound is unreachable in quiescence: step_global returns GlobalStep::Deadlock when the runnable queue is empty, Pending actors are not requeued, and logical_time advances only while an actor steps — a single outstanding Pending effect therefore freezes t, so W can never expire as the bound requires",
+      "severity": "BLOCKING",
+      "status": "open",
+      "resolved_into": "U-01;U-07",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25566-25579",
+          "25590-25594",
+          "10414-10415",
+          "8978",
+          "1-42312"
+        ]
+      }
+    },
+    {
+      "id": "C-113",
+      "title": "A post-deadline EffectReceipt makes the frozen E-Receipt rule inapplicable: the premise t + δ_t ≤ W (L8978) has no defined failure — neither fault, admission, nor reconciliation",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-01",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "8978",
+          "8971-8975",
+          "21868"
+        ]
+      }
+    },
+    {
+      "id": "C-114",
+      "title": "Three mutually inconsistent D debit models coexist: [15]-#4 (host/scheduler transitions consume ΔD), v0.3 E-Request (D is consumed at effect initiation via cost_C(E)'s ΔD component), and the E-ReceiveBlocked note (no budget consumed while blocked) against the resource-accounting audit's R-BUDGET-12 proposal (async waits debit D ← D − δ_t) — with no value or derivation for ΔD",
+      "severity": "MAJOR",
+      "status": "open",
+      "resolved_into": "U-01",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "8835",
+          "8967",
+          "8679",
+          "8904",
+          "8796"
+        ]
+      }
+    },
+    {
+      "id": "C-115",
+      "title": "DeadlineExceeded exists in the closed fault surface but no frozen rule pins where it fires or its precedence relative to budget insufficiency and host-policy denial",
+      "severity": "MINOR",
+      "status": "open",
+      "resolved_into": "U-01",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "23784-23819",
+          "9207-9245",
+          "8948-8975",
+          "38108-38137",
+          "11072"
         ]
       }
     }
