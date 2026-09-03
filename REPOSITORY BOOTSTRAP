@@ -1,0 +1,579 @@
+# RED-ON-RUST — REPOSITORY BOOTSTRAP PACK
+ 
+## Status
+ `Architecture:       FROZEN Specification:      FROZEN Verification:       FROZEN Repository Design:  BOOTSTRAP BASELINE Implementation:     READY ` 
+This document defines the initial Rust workspace, crate boundaries, dependency direction, visibility rules, module layout, testing topology, and implementation sequence.
+ 
+It does **not** introduce new language semantics.
+  
+# 1. Repository Objective
+ 
+The repository must make the following architectural property difficult to violate accidentally:
+ 
+[ \boxed{ Untrusted\ Input \not\Rightarrow Authority \not\Rightarrow External\ Effect } ]
+ 
+and:
+ 
+[ \boxed{ Production\ Semantics \neq Reference\ Implementation } ]
+ 
+The workspace therefore separates:
+ `untrusted language data         ↓ compiler         ↓ trusted executable representation         ↓ machine         ↓ authority / resources         ↓ durable effects         ↓ host ` 
+while independently maintaining:
+ `production implementation         ↕ normalized observations         ↕ independent reference model `  
+# 2. Workspace Layout
+ 
+Initial repository:
+ `red-on-rust/ ├── Cargo.toml ├── Cargo.lock ├── rust-toolchain.toml ├── rustfmt.toml ├── clippy.toml ├── deny.toml ├── LICENSE ├── README.md │ ├── crates/ │   ├── ror-core/ │   ├── ror-compiler/ │   ├── ror-kernel/ │   ├── ror-runtime/ │   ├── ror-persistence/ │   ├── ror-host/ │   ├── ror-agent/ │   │ │   ├── ror-reference/ │   ├── ror-differential/ │   └── ror-testkit/ │ ├── tests/ │   ├── conformance/ │   ├── exhaustive/ │   ├── property/ │   ├── mutation/ │   ├── crash/ │   └── stress/ │ ├── vectors/ │   ├── canonical/ │   ├── persistence/ │   └── effects/ │ ├── mutations/ │   └── registry.toml │ ├── docs/ │   ├── architecture/ │   ├── semantics/ │   ├── verification/ │   └── security/ │ └── scripts/     ├── exhaustive.sh     ├── differential.sh     ├── mutation.sh     └── stress.sh ` 
+The exact top-level names may change for organizational reasons, but the **dependency and trust boundaries must not**.
+  
+# 3. Crate Responsibilities
+ 
+## 3.1 `ror-core`
+ 
+Lowest-level semantic domain.
+ 
+Contains:
+ `Symbol ActorId CapRef EffectId EventSequence LogicalTime Expr Value FunctionValue Environment Constraint Effect EffectCost Budget Consumable Reserved Fault MachineEvent ` 
+Also contains canonical semantic traits/interfaces where doing so does not create circular dependencies.
+ 
+Must NOT contain:
+ 
+ 
+- host calls;
+ 
+- filesystem access;
+ 
+- networking;
+ 
+- scheduler implementation;
+ 
+- persistence implementation;
+ 
+- capability authority storage;
+ 
+- LLM integration.
+ 
+
+ 
+Dependency rule:
+ `ror-core    ↓ standard library only ` 
+Prefer no external dependencies unless an unavoidable frozen serialization/hash requirement is established.
+  
+# 4. `ror-compiler`
+ 
+Responsible for converting untrusted language structures into validated executable plans.
+ 
+Pipeline:
+ `Block  ↓ parse  ↓ NormalizedAST  ↓ ValidatedPlan  ↓ PlanIR  ↓ capability analysis  ↓ resource analysis  ↓ ExecutablePlan ` 
+Module structure:
+ `ror-compiler/ └── src/     ├── lib.rs     ├── parser.rs     ├── normalize.rs     ├── validate.rs     ├── lower.rs     ├── capability_analysis.rs     ├── resource_analysis.rs     ├── plan.rs     └── error.rs ` 
+Critical rule:
+ `Block ≠ ExecutablePlan ` 
+`ExecutablePlan` constructors must remain private to the compiler.
+ 
+Production runtime must only receive an `ExecutablePlan`.
+  
+# 5. `ror-kernel`
+ 
+Trusted authority/resource decision layer.
+ 
+Contains:
+ `CapabilityKernel AuthorityNode CapabilityContext capability derivation revocation authorization budget enforcement primitives logical-time validation ` 
+Module structure:
+ `ror-kernel/ └── src/     ├── lib.rs     ├── capability.rs     ├── authority.rs     ├── derivation.rs     ├── revocation.rs     ├── authorization.rs     ├── budget.rs     ├── resource.rs     └── error.rs ` 
+Critical visibility rule:
+ `pub(crate) struct AuthorityNode { ... } ` 
+must remain inaccessible to evaluator/runtime consumers.
+ 
+Public capability API exposes opaque handles:
+ `pub struct CapRef {     ... } ` 
+but not authority contents.
+  
+# 6. `ror-runtime`
+ 
+Trusted execution machine.
+ 
+Contains:
+ `CEK evaluator continuations actors scheduler mailboxes effect issuance machine state runtime transitions ` 
+Module structure:
+ `ror-runtime/ └── src/     ├── lib.rs     ├── machine.rs     ├── evaluator/     │   ├── mod.rs     │   ├── state.rs     │   ├── frames.rs     │   ├── step.rs     │   ├── lambda.rs     │   ├── call.rs     │   ├── attenuate.rs     │   └── request.rs     │     ├── actor/     │   ├── mod.rs     │   ├── state.rs     │   ├── mailbox.rs     │   ├── spawn.rs     │   ├── send.rs     │   └── receive.rs     │     ├── scheduler.rs     ├── effect.rs     ├── transition.rs     └── fault.rs ` 
+The evaluator may depend on kernel interfaces but must not gain authority introspection.
+  
+# 7. `ror-persistence`
+ 
+Responsible for durable machine state.
+ 
+Contains:
+ `canonical persistence framing WAL snapshot effect journal checksums sequence validation recovery crash classification ` 
+Module structure:
+ `ror-persistence/ └── src/     ├── lib.rs     ├── frame.rs     ├── wal.rs     ├── snapshot.rs     ├── effect_journal.rs     ├── recovery.rs     ├── checksum.rs     ├── crash.rs     └── error.rs ` 
+Persistence must reuse Phase 15A canonical semantic bytes.
+ 
+It must not create an alternative semantic serialization.
+  
+# 8. `ror-host`
+ 
+Host boundary.
+ 
+Contains:
+ `HostExecutor HostPolicy ReplayHost live host adapter interfaces effect request/receipt transport ` 
+Module structure:
+ `ror-host/ └── src/     ├── lib.rs     ├── executor.rs     ├── policy.rs     ├── replay.rs     ├── receipt.rs     └── error.rs ` 
+The host cannot authorize an effect independently of the capability/resource gates.
+ 
+The host is the final deployment boundary, not the semantic authority.
+  
+# 9. `ror-agent`
+ 
+Higher-level autonomous-agent orchestration.
+ 
+Contains:
+ `Observation PlanProposal planner interface staleness validation accepted-plan recording supervisor runtime lifecycle ` 
+Module structure:
+ `ror-agent/ └── src/     ├── lib.rs     ├── observation.rs     ├── proposal.rs     ├── planner.rs     ├── acceptance.rs     └── supervisor.rs ` 
+The planner interface is explicitly untrusted.
+ `trait Planner {     fn propose(&mut self, observation: Observation)         -> PlanProposal; } ` 
+The resulting proposal must pass the compiler.
+  
+# 10. `ror-reference`
+ 
+Independent executable reference model.
+ 
+This crate is intentionally separate from production runtime.
+ 
+Structure:
+ `ror-reference/ └── src/     ├── lib.rs     ├── model.rs     ├── value.rs     ├── environment.rs     ├── cek.rs     ├── capability.rs     ├── budget.rs     ├── actor.rs     ├── scheduler.rs     ├── effect.rs     ├── persistence.rs     ├── recovery.rs     └── observation.rs ` 
+The reference model must NOT depend on:
+ `ror-runtime ror-kernel ror-persistence ror-host ror-agent ` 
+It may depend on the frozen primitive/domain definitions from `ror-core` only where doing so does not accidentally import production semantics.
+ 
+Where semantic independence is important, define distinct reference types.
+ 
+For example:
+ `pub struct RefCapId(pub u64); pub struct RefActorId(pub u64); pub struct RefEffectId(pub u64); ` 
+rather than reusing production identity objects.
+  
+# 11. `ror-differential`
+ 
+The differential harness.
+ 
+Structure:
+ `ror-differential/ └── src/     ├── lib.rs     ├── generator.rs     ├── shrinker.rs     ├── runner.rs     ├── observation.rs     ├── comparator.rs     ├── counterexample.rs     ├── traces.rs     └── seed.rs ` 
+Responsibilities:
+ `generate  ↓ execute production  ↓ execute reference  ↓ normalize observations  ↓ compare  ↓ locate first divergence  ↓ shrink  ↓ persist counterexample ` 
+The comparator is authoritative for differential verification.
+  
+# 12. `ror-testkit`
+ 
+Shared testing infrastructure only.
+ 
+Allowed contents:
+ `test builders seed handling trace builders mock hosts mock kernels fixture utilities canonical test helpers assertion helpers ` 
+It must NOT contain production transition logic.
+ 
+It must NOT become a backdoor dependency from the reference model into production.
+  
+# 13. Dependency Graph
+ 
+The intended dependency direction is:
+ `                         ┌──────────────┐                          │   ror-core   │                          └──────┬───────┘                                 │              ┌──────────────────┼─────────────────┐              │                  │                 │              ▼                  ▼                 ▼       ror-compiler        ror-kernel        ror-reference              │                  │                 │              └──────────┐       │        ┌────────┘                         ▼       ▼        ▼                        ror-runtime     reference only                            │                     ┌──────┴──────┐                     ▼             ▼              ror-persistence   ror-host                     │                     ▼                  ror-agent ` 
+`ror-differential` sits outside the production dependency chain:
+ `              ┌───────────────┐               │ ror-differential │               └───────┬───────┘                       │              ┌────────┴────────┐              ▼                 ▼       production crates   ror-reference `  
+# 14. Forbidden Dependency Edges
+ 
+The following must be prevented at the Cargo level.
+ `ror-reference → ror-runtime       FORBIDDEN ror-reference → ror-kernel        FORBIDDEN ror-reference → ror-persistence   FORBIDDEN ror-reference → ror-host          FORBIDDEN  ror-core → ror-runtime             FORBIDDEN ror-core → ror-kernel              FORBIDDEN  ror-runtime → ror-reference        FORBIDDEN ror-kernel → ror-runtime           FORBIDDEN  ror-compiler → ror-runtime         FORBIDDEN ` 
+The exact compiler/kernel dependency direction may be adjusted if required by implementation mechanics, but the compiler must never receive authority to execute effects.
+  
+# 15. Cargo Workspace Baseline
+ 
+Root `Cargo.toml`:
+ `[workspace] resolver = "2"  members = [     "crates/ror-core",     "crates/ror-compiler",     "crates/ror-kernel",     "crates/ror-runtime",     "crates/ror-persistence",     "crates/ror-host",     "crates/ror-agent",     "crates/ror-reference",     "crates/ror-differential",     "crates/ror-testkit", ]  [workspace.package] edition = "2024" license = "Apache-2.0" version = "0.1.0" rust-version = "1.XX" ` 
+The exact Rust toolchain version should be pinned during bootstrap and recorded in `rust-toolchain.toml`.
+ 
+Example:
+ `[toolchain] channel = "stable" profile = "minimal" components = [     "rustfmt",     "clippy", ] ` 
+Do not rely on an unspecified compiler version for verification runs.
+  
+# 16. Visibility Rules
+ 
+Default to private.
+ 
+Use:
+ `pub(crate) ` 
+for trusted internal boundaries.
+ 
+Use:
+ `pub ` 
+only when an API is intentionally part of the crate's external contract.
+ 
+Examples:
+ `pub struct CapRef { ... } ` 
+may be public.
+ 
+But:
+ `pub struct AuthorityNode { ... } ` 
+must NOT be public.
+ 
+Likewise:
+ `pub(crate) fn finalize(...) ` 
+for executable-plan construction.
+  
+# 17. ExecutablePlan Construction Boundary
+ 
+The runtime must never be able to construct an executable plan directly from arbitrary language data.
+ 
+Preferred structure:
+ `pub struct ExecutablePlan {     ir: PlanIR,     bounds: ResourceBounds,     _sealed: Sealed, } ` 
+where construction is restricted to the compiler.
+ 
+The runtime accepts:
+ `fn execute(plan: &ExecutablePlan) ` 
+not:
+ `fn execute(block: &Block) ` 
+This distinction is mandatory.
+  
+# 18. Capability Boundary
+ 
+Production code must use:
+ `CapRef ` 
+rather than passing authority structures.
+ 
+Authority storage remains internal to the kernel.
+ 
+The runtime can request:
+ `kernel.validate(...) kernel.authorize(...) kernel.derive(...) ` 
+but cannot inspect:
+ `scope parameters resource ceiling lifetime parent authority revocation state ` 
+directly.
+  
+# 19. Host Boundary
+ 
+No evaluator module may import:
+ `std::fs std::net std::process ` 
+or equivalent host-effect APIs.
+ 
+External effects must flow through:
+ `Expr::Request       ↓ Effect       ↓ Capability gate       ↓ Budget gate       ↓ Deadline gate       ↓ HostPolicy       ↓ Durable issuance       ↓ HostExecutor ` 
+This is an architectural rule, not merely a coding convention.
+  
+# 20. Persistence Boundary
+ 
+No runtime transition should directly perform arbitrary persistence I/O.
+ 
+Use a persistence interface:
+ `pub trait Persistence {     fn append(&mut self, record: WalRecord)         -> Result<(), PersistenceError>;      fn sync(&mut self)         -> Result<(), PersistenceError>; } ` 
+The machine determines the semantic transition.
+ 
+The persistence layer determines how that transition becomes durable.
+  
+# 21. Phase 15A Bootstrap
+ 
+Before building the full runtime, implement canonical serialization.
+ 
+Initial files:
+ `ror-core/ └── src/     ├── canonical/     │   ├── mod.rs     │   ├── encode.rs     │   ├── decode.rs     │   ├── cursor.rs     │   ├── error.rs     │   └── tags.rs ` 
+Implement:
+ `CanonicalPayload CanonicalEncode CanonicalDecode ReadCursor envelope() checked_length() ` 
+Required vectors:
+ `Symbol(1) Value::Symbol(Symbol(1)) Map(Symbol(1) → false, Symbol(2) → true) ` 
+Required rejection cases:
+ `wrong version wrong type tag truncated header truncated payload length overflow invalid UTF-8 invalid discriminant invalid boolean trailing bytes duplicate map key `  
+# 22. Phase 15A Golden Vector Policy
+ 
+Golden vectors live outside implementation source:
+ `vectors/canonical/ ` 
+Each vector should include:
+ `name semantic value canonical bytes expected digest where applicable ` 
+Production and reference conformance tests consume the same vector corpus but use independent decoding logic.
+  
+# 23. Independent Reference Requirement
+ 
+The reference model should be written early.
+ 
+Do not postpone it until production is “complete.”
+ 
+Preferred development sequence:
+ `production component        ↓ reference component        ↓ differential test        ↓ mutation test        ↓ next component ` 
+This minimizes the possibility that production implementation decisions silently become the specification.
+  
+# 24. Initial Production/Reference Pair
+ 
+The first semantic milestone should be pure expressions.
+ 
+Production:
+ `Expr Environment Continuation CEK step ` 
+Reference:
+ `RefExpr RefEnvironment RefContinuation RefCEK step ` 
+Test:
+ `Production(expr)         ↕ Observation         ↕ Reference(expr) ` 
+Start with:
+ `Value Var Let Seq If ` 
+Then add:
+ `Lambda Call ` 
+Then:
+ `Attenuate Request ` 
+Then actors.
+ 
+Then persistence.
+  
+# 25. Test Organization
+ 
+Unit tests stay close to their implementation.
+ 
+Integration tests live under:
+ `tests/ ` 
+Recommended:
+ `tests/conformance/ tests/exhaustive/ tests/property/ tests/mutation/ tests/crash/ tests/stress/ ` 
+The separation is intentional.
+ 
+A unit test answers:
+ 
+ 
+Does this local component behave correctly?
+ 
+ 
+A differential test answers:
+ 
+ 
+Does production agree with the independent semantics?
+ 
+ 
+A mutation test answers:
+ 
+ 
+Can the verification system detect a known semantic defect?
+ 
+ 
+A crash test answers:
+ 
+ 
+Does durability/recovery preserve the frozen machine semantics?
+ 
+  
+# 26. Feature Flags
+ 
+Avoid semantic feature flags.
+ 
+Do not create:
+ `feature = "legacy-call-order" feature = "unsafe-capabilities" feature = "old-budget" ` 
+Frozen semantics should have one implementation.
+ 
+Development-only instrumentation may use features, for example:
+ `feature = "trace-debug" feature = "mutation" feature = "stress" ` 
+but these must not alter normal semantic behavior.
+  
+# 27. Unsafe Rust Policy
+ 
+Default policy:
+ `#![forbid(unsafe_code)] ` 
+at crate level unless a concrete implementation requirement demonstrates that `unsafe` is necessary.
+ 
+Any future `unsafe` must have:
+ `reason invariant safety proof tests review ` 
+and must not weaken the capability/effect boundary.
+ 
+The initial implementation should remain entirely safe Rust where practical.
+  
+# 28. Panic Policy
+ 
+Trusted runtime code must not use panic as normal semantic control flow.
+ 
+Recoverable conditions become explicit errors/faults.
+ 
+Especially:
+ `budget underflow invalid capability invalid receipt corrupt WAL sequence gap invalid snapshot marshal failure host failure ` 
+must not be represented by accidental panics.
+ 
+`unwrap()` and `expect()` should be restricted to statically justified invariants and reviewed individually.
+  
+# 29. Determinism Rules
+ 
+Never depend on:
+ `HashMap iteration order OS scheduling thread ID memory address wall-clock time random allocator behavior unordered host completion ` 
+where semantic determinism matters.
+ 
+Use deterministic structures such as:
+ `BTreeMap BTreeSet VecDeque explicit IDs explicit logical time ordered traces ` 
+Randomized testing is allowed.
+ 
+Randomness must be an explicit test input, never hidden machine state.
+  
+# 30. Initial Error Taxonomy
+ 
+Keep errors semantically distinct.
+ 
+Actor-local:
+ `ArityMismatch TypeError BudgetExhausted CapabilityDenied MarshalFault HostFault ReplayCorruption ` 
+Global:
+ `SnapshotCorruption EventLogCorruption EventSequenceGap InvalidRecoveredState EffectReconciliationFailure PersistenceFailure ActorTableCorruption SchedulerInvariantViolation ` 
+Do not collapse all failures into a generic `RuntimeError`.
+  
+# 31. Obligation Registry
+ 
+Create:
+ `docs/verification/obligations.toml ` 
+Each obligation has a stable identifier.
+ 
+Example:
+ `[[obligation]] id = "CEK-CALL-ARITY-PRECHECK" description = "Arity mismatch is detected before argument evaluation."  [[obligation]] id = "CEK-CALL-ARGS-LTR" description = "Arguments evaluate strictly left-to-right."  [[obligation]] id = "CAP-DERIVE-NO-AMPLIFICATION" description = "Derived authority cannot exceed parent authority."  [[obligation]] id = "BUDGET-ESCROW-CONSERVATION" description = "Effect completion escrow cannot be created or destroyed."  [[obligation]] id = "EFFECT-ISSUE-DURABLE-BEFORE-HOST" description = "Host invocation requires durable issuance."  [[obligation]] id = "RECOVERY-ISSUED-INDETERMINATE" description = "Issued but incomplete effects recover as Indeterminate unless reconciled."  [[obligation]] id = "WAL-GAP-REJECT" description = "WAL sequence gaps are rejected."  [[obligation]] id = "MARSHAL-CAPABILITY-REJECT" description = "Ordinary marshalling cannot transfer raw capabilities." ` 
+Obligation IDs must remain stable.
+  
+# 32. Mutation Registry
+ 
+Create:
+ `mutations/registry.toml ` 
+Each mutation contains:
+ `id category description target expected_killed_by status ` 
+Example:
+ `[[mutation]] id = "M001" category = "evaluator" description = "Reverse argument evaluation order." target = "ror-runtime::evaluator::call" status = "active"  [[mutation]] id = "M002" category = "evaluator" description = "Skip arity precheck." target = "ror-runtime::evaluator::call" status = "active"  [[mutation]] id = "M003" category = "capability" description = "Accept revoked capability." target = "ror-kernel::capability" status = "active" ` 
+Mutation IDs are never reused.
+  
+# 33. Counterexample Storage
+ 
+Create:
+ `artifacts/ ` 
+locally and in CI.
+ 
+A counterexample must contain:
+ `seed generator_version semantic_version test_case_version minimized_program initial_state scheduler_trace host_trace crash_trace production_observation reference_observation first_divergence ` 
+Do not rely on console output alone.
+  
+# 34. Bootstrap Milestones
+ 
+## M0 — Workspace
+ 
+Acceptance:
+ `cargo check --workspace cargo test --workspace cargo fmt --check cargo clippy --workspace ` 
+passes.
+ 
+No semantic functionality required yet.
+  
+## M1 — Canonical Serialization
+ 
+Acceptance:
+ `golden vectors pass round trips pass malformed inputs reject duplicate keys reject canonical bytes deterministic `  
+## M2 — Pure CEK
+ 
+Acceptance:
+ `Value Var Let Seq If ` 
+production/reference differential equivalence.
+  
+## M3 — Lambda / Call
+ 
+Acceptance:
+ `CEK-CALL-ARITY-PRECHECK CEK-CALL-ARGS-LTR CEK-CLOSURE-LEXICAL-CAPTURE ` 
+plus deep-call stress.
+  
+## M4 — Capability / Attenuation
+ 
+Acceptance:
+ `CAP-DERIVE-NO-AMPLIFICATION revocation expiration lexical capability binding ` 
+plus independent reference capability algebra.
+  
+## M5 — Effects
+ 
+Acceptance:
+ `authorization budget gates deadline host policy EffectId EffectDigest durable issuance receipt validation `  
+## M6 — Actors
+ 
+Acceptance:
+ `FIFO scheduler FIFO mailbox spawn isolation send/receive delegation blocked/wakeup semantics `  
+## M7 — Persistence
+ 
+Acceptance:
+ `WAL snapshot effect journal checksum sequence continuity recovery `  
+## M8 — Differential System
+ 
+Acceptance:
+ `generated programs reference execution production execution normalized comparison first-divergence reporting shrinking `  
+## M9 — Mutation Gate
+ 
+Acceptance:
+ 
+[ MutationKillRate=100% ]
+ 
+for all registered non-equivalent mutants.
+  
+## M10 — Crash/Recovery Gate
+ 
+Acceptance:
+ `T0 T1 T2 T3 T4 T5 T6 ` 
+all produce the frozen expected classification.
+  
+## M11 — Release Candidate
+ 
+Acceptance:
+ `exhaustive property mutation differential crash stress determinism serialization security ` 
+all green.
+  
+# 35. First Implementation Sprint
+ 
+The first sprint should contain exactly these tasks:
+ `ROR-001  Create Cargo workspace ROR-002  Pin Rust toolchain ROR-003  Create ror-core domain types ROR-004  Implement canonical cursor ROR-005  Implement canonical envelope ROR-006  Implement primitive canonical types ROR-007  Implement Value canonical encoding ROR-008  Implement independent Value canonical decoding ROR-009  Add canonical golden vectors ROR-010  Add malformed-input suite ROR-011  Add duplicate-map-key regression ROR-012  Create reference-model crate ROR-013  Create differential observation API ROR-014  Implement pure reference CEK ROR-015  Implement pure production CEK ROR-016  Add first production/reference differential tests ` 
+No actors, external effects, persistence, or LLM integration are required in Sprint 1.
+  
+# 36. First Security Gate
+ 
+Before implementing external effects, demonstrate:
+ 
+[ \boxed{ Block \not\Rightarrow ExecutablePlan } ]
+ 
+and:
+ 
+[ \boxed{ CapRef \not\Rightarrow AuthorityInspection } ]
+ 
+and:
+ 
+[ \boxed{ Value::Capability \not\Rightarrow OrdinaryMessageTransfer } ]
+ 
+and:
+ 
+[ \boxed{ HostInvocation \Rightarrow DurableIssued } ]
+ 
+These are repository-level architectural properties, not merely test cases.
+  
+# 37. First Differential Gate
+ 
+Before actors or effects exist, require:
+ `Production CEK        ↓ Normalized Observation        ↑ Reference CEK ` 
+to agree for:
+ `Value Var Let Seq If Lambda Call ` 
+including faults.
+ 
+The differential harness should be operational before the production CEK becomes large.
+  
+# 38. Repository-Level Definition of Done
+ 
+A component is complete only when:
+ `implementation + unit tests + reference semantics + differential tests + obligation mapping + mutation coverage + documentation ` 
+are present where applicable.
+ 
+"Code compiles" is not completion.
+ 
+"Unit tests pass" is not completion.
+ 
+"Coverage is high" is not completion.
+ 
+The final standard is independent semantic agreement plus verification evidence.
+  
+# 39. Final Repository Invariant
+ 
+The repository should make this architecture visible:
+ `             UNTRUSTED                 │         ┌───────▼────────┐         │ Block / LLM    │         └───────┬────────┘                 │           compiler only                 │         ┌───────▼────────┐         │ ExecutablePlan │         └───────┬────────┘                 │         ┌───────▼────────┐         │ CEK Runtime    │         └───┬────────┬───┘             │        │             ▼        ▼        Capability   Budget           Kernel     System             │        │             └────┬───┘                  ▼           Effect Issuance                  │           durable boundary                  │                  ▼               Host ` 
+and independently:
+ `       Production            │            ▼       Observation            ▲            │        Reference ` 
+The repository is successful when these boundaries are enforced by:
+ `Cargo dependencies Rust visibility type construction trait boundaries module structure tests mutation testing differential testing ` 
+rather than relying solely on developer discipline.
+  
+# 40. Bootstrap Completion Statement
+ 
+When M0–M2 are complete, report:
+ `RED-ON-RUST BOOTSTRAP STATUS  Workspace:              GREEN Dependency boundaries:  GREEN Canonical format:       GREEN Reference model:        GREEN Pure CEK:               GREEN Differential gate:      GREEN  Next: Lambda / Call → Capability → Effects → Actors → Persistence ` 
+Do not declare the implementation verified at this point.
+ 
+The correct statement remains:
+ 
+ 
+**The repository infrastructure and initial semantic implementation have passed their current verification gates; full Red-on-Rust conformance remains pending completion of the frozen verification program.**
