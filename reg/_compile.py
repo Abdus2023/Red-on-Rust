@@ -692,7 +692,10 @@ def battery(I: Inputs, reg: dict, sch: dict, committed_reg: bytes | None) -> tup
     st["status_distribution"] = dict(collections.Counter(r["status"] for r in reqs))
     # 12 historical evidence unchanged: ledger is append-only (checked vs git HEAD copy)
     hist_ok, hist_note = ledger_append_only(ledger)
-    ok(hist_ok, f"12   historical evidence unchanged: {hist_note}")
+    # the detail depends on git state (committed vs not), so it is printed, not rendered
+    print(f"     12   detail: {hist_note}", file=sys.stderr)
+    ok(hist_ok, f"12   historical evidence unchanged: transition ledger is append-only vs the committed "
+                f"copy; {len(ledger['transitions'])} entries")
     # 13 security classification preserved
     gi_sec_ids = {rid for rid, gs in I.gi.items() if any(g.startswith("GI-SEC-") for g in gs)}
     sec_ok = all(r["security_relevant"] for r in reqs if r["id"] in gi_sec_ids) and \

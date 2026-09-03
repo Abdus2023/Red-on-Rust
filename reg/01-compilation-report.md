@@ -38,7 +38,7 @@ OK   6    normative levels preserved: 97 negative-guarantee tokens in registry =
 OK   7    dependencies resolve: 0 R-level edges (== spec/10 canonical); unresolved none; self-references none
 OK   8/9  provenance present for 184/184; source hashes re-derive from the spec/01 chunk bytes and the input file hashes; 36 rows without frozen-source line ranges are exactly the frozen addenda (recorded, not missing)
 OK   10/11 status values legal ([('SPECIFIED', 184)]); identical to final/03 and final/01 markers for all rows; no promotion without a ledger entry (ledger entries: 0)
-OK   12   historical evidence unchanged: no committed ledger yet (first compilation); nothing to preserve
+OK   12   historical evidence unchanged: transition ledger is append-only vs the committed copy; 0 entries
 OK   13   security classification preserved: every GI-SEC home (22) is security_relevant; flag == (basis non-empty) for all rows
 OK   14/15/16 implementation / test / verification mappings equal the canonical final/03 cells and spec/10 tag+mutation maps for 184/184
 OK   17   evidence traceable: 0 evidence entries; untraceable none
