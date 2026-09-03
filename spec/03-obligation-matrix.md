@@ -20,9 +20,12 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-CORE-09 | Causal crash recovery (qualified theorem) | L27551–27569, L35159–35176 | SPECIFIED | ror-persistence | R-RECOV-02 T0–T6 |
 | R-CORE-10 | No silent recovery corruption | L42100–42105, L35196–35208 | SPECIFIED | ror-persistence | M015, M016, negative recovery tests |
 | R-CORE-11 | One canonical signature per I2 predicate: ValidatedRequest(E) request-time subsuming ValidatedPlan(plan(E)); Authorized(holder, c, E, t) possession conjunct (formalizes R-KERN-04); ValidatedPlan_pred vs ValidatedPlan_struct; chain stated once (X-01/X-04/X-05; C-80 resolved) | addendum (SEC-016) | SPECIFIED | ror-kernel, ror-runtime | R-TEST-09 differential adjudication |
+| R-CORE-12 | Fault totality on machine paths: panic-free non-test code, failures map to declared Fault (InternalInvariant family); transition atomicity — complete or fault, no died-mid-transition; durable append precedes in-memory mutation; clippy unwrap/expect denial (C-83 resolved; M034) | addendum (SEC-020) | SPECIFIED | all machine crates | M034, panic-catching fuzz harness |
 | R-TRUST-01 | Trust table (LLM/Block No; host Partial; rest Yes) | L41823–41841, L27611–27624 | SPECIFIED | — | — |
 | R-TRUST-02 | TCB composition; LLM output ∉ TCB authority | L28178–28230 | SPECIFIED | — | — |
 | R-TRUST-03 | No hidden authority; evaluator sees refs only | L37722–37748, L19153–19175 | SPECIFIED | ror-kernel, ror-runtime | Track B (mock kernel), visibility checks |
+| R-TRUST-04 | One complete trust table: MOD-06/08/10 rows frozen (authoritative machine boundary); 11-row table superseded; planner never a security/runtime provider — prohibitions homed at enforcing modules; dep/ SC-1/2/3 hard failures (C-84 resolved) | addendum (SEC-022) | SPECIFIED | — | dep/ regeneration with SC-1/2/3 hard-gated |
+| R-TRUST-05 | Crate DAG carries the R-DUR-02 hinge edge ror-runtime → ror-persistence (inverted trait superseded); ror-core → ror-kernel forbidden; forbidden-edge list checked against Cargo.toml; crate-separation rule (C-85 resolved) | addendum (SEC-022) | SPECIFIED | ror-runtime, ror-persistence | Cargo.toml DAG mechanical check |
 
 ## S-04 Architecture / S-05 Planner / S-06 Compilation
 | ID | Obligation (short) | Provenance | Status | Impl→ | Verify→ |
@@ -125,6 +128,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-ACTOR-06 | Send async + deterministic wakeup; Receive blocks without fuel; FIFO mailbox | L25702–25749, L37941–37951 | SPECIFIED | ror-runtime | Track D, M013 |
 | R-ACTOR-07 | Deterministic concurrency theorem | L25759–25766 | SPECIFIED | ror-runtime | global differential (Track D) |
 | R-ACTOR-08 | No amplification / no teleportation theorems | L26048–26070 | SPECIFIED | ror-runtime | teleportation test, amplification test |
+| R-ACTOR-09 | Spawn transfers no capabilities by default (delegation is the only default path); explicit manifest + constraint compiler-checked, strictly attenuated; Authority(child) ≺ parent; trust_level phantom retracted; BudgetAllocationSpec bounds (C-82 resolved; M025) | addendum (SEC-006) | SPECIFIED | ror-runtime, ror-kernel | M025, spawn fan-out amplification tests |
 | R-MARSHAL-01 | Recursive capability rejection in ordinary marshal | L41647–41658, L25674–25701, L37946–37951 | SPECIFIED | ror-runtime | MARSHAL-NO-RAW-CAPABILITY |
 | R-MARSHAL-02 | Explicit delegation only; DelegatedCapability envelope; ≼ parent | L25972–26001, L37953–37959 | SPECIFIED | ror-runtime, ror-kernel | Track C (delegation) |
 | R-MARSHAL-03 | MarshalledValue = canonical bytes; unmarshal(marshal(v)) = v | L25674–25701 | SPECIFIED | ror-runtime | Track B (marshalling) |
@@ -203,4 +207,4 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-CLAIM-03 | Engineering response format; CONFLICT reporting | L38808–38846 | SPECIFIED | process | — |
 | R-CLAIM-04 | Start condition (no new semantic phase; reference alongside) | L38921–38928 | SPECIFIED | process | — |
 
-**Total: 157 obligations** (148 transcribed from the frozen source + 9 post-audit frozen addenda: R-COMPILE-06, R-CORE-11, R-KERN-04, R-KERN-05, R-EFFECT-08, R-MARSHAL-05, R-MARSHAL-06, R-CANON-12, R-PERSIST-07). All `SPECIFIED`. None may be promoted without repository evidence per `00-overview.md` §2.
+**Total: 161 obligations** (148 transcribed from the frozen source + 13 post-audit frozen addenda: R-COMPILE-06, R-CORE-11, R-CORE-12, R-KERN-04, R-KERN-05, R-EFFECT-08, R-MARSHAL-05, R-MARSHAL-06, R-CANON-12, R-PERSIST-07, R-ACTOR-09, R-TRUST-04, R-TRUST-05). All `SPECIFIED`. None may be promoted without repository evidence per `00-overview.md` §2.

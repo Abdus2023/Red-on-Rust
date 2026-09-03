@@ -23,7 +23,7 @@ The frozen source (`Red-on-Rust.md`) has been canonicalized into the document se
 - `spec/00-overview.md` — method, status ladder (`SPECIFIED → IMPLEMENTED → TESTED → VERIFIED → PROVEN`), identifier scheme
 - `spec/01-canonical-specification.md` — cleaned normative specification (24 sections, `S-01`…`S-24`)
 - `spec/02-section-hierarchy.md` — stable section index with provenance and supersession records
-- `spec/03-obligation-matrix.md` — 157 stable requirement IDs (`R-…`; 148 from the frozen source + 9 post-audit frozen addenda) with status and provenance
+- `spec/03-obligation-matrix.md` — 161 stable requirement IDs (`R-…`; 148 from the frozen source + 13 post-audit frozen addenda) with status and provenance
 - `spec/04-dependency-graph.md` — section, object, and verification dependency graphs
 - `spec/05-terminology.md` — glossary and normalization rules
 - `spec/06-contradictions-ambiguities.md` — 74 consistency findings in 76 rows (`C-01`…`C-76`; C-46…C-76 added by the terminology pass, C-08 re-graded MINOR → MAJOR by it, and C-54 rewritten by its declaration sweep after the first version of that row was filed on a false premise)

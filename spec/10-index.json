@@ -31,12 +31,12 @@
     },
     "id_schemes": {
       "S-NN": "specification section (24)",
-      "R-AREA-NN": "normative requirement/obligation (157; 148 source-transcribed + 9 post-audit frozen addenda)",
-      "C-NN": "contradiction/ambiguity finding (80 indexed; 81 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
+      "R-AREA-NN": "normative requirement/obligation (161; 148 source-transcribed + 13 post-audit frozen addenda)",
+      "C-NN": "contradiction/ambiguity finding (84 indexed; 85 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
       "U-NN": "unresolved item requiring explicit decision (28)",
       "M-NN": "milestone M0-M11",
       "TAG": "source verification-obligation tags (19; 17 frozen-source + 2 post-audit addenda)",
-      "M0NN": "baseline mutation registry (25; 18 baseline + 7 post-audit: M019–M024, M032)",
+      "M0NN": "baseline mutation registry (27; 18 baseline + 9 post-audit: M019–M025, M032, M034)",
       "ROR-NNN": "first-sprint tasks (16)"
     },
     "documents": {
@@ -45,7 +45,7 @@
       "03-obligation-matrix.md": "all requirements with stable IDs, status, provenance",
       "04-dependency-graph.md": "section/object/verification dependency graphs + DOT",
       "05-terminology.md": "glossary, normalization rules, under-specified terms",
-      "06-contradictions-ambiguities.md": "findings C-01..C-81 with severity and status",
+      "06-contradictions-ambiguities.md": "findings C-01..C-85 with severity and status",
       "07-implementation-mapping.md": "obligations -> crates/modules; actual repo state; milestone crosswalk",
       "08-verification-mapping.md": "obligations -> tags/tests/evidence; claim ladder per theorem",
       "09-unresolved-decisions.md": "items U-01..U-34 requiring explicit architectural decisions",
@@ -87,7 +87,8 @@
         "R-CORE-08",
         "R-CORE-09",
         "R-CORE-10",
-        "R-CORE-11"
+        "R-CORE-11",
+        "R-CORE-12"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -105,7 +106,9 @@
       "requirements": [
         "R-TRUST-01",
         "R-TRUST-02",
-        "R-TRUST-03"
+        "R-TRUST-03",
+        "R-TRUST-04",
+        "R-TRUST-05"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -389,7 +392,8 @@
         "R-ACTOR-05",
         "R-ACTOR-06",
         "R-ACTOR-07",
-        "R-ACTOR-08"
+        "R-ACTOR-08",
+        "R-ACTOR-09"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -952,6 +956,26 @@
       ]
     },
     {
+      "id": "R-CORE-12",
+      "section": "S-02",
+      "title": "Fault totality and transition atomicity on machine paths (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [],
+      "verification": [
+        "M034",
+        "panic-catching fuzz harness"
+      ],
+      "related_findings": [
+        "C-83"
+      ]
+    },
+    {
       "id": "R-TRUST-01",
       "section": "S-03",
       "title": "Trust table (LLM/Block No; host Partial; rest Yes)",
@@ -1006,6 +1030,47 @@
         "visibility checks"
       ],
       "related_findings": []
+    },
+    {
+      "id": "R-TRUST-04",
+      "section": "S-03",
+      "title": "One complete trust table; planner never a provider (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [],
+      "verification": [
+        "dep/ SC-1/2/3 hard-gated"
+      ],
+      "related_findings": [
+        "C-84"
+      ]
+    },
+    {
+      "id": "R-TRUST-05",
+      "section": "S-03",
+      "title": "Durability hinge crate edge structurally carriable (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime",
+        "ror-persistence"
+      ],
+      "verification": [
+        "Cargo.toml DAG mechanical check"
+      ],
+      "related_findings": [
+        "C-85"
+      ]
     },
     {
       "id": "R-ARCH-01",
@@ -2698,6 +2763,29 @@
         "amplification test"
       ],
       "related_findings": []
+    },
+    {
+      "id": "R-ACTOR-09",
+      "section": "S-15",
+      "title": "Spawn authority rule: no default transfer, strict attenuation (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime",
+        "ror-kernel"
+      ],
+      "verification": [
+        "M025",
+        "spawn fan-out amplification tests"
+      ],
+      "related_findings": [
+        "C-82"
+      ]
     },
     {
       "id": "R-MARSHAL-01",
@@ -5396,6 +5484,65 @@
           "12283-12310"
         ]
       }
+    },
+    {
+      "id": "C-82",
+      "title": "execute_spawn iterates all parent capabilities under one spawn_constraint that has no AST source (Expr::Spawn carries no constraint field; L25631–25637, L12191–12194), the v0.3 trust_level is a phantom (AMB-04/C-36), and BudgetAllocationSpec validation is unstated (U-03) — the security consequence, that a conforming implementation may default to identity derivation and fan out full parent authority at scale from untrusted plans while child ≼ parent holds pointwise, is unregistered (audit SEC-006)",
+      "severity": "BLOCKING",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "25631-25637",
+          "12191-12194",
+          "8770-8786",
+          "25944-25952"
+        ]
+      }
+    },
+    {
+      "id": "C-83",
+      "title": "The frozen machine code panics at exactly the commit points where partial state exists — gate-10/13 consume(...).unwrap()/reserve(...).unwrap() (\"Safe due to checks\"), the receipt-path release(...).unwrap() beside a checked consume, allocate_child_budget(...).unwrap(), finalize_request's pop().unwrap() + unreachable!() — contradicting the frozen discipline that budget failures are data, never panics (mod/04, R-BUDGET-02, MOD-01 fault taxonomy); unregistered as a conflict (audit SEC-020)",
+      "severity": "BLOCKING",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "10487-10490",
+          "23556-23563",
+          "23863-23882",
+          "10588"
+        ]
+      }
+    },
+    {
+      "id": "C-84",
+      "title": "The trust table is frozen twice with different rows (11 vs 12; Persistence absent from the earlier) and three authoritative boundary modules have no row at all (MOD-06 marshalling, MOD-08 effect gates, MOD-10 codec); the dependency layer measures SC-1/2/3 FAIL — the planner module recorded as security provider (14 edges, V-03) and a production→planner runtime edge — so the recorded graph licenses discharging R-TRUST-01 inside the one crate that faces the untrusted LLM (audit SEC-022)",
+      "severity": "BLOCKING",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "27613-27623",
+          "41827-41841"
+        ]
+      }
+    },
+    {
+      "id": "C-85",
+      "title": "The step-14 durable append — the hinge of R-DUR-02 (HostInvoked ⇒ DurableIssued) — implies a ror-runtime → ror-persistence dependency no crate list carries (V-10a: \"the single most load-bearing cross-crate call in the design is the one the crate list omits\"), and MOD-03 → MOD-04 implies ror-core → ror-kernel, forbidden outright by the frozen edge list (V-10b); the durability hinge is structurally uncarriable as declared (audit SEC-022)",
+      "severity": "MAJOR",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "39807-39828"
+        ]
+      }
     }
   ],
   "unresolved": [
@@ -5883,6 +6030,20 @@
       ]
     },
     {
+      "id": "M025",
+      "defect": "spawn clones parent context unattenuated",
+      "kills_evidence_for": [
+        "R-ACTOR-09"
+      ]
+    },
+    {
+      "id": "M034",
+      "defect": "release failure silently ignored (unwrap to let _)",
+      "kills_evidence_for": [
+        "R-CORE-12"
+      ]
+    },
+    {
       "id": "M032",
       "defect": "contains_capability skips FunctionValue.env",
       "kills_evidence_for": [
@@ -6204,7 +6365,8 @@
         "R-HOST-04",
         "R-HOST-05",
         "R-EFFECT-08",
-        "R-CORE-11"
+        "R-CORE-11",
+        "R-CORE-12"
       ]
     },
     {
@@ -6231,7 +6393,8 @@
         "R-MARSHAL-02",
         "R-MARSHAL-03",
         "R-MARSHAL-04",
-        "R-MARSHAL-06"
+        "R-MARSHAL-06",
+        "R-ACTOR-09"
       ]
     },
     {
@@ -6566,7 +6729,9 @@
         "R-MARSHAL-04",
         "R-MARSHAL-05",
         "R-MARSHAL-06",
-        "R-CORE-11"
+        "R-CORE-11",
+        "R-ACTOR-09",
+        "R-CORE-12"
       ],
       "depends_on": [
         "ror-core",
@@ -6596,7 +6761,8 @@
         "R-RECOV-06",
         "R-RECOV-07",
         "R-KERN-05",
-        "R-PERSIST-07"
+        "R-PERSIST-07",
+        "R-TRUST-05"
       ],
       "depends_on": [
         "ror-core"

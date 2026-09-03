@@ -1,13 +1,16 @@
 # Addendum III — MEDIUM-HIGH freeze (SEC-006 / SEC-020 / SEC-022)
 
-**Status: DRAFT FOR SPECIFICATION-OWNER ADOPTION — not applied.** No frozen or
-canonical text is changed by this file. The exact edit set lives in
-`audit/spec_addendum3.py` (this draft is generated from its constants, so the
-two cannot drift). The dry run is full-fidelity: a `git archive` sandbox of
-HEAD receives the edits and the entire verification stack runs there
-(`audit/spec_check.py`, `spec/_build_index.py`, and `req/_validate.py` — whose
-recorded register expectation grows 81 → 85 raw C-rows, the count the sandbox
-run proved). `--apply` executes in place; rollback is `git revert`.
+**Status: APPLIED** via `audit/spec_addendum3.py --apply` (adoption commit on
+`arena/01a063c4-red-on-rust`; post-apply verification on the real tree:
+161 obligations / 161 matrix rows / 148 records, `spec/_check.py` D1=0 exit 0
+with only the pre-existing adjudicated warnings, index rebuilt at
+161/84/27/19, `req/_validate.py` exit 0 / ERRORS 0). This file is retained as
+the review record of exactly what was adopted and why; rollback is
+`git revert` of the adoption commit. The exact edit set lives in
+`audit/spec_addendum3.py` (this draft was generated from its constants, so the
+two cannot drift); its dry run is full-fidelity — a `git archive` sandbox of
+HEAD receives the edits and the entire verification stack
+(`audit/spec_check.py`, `spec/_build_index.py`, `req/_validate.py`) runs there.
 
 ## 1. What this freezes (report §6 items 4/5/7 remainders)
 

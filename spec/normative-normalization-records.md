@@ -2,7 +2,7 @@
 
 **Source:** `spec/01-canonical-specification.md` (24 sections, 148 requirements `R-SCOPE-01`…`R-CLAIM-04`).
 
-> **Post-audit addenda (outside this pass's scope):** obligations `R-COMPILE-06`, `R-KERN-04`, `R-KERN-05`, `R-EFFECT-08` were added after the normalization pass as frozen addenda (SEC-001/SEC-002 remediation). They have no normalization record: each is its own original — no substitution, `Original = Normalized` by construction. The same holds for the five addendum-II obligations (`R-CANON-12`, `R-CORE-11`, `R-MARSHAL-05`, `R-MARSHAL-06`, `R-PERSIST-07`; remediations SEC-003/004/005/016/018).
+> **Post-audit addenda (outside this pass's scope):** obligations `R-COMPILE-06`, `R-KERN-04`, `R-KERN-05`, `R-EFFECT-08` were added after the normalization pass as frozen addenda (SEC-001/SEC-002 remediation). They have no normalization record: each is its own original — no substitution, `Original = Normalized` by construction. The same holds for the five addendum-II obligations (`R-CANON-12`, `R-CORE-11`, `R-MARSHAL-05`, `R-MARSHAL-06`, `R-PERSIST-07`; remediations SEC-003/004/005/016/018). The same holds for the four addendum-III obligations (`R-ACTOR-09`, `R-CORE-12`, `R-TRUST-04`, `R-TRUST-05`; remediations SEC-006/020/022).
 
 **Method:** Each specification requirement was audited and rewritten into precise RFC 2119 normative language (`MUST`, `MUST NOT`, `SHOULD`, `SHOULD NOT`, `MAY`, `INFORMATIVE`).
 
