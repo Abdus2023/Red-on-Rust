@@ -43,7 +43,7 @@ Promotion is strictly evidence-gated: `SPECIFIED → IMPLEMENTED → TESTED → 
 | `M-NN` | Milestone (M0…M11, as defined in source) | `02` (S-23), `08` §4 |
 | `TAG-NAME` | Source's own verification-obligation tags (e.g., `CEK-CALL-ARITY-PRECHECK`) | `08-verification-mapping.md` |
 | `ROR-NNN` | Source's first-sprint task IDs (ROR-001…) | `07-implementation-mapping.md` |
-| `M0NN` | Baseline mutation-registry IDs (M001…M018) | `08-verification-mapping.md` |
+| `M0NN` | Mutation-registry IDs (M001…M035; M019…M035 added by frozen addenda I–V) | `08-verification-mapping.md` |
 | `T-NN` | Canonical terminology entry (T-01…T-81) | `../term/01-dictionary.md` |
 | `N-NN` | Non-conflation law: two terms that must never be used for each other (N-01…N-31) | `../term/03-laws.md` |
 | `X-NN` | Terminology collision, cited to a frozen-source line (X-01…X-86) | `../term/02-collisions.md` |

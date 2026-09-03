@@ -2280,7 +2280,7 @@ Owning module: **MOD-15**.
 - **PROTECTED (do not rename):**
     - `Mutation` — frozen name
     - `mutant` — frozen name for an instance
-    - `M001…M018` — frozen baseline mutation-registry IDs
+    - `M001…M035` — frozen mutation-registry IDs (M001…M018 baseline; M019…M035 added by frozen addenda I–V)
     - `equivalent mutant` — frozen classification
     - `non-equivalent mutation` — frozen scope of the 100% target
     - `mutations/registry.toml` — frozen file path

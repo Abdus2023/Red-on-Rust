@@ -4916,8 +4916,8 @@
      "why": "frozen name for an instance"
     },
     {
-     "name": "M001…M018",
-     "why": "frozen baseline mutation-registry IDs"
+     "name": "M001…M035",
+     "why": "frozen mutation-registry IDs (M001…M018 baseline; M019…M035 added by frozen addenda I–V)"
     },
     {
      "name": "equivalent mutant",

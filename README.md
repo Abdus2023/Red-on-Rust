@@ -26,7 +26,7 @@ The frozen source (`Red-on-Rust.md`) has been canonicalized into the document se
 - `spec/03-obligation-matrix.md` — 173 stable requirement IDs (`R-…`; 148 from the frozen source + 25 post-audit frozen addenda) with status and provenance
 - `spec/04-dependency-graph.md` — section, object, and verification dependency graphs
 - `spec/05-terminology.md` — glossary and normalization rules
-- `spec/06-contradictions-ambiguities.md` — 74 consistency findings in 76 rows (`C-01`…`C-76`; C-46…C-76 added by the terminology pass, C-08 re-graded MINOR → MAJOR by it, and C-54 rewritten by its declaration sweep after the first version of that row was filed on a false premise)
+- `spec/06-contradictions-ambiguities.md` — 96 consistency findings in 97 rows (`C-01`…`C-97`, C-39 a pointer row; C-46…C-76 added by the terminology pass and C-77…C-97 by the post-audit frozen addenda I–V; C-08 re-graded MINOR → MAJOR, and C-54 rewritten by its declaration sweep after the first version of that row was filed on a false premise)
 - `spec/07-implementation-mapping.md` — obligations → crate/module mapping; actual repository state
 - `spec/08-verification-mapping.md` — obligations → conformance tests and evidence status
 - `spec/09-unresolved-decisions.md` — 28 items (`U-…`) requiring explicit architectural decisions (U-23…U-25 added by the terminology pass, U-26…U-29 by its declaration sweep and U-30…U-34 by its struct-field sweep; U-08 corrected and U-14 escalated to blocking by its fault-taxonomy audit)
@@ -44,7 +44,7 @@ CROSS-REFERENCES. Normative text remains single-homed in `spec/01`/`req/`;
 (`python3 mod/_build.py --write`; checked with `python3 mod/_build.py`).
 
 A third organization, `dep/`, is the **dependency graph** derived from the other two:
-four layers (10 crates / 15 crate edges, 17 modules / 137 typed module edges, 545 atomic
+four layers (10 crates / 17 crate edges, 17 modules / 134 typed module edges, 545 atomic
 records / 927 requirement edges, 24 sections / 34 section edges), each edge typed
 `TYPE_ | SEMANTIC_ | SECURITY_ | SERIALIZATION_ | PERSISTENCE_ | VERIFICATION_ |
 RUNTIME_DEPENDENCY` and read as **`A -> B` = B depends on A**. It reports roots, leaves,
