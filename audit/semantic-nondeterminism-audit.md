@@ -232,7 +232,8 @@ The machine must have **no dependence on any hasher's seed**. Stronger than "don
 ### DET-005 — HIGH — `ReplayHost` has three incompatible frozen shapes; two of them break trace ordering
 
 **LOCATION**
-Six frozen declarations in five incompatible shapes, no supersession record between them:
+Six frozen declarations in six incompatible shapes, no supersession record between them
+(`term/_structs.py` derives the same 6-declarations/6-shapes split independently):
 
 | Line | Shape | Ordering property |
 |---|---|---|
@@ -246,7 +247,7 @@ Six frozen declarations in five incompatible shapes, no supersession record betw
 - Governing obligation: `spec/01` R-HOST-03 "Ordered ReplayHost; ID+digest per entry; no unordered map" (`spec/03` L123, provenance L25972–25996, L37985–38000). L34498 states the rule in prose: "The replay host should consume an **ordered effect trace**, not merely perform a map lookup."
 
 **VIOLATION**
-`HostTrace` is one of DT's two parameters. Its only concrete realization in frozen text is `ReplayHost`, and that realization is frozen **six times in five mutually incompatible shapes**, two of which (L22339, L24011) are explicitly the "merely perform a map lookup" pattern that L34498 forbids and R-HOST-03 outlaws. The L24011 form is the most dangerous because it is the *latest* full Phase-12 code block and it carries a vestigial `cursor: usize` field — an implementer reading it sees a cursor, assumes ordering, and gets `HashMap` lookup semantics.
+`HostTrace` is one of DT's two parameters. Its only concrete realization in frozen text is `ReplayHost`, and that realization is frozen **six times in six mutually incompatible shapes**, two of which (L22339, L24011) are explicitly the "merely perform a map lookup" pattern that L34498 forbids and R-HOST-03 outlaws. The L24011 form is the most dangerous because it is the *latest* full Phase-12 code block and it carries a vestigial `cursor: usize` field — an implementer reading it sees a cursor, assumes ordering, and gets `HashMap` lookup semantics.
 
 The semantic difference is not cosmetic. Under map lookup:
 - **Order is unchecked.** A machine that issues effects in a different order than recorded still replays "successfully", because each lookup finds its receipt. The replay therefore *fails to detect* the very nondeterminism it exists to detect. R-HOST-05 ("replay validates trace, not just final state") is unimplementable on this shape.
@@ -709,7 +710,7 @@ The machine "must use" seven mechanisms. Status of each in the frozen corpus:
 | **LogicalTime** | **YES** | **PARTIAL** | `pub struct LogicalTime(pub u64)` (L9137, L10201, L10686), held once in `GlobalState` (L24159), `term/` T-28, R-CAP-09 prohibits wall-clock. **Gaps:** `δ_t` advancement schedule unfrozen (DET-008); `Lifetime` is Unix-timestamped and compared against it (DET-006). The type is right; the clock's *rate* and one of its *comparands* are not. |
 | **Deterministic IDs** | **YES** | **PARTIAL** | R-ACTOR-03 / R-EFFECT-03: monotonic counters, `next_actor_id`/`next_effect_id` in `GlobalState`; explicit prohibition of UUIDs, PIDs, addresses, thread IDs, wall-clock (L24258–24260, L21949–21953). **Gaps:** `CapRef` allocation left to the arena allocator (DET-010); `fresh_actor()`/"globally unique" survive in the semantics rules (DET-015). Two of three identifier families are fully disciplined. |
 | **Explicit SchedulerTrace** | **NO** | **—** | **Does not exist as an artifact.** All 13 occurrences are inside the theorem. No type, no fields, no encoding, no equality, no recording rule, no `term/` entry (DET-001). |
-| **Explicit HostTrace** | **NO** | **—** | **Does not exist as a defined artifact.** Same 13 occurrences. Its only concrete proxy, `ReplayHost`, is frozen in **six declarations across five mutually incompatible shapes**, two of which are unordered map lookups that violate R-HOST-03 (DET-001, DET-005). |
+| **Explicit HostTrace** | **NO** | **—** | **Does not exist as a defined artifact.** Same 13 occurrences. Its only concrete proxy, `ReplayHost`, is frozen in **six declarations across six mutually incompatible shapes**, two of which are unordered map lookups that violate R-HOST-03 (DET-001, DET-005). |
 | **Canonical serialization** | **PARTIAL** | **NO** | 15A is frozen, thorough, and good **for the data-value domain** — envelope, tags, discriminants, ordered collections, duplicate-key rejection, strict decoder, golden vectors (R-CANON-01…13). **But** no encoding exists for `Expr`, `Frame`, `Environment`, `Constraint`, `Authority`, `CapabilityContext`, `Budget`, `Mailbox`, `SchedulerState`, `GlobalState` (U-02) — i.e. for almost everything DT ranges over (DET-002) — and two grammars still coexist at the one site where serialization meets the digest (DET-007). |
 | **Ordered event traces** | **PARTIAL** | **PARTIAL** | `EventLog { events: Vec<LogEntry> }` (L10905) is ordered and append-only; `EventEnvelope { sequence, logical_time, event }` (L33888); WAL sequences gap-checked `s_{n+1} = s_n + 1`; R-PERSIST-08 now chains checksums. **Gaps:** `EventSequence` vs `WalSequence` relationship unstated (U-16); revocation-cascade event order is `HashMap`-dependent (DET-003 item 2); and the event log appears as a theorem *input* at L26998 while being a `GlobalState` field written by transitions — a circularity (DET-001). |
 | **Deterministic queues** | **YES** | **YES** | `RunnableQueue { queue: VecDeque<ActorId> }` (L24272 area, L25538 "FIFO, explicitly ordered"), the at-most-once membership invariant (L24280: "ActorId occurs at most once in RunnableQueue"), R-ACTOR-04, mailboxes `VecDeque<MarshalledValue>` FIFO (R-ACTOR-06), `SchedulerState { runnable: VecDeque<ActorId>, blocked: BTreeSet<ActorId> }` (L10925) — ordered container for the blocked set, which is the correct choice and shows the discipline was applied deliberately here. **The one inventory item that is fully frozen and fully adequate.** |
@@ -829,7 +830,7 @@ Additive; none rewrites frozen text. Per R-SCOPE-03 all supersessions quote rath
 
 | Register | Proposed entries |
 |---|---|
-| `spec/06` (contradictions) | **C-98** DT stated in three non-equivalent forms, one circular (MAJOR) · **C-99** `ReplayHost` frozen in six declarations, five incompatible shapes, two violating R-HOST-03 (MAJOR) · **C-100** `Lifetime` Unix-timestamped and compared against `LogicalTime`, contradicting R-CAP-09/R-CLAIM-02 (MAJOR) · **C-101** `HashMap`/`HashSet` in operative machine structs vs the L28738 prohibition (MAJOR) · **C-102** `usize` in serialized/compared/fault types vs "explicit integer widths" (MINOR) |
+| `spec/06` (contradictions) | **C-98** DT stated in three non-equivalent forms, one circular (MAJOR) · **C-99** `ReplayHost` frozen in six declarations, six incompatible shapes, two violating R-HOST-03 (MAJOR) · **C-100** `Lifetime` Unix-timestamped and compared against `LogicalTime`, contradicting R-CAP-09/R-CLAIM-02 (MAJOR) · **C-101** `HashMap`/`HashSet` in operative machine structs vs the L28738 prohibition (MAJOR) · **C-102** `usize` in serialized/compared/fault types vs "explicit integer widths" (MINOR) |
 | `spec/09` (unresolved) | **U-35** the four DT terms undefined — **BLOCKING** (gates Track A, Track D, R-HOST-03/04/05, R-REF-01) · **U-36** `CapRef`/arena allocation policy · **U-37** snapshot-selection rule. Amend **U-02** (add: blocks DT's conclusion, not only persistence), **U-07** (add: blocks cross-implementation determinism and R-BUDGET-09 liveness), **U-03** (add: the compile-time-fixed proviso) |
 | `term/` | **T-82** `SchedulerTrace` · **T-83** `HostTrace` · **T-84** `InitialState` · **T-85** `UniqueMachineTrace` · **T-86** `Lifetime` (with the Unix reading as `FORBIDDEN_VARIANTS`) · **X-87** `ReplayHost` — one name, six denotations · non-conflation law **N-32** `SchedulerTrace ≠ EventLog` (input consumed vs output produced) · **N-33** `Lifetime ≠ WallClockInterval` |
 | `spec/03` (obligations) | Determinism-closure addenda **R-CORE-14** (`InitialState` closed; no transition reads outside the three parameters) and **R-CORE-15** (DT terms defined; trace equality specified) |
@@ -856,7 +857,7 @@ rejected by some checker. A green baseline is required first, so a red tree
 cannot pass everything vacuously. **16 of 17 are killed**; the seventeenth is
 M036, registered and filed rather than silently tolerated.
 
-Five results are worth recording beyond the pass/fail.
+Seven results are worth recording beyond the pass/fail.
 
 **(a) A drift no checker could see — including one this audit introduced.**
 `spec/06`'s summary line read "74 findings (76 rows)" against 97 actual rows;
@@ -980,7 +981,7 @@ owner decision:
 |---|---|
 | **T-82** `SchedulerTrace` · **T-83** `HostTrace` · **T-84** `InitialState` · **T-85** `UniqueMachineTrace` | `UNDECLARED-TYPE`, following T-07's precedent: every occurrence is a *use* inside the theorem, every use site is enumerated, and no declaration is invented. |
 | **T-86** `Lifetime` | The `// Unix timestamp` declaration, verbatim, against the `authorizes(…, t: LogicalTime)` consumer. |
-| **X-87** `ReplayHost` | Six declarations, five shapes, with each site's ordering discipline recorded. |
+| **X-87** `ReplayHost` | Six declarations, six shapes, with each site's ordering discipline recorded. |
 | **N-32** `SchedulerTrace ≠ EventLog` · **N-33** `Lifetime ≠ WallClockInterval` | The input/output conflation and the clock/logical-time conflation. |
 
 Filing them mechanized two claims that had been prose. `SchedulerTrace` has
@@ -1015,6 +1016,79 @@ That is the K12 failure mode verbatim, in a mutation written to guard against
 exactly this class. It now locates the count dynamically. The suite is
 **17/17** with no inapplicable mutations; `inapplicable` is surfaced as its own
 bucket precisely so a non-test can never again be mistaken for coverage.
+
+**(f) An independent tool contradicted the audit, and the audit was wrong.**
+
+An inventory of the repository found **15 executables**; this harness's
+baseline was running **six**, and my per-commit verification loop had been
+running five. Two of the nine unattended ones are substantive checkers:
+`req/_coverage.py` (an omission audit — which normative-looking source lines
+no record cites; it reports 74 marker lines, 0 uncited) and
+`term/_structs.py`, which re-derives every struct declaration in the frozen
+source and groups them by field set.
+
+Running `term/_structs.py` produced a direct contradiction:
+
+```
+### ReplayHost  (6 decls, 6 shapes)
+```
+
+Every version of this audit had said **six declarations in five shapes** —
+DET-005, C-99, U-35, `mod/09`, and the X-87 entry filed one commit ago. The
+independent derivation says six. It is right and I was wrong: the audit's own
+evidence table at §5.5 lists six structurally distinct field sets and has from
+the first draft, so the "five" contradicted the table printed directly beneath
+it. The same run also corrected **four turn numbers** in X-87 (L1234 is turn
+[3] not [2]; L22339 is [29] not [28]; L34498 is [46] not [48]) — and the
+repository's *older* entries at `term/_terms.py` L5555/L5566 already had those
+turns right, so the new entry contradicted established work in the same file.
+
+Both are now corrected across `term/`, `spec/06` C-99, `spec/09` U-35,
+`mod/09` and this document, and the X-87 note cites `term/_structs.py` as the
+independent derivation. `term/_structs.py` and `req/_coverage.py` are in the
+harness baseline.
+
+The methodological point is worth more than the count. The error survived four
+commits of review *because I kept re-reading my own prose instead of running
+the tool that derives the fact*. A checker that no one runs is indistinguishable
+from a checker that does not exist — which is the same finding as U-38 (a
+detector wired to a non-failing severity) and the same finding as K10 (a
+mutation silently matching nothing), arrived at a third way. **The repository
+had the means to falsify this claim from the day it was written.**
+
+**(g) The root cause: there was no entrypoint.**
+
+Every fix in §9 shares a mechanism — a guard existed and nobody reached it.
+`spec/_check.py` detects M036 and exits 0 (U-38). K10 matched nothing and
+reported nothing. `term/_structs.py` had the right shape count for four
+commits. The common factor is not the guards; it is that running them was
+tribal knowledge, so which ones ran depended on what the person remembered.
+
+`check.py` runs all of them in dependency order and fails on any failure.
+Generators run in *check* mode, so a generator whose output would change is a
+failure rather than a silent fix. Crucially it also fails when a `*/_*.py`
+executable is neither run nor explicitly classified as a data module or
+write-mode generator:
+
+```
+UNCLASSIFIED EXECUTABLES -- add to CHECKERS or NON_CHECKERS in check.py:
+  spec/_newgate.py
+FAILED: inventory
+```
+
+That inventory check is the one that makes the class of error non-recurring: a
+new gate cannot sit unattended, because its mere existence fails the build
+until someone classifies it. Current state: **10 checkers, 5 classified
+non-checkers, 15 accounted for.**
+
+Adding it immediately demonstrated its own value twice. Inserting the README
+paragraph shifted three line anchors — repaired automatically by
+`term/_reanchor.py` — and one of those anchors exposed a *further* stale
+claim, `X-01…X-86`, that the §9(e) prose-count gate should have caught. The
+gate checked `spec/00`'s X- range but not the README's: a list of claims I
+wrote by hand, missing an entry, which is precisely the "looks covered, isn't"
+shape the gate was built to prevent. Both the claim and the gate's coverage
+are fixed, and the fix is verified to fail in the drifted direction.
 
 This addendum issues no frozen text. M036 is registered in `spec/08` as a
 **known, filed survivor** — the harness reports it as such rather than counting

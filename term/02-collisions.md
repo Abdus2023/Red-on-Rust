@@ -96,7 +96,7 @@ A collision is filed when the source (or a document derived from it) uses one na
 | [X-84](#x-84) | Thirty-one more type names are used in frozen field positions and declared nowhere — including the reference model's whole vocabulary | UNDEFINED-TYPE | **MAJOR** | 9 | X-29, X-30, X-75, U-13, U-16, U-21, C-33 | YES |
 | [X-85](#x-85) | `FunctionValue.env` is an `EnvironmentSnapshot` in one declaration and a live `Environment` in two; X-33 records the name, not the divergence | FIELD-SET | **MAJOR** | 6 | X-33, X-84, X-45, U-09, U-02 | YES |
 | [X-86](#x-86) | `Frame`'s eleven declarations carry five distinct variant sets, and the continuation's variant names change twice | DIVERGENT-SHAPE | **MAJOR** | 5 | X-37, AMB-26, X-35, X-57, U-02 | YES |
-| [X-87](#x-87) | `ReplayHost` — the sole concrete realization of the theorem's `HostTrace` parameter — is declared six times in five incompatible shapes, and only one of them is ordered | DIVERGENT-SHAPE | **MAJOR** | 3 | C-99, U-35 | YES |
+| [X-87](#x-87) | `ReplayHost` — the sole concrete realization of the theorem's `HostTrace` parameter — is declared six times in six incompatible shapes, and only one of them is ordered | DIVERGENT-SHAPE | **MAJOR** | 3 | C-99, U-35 | YES |
 | [X-11](#x-11) | The symbol `A` denotes Authority and, subscripted, an actor's state | SYMBOL-OVERLOAD | **MINOR** | 2 | — | no |
 | [X-14](#x-14) | The symbol `H` denotes the effect journal while calligraphic `ℋ` denotes the heap | SYMBOL-OVERLOAD | **MINOR** | 3 | — | no |
 | [X-15](#x-15) | The symbol `B` denotes the Budget and, in turn [1], a Block | SYMBOL-OVERLOAD | **MINOR** | 2 | — | no |
@@ -2291,7 +2291,7 @@ Yes — `spec/09` U-27: which shape governs, and where shape (iii)'s continuatio
 | `spec/06-contradictions-ambiguities.md`:81 | ``\| C-66 \| `MarshalledValue`'s payload is `Value``` | C-66, the contradictions-register row for this finding |
 | `spec/09-unresolved-decisions.md`:162 | ``### U-30 — Which payload does `MarshalledValue` carry`` | U-30, the decision this finding needs |
 | `term/00-overview.md`:175 | ``\| `term/_terms.py T-79…T-81, N-28` \|`` | the §6 row recording T-79's creation |
-| `README.md`:104 | ``(`X-01`…`X-86`, of which 4 are BLOCKING)`` | the README's collision-register count, updated by this pass |
+| `README.md`:113 | ``(`X-01`…`X-87`, of which 4 are BLOCKING)`` | the README's collision-register count, updated by this pass |
 
 ### The collision
 
@@ -2763,7 +2763,7 @@ Which `Frame` variant set governs — the nine-variant form of turns [21]-[22], 
 
 ## X-87
 
-**`ReplayHost` — the sole concrete realization of the theorem's `HostTrace` parameter — is declared six times in five incompatible shapes, and only one of them is ordered**
+**`ReplayHost` — the sole concrete realization of the theorem's `HostTrace` parameter — is declared six times in six incompatible shapes, and only one of them is ordered**
 
 - **Kind:** `DIVERGENT-SHAPE` — the same type name is declared repeatedly with materially different variant or field shapes
 - **Severity:** MAJOR
@@ -2774,12 +2774,12 @@ Which `Frame` variant set governs — the nine-variant form of turns [21]-[22], 
 
 | Line | Text at that line | What it denotes there |
 |---|---|---|
-| `Red-on-Rust.md` L1234 | `pub struct ReplayHost {` | turn [2]: `cursor: usize` + `trace: Vec<Result<Value, HostFault>>` — ordered, but the element type is a bare `Value`, not a receipt |
+| `Red-on-Rust.md` L1234 | `pub struct ReplayHost {` | turn [3]: `cursor: usize` + `trace: Vec<Result<Value, HostFault>>` — ordered, but the element type is a bare `Value`, not a receipt |
 | `Red-on-Rust.md` L9783 | `pub struct ReplayHost {` | turn [17]: `trace: ReplayTrace` — delegates the shape to a type that is itself never declared |
 | `Red-on-Rust.md` L10541 | `pub struct ReplayHost {` | turn [18]: `trace: VecDeque<EffectReceipt>` consumed by `pop_front()` — ordered, receipt-typed, and the only form whose consumption discipline is visible in its own body |
-| `Red-on-Rust.md` L22339 | `pub struct ReplayHost {` | turn [28]: `receipts: ReceiptLog` — a third undeclared carrier type |
+| `Red-on-Rust.md` L22339 | `pub struct ReplayHost {` | turn [29]: `receipts: ReceiptLog` — a third undeclared carrier type |
 | `Red-on-Rust.md` L24011 | `pub struct ReplayHost {` | turn [30]: `recorded_receipts: HashMap<EffectId, EffectReceipt>` + `cursor: usize` commented `// For ordered trace consumption if needed` — UNORDERED lookup, and the cursor is optional by its own comment |
-| `Red-on-Rust.md` L34498 | `pub struct ReplayHost {` | turn [48]: `trace: Vec<EffectReceipt>` + `cursor: usize` — the only declaration that is both receipt-typed and unconditionally ordered |
+| `Red-on-Rust.md` L34498 | `pub struct ReplayHost {` | turn [46]: `trace: Vec<EffectReceipt>` + `cursor: usize` — the only declaration that is both receipt-typed and unconditionally ordered |
 
 ### Evidence (canonicalization layer)
 
@@ -2790,7 +2790,7 @@ Which `Frame` variant set governs — the nine-variant form of turns [21]-[22], 
 
 ### The collision
 
-The determinism theorem's `HostTrace` parameter has no declaration of its own (T-83), so `ReplayHost` is the only frozen text that fixes what a host trace IS. It does so six times, in five mutually incompatible shapes, spanning turns [2] through [48].
+The determinism theorem's `HostTrace` parameter has no declaration of its own (T-83), so `ReplayHost` is the only frozen text that fixes what a host trace IS. It does so six times, in six mutually incompatible shapes, spanning turns [3] through [46] — `term/_structs.py` derives the same 6-decls/6-shapes split independently from the frozen text.
 
 ### Why it matters
 
@@ -3357,7 +3357,7 @@ AMB-25 is corrected in this pass to the four attested names, with the correction
 | `spec/06-contradictions-ambiguities.md`:23 | `README L22–28 ("Implementation: IN PROGRESS") vs README L656–661 / L42092–42100` | the defective citations |
 | `req/03-ambiguous.md`:189 | ```README.md` L22–28 vs L656–661`` | the same defective citations, repeated |
 | `README.md`:12 | `Implementation:     IN PROGRESS` | the real first status block |
-| `README.md`:771 | `Implementation     READY` | the real last status block |
+| `README.md`:780 | `Implementation     READY` | the real last status block |
 
 ### The collision
 
@@ -3490,7 +3490,7 @@ Only formally: does the turn-[4] two-field `EffectReceipt` survive as an earlier
 | File:line | Text at that line | Note |
 |---|---|---|
 | `README.md`:12 | `Implementation:     IN PROGRESS` | the README's first status block |
-| `README.md`:771 | `Implementation     READY` | the README's last status block |
+| `README.md`:780 | `Implementation     READY` | the README's last status block |
 
 ### The collision
 

@@ -374,6 +374,11 @@ def main() -> int:
         ("spec/00-overview.md", r"N-01…N-(\d+)", max_n),
         ("spec/00-overview.md", r"X-01…X-(\d+)", max_x),
         ("README.md", r"`N-01`…`N-(\d+)`", max_n),
+        # README also carries an X- range. It was omitted from this list on the
+        # first pass and went stale immediately -- the gate checked spec/00's
+        # X- range and not this one, which is the same "looks covered, isn't"
+        # shape the gate exists to prevent.
+        ("README.md", r"`X-01`…`X-(\d+)`", max_x),
         ("spec/05-terminology.md", r"`T-01`…`T-(\d+)`", max_t),
     ):
         txt = (A.REPO_ROOT / fname).read_text(encoding="utf-8")

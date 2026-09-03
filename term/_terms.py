@@ -3644,7 +3644,7 @@ TERMS += [
         "T-83", "HostTrace", "HOST", "UNDECLARED-TYPE",
         "The host-outcome sequence the determinism theorem takes as an INPUT. Undeclared "
         "like T-82, but unlike T-82 the source does supply a candidate shape six times "
-        "over, under the name `ReplayHost` (X-87) — in five mutually incompatible forms. "
+        "over, under the name `ReplayHost` (X-87) — in six mutually incompatible forms. "
         "Only L34498 (`trace: Vec<EffectReceipt>` + `cursor`) satisfies R-HOST-03's "
         "ordered-consumption requirement; the L24011 `HashMap<EffectId, EffectReceipt>` "
         "form makes replay order-insensitive and is the reason DET-005 is HIGH.",
@@ -3659,8 +3659,8 @@ TERMS += [
         sections=["S-02", "S-14"],
         collisions=["X-87"],
         note="UNDECLARED as a type; six competing `ReplayHost` carriers at L1234, L9783, "
-             "L10541, L22339, L24011, L34498 (five distinct shapes — L1234 and L10541 "
-             "differ in element type). DET-005; U-35 proposes `Vec<EffectReceipt>`, "
+             "L10541, L22339, L24011, L34498 (six distinct shapes; `term/_structs.py` derives "
+             "the same 6/6 split independently). DET-005; U-35 proposes `Vec<EffectReceipt>`, "
              "ordered and cursor-consumed, per L34498.",
     ),
     Term(
@@ -4661,11 +4661,11 @@ COLLISIONS: list[Collision] = [
       ["C-42", "U-02"], "", True),
     X("X-87",
       "`ReplayHost` — the sole concrete realization of the theorem's `HostTrace` "
-      "parameter — is declared six times in five incompatible shapes, and only one "
+      "parameter — is declared six times in six incompatible shapes, and only one "
       "of them is ordered",
       "DIVERGENT-SHAPE", "MAJOR",
       [(1234, "pub struct ReplayHost {",
-        "turn [2]: `cursor: usize` + `trace: Vec<Result<Value, HostFault>>` — ordered, "
+        "turn [3]: `cursor: usize` + `trace: Vec<Result<Value, HostFault>>` — ordered, "
         "but the element type is a bare `Value`, not a receipt"),
        (9783, "pub struct ReplayHost {",
         "turn [17]: `trace: ReplayTrace` — delegates the shape to a type that is itself "
@@ -4675,18 +4675,19 @@ COLLISIONS: list[Collision] = [
         "receipt-typed, and the only form whose consumption discipline is visible in its "
         "own body"),
        (22339, "pub struct ReplayHost {",
-        "turn [28]: `receipts: ReceiptLog` — a third undeclared carrier type"),
+        "turn [29]: `receipts: ReceiptLog` — a third undeclared carrier type"),
        (24011, "pub struct ReplayHost {",
         "turn [30]: `recorded_receipts: HashMap<EffectId, EffectReceipt>` + `cursor: usize` "
         "commented `// For ordered trace consumption if needed` — UNORDERED lookup, and "
         "the cursor is optional by its own comment"),
        (34498, "pub struct ReplayHost {",
-        "turn [48]: `trace: Vec<EffectReceipt>` + `cursor: usize` — the only declaration "
+        "turn [46]: `trace: Vec<EffectReceipt>` + `cursor: usize` — the only declaration "
         "that is both receipt-typed and unconditionally ordered")],
       "The determinism theorem's `HostTrace` parameter has no declaration of its own "
       "(T-83), so `ReplayHost` is the only frozen text that fixes what a host trace IS. "
-      "It does so six times, in five mutually incompatible shapes, spanning turns [2] "
-      "through [48].",
+      "It does so six times, in six mutually incompatible shapes, spanning turns [3] "
+      "through [46] — `term/_structs.py` derives the same 6-decls/6-shapes split "
+      "independently from the frozen text.",
       "The shapes are not stylistic variants: they disagree about whether replay is "
       "ORDER-SENSITIVE. The L24011 `HashMap<EffectId, EffectReceipt>` form resolves "
       "effects by identifier lookup, so a permuted effect sequence replays identically "
@@ -5881,7 +5882,7 @@ COLLISIONS += [
       ["T-65", "T-64", "T-68"],
       ["C-09", "AMB-24"], "", True,
       [("README.md", 12, "Implementation:     IN PROGRESS", "the README's first status block"),
-       ("README.md", 771, "Implementation     READY", "the README's last status block")]),
+       ("README.md", 780, "Implementation     READY", "the README's last status block")]),
 ]
 
 
@@ -6295,7 +6296,7 @@ COLLISIONS += [
        ("req/03-ambiguous.md", 189, "`README.md` L22–28 vs L656–661",
         "the same defective citations, repeated"),
        ("README.md", 12, "Implementation:     IN PROGRESS", "the real first status block"),
-       ("README.md", 771, "Implementation     READY", "the real last status block")]),
+       ("README.md", 780, "Implementation     READY", "the real last status block")]),
     X(xid="X-64",
       title="`Fault::StalePlan` is used by the frozen source at L28373 but is a variant of none of the seven `Fault` declarations",
       kind="UNDECLARED-VARIANT",
@@ -7109,7 +7110,7 @@ COLLISIONS += [
          "U-30, the decision this finding needs"),
         ("term/00-overview.md", 175, "| `term/_terms.py T-79…T-81, N-28` |",
          "the §6 row recording T-79's creation"),
-        ("README.md", 104, "(`X-01`…`X-86`, of which 4 are BLOCKING)",
+        ("README.md", 113, "(`X-01`…`X-87`, of which 4 are BLOCKING)",
          "the README's collision-register count, updated by this pass"),
       ]),
     X(xid="X-77",

@@ -94,6 +94,15 @@ generated: `dep/00-overview.md` …
 `dep/05-violations.md` plus `dep/10-graph.json`; regenerate with
 `python3 dep/_graph.py --write` and check with `python3 dep/_graph.py`.
 
+**Running the checks.** `python3 check.py` runs every checker in the repository in
+dependency order and exits non-zero if any fails. It also fails when a `*/_*.py`
+executable is neither run nor explicitly classified as a data module or
+write-mode generator, so a new gate cannot sit unattended: `term/_structs.py`
+did exactly that, and a `ReplayHost` shape count it disproves stood wrong in five
+documents until it was finally run. `python3 check.py --list` shows the inventory.
+Generators run in check mode, so a generator whose output would change is a
+failure rather than a silent fix.
+
 A fourth organization, `term/`, is the **terminology normalization**: 86 canonical terms
 (`T-01`…`T-86`), each carrying `CANONICAL_TERM`, `FORBIDDEN_VARIANTS`, `DEFINITION`, `TYPE`,
 `OWNER`, `FIRST_DEFINITION` and `DEPENDENTS`; 33 non-conflation laws (`N-01`…`N-33`) enforcing
@@ -101,7 +110,7 @@ the distinctions the specification depends on — `Block ≠ ExecutablePlan`, `P
 ExecutablePlan`, `CapRef ≠ Authority`, `EffectRequest ≠ EffectIssued`, `EffectIssued ≠
 EffectCompleted`, `Specification ≠ Implementation`, `Implementation ≠ Verification`,
 `Verification ≠ Proof`, `LLM output ≠ Authority`; and an **86-entry collision register**
-(`X-01`…`X-86`, of which 4 are BLOCKING) reporting every terminology collision found in the
+(`X-01`…`X-87`, of which 4 are BLOCKING) reporting every terminology collision found in the
 frozen source *and* in this repository's own documents. Its governing constraint is that a
 canonical term is a name an author must **use**, never a new identifier to **introduce**: no
 API, type, mathematical symbol or protocol field is renamed anywhere in `term/`. Where the
@@ -110,7 +119,7 @@ both denotations are quoted; where a name is used but never declared, that is re
 than filled in. `term/01-dictionary.md`, `term/02-collisions.md`, `term/03-laws.md` and
 `term/10-index.json` are generated from `term/_terms.py` (`python3 term/_dict.py --write`);
 `python3 term/_check.py` re-greps all 1025 citations against `Red-on-Rust.md`, verifies every
-turn attribution from the source's own `## [n]` markers, checks all 369 term↔collision links in
+turn attribution from the source's own `## [n]` markers, checks all 372 term↔collision links in
 both directions, and fails on drift; `python3 term/_structs.py` re-derives every declaration. Twelve collisions (X-39…X-41, X-51, X-59…X-64, X-66, X-68)
 are defects in `spec/`, `mod/`, `req/` or this README, wholly or in part; each is corrected in
 place with its `X-` id cited and the superseded wording quoted rather than deleted. Two claims an

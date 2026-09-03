@@ -6939,7 +6939,7 @@
    "OWNER": "MOD-09",
    "owner_crate": "ror-host",
    "domain": "HOST",
-   "DEFINITION": "The host-outcome sequence the determinism theorem takes as an INPUT. Undeclared like T-82, but unlike T-82 the source does supply a candidate shape six times over, under the name `ReplayHost` (X-87) — in five mutually incompatible forms. Only L34498 (`trace: Vec<EffectReceipt>` + `cursor`) satisfies R-HOST-03's ordered-consumption requirement; the L24011 `HashMap<EffectId, EffectReceipt>` form makes replay order-insensitive and is the reason DET-005 is HIGH.",
+   "DEFINITION": "The host-outcome sequence the determinism theorem takes as an INPUT. Undeclared like T-82, but unlike T-82 the source does supply a candidate shape six times over, under the name `ReplayHost` (X-87) — in six mutually incompatible forms. Only L34498 (`trace: Vec<EffectReceipt>` + `cursor`) satisfies R-HOST-03's ordered-consumption requirement; the L24011 `HashMap<EffectId, EffectReceipt>` form makes replay order-insensitive and is the reason DET-005 is HIGH.",
    "FIRST_DEFINITION": {
     "file": "Red-on-Rust.md",
     "line": 25338,
@@ -6977,7 +6977,7 @@
    "laws": [],
    "shape": null,
    "supersedes": [],
-   "note": "UNDECLARED as a type; six competing `ReplayHost` carriers at L1234, L9783, L10541, L22339, L24011, L34498 (five distinct shapes — L1234 and L10541 differ in element type). DET-005; U-35 proposes `Vec<EffectReceipt>`, ordered and cursor-consumed, per L34498."
+   "note": "UNDECLARED as a type; six competing `ReplayHost` carriers at L1234, L9783, L10541, L22339, L24011, L34498 (six distinct shapes; `term/_structs.py` derives the same 6/6 split independently). DET-005; U-35 proposes `Vec<EffectReceipt>`, ordered and cursor-consumed, per L34498."
   },
   {
    "tid": "T-84",
@@ -9022,7 +9022,7 @@
   },
   {
    "xid": "X-87",
-   "title": "`ReplayHost` — the sole concrete realization of the theorem's `HostTrace` parameter — is declared six times in five incompatible shapes, and only one of them is ordered",
+   "title": "`ReplayHost` — the sole concrete realization of the theorem's `HostTrace` parameter — is declared six times in six incompatible shapes, and only one of them is ordered",
    "kind": "DIVERGENT-SHAPE",
    "severity": "MAJOR",
    "affects": [
@@ -9036,7 +9036,7 @@
    ],
    "new_finding": true,
    "decision_needed": "Which `ReplayHost` declaration governs, and is replay order-sensitive? If the L24011 HashMap form governs, the effect-order-permutation test in the audit §6 must pass by construction and DET-005 is unfixable without a shape change.",
-   "statement": "The determinism theorem's `HostTrace` parameter has no declaration of its own (T-83), so `ReplayHost` is the only frozen text that fixes what a host trace IS. It does so six times, in five mutually incompatible shapes, spanning turns [2] through [48].",
+   "statement": "The determinism theorem's `HostTrace` parameter has no declaration of its own (T-83), so `ReplayHost` is the only frozen text that fixes what a host trace IS. It does so six times, in six mutually incompatible shapes, spanning turns [3] through [46] — `term/_structs.py` derives the same 6-decls/6-shapes split independently from the frozen text.",
    "why_it_matters": "The shapes are not stylistic variants: they disagree about whether replay is ORDER-SENSITIVE. The L24011 `HashMap<EffectId, EffectReceipt>` form resolves effects by identifier lookup, so a permuted effect sequence replays identically and the theorem's `HostTrace` input carries strictly less information than the live run did. L35218 and L38282 both assert flatly that `ReplayHost` is ordered, and L34911 lists `ReplayHost validates ordered ID + digest` as a satisfied checklist item — claims the L24011 declaration does not support. R-HOST-03 requires ordered consumption; four of the six declarations cannot satisfy it.",
    "disposition": "REPORTED. No declaration is struck and none is promoted: U-35 must choose, and the audit recommends L34498's shape (`Vec<EffectReceipt>` + cursor) because it is the only one that is simultaneously receipt-typed, unconditionally ordered, and consistent with the ordered-replay claims made elsewhere in frozen text.",
    "sites": [
@@ -9044,7 +9044,7 @@
      "file": "Red-on-Rust.md",
      "line": 1234,
      "text": "pub struct ReplayHost {",
-     "denotes": "turn [2]: `cursor: usize` + `trace: Vec<Result<Value, HostFault>>` — ordered, but the element type is a bare `Value`, not a receipt"
+     "denotes": "turn [3]: `cursor: usize` + `trace: Vec<Result<Value, HostFault>>` — ordered, but the element type is a bare `Value`, not a receipt"
     },
     {
      "file": "Red-on-Rust.md",
@@ -9062,7 +9062,7 @@
      "file": "Red-on-Rust.md",
      "line": 22339,
      "text": "pub struct ReplayHost {",
-     "denotes": "turn [28]: `receipts: ReceiptLog` — a third undeclared carrier type"
+     "denotes": "turn [29]: `receipts: ReceiptLog` — a third undeclared carrier type"
     },
     {
      "file": "Red-on-Rust.md",
@@ -9074,7 +9074,7 @@
      "file": "Red-on-Rust.md",
      "line": 34498,
      "text": "pub struct ReplayHost {",
-     "denotes": "turn [48]: `trace: Vec<EffectReceipt>` + `cursor: usize` — the only declaration that is both receipt-typed and unconditionally ordered"
+     "denotes": "turn [46]: `trace: Vec<EffectReceipt>` + `cursor: usize` — the only declaration that is both receipt-typed and unconditionally ordered"
     }
    ],
    "doc_sites": [
@@ -11358,7 +11358,7 @@
     },
     {
      "file": "README.md",
-     "line": 771,
+     "line": 780,
      "text": "Implementation     READY",
      "note": "the README's last status block"
     }
@@ -12110,7 +12110,7 @@
     },
     {
      "file": "README.md",
-     "line": 771,
+     "line": 780,
      "text": "Implementation     READY",
      "note": "the real last status block"
     }
@@ -13629,8 +13629,8 @@
     },
     {
      "file": "README.md",
-     "line": 104,
-     "text": "(`X-01`…`X-86`, of which 4 are BLOCKING)",
+     "line": 113,
+     "text": "(`X-01`…`X-87`, of which 4 are BLOCKING)",
      "note": "the README's collision-register count, updated by this pass"
     }
    ]

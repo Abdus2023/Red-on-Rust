@@ -1773,7 +1773,7 @@ Owning module: **MOD-09**.
 - **CANONICAL_TERM:** `HostTrace`
 - **TYPE:** UNDECLARED-TYPE — a name used as a type in frozen declarations but never declared anywhere
 - **OWNER:** MOD-09 (`ror-host`)
-- **DEFINITION:** The host-outcome sequence the determinism theorem takes as an INPUT. Undeclared like T-82, but unlike T-82 the source does supply a candidate shape six times over, under the name `ReplayHost` (X-87) — in five mutually incompatible forms. Only L34498 (`trace: Vec<EffectReceipt>` + `cursor`) satisfies R-HOST-03's ordered-consumption requirement; the L24011 `HashMap<EffectId, EffectReceipt>` form makes replay order-insensitive and is the reason DET-005 is HIGH.
+- **DEFINITION:** The host-outcome sequence the determinism theorem takes as an INPUT. Undeclared like T-82, but unlike T-82 the source does supply a candidate shape six times over, under the name `ReplayHost` (X-87) — in six mutually incompatible forms. Only L34498 (`trace: Vec<EffectReceipt>` + `cursor`) satisfies R-HOST-03's ordered-consumption requirement; the L24011 `HashMap<EffectId, EffectReceipt>` form makes replay order-insensitive and is the reason DET-005 is HIGH.
 - **FIRST_DEFINITION:** `L25338`, turn [31] — `InitialState + SchedulerTrace + HostTrace`
 - **DEPENDENTS:** T-82 `SchedulerTrace`, T-84 `InitialState`, T-85 `UniqueMachineTrace`
 - **FORBIDDEN_VARIANTS:**
@@ -1785,7 +1785,7 @@ Owning module: **MOD-09**.
 - **OBLIGATIONS:** `R-CORE-08`, `R-HOST-03`
 - **SECTIONS:** `S-02`, `S-14`
 - **COLLISIONS:** [X-87](02-collisions.md#x-87)
-- **NOTE:** UNDECLARED as a type; six competing `ReplayHost` carriers at L1234, L9783, L10541, L22339, L24011, L34498 (five distinct shapes — L1234 and L10541 differ in element type). DET-005; U-35 proposes `Vec<EffectReceipt>`, ordered and cursor-consumed, per L34498.
+- **NOTE:** UNDECLARED as a type; six competing `ReplayHost` carriers at L1234, L9783, L10541, L22339, L24011, L34498 (six distinct shapes; `term/_structs.py` derives the same 6/6 split independently). DET-005; U-35 proposes `Vec<EffectReceipt>`, ordered and cursor-consumed, per L34498.
 
 ---
 

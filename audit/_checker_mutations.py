@@ -62,6 +62,14 @@ CHECKERS = [
     ("req/_validate.py", []),
     ("spec/_build_index.py", []),
     ("dep/_graph.py", []),
+    # Added after an inventory found the repo has 15 executables and this
+    # harness was exercising 6. term/_structs.py re-derives every struct
+    # declaration from the frozen source and is the tool that caught the
+    # "five shapes" miscount in X-87; req/_coverage.py is the omission audit
+    # (which normative-looking source lines no record cites). Both are real
+    # gates and neither was in the loop.
+    ("term/_structs.py", []),
+    ("req/_coverage.py", []),
 ]
 
 
