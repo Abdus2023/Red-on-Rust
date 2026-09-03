@@ -52,6 +52,7 @@ CHECKERS: list[tuple[str, str]] = [
     ("term/_reanchor.py",    "living-document line anchors resolve uniquely"),
     ("audit/_conservation_checker.py", "mechanically verifies resource conservation and transition atomicity for Op-01..Op-22"),
     ("audit/_crash_consistency_checker.py", "audit gate: persistence causal ordering, T0-T6 matrix, no-silent-repair, recovery replay"),
+    ("audit/_reference_independence_checker.py", "audit gate: ror-reference independence boundary (10 forbidden surfaces, 5 crate-edge forbiddens, distinct Ref* ids) + reports the semantic-coupling vectors (F-01..F-09) that could invalidate differential testing"),
     ("audit/_checker_mutations.py", "mutation-tests the checkers themselves"),
 ]
 
