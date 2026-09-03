@@ -7289,7 +7289,8 @@
       ],
       "depends_on": [
         "ror-core",
-        "ror-kernel"
+        "ror-kernel",
+        "ror-persistence"
       ]
     },
     {

@@ -8,7 +8,7 @@ Rows are modules; columns are the seven edge kinds. A cell reads `has ↓ / give
 
 | Module | Crate / home | TYPE | SEMANTIC | SECURITY | SERIALIZATION | PERSISTENCE | VERIFICATION | RUNTIME | has (needs) | gives (needed by) |
 |---|---|---|---|---|---|---|---|---|---|---|
-| `MOD-01` CORE | `ror-core` | 1↓/11↑ | 10↓/2↑ | 1↓/0↑ | — | — | 2↓/2↑ | — | 14 | 15 |
+| `MOD-01` CORE | `ror-core` | 1↓/11↑ | 10↓/2↑ | — | — | — | 2↓/2↑ | — | 13 | 15 |
 | `MOD-02` COMPILER | `ror-compiler` | 2↓/1↑ | 1↓/2↑ | — | — | — | 1↓/2↑ | 0↓/1↑ | 4 | 6 |
 | `MOD-03` CAPABILITY | `ror-kernel` | 2↓/1↑ | 0↓/3↑ | 0↓/5↑ | — | — | 1↓/2↑ | — | 3 | 11 |
 | `MOD-04` BUDGET | `ror-core` | 2↓/4↑ | 2↓/2↑ | — | — | 2↓/0↑ | 1↓/2↑ | 0↓/4↑ | 7 | 12 |
@@ -16,11 +16,11 @@ Rows are modules; columns are the seven edge kinds. A cell reads `has ↓ / give
 | `MOD-06` ACTOR | `ror-runtime` | 1↓/1↑ | 0↓/3↑ | 1↓/0↑ | 1↓/0↑ | 1↓/0↑ | 1↓/2↑ | 3↓/3↑ | 8 | 9 |
 | `MOD-07` SCHEDULER | `ror-runtime` | 1↓/1↑ | 0↓/2↑ | 1↓/1↑ | — | 1↓/0↑ | 0↓/2↑ | 3↓/2↑ | 6 | 8 |
 | `MOD-08` EFFECT | `ror-runtime` | 1↓/0↑ | 0↓/5↑ | 1↓/0↑ | — | 1↓/0↑ | 1↓/2↑ | 5↓/2↑ | 9 | 9 |
-| `MOD-09` HOST | `ror-host` | 1↓/0↑ | 0↓/2↑ | — | 1↓/0↑ | 1↓/0↑ | 1↓/2↑ | 2↓/2↑ | 6 | 6 |
+| `MOD-09` HOST | `ror-host` | 1↓/0↑ | 0↓/2↑ | — | 1↓/0↑ | 1↓/0↑ | 1↓/2↑ | 1↓/1↑ | 5 | 5 |
 | `MOD-10` SERIALIZATION | `ror-core` | 0↓/1↑ | 1↓/1↑ | — | 0↓/4↑ | — | 2↓/2↑ | — | 3 | 8 |
 | `MOD-11` PERSISTENCE | `ror-persistence` | 2↓/0↑ | 1↓/2↑ | — | 1↓/0↑ | 1↓/8↑ | 1↓/2↑ | — | 6 | 12 |
 | `MOD-12` RECOVERY | `ror-persistence` | 4↓/0↑ | 1↓/2↑ | — | 1↓/0↑ | 1↓/2↑ | 2↓/2↑ | — | 9 | 6 |
-| `MOD-13` AGENT | `ror-agent` | 1↓/0↑ | — | 2↓/1↑ | — | 1↓/0↑ | 0↓/1↑ | 4↓/1↑ | 8 | 3 |
+| `MOD-13` AGENT | `ror-agent` | 1↓/0↑ | — | 2↓/0↑ | — | 1↓/0↑ | 0↓/1↑ | 3↓/0↑ | 7 | 1 |
 | `MOD-14` REFERENCE | `ror-reference` | — | 12↓/0↑ | — | — | — | 2↓/5↑ | — | 14 | 5 |
 | `MOD-15` DIFFERENTIAL | `ror-differential` | — | — | — | — | — | 14↓/5↑ | — | 14 | 5 |
 | `MOD-16` MUTATION | `mutations/registry.toml` | — | — | — | — | — | 3↓/1↑ | — | 3 | 1 |
@@ -34,7 +34,6 @@ Rows are modules; columns are the seven edge kinds. A cell reads `has ↓ / give
 
 | Direction | Kind | Counterpart | Visibility |
 |---|---|---|---|
-| depends on | SECURITY_DEPENDENCY | `MOD-13 AGENT` | 14 req |
 | depends on | SEMANTIC_DEPENDENCY | `MOD-02 COMPILER` | 7 req |
 | depends on | SEMANTIC_DEPENDENCY | `MOD-03 CAPABILITY` | 13 req |
 | depends on | SEMANTIC_DEPENDENCY | `MOD-04 BUDGET` | 11 req |
@@ -212,12 +211,10 @@ Rows are modules; columns are the seven edge kinds. A cell reads `has ↓ / give
 |---|---|---|---|
 | depends on | PERSISTENCE_DEPENDENCY | `MOD-11 PERSISTENCE` | prose+1 req |
 | depends on | RUNTIME_DEPENDENCY | `MOD-08 EFFECT` | crate-table+prose+2 req |
-| depends on | RUNTIME_DEPENDENCY | `MOD-13 AGENT` | prose |
 | depends on | SERIALIZATION_DEPENDENCY | `MOD-10 SERIALIZATION` | prose |
 | depends on | TYPE_DEPENDENCY | `MOD-01 CORE` | crate-table+prose+4 req |
 | depends on | VERIFICATION_DEPENDENCY | `MOD-15 DIFFERENTIAL` | 1 req |
 | depended on by | RUNTIME_DEPENDENCY | `MOD-08 EFFECT` | prose+2 req |
-| depended on by | RUNTIME_DEPENDENCY | `MOD-13 AGENT` | prose+1 req |
 | depended on by | SEMANTIC_DEPENDENCY | `MOD-01 CORE` | 5 req |
 | depended on by | SEMANTIC_DEPENDENCY | `MOD-14 REFERENCE` | prose+1 req |
 | depended on by | VERIFICATION_DEPENDENCY | `MOD-15 DIFFERENTIAL` | prose+1 req |
@@ -290,12 +287,9 @@ Rows are modules; columns are the seven edge kinds. A cell reads `has ↓ / give
 | depends on | RUNTIME_DEPENDENCY | `MOD-02 COMPILER` | crate-table+prose+4 req |
 | depends on | RUNTIME_DEPENDENCY | `MOD-05 EVALUATOR` | crate-table |
 | depends on | RUNTIME_DEPENDENCY | `MOD-06 ACTOR` | prose+2 req |
-| depends on | RUNTIME_DEPENDENCY | `MOD-09 HOST` | prose+1 req |
 | depends on | SECURITY_DEPENDENCY | `MOD-03 CAPABILITY` | 2 req |
 | depends on | SECURITY_DEPENDENCY | `MOD-07 SCHEDULER` | 3 req |
 | depends on | TYPE_DEPENDENCY | `MOD-01 CORE` | crate-table+prose+9 req |
-| depended on by | RUNTIME_DEPENDENCY | `MOD-09 HOST` | prose |
-| depended on by | SECURITY_DEPENDENCY | `MOD-01 CORE` | 14 req |
 | depended on by | VERIFICATION_DEPENDENCY | `MOD-17 VERIFICATION` | 1 req |
 
 ### `MOD-14` REFERENCE — `ror-reference`
@@ -394,13 +388,13 @@ Rows are modules; columns are the seven edge kinds. A cell reads `has ↓ / give
 | Kind | crate | module | requirement | section |
 |---|---|---|---|---|
 | `TYPE_DEPENDENCY` | 7 | 20 | 72 | 4 |
-| `SEMANTIC_DEPENDENCY` | 0 | 28 | 214 | 5 |
-| `SECURITY_DEPENDENCY` | 1 | 7 | 82 | 7 |
+| `SEMANTIC_DEPENDENCY` | 0 | 28 | 228 | 5 |
+| `SECURITY_DEPENDENCY` | 1 | 6 | 68 | 7 |
 | `SERIALIZATION_DEPENDENCY` | 1 | 4 | 71 | 2 |
-| `PERSISTENCE_DEPENDENCY` | 0 | 10 | 75 | 3 |
+| `PERSISTENCE_DEPENDENCY` | 1 | 10 | 75 | 3 |
 | `VERIFICATION_DEPENDENCY` | 3 | 49 | 247 | 6 |
-| `RUNTIME_DEPENDENCY` | 3 | 19 | 166 | 7 |
-| **total** | 15 | 137 | 927 | 34 |
+| `RUNTIME_DEPENDENCY` | 3 | 17 | 166 | 7 |
+| **total** | 16 | 134 | 927 | 34 |
 
 ## 4. Crate × kind
 
@@ -409,8 +403,8 @@ Rows are modules; columns are the seven edge kinds. A cell reads `has ↓ / give
 | `ror-core` | — | `ror-agent` (TYPE), `ror-compiler` (TYPE), `ror-host` (TYPE), `ror-kernel` (TYPE), `ror-persistence` (SERIALIZATION), `ror-persistence` (TYPE), `ror-runtime` (TYPE), `ror-testkit` (TYPE) |
 | `ror-compiler` | `ror-core` (TYPE) | `ror-agent` (RUNTIME) |
 | `ror-kernel` | `ror-core` (TYPE) | `ror-runtime` (SECURITY) |
-| `ror-runtime` | `ror-core` (TYPE), `ror-kernel` (SECURITY) | `ror-agent` (RUNTIME), `ror-differential` (VERIFICATION), `ror-host` (RUNTIME) |
-| `ror-persistence` | `ror-core` (SERIALIZATION), `ror-core` (TYPE) | — |
+| `ror-runtime` | `ror-core` (TYPE), `ror-kernel` (SECURITY), `ror-persistence` (PERSISTENCE) | `ror-agent` (RUNTIME), `ror-differential` (VERIFICATION), `ror-host` (RUNTIME) |
+| `ror-persistence` | `ror-core` (SERIALIZATION), `ror-core` (TYPE) | `ror-runtime` (PERSISTENCE) |
 | `ror-host` | `ror-core` (TYPE), `ror-runtime` (RUNTIME) | — |
 | `ror-agent` | `ror-compiler` (RUNTIME), `ror-core` (TYPE), `ror-runtime` (RUNTIME) | — |
 | `ror-reference` | — | `ror-differential` (VERIFICATION) |

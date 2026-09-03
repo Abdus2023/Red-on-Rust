@@ -200,6 +200,10 @@ CRATE_EDGES = [
      "spec/07 §6; R-PLANNER-02 (proposals must pass the compiler)"),
     ("ror-runtime", "ror-agent", "RUNTIME_DEPENDENCY",
      "spec/07 §6; REQ-ARCH-001 stage order (planner -> machine boundary)"),
+    ("ror-persistence", "ror-runtime", "PERSISTENCE_DEPENDENCY",
+     "spec/07 §6 (addendum III, R-TRUST-05): request step-14 durable "
+     "append/sync — the R-DUR-02 hinge, no effect before the journal is "
+     "durable; MODULE_DEPS MOD-08->MOD-11 'crate'"),
     ("ror-core", "ror-testkit", "TYPE_DEPENDENCY",
      "spec/07 §6 `ror-testkit -> ror-core (+ test-only deps)`"),
     ("ror-reference", "ror-differential", "VERIFICATION_DEPENDENCY",
@@ -224,20 +228,11 @@ CRATE_MISSING_EDGES = [
      "mod/13-agent.md DEPENDENCIES 'MOD-11 (durable recording)': `PlannerAccepted` "
      "recording for exact replay (R-PLANNER-04, REQ-PLANNER-018). `ror-agent -> "
      "ror-persistence` appears in no crate list."),
-    ("ror-persistence", "ror-runtime", "PERSISTENCE_DEPENDENCY",
-     "`mod/_ownership.MODULE_DEPS` labels `MOD-08 -> MOD-11` a **crate** "
-     "dependency ('request step 14 calls ror-persistence append/sync'), and "
-     "R-DUR-02 / `spec/07` §3 make that call the hinge of the durability "
-     "transaction — no effect before the journal is durable. `spec/07` §6 gives "
-     "`ror-runtime -> ror-core, ror-kernel` only, and `spec/10-index.json` "
-     "agrees with §6 here, so the edge exists nowhere. Either add it, or state "
-     "the journal-trait inversion (`ror-runtime` owns the trait, "
-     "`ror-persistence` implements it, which flips the edge to "
-     "`ror-runtime -> ror-persistence`). See V-10."),
-    ("ror-host", "ror-agent", "RUNTIME_DEPENDENCY",
-     "mod/13-agent.md DEPENDENCIES 'MOD-09 (replay composition for the "
-     "conformance suite)'; mod/09-host.md DEPENDENCIES 'MOD-13 (end-to-end "
-     "replay composition)'. Direction undecided — see V-04."),
+    # V-10a applied (addendum III, R-TRUST-05): the ror-persistence ->
+    # ror-runtime hinge edge is now carried by spec/07 §6 and CRATE_EDGES.
+    # V-04d applied (R-TRUST-04): the host/agent replay composition is a
+    # test-time concern; the ror-host -> ror-agent "required" edge is
+    # withdrawn with the prose declarations (no crate edge needed).
 ]
 
 # Frozen forbidden edges.  Stored as (DEPENDENT, DEPENDENCY): the dependent MUST
@@ -300,10 +295,10 @@ KIND_PROVIDER_CHECK = {
         None,
     ),
     "SECURITY_DEPENDENCY": (
-        "an authoritative machine boundary, never the LLM/planner — with exactly "
-        "one recorded exception, `MOD-13 -> MOD-01`, which is the V-03 defect "
-        "(also reported by SC-1)",
-        lambda p, c: p in AUTHORITY or (p, c) == ("MOD-13", "MOD-01"),
+        "an authoritative machine boundary, never the LLM/planner — the V-03 "
+        "exception is closed: the planner's records are prohibitions, negative "
+        "contracts homed at MOD-03/06/08 (V-03b applied, addendum III R-TRUST-04)",
+        lambda p, c: p in AUTHORITY,
     ),
     "SERIALIZATION_DEPENDENCY": (
         "MOD-10 SERIALIZATION (`ror-core` canonical)",
@@ -474,17 +469,35 @@ KIND_OVERRIDES = {
         "NOT an encoding dependency: the machine `Value` domain is not the 15A "
         "`Value` domain (C-03/C-45 -> U-09). Witnesses REQ-CALC-001 -> "
         "REQ-CANON-009, REQ-CALC-008 -> REQ-CANON-001/021."),
-    ("MOD-13", "MOD-01"): (
-        "SECURITY_DEPENDENCY",
-        "R-TRUST-01/R-CORE-01 as recorded depend on planner-boundary "
-        "prohibitions (REQ-TRUST-001 -> REQ-PLANNER-003/010, SECURITY-IMPACT "
-        "critical), which makes the planner module the PROVIDER of a security "
-        "property. Enforcement is not in `ror-agent` (spec/07 §3) — see V-03."),
     ("MOD-03", "MOD-04"): (
         "TYPE_DEPENDENCY",
         "the resource ceiling operand of a capability is a value of the "
         "algebra's constraint/resource domain (mod/04-budget.md DEPENDENCIES: "
         "'MOD-03 (ceiling operand; logical time discipline)')."),
+}
+
+# Post-audit re-homings (addendum III on branch arena/01a063c4-red-on-rust:
+# R-TRUST-04 completes the trust table — the underlying contradiction is
+# recorded as spec/06 C-84 — and R-TRUST-05 adds the runtime-depends-on-
+# persistence hinge, recorded as C-85).  Key (provider, consumer);
+# value: where the coupling went.  Pairs listed here are EXCLUDED from the
+# module graph even though `req/` witnesses still imply them — the witnesses
+# are historical records of the pre-addendum reading, kept verbatim per the
+# quoted-not-deleted discipline.  V-03b and V-04d applied.
+REHOMED_MODULE_EDGES = {
+    ("MOD-13", "MOD-01"):
+        "V-03b applied (R-TRUST-04, addendum III): the trust property is "
+        "discharged at the machine boundary; the planner's records are "
+        "prohibitions — negative contracts homed at MOD-03/06/08 — and the "
+        "coupling is carried by MOD-03 -> MOD-01 (SEMANTIC, 13 req witnesses)",
+    ("MOD-09", "MOD-13"):
+        "V-04d applied (R-TRUST-04/R-ARCH-01, addendum III): the end-to-end "
+        "replay composition is a test-time concern owned by tests/; the prose "
+        "declarations on both sides are withdrawn",
+    ("MOD-13", "MOD-09"):
+        "V-04d applied (R-TRUST-04/R-ARCH-01, addendum III): the machine never "
+        "calls back into ror-agent; no RUNTIME edge may have the planner as "
+        "provider (SC-3)",
 }
 
 # ---------------------------------------------------------------------------
@@ -567,6 +580,12 @@ FINDINGS = {
             "R-ARCH-04 has no enumerated checklist."),
         decision="Register the ten prohibitions as atomic records under R-REPO-03 "
                  "and map them to a Track-B structural test.",
+        status=(
+            "RE-SCOPED by addendum III: the audit-time 'cited nowhere' claim "
+            "no longer holds — spec/06 C-85 cites L39807-39828 §14 as the "
+            "provenance of the spec/07 §6 hinge edit, and check 9/ID-5 exempts "
+            "exactly that one row. The residual is unchanged: the ten "
+            "prohibitions still lack atomic records under R-REPO-03."),
     ),
     "V-03": dict(
         title="Security dependencies whose provider is the LLM/planner module",
@@ -592,6 +611,12 @@ FINDINGS = {
         decision="Re-home the enforcement obligation: state R-TRUST-01's "
                  "operative form against MOD-03/MOD-06/MOD-08 and keep the "
                  "planner records as prohibitions only (no inbound security edge).",
+        status=(
+            "RESOLVED — V-03b applied with addendum III (R-TRUST-04; C-84 "
+            "records the trust-table contradiction behind it): the edge is "
+            "excluded via REHOMED_MODULE_EDGES, the coupling is carried by "
+            "MOD-03 -> MOD-01 (SEMANTIC, 13 req witnesses), and SC-1/SC-2 "
+            "now PASS as hard gates of `dep/_graph.py`"),
     ),
     "V-04": dict(
         title="The source's §13 'Dependency Graph' contradicts the frozen crate "
@@ -623,6 +648,15 @@ FINDINGS = {
             "'Dependency Graph'."),
         decision="Mark §13 as non-normative (pipeline order) or redraw it in the "
                  "depends-on direction; `spec/07` §6 governs.",
+        status=(
+            "RESOLVED IN PART — V-04d applied with addendum III "
+            "(R-TRUST-04/R-ARCH-01): the host/agent replay composition is a "
+            "test-time concern owned by tests/; both prose declarations are "
+            "withdrawn (REHOMED_MODULE_EDGES) and the ror-host -> ror-agent "
+            "missing-edge entry is withdrawn with them, which also clears "
+            "SC-3's offender. §13's arrows (a)-(d) stay as ID-3 records them; "
+            "(a)'s direction is settled by R-TRUST-05/C-85, which adds "
+            "ror-persistence -> ror-runtime to §6."),
     ),
     "V-05": dict(
         title="Machine-readable crate graph in `spec/10-index.json` disagrees "
@@ -748,6 +782,12 @@ FINDINGS = {
                  "the other way and must then be checked against the "
                  "persistence-before-runtime build order). Re-label the three "
                  "test-side entries. Settle V-09 before deciding (b).",
+        status=(
+            "RESOLVED IN PART — V-10a applied with addendum III (R-TRUST-05, "
+            "C-85): spec/07 §6 gains ror-persistence -> ror-runtime and "
+            "CRATE_EDGES/`spec/10-index.json` carry it; V-10b is rejected. "
+            "V-10c (the PlannerAccepted recording edge) remains open, and "
+            "V-09's MOD-03 -> MOD-04 question is unaffected."),
     ),
     "V-11": dict(
         title="The frozen trust table does not cover three modules the graph "
@@ -780,6 +820,14 @@ FINDINGS = {
                  "the canonical serializer to the trust table (or state that "
                  "they are inside the TCB by the obligations cited), and fix "
                  "C-37's provenance line.",
+        status=(
+            "RE-SCOPED by addendum III (R-TRUST-04): the spec-level trust "
+            "table is now complete — R-TRUST-04 carries the full table in "
+            "spec/01/spec/03, and C-84 records the frozen-file drift this "
+            "finding identified. Red-on-Rust.md L41827-41838 and README.md "
+            "are frozen at 12 rows, so ID-7 keeps reading the frozen table "
+            "and the three authority rows (MOD-06/08/10) are stated at spec "
+            "level. C-37's provenance line remains to be fixed."),
     ),
 }
 
@@ -836,6 +884,7 @@ RESOLUTIONS = {
                       "at the machine boundary (`spec/07` §3) — so what is "
                       "unsound is the record, not the design."),
             dict(id="V-03b",
+                 applied="addendum III (R-TRUST-04) — in force",
                  label="Re-home the obligations onto the enforcing boundary and "
                        "drop the planner as provider",
                  change=dict(drop_module_edges=[("MOD-13", "MOD-01")]),
@@ -844,6 +893,8 @@ RESOLUTIONS = {
                       "graph with an authoritative provider. This is what "
                       "F-PLANNER-TRUST's verdict recommends."),
             dict(id="V-03c",
+                 void="V-03b applied — the pair is re-homed, so this option's "
+                      "premise (keep the pair and rekind it) no longer exists",
                  label="Keep the pair, record it as specification-layer",
                  change=dict(rekind={("MOD-13", "MOD-01"):
                                      "SEMANTIC_DEPENDENCY"}),
@@ -879,6 +930,7 @@ RESOLUTIONS = {
                       "is not available while the crate layer is required to be "
                       "a DAG (check 7)."),
             dict(id="V-04d",
+                 applied="addendum III (R-TRUST-04/R-ARCH-01) — in force",
                  label="Neither crate owns it — the conformance suite composes "
                        "the two",
                  change=dict(drop_module_edges=[("MOD-09", "MOD-13"),
@@ -894,6 +946,7 @@ RESOLUTIONS = {
                  "does the durability call run?",
         options=[
             dict(id="V-10a",
+                 applied="addendum III (R-TRUST-05, C-85) — in force",
                  label="The machine calls the journal",
                  change=dict(add_crate_edges=[
                      ("ror-persistence", "ror-runtime", "PERSISTENCE_DEPENDENCY")]),
@@ -948,13 +1001,13 @@ E_PROD = {"MOD-01", "MOD-02", "MOD-03", "MOD-04", "MOD-05", "MOD-06", "MOD-07",
 CYCLE_FAMILIES = [
     ("F-PLANNER-TRUST", "trust model vs planner prohibitions",
      lambda fs: fs == {"MOD-01", "MOD-13"},
-     "**REQUIRES ARCHITECTURAL REVIEW — V-03.** The closing edge "
-     "`MOD-13 -> MOD-01` is a SECURITY_DEPENDENCY whose provider is the "
-     "LLM/planner module. The properties are prohibitions *on* the planner and "
-     "enforcement sits at the machine boundary (`spec/07` §3), so the "
-     "architecture is sound, but as recorded the planner is a provider of a "
-     "security guarantee. Re-home the operative statement of R-TRUST-01 against "
-     "MOD-03/MOD-06/MOD-08 and the cycle disappears."),
+     "**RESOLVED — V-03b applied (addendum III, R-TRUST-04).** The closing "
+     "edge `MOD-13 -> MOD-01` was a SECURITY_DEPENDENCY whose provider is the "
+     "LLM/planner module; the properties were prohibitions *on* the planner "
+     "with enforcement at the machine boundary (`spec/07` §3). The operative "
+     "statement is re-homed against MOD-03/MOD-06/MOD-08 "
+     "(REHOMED_MODULE_EDGES), so this SCC no longer exists in the module "
+     "graph; the family is kept for the historical record."),
     ("F-EVIDENCE-LOOP", "evidence loop (module ↔ verification layer)",
      lambda fs: bool(fs & E_VERIF) and not (fs <= E_PROD),
      "Not a code cycle. Both directions are VERIFICATION_DEPENDENCY (or the "
@@ -966,12 +1019,11 @@ CYCLE_FAMILIES = [
      "`ror-runtime -> ror-differential`, which are dev-dependencies — HD-6)."),
     ("F-HOST-AGENT", "end-to-end replay composition",
      lambda fs: fs == {"MOD-09", "MOD-13"},
-     "**REQUIRES ARCHITECTURAL REVIEW.** `mod/09-host.md` declares MOD-13 and "
-     "`mod/13-agent.md` declares MOD-09 for the same conformance-suite "
-     "composition; neither `ror-host -> ror-agent` nor `ror-agent -> ror-host` "
-     "appears in any crate list, and both directions are typed RUNTIME. Pick one "
-     "owner — the conformance suite (`tests/`) should compose the two — and "
-     "delete the other prose edge."),
+     "**RESOLVED — V-04d applied (addendum III, R-TRUST-04/R-ARCH-01).** The "
+     "conformance suite (`tests/`) composes host and agent; both prose "
+     "declarations are withdrawn (REHOMED_MODULE_EDGES), so this mutual pair "
+     "no longer exists in the module graph and SC-3's RUNTIME offender is "
+     "gone. The family is kept for the historical record."),
     ("F-EFFECT-HOST", "effect / host handshake",
      lambda fs: fs == {"MOD-08", "MOD-09"},
      "Acceptable, resolved by dependency inversion. `MOD-08 -> MOD-09` is the "
@@ -985,9 +1037,10 @@ CYCLE_FAMILIES = [
      "Acceptable, one direction is specification-only. `MOD-11 -> MOD-08` "
      "(the effect module depends on the journal: request step 14 calls "
      "`ror-persistence` append/sync) is a *crate-level* coupling according to "
-     "`mod/_ownership.MODULE_DEPS`, but `spec/07` §6 carries no "
-     "`ror-persistence -> ror-runtime` edge, so it is not realisable today — "
-     "that gap is V-10/HD-3. The reverse (`ror-persistence` citing the request "
+     "`mod/_ownership.MODULE_DEPS`, and since V-10a applied (addendum III, "
+     "R-TRUST-05) `spec/07` §6 carries the `ror-persistence -> ror-runtime` "
+     "edge, so it is realisable — the V-10a gap is closed. The reverse "
+     "(`ror-persistence` citing the request "
      "sequence) is specification-only and recorded as SEMANTIC — `dep/05` HD-1."),
     ("F-BUDGET-GATE", "budget algebra vs machine gates",
      lambda fs: "MOD-04" in fs and bool(fs & {"MOD-05", "MOD-06", "MOD-07", "MOD-08"}),

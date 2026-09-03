@@ -87,8 +87,12 @@ Crate contract (mirrored by pointer): host execution and replay boundaries in
 ## DEPENDENCIES
 
 - Module dependencies: MOD-01 (`Effect`/receipt/fault types), MOD-08 (issuance),
-  MOD-10 (digest validation), MOD-11 (durable trace source), MOD-13 (end-to-end
-  replay composition).
+  MOD-10 (digest validation), MOD-11 (durable trace source).
+- Withdrawn with addendum III (R-TRUST-04, dep/05 V-04d applied): the old
+  "end-to-end replay composition" dependency on the agent module. The
+  conformance suite (`tests/`) composes host and agent at test time; neither
+  crate owns it and no crate edge is implied. Kept here as a record, not a
+  dependency.
 - Consumers: MOD-08 (receipts resume continuations), MOD-12 (recovery consults host
   reconciliation), MOD-15 (live-vs-replay differential).
 - Crate edge: `ror-host → ror-core, ror-runtime` (adapter boundary, `spec/07` §6).

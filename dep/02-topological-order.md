@@ -48,12 +48,12 @@ With every edge included the module graph is one strongly connected component (`
 ```
    -- inside cycles: MOD-01, MOD-02, MOD-03, MOD-04, MOD-05, MOD-06, MOD-07, MOD-08, MOD-09, MOD-10, MOD-11, MOD-12, MOD-13, MOD-14, MOD-15, MOD-16, MOD-17
 ```
-That removes 27 of the 41 mutual pairs and **still leaves no partial order**: one SCC still covers 13 modules (MOD-01, MOD-02, MOD-03, MOD-04, MOD-05, MOD-06, MOD-07, MOD-08, MOD-09, MOD-10, MOD-11, MOD-12, MOD-13), and the other 4 (MOD-14, MOD-15, MOD-16, MOD-17) hang off it, so Kahn's algorithm places 0 nodes. The 14 mutual pairs that survive are F-BUDGET-GATE (2), F-CEILING-OPERAND (1), F-DURABILITY-JOURNAL (1), F-EFFECT-HOST (1), F-ESCROW-DURABILITY (2), F-HOST-AGENT (1), F-INTRA-CORE (2), F-INTRA-PERSISTENCE (1), F-INTRA-RUNTIME (2), F-PLANNER-TRUST (1) (`dep/03` §2.2). Each of them is a real coupling between two production modules, so none can be argued away as specification-layer noise: they close only when V-01 (`ExecutablePlan`'s crate home), V-03 (MOD-13 as a security provider) and V-04 (the host/agent replay edge) are decided. The condensation of the reduced graph is therefore the finest order available:
+That removes 27 of the 39 mutual pairs and **still leaves no partial order**: one SCC still covers 12 modules (MOD-01, MOD-02, MOD-03, MOD-04, MOD-05, MOD-06, MOD-07, MOD-08, MOD-09, MOD-10, MOD-11, MOD-12), and the other 5 (MOD-13, MOD-14, MOD-15, MOD-16, MOD-17) hang off it, so Kahn's algorithm places 0 nodes. The 12 mutual pairs that survive are F-BUDGET-GATE (2), F-CEILING-OPERAND (1), F-DURABILITY-JOURNAL (1), F-EFFECT-HOST (1), F-ESCROW-DURABILITY (2), F-INTRA-CORE (2), F-INTRA-PERSISTENCE (1), F-INTRA-RUNTIME (2) (`dep/03` §2.2). Each of them is a real coupling between two production modules, so none can be argued away as specification-layer noise: they close only when V-01 (`ExecutablePlan`'s crate home), V-03 (MOD-13 as a security provider) and V-04 (the host/agent replay edge) are decided. The condensation of the reduced graph is therefore the finest order available:
 
 ```
-level 0: MOD-01 CORE, MOD-02 COMPILER, MOD-03 CAPABILITY, MOD-04 BUDGET, MOD-05 EVALUATOR, MOD-06 ACTOR, MOD-07 SCHEDULER, MOD-08 EFFECT, MOD-09 HOST, MOD-10 SERIALIZATION, MOD-11 PERSISTENCE, MOD-12 RECOVERY, MOD-13 AGENT
-level 1: MOD-14 REFERENCE, MOD-15 DIFFERENTIAL, MOD-17 VERIFICATION
-level 2: MOD-16 MUTATION
+level 0: MOD-01 CORE, MOD-02 COMPILER, MOD-03 CAPABILITY, MOD-04 BUDGET, MOD-05 EVALUATOR, MOD-06 ACTOR, MOD-07 SCHEDULER, MOD-08 EFFECT, MOD-09 HOST, MOD-10 SERIALIZATION, MOD-11 PERSISTENCE, MOD-12 RECOVERY
+level 1: MOD-13 AGENT, MOD-14 REFERENCE, MOD-15 DIFFERENTIAL
+level 2: MOD-16 MUTATION, MOD-17 VERIFICATION
 ```
 
 ## 3. Layer 3 — requirement graph

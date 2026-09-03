@@ -82,8 +82,12 @@ integration (R-REPO-02).
 ## DEPENDENCIES
 
 - Module dependencies: MOD-01 (types, fault surface), MOD-02 (compilation),
-  MOD-06 (epoch/state), MOD-11 (durable recording), MOD-09 (replay composition for
-  the conformance suite).
+  MOD-06 (epoch/state), MOD-11 (durable recording).
+- Withdrawn with addendum III (R-TRUST-04, dep/05 V-04d applied): the old
+  "replay composition for the conformance suite" dependency on the host
+  module. The conformance suite (`tests/`) composes host and agent at test
+  time; neither crate owns it and no crate edge is implied. Kept here as a
+  record, not a dependency.
 - Consumers: MOD-02 (downstream), MOD-12 (supervisor reconciliation entry point),
   MOD-15/17 (outer-loop tests).
 - Crate edge: `ror-agent → ror-core, ror-compiler, ror-runtime` (`spec/07` §6).

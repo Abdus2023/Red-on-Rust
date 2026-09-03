@@ -24,7 +24,7 @@ This is the convention of `spec/04-dependency-graph.md` (its DOT edge `S07->S08`
 |---|---|---|---|
 | `TYPE_DEPENDENCY` | The consumer names types/constructors declared by the provider. | a production module that declares the type — `ror-core` domain types (MOD-01/MOD-04/MOD-10) and the plan-input, capability-ceiling and durable-state shapes (MOD-02/MOD-03/MOD-06/MOD-07); no MOD-14…MOD-17 module supplies a production type | yes |
 | `SEMANTIC_DEPENDENCY` | The consumer's meaning is fixed by the provider's normative rule; no code edge is implied (specification-layer coupling). | the module that single-homes the operative statement — a property of the source text, not of the graph, so it is the one kind with no machine-checkable provider rule | no |
-| `SECURITY_DEPENDENCY` | The consumer's security property is *discharged* by the provider, which must be an authoritative machine-boundary component. | an authoritative machine boundary, never the LLM/planner — with exactly one recorded exception, `MOD-13 -> MOD-01`, which is the V-03 defect (also reported by SC-1) | yes |
+| `SECURITY_DEPENDENCY` | The consumer's security property is *discharged* by the provider, which must be an authoritative machine-boundary component. | an authoritative machine boundary, never the LLM/planner — the V-03 exception is closed: the planner's records are prohibitions, negative contracts homed at MOD-03/06/08 (V-03b applied, addendum III R-TRUST-04) | yes |
 | `SERIALIZATION_DEPENDENCY` | The consumer's payloads/identities are encoded or decoded with the provider's canonical (15A) format. | MOD-10 SERIALIZATION (`ror-core` canonical) | yes |
 | `PERSISTENCE_DEPENDENCY` | The consumer's durability, journal, snapshot or recovery behaviour is defined by the provider (15B). | MOD-11 PERSISTENCE / MOD-12 RECOVERY (`ror-persistence`) | yes |
 | `VERIFICATION_DEPENDENCY` | Test-time coupling across the verification boundary: one endpoint is a MOD-14…MOD-17 module that supplies the oracle, harness, mutation run, CI or claim discipline, the other is the module under test. Never a production code edge. | one endpoint is MOD-14…MOD-17 (`ror-reference`, `ror-differential`, `ror-testkit`, `tests/`) and that endpoint is the evidence supplier; the other endpoint is the module under test — no edge may join two production modules | no |
@@ -47,7 +47,7 @@ An L2 edge is *visible* if it appears in the crate table or in a module file's p
 
 ## 4. Kind classification
 
-Every L2 pair is classified by the first matching rule of `dep/_edges.py` `KIND_RULES` (23 rules) or by an explicit `KIND_OVERRIDES` (4 entries); `dep/_graph.py` check 4 fails the run if a pair matches none, so no edge can acquire a kind by default. L3 kinds are inherited from the owning modules when the pair crosses a module boundary, and from the provider record's area when it does not.
+Every L2 pair is classified by the first matching rule of `dep/_edges.py` `KIND_RULES` (23 rules) or by an explicit `KIND_OVERRIDES` (3 entries); `dep/_graph.py` check 4 fails the run if a pair matches none, so no edge can acquire a kind by default. L3 kinds are inherited from the owning modules when the pair crosses a module boundary, and from the provider record's area when it does not.
 
 | Rule | Predicate (provider `p`, consumer `c`) | Kind |
 |---|---|---|
@@ -80,7 +80,6 @@ Every L2 pair is classified by the first matching rule of `dep/_edges.py` `KIND_
 | `MOD-01 -> MOD-10` | `SEMANTIC_DEPENDENCY` | NOT an encoding dependency: the machine `Value` domain is not the 15A `Value` domain (C-03/C-45 -> U-09). Witnesses REQ-CALC-001 -> REQ-CANON-009, REQ-CALC-008 -> REQ-CANON-001/021. |
 | `MOD-03 -> MOD-04` | `TYPE_DEPENDENCY` | the resource ceiling operand of a capability is a value of the algebra's constraint/resource domain (mod/04-budget.md DEPENDENCIES: 'MOD-03 (ceiling operand; logical time discipline)'). |
 | `MOD-10 -> MOD-01` | `TYPE_DEPENDENCY` | 15A encodes the `ror-core` data domain, so MOD-10 consumes MOD-01's types (R-CANON-04/05). The two `Value` domains collide here (C-03/C-45 -> U-09). |
-| `MOD-13 -> MOD-01` | `SECURITY_DEPENDENCY` | R-TRUST-01/R-CORE-01 as recorded depend on planner-boundary prohibitions (REQ-TRUST-001 -> REQ-PLANNER-003/010, SECURITY-IMPACT critical), which makes the planner module the PROVIDER of a security property. Enforcement is not in `ror-agent` (spec/07 §3) — see V-03. |
 
 ## 5. Files
 

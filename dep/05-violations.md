@@ -21,9 +21,11 @@ The reference model *does* depend on 12 production modules (MOD-01, MOD-02, MOD-
 
 | Check | Result | Offenders |
 |---|---|---|
-| SC-1 Every SECURITY_DEPENDENCY provider is an authoritative machine-boundary component | **FAIL** | `MOD-13 -> MOD-01` [SECURITY_DEPENDENCY] |
-| SC-2 The LLM/planner is never the provider of a security property | **FAIL** | `MOD-13 -> MOD-01` [SECURITY_DEPENDENCY] |
-| SC-3 No production component calls the planner at runtime | **FAIL** | `MOD-13 -> MOD-09` [RUNTIME_DEPENDENCY] |
+| SC-1 Every SECURITY_DEPENDENCY provider is an authoritative machine-boundary component | **PASS** | — |
+| SC-2 The LLM/planner is never the provider of a security property | **PASS** | — |
+| SC-3 No production component calls the planner at runtime | **PASS** | — |
+
+SC-1/SC-2/SC-3 are **hard gates** since addendum III (R-TRUST-04 closed V-03/V-04): `dep/_graph.py` exits 1 if any of them regresses.
 
 Authoritative boundary (providers permitted on a `SECURITY_DEPENDENCY`), from the R-TRUST-01 trust table:
 
@@ -50,11 +52,10 @@ Not authoritative (may never provide a security edge):
 
 ### 1.3 LLM/planner is never a security authority
 
-Edges whose provider is `MOD-13` and whose kind is `SECURITY_DEPENDENCY`: **1**
+Edges whose provider is `MOD-13` and whose kind is `SECURITY_DEPENDENCY`: **0**
 
-- `MOD-13 -> MOD-01` [14 req] — R-TRUST-01/R-CORE-01 as recorded depend on planner-boundary prohibitions (REQ-TRUST-001 -> REQ-PLANNER-003/010, SECURITY-IMPACT critical), which makes the planner module the PROVIDER of a security property. Enforcement is not in `ror-agent` (spec/07 §3) — see V-03.
 
-This is finding **V-03** below: the planner appears as the *provider* of a security property because the trust-model obligations cite the planner prohibitions. The prohibitions are real and the enforcement is correctly placed at the machine boundary (`spec/07` §3), but as recorded the graph makes `ror-agent` a security dependency of `R-TRUST-01`.
+Finding **V-03 is closed** — V-03b applied with addendum III (R-TRUST-04; spec/06 C-84 records the underlying contradiction): no `SECURITY_DEPENDENCY` has the planner as provider. The prohibition records are homed at the enforcing boundary (MOD-03/06/08); the former `MOD-13 -> MOD-01` edge and the withdrawn replay-composition edges are kept as historical records in `dep/_edges.py` `REHOMED_MODULE_EDGES`.
 
 ### 1.4 The frozen prohibitions are not tracked anywhere
 
@@ -80,21 +81,24 @@ A repository-wide search of `req/*.md`, `spec/*.md` and `mod/*.md` for the line 
 - **severity:** MAJOR
 - **constraint:** ror-reference independence / boundary enforcement (R-REPO-03)
 - L39807-39828 §14 'Forbidden Dependency Edges' lists 9 Cargo-level prohibitions and L39645-39651 §10 adds a 10th (`ror-reference -> ror-agent`). A repository-wide search finds no `R-…` obligation in `spec/03`, no atomic record in `req/` and no finding in `spec/06` that cites L39757-39828: only REQ-REPO-014 ('`ror-reference` … with no production dependencies') carries part of it, and its SOURCE range (L39196-40762) swallows the block without stating it. Five of the ten prohibitions (`ror-core -> ror-runtime`, `ror-core -> ror-kernel`, `ror-runtime -> ror-reference`, `ror-kernel -> ror-runtime`, `ror-compiler -> ror-runtime`) therefore have no verification obligation at all, so the 'Cargo dependency review' mapped to R-ARCH-04 has no enumerated checklist.
-- **decision required:** Register the ten prohibitions as atomic records under R-REPO-03 and map them to a Track-B structural test.
+- **decision:** Register the ten prohibitions as atomic records under R-REPO-03 and map them to a Track-B structural test.
+- **status:** RE-SCOPED by addendum III: the audit-time 'cited nowhere' claim no longer holds — spec/06 C-85 cites L39807-39828 §14 as the provenance of the spec/07 §6 hinge edit, and check 9/ID-5 exempts exactly that one row. The residual is unchanged: the ten prohibitions still lack atomic records under R-REPO-03.
 
 ### V-03 — Security dependencies whose provider is the LLM/planner module
 
 - **severity:** MAJOR
 - **constraint:** LLM/planner components must never become security authorities
 - The trust-model obligations in MOD-01 depend on planner-boundary records: REQ-TRUST-001 -> REQ-PLANNER-003 ('the model MUST NOT allocate capabilities', SECURITY-IMPACT critical) and REQ-TRUST-001 -> REQ-PLANNER-010 ('… MUST NOT alter scheduler state'). In the typed graph these are SECURITY_DEPENDENCY edges whose PROVIDER is MOD-13 AGENT, i.e. the planner module is the depended-upon side of a security property. The properties are *prohibitions on* the planner, not authority *held by* it, and `spec/07` §3 puts enforcement at the machine boundary ('the check lives at the machine boundary, not in the LLM integration'), so the architecture is sound — but the dependency as recorded makes the planner a provider of security guarantees and would let an implementation discharge R-TRUST-01 inside `ror-agent`. It is also uncarriable: no crate edge `ror-agent -> ror-core` exists, so the edge appears in HD-1 too, and the same holds for the reverse planner edge `MOD-13 -> MOD-09`, which is SC-3's offender.
-- **decision required:** Re-home the enforcement obligation: state R-TRUST-01's operative form against MOD-03/MOD-06/MOD-08 and keep the planner records as prohibitions only (no inbound security edge).
+- **decision:** Re-home the enforcement obligation: state R-TRUST-01's operative form against MOD-03/MOD-06/MOD-08 and keep the planner records as prohibitions only (no inbound security edge).
+- **status:** RESOLVED — V-03b applied with addendum III (R-TRUST-04; C-84 records the trust-table contradiction behind it): the edge is excluded via REHOMED_MODULE_EDGES, the coupling is carried by MOD-03 -> MOD-01 (SEMANTIC, 13 req witnesses), and SC-1/SC-2 now PASS as hard gates of `dep/_graph.py`
 
 ### V-04 — The source's §13 'Dependency Graph' contradicts the frozen crate edge list on one edge and adds three no crate list carries
 
 - **severity:** MAJOR
 - **constraint:** invalid dependency direction (R-ARCH-04, R-REPO-02)
 - Read in this document set's convention (arrow points to the dependent), L39762-39790 §13 draws 8 crate edges. Four agree with `spec/07` §6 (`ror-core -> ror-compiler`, `ror-core -> ror-kernel`, `ror-kernel -> ror-runtime`, `ror-runtime -> ror-host`). The other four do not, and they are not all the same kind of error (`dep/_graph.py` ID-3 lists them): (a) `ror-runtime -> ror-persistence` — i.e. the durable layer depending on the machine — is a **genuine contradiction**, not a convention artefact: request step 14 calls `ror-persistence` append/sync *from* `ror-runtime` (`spec/07` §3, R-DUR-02), and the durable layer has to survive the machine it outlives. (b) `ror-compiler -> ror-runtime` is V-01's undecided `ExecutablePlan` edge, absent from §6 (and the reverse direction is the one §14 forbids). (c) `ror-persistence -> ror-agent` is the `PlannerAccepted` recording edge — absent from §6, tracked as HD-3. (d) `ror-core -> ror-reference` conflicts with `spec/10-index.json`'s 'frozen semantics only (no production core deps)' and with R-REF-02 as recorded, though §14 does not forbid `ror-reference -> ror-core`. The §13 picture is a pipeline/data-flow diagram mislabelled 'Dependency Graph'.
-- **decision required:** Mark §13 as non-normative (pipeline order) or redraw it in the depends-on direction; `spec/07` §6 governs.
+- **decision:** Mark §13 as non-normative (pipeline order) or redraw it in the depends-on direction; `spec/07` §6 governs.
+- **status:** RESOLVED IN PART — V-04d applied with addendum III (R-TRUST-04/R-ARCH-01): the host/agent replay composition is a test-time concern owned by tests/; both prose declarations are withdrawn (REHOMED_MODULE_EDGES) and the ror-host -> ror-agent missing-edge entry is withdrawn with them, which also clears SC-3's offender. §13's arrows (a)-(d) stay as ID-3 records them; (a)'s direction is settled by R-TRUST-05/C-85, which adds ror-persistence -> ror-runtime to §6.
 
 ### V-05 — Machine-readable crate graph in `spec/10-index.json` disagrees with `spec/07` §6
 
@@ -115,7 +119,7 @@ A repository-wide search of `req/*.md`, `spec/*.md` and `mod/*.md` for the line 
 - **severity:** MAJOR
 - **constraint:** graph completeness (mod/_build.py check 8)
 - `mod/_build.py` check 8 validates only `MODULE_DEPS` (crate/oracle/sut edges). The 17 module files' `DEPENDENCIES` prose declares more module edges than that table contains, and the prose and the table disagree in both directions. The prose-only edges include real cross-crate couplings — `MOD-10 -> MOD-11` (15B payloads are 15A bytes), `MOD-10 -> MOD-12` (15A decode at recovery step 3), `MOD-03 -> MOD-02` (constraint semantics), `MOD-02 -> MOD-05` (`ExecutablePlan` input type), `MOD-11 -> MOD-13` and `MOD-13 -> MOD-09` — none of which any checker verifies. These are written in this document set's convention (`A -> B` = B depends on A); the module files' prose reads the other way, which is exactly the V-06 hazard.
-- **measured:** the module files' DEPENDENCIES prose declares 75 module pairs, `MODULE_DEPS` declares 25, and they disagree both ways — **53 prose-only** (`MOD-01 -> MOD-04`, `MOD-01 -> MOD-10`, `MOD-01 -> MOD-14`, `MOD-01 -> MOD-15`, `MOD-02 -> MOD-05`, `MOD-02 -> MOD-14`, …) and **3 table-only** (`MOD-01 -> MOD-12`, `MOD-03 -> MOD-07`, `MOD-05 -> MOD-13`). The `dep/` module layer takes the union, so both sets appear there and are typed. `mod/_build.py` checks only `MODULE_DEPS`, so it verifies none of the 53 prose-only pairs; conversely the 3 table-only pairs are checked but declared in no module file, so a reader of `mod/` will not find them.
+- **measured:** the module files' DEPENDENCIES prose declares 73 module pairs, `MODULE_DEPS` declares 25, and they disagree both ways — **51 prose-only** (`MOD-01 -> MOD-04`, `MOD-01 -> MOD-10`, `MOD-01 -> MOD-14`, `MOD-01 -> MOD-15`, `MOD-02 -> MOD-05`, `MOD-02 -> MOD-14`, …) and **3 table-only** (`MOD-01 -> MOD-12`, `MOD-03 -> MOD-07`, `MOD-05 -> MOD-13`). The `dep/` module layer takes the union, so both sets appear there and are typed. `mod/_build.py` checks only `MODULE_DEPS`, so it verifies none of the 51 prose-only pairs; conversely the 3 table-only pairs are checked but declared in no module file, so a reader of `mod/` will not find them.
 - **decision required:** Fold the prose edges into the checked table (typed), or have `mod/_build.py` parse the DEPENDENCIES prose and assert agreement with `dep/`.
 
 ### V-08 — `ror-compiler -> ror-kernel` is required by the compiler's own dependency note but absent from the frozen crate list
@@ -137,14 +141,16 @@ A repository-wide search of `req/*.md`, `spec/*.md` and `mod/*.md` for the line 
 - **severity:** MAJOR
 - **constraint:** crate DAG completeness (R-REPO-02) + forbidden edges (L39807-39828 §14)
 - `mod/_ownership.MODULE_DEPS` marks 23 of its 25 entries `crate`. Checked against `spec/07` §6 (`dep/_graph.py` ID-6), **5 imply a crate edge that no crate list carries**. Two are production couplings. (a) `MOD-11 -> MOD-08` — 'request step 14 calls `ror-persistence` append/sync' — needs `ror-persistence -> ror-runtime`, i.e. `ror-runtime` depending on `ror-persistence`. That call is the hinge of R-DUR-02 (no external effect before the journal is durable), so the single most load-bearing cross-crate call in the design is the one the crate list omits. (b) `MOD-03 -> MOD-04` — 'budget primitives co-located with ror-kernel; ceiling operand from the algebra' — needs `ror-core -> ror-kernel`, which L39821 §14 forbids outright; the note is independent evidence for V-09, because the module table itself treats MOD-04's primitives as kernel-resident while `crate_of_module()` homes MOD-04 in `ror-core`. The other three (`MOD-17 -> MOD-15`, `MOD-15 -> MOD-16`, `MOD-17 -> MOD-16`) have a non-crate home on at least one side (`tests/`, `mutations/registry.toml`), so they are dev couplings, but the `crate` label is wrong for them too.
-- **decision required:** Add `ror-persistence -> ror-runtime` to `spec/07` §6, or state the journal-trait inversion explicitly (which flips the edge the other way and must then be checked against the persistence-before-runtime build order). Re-label the three test-side entries. Settle V-09 before deciding (b).
+- **decision:** Add `ror-persistence -> ror-runtime` to `spec/07` §6, or state the journal-trait inversion explicitly (which flips the edge the other way and must then be checked against the persistence-before-runtime build order). Re-label the three test-side entries. Settle V-09 before deciding (b).
+- **status:** RESOLVED IN PART — V-10a applied with addendum III (R-TRUST-05, C-85): spec/07 §6 gains ror-persistence -> ror-runtime and CRATE_EDGES/`spec/10-index.json` carry it; V-10b is rejected. V-10c (the PlannerAccepted recording edge) remains open, and V-09's MOD-03 -> MOD-04 question is unaffected.
 
 ### V-11 — The frozen trust table does not cover three modules the graph treats as security authorities — and the source states it twice, with different rows
 
 - **severity:** MINOR
 - **constraint:** security dependencies must point at the authoritative machine boundary (R-TRUST-01)
 - `Red-on-Rust.md` states the trust table twice: L27613-27623 (11 rows) and L41827-41838 (12 rows — the later one adds `Persistence | Yes | Durable machine state`, which the earlier one lacks; wording also drifts, 'Partially trusted' -> 'Partial', 'ReplayHost' -> 'Replay host', 'Causal durability' -> 'Causal effect state'). Under the repository's supersession rule the later table governs, and `README.md` reproduces all 12 rows. Measured against it (`dep/_graph.py` ID-7), **three modules in `AUTHORITY` have no row at all**: `MOD-06` ACTOR (marshalling / delegation), `MOD-08` EFFECT (the table's 'Effect journal' row is the journal, i.e. MOD-11) and `MOD-10` SERIALIZATION. Their authority is inferred from R-MARSHAL-01/02, R-EFFECT-03 and R-CANON-01/04, not frozen by the table. No `SECURITY_DEPENDENCY` currently has one of the three as provider, so SC-1's PASS does not rest on them today — but the set is presented in `dep/05` §1.2 as the authoritative boundary, so the gap has to be visible. Separately, `spec/06` C-37 cites 'L41641 (trust table: Deterministic interleaving)'; L41641 is the FIFO-scheduler passage, and the rows that say 'Deterministic interleaving' are L27618 and L41832.
-- **decision required:** Add rows for the marshalling boundary, the effect boundary and the canonical serializer to the trust table (or state that they are inside the TCB by the obligations cited), and fix C-37's provenance line.
+- **decision:** Add rows for the marshalling boundary, the effect boundary and the canonical serializer to the trust table (or state that they are inside the TCB by the obligations cited), and fix C-37's provenance line.
+- **status:** RE-SCOPED by addendum III (R-TRUST-04): the spec-level trust table is now complete — R-TRUST-04 carries the full table in spec/01/spec/03, and C-84 records the frozen-file drift this finding identified. Red-on-Rust.md L41827-41838 and README.md are frozen at 12 rows, so ID-7 keeps reading the frozen table and the three authority rows (MOD-06/08/10) are stated at spec level. C-37's provenance line remains to be fixed.
 
 ---
 
@@ -152,9 +158,9 @@ A repository-wide search of `req/*.md`, `spec/*.md` and `mod/*.md` for the line 
 
 A dependency is *hidden* when it is real in the specification but invisible in the graph an implementer would read (`spec/07` §6 crate list, `mod/18` §0 module table, `spec/10-index.json`).
 
-### HD-1 — Production couplings no frozen crate edge can carry (31)
+### HD-1 — Production couplings no frozen crate edge can carry (24)
 
-31 module edges between production modules have no crate realisation: the specification states the coupling, but `spec/07` §6 has no edge that could carry it. Each is either a specification-layer statement (fine) or a missing crate edge (a finding).
+24 module edges between production modules have no crate realisation: the specification states the coupling, but `spec/07` §6 has no edge that could carry it. Each is either a specification-layer statement (fine) or a missing crate edge (a finding).
 
 | Item | Detail |
 |---|---|
@@ -176,19 +182,12 @@ A dependency is *hidden* when it is real in the specification but invisible in t
 | `MOD-08 -> MOD-12` | SEMANTIC_DEPENDENCY — would need crate edge ror-runtime -> ror-persistence (absent); 2 req |
 | `MOD-09 -> MOD-01` | SEMANTIC_DEPENDENCY — would need crate edge ror-host -> ror-core (absent); 5 req |
 | `MOD-09 -> MOD-08` | RUNTIME_DEPENDENCY — would need crate edge ror-host -> ror-runtime (absent); prose+2 req |
-| `MOD-09 -> MOD-13` | RUNTIME_DEPENDENCY — would need crate edge ror-host -> ror-agent (absent); prose+1 req |
 | `MOD-11 -> MOD-01` | SEMANTIC_DEPENDENCY — would need crate edge ror-persistence -> ror-core (absent); 9 req |
 | `MOD-11 -> MOD-04` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-core (absent); 1 req |
-| `MOD-11 -> MOD-05` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-runtime (absent); 1 req |
-| `MOD-11 -> MOD-06` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-runtime (absent); 2 req |
-| `MOD-11 -> MOD-07` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-runtime (absent); 1 req |
-| `MOD-11 -> MOD-08` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-runtime (absent); crate-table+prose+8 req |
 | `MOD-11 -> MOD-09` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-host (absent); prose+1 req |
 | `MOD-11 -> MOD-13` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-agent (absent); prose+2 req |
 | `MOD-12 -> MOD-01` | SEMANTIC_DEPENDENCY — would need crate edge ror-persistence -> ror-core (absent); 14 req |
 | `MOD-12 -> MOD-04` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-core (absent); 1 req |
-| `MOD-13 -> MOD-01` | SECURITY_DEPENDENCY — would need crate edge ror-agent -> ror-core (absent); 14 req |
-| `MOD-13 -> MOD-09` | RUNTIME_DEPENDENCY — would need crate edge ror-agent -> ror-host (absent); prose |
 
 ### HD-2 — Intra-crate couplings the crate DAG cannot express (14)
 
@@ -200,16 +199,14 @@ The crate layer collapses each of these groups to a single node, so reading only
 | `ror-persistence` | `MOD-11 -> MOD-12`, `MOD-12 -> MOD-11` |
 | `ror-runtime` | `MOD-05 -> MOD-06`, `MOD-05 -> MOD-07`, `MOD-05 -> MOD-08`, `MOD-06 -> MOD-07`, `MOD-06 -> MOD-08`, `MOD-07 -> MOD-06`, `MOD-07 -> MOD-08`, `MOD-08 -> MOD-05` |
 
-### HD-3 — Required crate edges absent from every crate list (4)
+### HD-3 — Required crate edges absent from every crate list (2)
 
-Forced by the frozen text or by `mod/_ownership.MODULE_DEPS`; see `dep/05` V-01, V-04 and V-10. `dep/01` §1.2 shows the crate DAG absorbs all of them without becoming cyclic.
+Forced by the frozen text or by `mod/_ownership.MODULE_DEPS`; see `dep/05` V-01 and V-10 (V-10a applied — addendum III, R-TRUST-05 — so the hinge edge is carried; V-04's entry is withdrawn with the prose, V-04d). `dep/01` §1.2 shows the crate DAG absorbs the rest without becoming cyclic.
 
 | Item | Detail |
 |---|---|
 | `ror-compiler -> ror-runtime` | TYPE_DEPENDENCY — REQ-ARCH-004/005 + L39962-39998 §17: `fn execute(plan: &ExecutablePlan)` with construction `pub(crate)`-restricted to the compiler (L39947-39950). The runtime must name `ExecutablePlan`, so either the type is exported from `ror-compiler` (this edge) or it lives in `ror-core` behind a seal. Neither `spec/07` §6 nor `spec/10-index.json` states which. |
 | `ror-persistence -> ror-agent` | PERSISTENCE_DEPENDENCY — mod/13-agent.md DEPENDENCIES 'MOD-11 (durable recording)': `PlannerAccepted` recording for exact replay (R-PLANNER-04, REQ-PLANNER-018). `ror-agent -> ror-persistence` appears in no crate list. |
-| `ror-persistence -> ror-runtime` | PERSISTENCE_DEPENDENCY — `mod/_ownership.MODULE_DEPS` labels `MOD-08 -> MOD-11` a **crate** dependency ('request step 14 calls ror-persistence append/sync'), and R-DUR-02 / `spec/07` §3 make that call the hinge of the durability transaction — no effect before the journal is durable. `spec/07` §6 gives `ror-runtime -> ror-core, ror-kernel` only, and `spec/10-index.json` agrees with §6 here, so the edge exists nowhere. Either add it, or state the journal-trait inversion (`ror-runtime` owns the trait, `ror-persistence` implements it, which flips the edge to `ror-runtime -> ror-persistence`). See V-10. |
-| `ror-host -> ror-agent` | RUNTIME_DEPENDENCY — mod/13-agent.md DEPENDENCIES 'MOD-09 (replay composition for the conformance suite)'; mod/09-host.md DEPENDENCIES 'MOD-13 (end-to-end replay composition)'. Direction undecided — see V-04. |
 
 ### HD-4 — `spec/07` §6 edges missing from `spec/10-index.json` (2)
 
@@ -278,7 +275,7 @@ Test-time couplings between the verification layer and production crates. `ror-r
 | ID-3 | §13 diagram edges absent from the frozen crate list | `ror-core -> ror-reference`, `ror-compiler -> ror-runtime`, `ror-runtime -> ror-persistence`, `ror-persistence -> ror-agent` | L39762-39790 §13 asserts `ror-runtime -> ror-persistence`, `ror-runtime -> ror-host` and `ror-persistence -> ror-agent`; the first contradicts `spec/07` §3 (request step 14 calls `ror-persistence` from `ror-runtime`). See V-04. |
 | ID-4 | `spec/10-index.json` `depends_on` entries that are not crate names | `ror-reference -> frozen semantics only (no production core deps)`, `ror-differential -> ror-runtime (black box)` | prose inside a machine-readable edge list; any consumer of the index reads a wrong node set. See V-05. |
 | ID-5 | documents citing `Red-on-Rust.md` L39757-39828 (§13 diagram / §14 forbidden edges) | none | none of `spec/03`, `spec/06`, `req/` or `mod/` cites the frozen dependency-direction blocks — the basis of V-02 and HD-5. |
-| ID-6 | `mod/_ownership.MODULE_DEPS` entries labelled `crate` whose implied crate edge no crate list carries | `MOD-03 -> MOD-04` (FORBIDDEN ror-kernel -> ror-core), `MOD-11 -> MOD-08` (ror-persistence -> ror-runtime), `MOD-17 -> MOD-15` (tests/ -> ror-differential), `MOD-15 -> MOD-16` (ror-differential -> mutations/registry.toml), `MOD-17 -> MOD-16` (tests/ -> mutations/registry.toml) | 5 of the 23 `crate`-labelled entries (of 25 total). `MOD-11 -> MOD-08` is the step-14 durability call of R-DUR-02; `MOD-03 -> MOD-04` needs `ror-core -> ror-kernel`, which L39821 §14 forbids. The other three have a non-crate home (`tests/`, `mutations/registry.toml`) on one side. See V-10, HD-3. |
+| ID-6 | `mod/_ownership.MODULE_DEPS` entries labelled `crate` whose implied crate edge no crate list carries | `MOD-03 -> MOD-04` (FORBIDDEN ror-kernel -> ror-core), `MOD-17 -> MOD-15` (tests/ -> ror-differential), `MOD-15 -> MOD-16` (ror-differential -> mutations/registry.toml), `MOD-17 -> MOD-16` (tests/ -> mutations/registry.toml) | 4 of the 23 `crate`-labelled entries (of 25 total). `MOD-11 -> MOD-08` is the step-14 durability call of R-DUR-02; `MOD-03 -> MOD-04` needs `ror-core -> ror-kernel`, which L39821 §14 forbids. The other three have a non-crate home (`tests/`, `mutations/registry.toml`) on one side. See V-10, HD-3. |
 | ID-7 | `AUTHORITY` entries backed by a `Yes` row of the frozen trust table (`Red-on-Rust.md` L41827-41838) | `MOD-02 -> Compiler` (frozen), `MOD-03 -> Capability kernel` (frozen), `MOD-04 -> Budget system` (frozen), `MOD-05 -> CEK machine` (frozen), `MOD-06 -> no row` (INFERRED), `MOD-07 -> Scheduler` (frozen), `MOD-08 -> no row` (INFERRED), `MOD-09 -> Replay host, Live host` (frozen + partial), `MOD-10 -> no row` (INFERRED), `MOD-11 -> Persistence, Effect journal` (frozen), `MOD-12 -> Supervisor` (frozen) | 8 of 11 are frozen by the table; 3 (MOD-06, MOD-08, MOD-10) have no row and are inferred from obligations; `MOD-09` is `Yes` only as the replay host (`Live host` is `Partial`). The source states the table 2 times : L27613-27623 (11 rows) and L41827-41838 (12 rows); the later one adds `Persistence`, which the earlier lacks. See V-11. |
 
 ### 4.1 ID-6 in detail — `crate`-labelled module edges no crate list carries
@@ -321,7 +318,7 @@ The direction question that matters is **ID-3/V-04**: `Red-on-Rust.md` L39762-39
 
 V-01, V-03 and V-04 are the three findings that leave the module layer with no partial order at all (`dep/02` §2.2). Each option below is a mutation of the graph **as recorded** — a crate edge added to `spec/07` §6, a module edge re-recorded with another kind, or a prose declaration withdrawn. **None of them is applied, and none is a recommendation**: the decision belongs to the specification owner. What this layer contributes is the price of each answer, recomputed from the mutated graph rather than estimated. Deltas are against the graph as recorded.
 
-**As recorded:** crate layer acyclic; 50 of 137 module edges have a crate realisation (the implementation graph of `dep/02` §2.1), with 3 non-trivial SCCs; HD-1 = 31; 41 mutual pairs, 5 of them inside that implementation graph; security failures SC-1, SC-2, SC-3.
+**As recorded:** crate layer acyclic; 54 of 134 module edges have a crate realisation (the implementation graph of `dep/02` §2.1), with 3 non-trivial SCCs; HD-1 = 24; 39 mutual pairs, 5 of them inside that implementation graph; security failures none.
 
 ### 7.1 V-01 — `ExecutablePlan` has no determined crate home, so a required crate edge is undecided
 
@@ -329,8 +326,8 @@ V-01, V-03 and V-04 are the three findings that leave the module layer with no p
 
 | Option | Crate DAG | Impl graph (edges a crate edge can carry) | Impl SCCs | HD-1 | Mutual pairs (full / impl) | SC failures |
 |---|---|---|---|---|---|---|
-| **V-01a** Home it in `ror-core`, behind a seal | acyclic | 50 of 137 | 3 | 31 | 41 / 5 | SC-1, SC-2, SC-3 |
-| **V-01b** Export it from `ror-compiler` | acyclic | 51 (+1) of 137 | 3 | 30 (-1) | 41 / 5 | SC-1, SC-2, SC-3 |
+| **V-01a** Home it in `ror-core`, behind a seal | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
+| **V-01b** Export it from `ror-compiler` | acyclic | 55 (+1) of 134 | 3 | 23 (-1) | 39 / 5 | none |
 
 - **V-01a** — No new crate edge: the runtime already depends on `ror-core`. The open part is the mechanism, not the direction — L39947-39950 §16 restricts construction to `pub(crate) fn finalize`, and `pub(crate)` is per-crate, so a `ror-core` home needs a seal Rust cannot express that way. As recorded the module edge stays `MOD-02 -> MOD-05`, which would then overstate who owns the type.
 - **V-01b** — Adds `ror-compiler -> ror-runtime`, i.e. the runtime names the compiler's type — the direction §13's diagram already draws. §14 L39826 forbids only the reverse (the compiler depending on the runtime), and L39831 permits adjusting the compiler/kernel direction where implementation mechanics require it, provided the compiler never receives authority to execute effects, which a type dependency does not grant.
@@ -342,13 +339,13 @@ V-01, V-03 and V-04 are the three findings that leave the module layer with no p
 
 | Option | Crate DAG | Impl graph (edges a crate edge can carry) | Impl SCCs | HD-1 | Mutual pairs (full / impl) | SC failures |
 |---|---|---|---|---|---|---|
-| **V-03a** Keep as recorded | acyclic | 50 of 137 | 3 | 31 | 41 / 5 | SC-1, SC-2, SC-3 |
-| **V-03b** Re-home the obligations onto the enforcing boundary and drop the planner as provider | acyclic | 50 of 136 | 3 | 30 (-1) | 40 (-1) / 5 | SC-3 |
-| **V-03c** Keep the pair, record it as specification-layer | acyclic | 50 of 137 | 3 | 31 | 41 / 5 | SC-3 |
+| **V-03a** Keep as recorded | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
+| **V-03b** **APPLIED — addendum III (R-TRUST-04) — in force** Re-home the obligations onto the enforcing boundary and drop the planner as provider | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
+| **V-03c** **VOID — V-03b applied — the pair is re-homed, so this option's premise (keep the pair and rekind it) no longer exists** Keep the pair, record it as specification-layer | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
 
 - **V-03a** — SC-1 and SC-2 stay FAIL: on 14 obligations the LLM/planner module is the provider of a security property. The architecture is sound — enforcement sits at the machine boundary (`spec/07` §3) — so what is unsound is the record, not the design.
-- **V-03b** — The coupling does not vanish: `MOD-03 -> MOD-01` already exists (SEMANTIC, 13 req), so the invariant stays in the graph with an authoritative provider. This is what F-PLANNER-TRUST's verdict recommends.
-- **V-03c** — The weakest change that clears SC-1/SC-2: no SECURITY_DEPENDENCY has a non-authoritative provider any more. It leaves the planner as the module the trust obligations point at, so it fixes the check without fixing the reading.
+- **V-03b** — APPLIED (addendum III (R-TRUST-04) — in force) — The coupling does not vanish: `MOD-03 -> MOD-01` already exists (SEMANTIC, 13 req), so the invariant stays in the graph with an authoritative provider. This is what F-PLANNER-TRUST's verdict recommends.
+- **V-03c** — VOID (V-03b applied — the pair is re-homed, so this option's premise (keep the pair and rekind it) no longer exists) — The weakest change that clears SC-1/SC-2: no SECURITY_DEPENDENCY has a non-authoritative provider any more. It leaves the planner as the module the trust obligations point at, so it fixes the check without fixing the reading.
 
 ### 7.3 V-04 — The source's §13 'Dependency Graph' contradicts the frozen crate edge list on one edge and adds three no crate list carries
 
@@ -356,19 +353,16 @@ V-01, V-03 and V-04 are the three findings that leave the module layer with no p
 
 | Option | Crate DAG | Impl graph (edges a crate edge can carry) | Impl SCCs | HD-1 | Mutual pairs (full / impl) | SC failures |
 |---|---|---|---|---|---|---|
-| **V-04a** The agent depends on the host | acyclic | 51 (+1) of 137 | 3 | 30 (-1) | 41 / 5 | SC-1, SC-2, SC-3 |
-| **V-04b** The host depends on the agent | acyclic | 51 (+1) of 137 | 3 | 30 (-1) | 41 / 5 | SC-1, SC-2, SC-3 |
-| **V-04c** Carry both prose declarations as they stand | **CYCLIC** | 52 (+2) of 137 | 4 (+1) | 29 (-2) | 41 / 6 (+1) | SC-1, SC-2, SC-3 |
-| **V-04d** Neither crate owns it — the conformance suite composes the two | acyclic | 50 of 135 | 3 | 29 (-2) | 40 (-1) / 5 | SC-1, SC-2 |
+| **V-04a** The agent depends on the host | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
+| **V-04b** The host depends on the agent | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
+| **V-04c** Carry both prose declarations as they stand | **CYCLIC** | 54 of 134 | 3 | 24 | 39 / 5 | none |
+| **V-04d** **APPLIED — addendum III (R-TRUST-04/R-ARCH-01) — in force** Neither crate owns it — the conformance suite composes the two | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
 
 - **V-04a** — Carries `MOD-09 -> MOD-13` (R8-replay-composition) and leaves `MOD-13 -> MOD-09` uncarried.
-  - *Module edges that gain a crate realisation:* `MOD-09 -> MOD-13` (RUNTIME).
   - *Build order:* `ror-host` 8 → 7, `ror-agent` 7 → 8. Full order becomes: ror-core, ror-compiler, ror-kernel, ror-persistence, ror-reference, ror-runtime, ror-host, ror-agent, ror-testkit, ror-differential.
 - **V-04b** — Carries `MOD-13 -> MOD-09` and leaves `MOD-09 -> MOD-13` uncarried.
-  - *Module edges that gain a crate realisation:* `MOD-13 -> MOD-09` (RUNTIME).
 - **V-04c** — Measured below rather than asserted: both directions typed RUNTIME is a crate-level 2-cycle, so this option is not available while the crate layer is required to be a DAG (check 7).
-  - *Module edges that gain a crate realisation:* `MOD-09 -> MOD-13` (RUNTIME), `MOD-13 -> MOD-09` (RUNTIME).
-- **V-04d** — F-HOST-AGENT's own verdict: `tests/` composes host and agent, and both prose declarations are withdrawn. No crate edge is needed and no obligation is lost, because the composition is a test-time concern.
+- **V-04d** — APPLIED (addendum III (R-TRUST-04/R-ARCH-01) — in force) — F-HOST-AGENT's own verdict: `tests/` composes host and agent, and both prose declarations are withdrawn. No crate edge is needed and no obligation is lost, because the composition is a test-time concern.
 
 ### 7.4 V-10 — `mod/_ownership.MODULE_DEPS` asserts crate-level edges that `spec/07` §6 does not carry — one of them in a forbidden direction
 
@@ -376,21 +370,18 @@ V-01, V-03 and V-04 are the three findings that leave the module layer with no p
 
 | Option | Crate DAG | Impl graph (edges a crate edge can carry) | Impl SCCs | HD-1 | Mutual pairs (full / impl) | SC failures |
 |---|---|---|---|---|---|---|
-| **V-10a** The machine calls the journal | acyclic | 54 (+4) of 137 | 3 | 27 (-4) | 41 / 5 | SC-1, SC-2, SC-3 |
-| **V-10b** Journal-trait inversion | acyclic | 54 (+4) of 137 | 3 | 27 (-4) | 41 / 5 | SC-1, SC-2, SC-3 |
-| **V-10c** Add only the `PlannerAccepted` recording edge | acyclic | 51 (+1) of 137 | 3 | 30 (-1) | 41 / 5 | SC-1, SC-2, SC-3 |
-| **V-10d** For reference: every edge HD-3 lists, at once | acyclic | 57 (+7) of 137 | 3 | 24 (-7) | 41 / 5 | SC-1, SC-2, SC-3 |
+| **V-10a** **APPLIED — addendum III (R-TRUST-05, C-85) — in force** The machine calls the journal | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
+| **V-10b** Journal-trait inversion | **CYCLIC** | 58 (+4) of 134 | 2 (-1) | 20 (-4) | 39 / 6 (+1) | none |
+| **V-10c** Add only the `PlannerAccepted` recording edge | acyclic | 55 (+1) of 134 | 3 | 23 (-1) | 39 / 5 | none |
+| **V-10d** For reference: every edge HD-3 lists, at once | acyclic | 56 (+2) of 134 | 3 | 22 (-2) | 39 / 5 | none |
 
-- **V-10a** — Adds `ror-persistence -> ror-runtime`, i.e. the runtime depends on the durable layer — what request step 14 does when it calls append/sync, and what R-DUR-02 / `spec/07` §3 make the hinge of the durability transaction: no effect before the journal is durable. §14 forbids neither direction here. One of the edges it carries, `MOD-11 -> MOD-08`, is already labelled a **crate** dependency by `mod/_ownership.MODULE_DEPS`.
-  - *Module edges that gain a crate realisation:* `MOD-11 -> MOD-05` (PERSISTENCE), `MOD-11 -> MOD-06` (PERSISTENCE), `MOD-11 -> MOD-07` (PERSISTENCE), `MOD-11 -> MOD-08` (PERSISTENCE).
+- **V-10a** — APPLIED (addendum III (R-TRUST-05, C-85) — in force) — Adds `ror-persistence -> ror-runtime`, i.e. the runtime depends on the durable layer — what request step 14 does when it calls append/sync, and what R-DUR-02 / `spec/07` §3 make the hinge of the durability transaction: no effect before the journal is durable. §14 forbids neither direction here. One of the edges it carries, `MOD-11 -> MOD-08`, is already labelled a **crate** dependency by `mod/_ownership.MODULE_DEPS`.
 - **V-10b** — `ror-runtime` owns the journal trait and `ror-persistence` implements it, which flips the edge to `ror-runtime -> ror-persistence` — the direction §13's diagram draws. V-10's decision warns this must be checked against the build order; the reordering it causes is measured below rather than guessed.
   - *Module edges that gain a crate realisation:* `MOD-06 -> MOD-12` (TYPE), `MOD-07 -> MOD-12` (TYPE), `MOD-08 -> MOD-11` (SEMANTIC), `MOD-08 -> MOD-12` (SEMANTIC).
-  - *Build order:* `ror-reference` 5 → 4, `ror-runtime` 6 → 5, `ror-agent` 7 → 6, `ror-host` 8 → 7, `ror-persistence` 4 → 8. Full order becomes: ror-core, ror-compiler, ror-kernel, ror-reference, ror-runtime, ror-agent, ror-host, ror-persistence, ror-testkit, ror-differential.
 - **V-10c** — Adds `ror-persistence -> ror-agent` for the `PlannerAccepted` recording `mod/13-agent.md` declares (R-PLANNER-04, REQ-PLANNER-018). Independent of the durability direction, so it can be decided separately.
   - *Module edges that gain a crate realisation:* `MOD-11 -> MOD-13` (PERSISTENCE).
 - **V-10d** — Not a single decision — it assumes V-01b and V-04a as well — but it is the row that answers `dep/01` §1.2's claim that the crate DAG absorbs all four missing edges without becoming cyclic, and check 7 tests exactly that on every run.
-  - *Module edges that gain a crate realisation:* `MOD-02 -> MOD-05` (TYPE), `MOD-09 -> MOD-13` (RUNTIME), `MOD-11 -> MOD-05` (PERSISTENCE), `MOD-11 -> MOD-06` (PERSISTENCE), `MOD-11 -> MOD-07` (PERSISTENCE), `MOD-11 -> MOD-08` (PERSISTENCE), `MOD-11 -> MOD-13` (PERSISTENCE).
-  - *Build order:* `ror-host` 8 → 7, `ror-agent` 7 → 8. Full order becomes: ror-core, ror-compiler, ror-kernel, ror-persistence, ror-reference, ror-runtime, ror-host, ror-agent, ror-testkit, ror-differential.
+  - *Module edges that gain a crate realisation:* `MOD-02 -> MOD-05` (TYPE), `MOD-11 -> MOD-13` (PERSISTENCE).
 
 ### 7.5 What is not priced here
 

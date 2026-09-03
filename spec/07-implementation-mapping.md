@@ -92,7 +92,7 @@ Maps every obligation to its **normative implementation home** (the crate/module
 ror-core ── (std only)
 ror-compiler → ror-core
 ror-kernel → ror-core
-ror-runtime → ror-core, ror-kernel
+ror-runtime → ror-core, ror-kernel, ror-persistence
 ror-persistence → ror-core
 ror-host → ror-core, ror-runtime (adapter boundary)
 ror-agent → ror-core, ror-compiler, ror-runtime
@@ -100,5 +100,10 @@ ror-reference → (frozen semantics only; NO ror-runtime/ror-kernel/ror-persiste
 ror-differential → ror-reference, ror-runtime (as black-box SUT), ror-testkit
 ror-testkit → ror-core (+ test-only deps)
 ```
+
+Addendum III (R-TRUST-05; spec/06 C-85): `ror-runtime` gains `ror-persistence` —
+request step 14's durable append/sync is the hinge of R-DUR-02 (`HostInvoked ⇒
+DurableIssued`, no external effect before the journal is durable). This is the
+only edge §14's frozen list does not forbid in either direction.
 
 Forbidden edges (R-SCOPE-04, R-REF-02): any `ror-reference → {production step/authorize/budget/recover/encode/scheduler}` core-logic call.

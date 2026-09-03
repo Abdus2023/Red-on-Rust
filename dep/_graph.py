@@ -32,13 +32,18 @@ Checks (always)
       with the direction flipped into this document set's convention.
   3.  every module edge declared in a module file's DEPENDENCIES prose appears
       in the module layer, and every module-layer edge is justified by
-      MODULE_DEPS, by prose, or by at least one `req/` witness pair.
+      MODULE_DEPS, by prose, or by at least one `req/` witness pair — unless
+      the pair is explicitly re-homed in `dep/_edges.py`
+      `REHOMED_MODULE_EDGES` (V-03b/V-04d applied, addendum III: the req
+      witnesses are historical records of the pre-addendum reading).
   4.  every module pair matches exactly one classification rule (or an
       explicit override) — no edge gets a kind by default.
   5.  ror-reference / MOD-14 independence: none of the ten frozen forbidden
       crate edges is present, and no MOD-14 edge has an implementable kind.
   6.  security direction: every SECURITY_DEPENDENCY provider is an
       authoritative boundary component; the planner is never a provider.
+      SC-1/SC-2/SC-3 are HARD GATES (exit 1) since addendum III (R-TRUST-04
+      closed V-03/V-04): the run fails if any of them regresses.
   7.  the crate graph is acyclic; every cycle of the module layer's
       implementation graph (edges a frozen crate edge can carry) and every
       mutual module pair is listed and matches a named cycle family in
@@ -327,6 +332,10 @@ def build_module_graph(prose_pairs, mdeps, witnesses):
         if p == c:
             err(f"module self-edge {p}")
             continue
+        if (p, c) in E.REHOMED_MODULE_EDGES:
+            # V-03b/V-04d applied (addendum III, R-TRUST-04): the coupling is
+            # re-homed per the table; witnesses/prose are historical records.
+            continue
         kind, rule, basis = classify(p, c)
         if kind is None:
             err(f"module edge {p} -> {c} matches no classification rule")
@@ -557,8 +566,10 @@ def hidden_dependencies(mod_graph, prose_pairs, mdeps, witnesses, crate_index,
     # HD-3: crate edges required but absent
     hd.append(("HD-3", "Required crate edges absent from every crate list",
                "Forced by the frozen text or by `mod/_ownership.MODULE_DEPS`; see "
-               "`dep/05` V-01, V-04 and V-10. `dep/01` §1.2 shows the crate DAG "
-               "absorbs all of them without becoming cyclic.",
+               "`dep/05` V-01 and V-10 (V-10a applied — addendum III, "
+               "R-TRUST-05 — so the hinge edge is carried; V-04's entry is "
+               "withdrawn with the prose, V-04d). `dep/01` §1.2 shows the "
+               "crate DAG absorbs the rest without becoming cyclic.",
                E.CRATE_MISSING_EDGES))
     # HD-4: crate edges in spec/07 §6 but missing from the machine-readable index
     idx_edges = {(c["name"], d) for c in crate_index["crates"] for d in c["depends_on"]
@@ -614,7 +625,8 @@ def security_checks(mod_graph):
                            "authoritative machine-boundary component",
                    bad_provider,
                    "R-TRUST-01/R-TRUST-02 trust table; the provider is the "
-                   "component that discharges the property"))
+                   "component that discharges the property. Hard gate since "
+                   "addendum III (R-TRUST-04; V-03b applied)"))
     inbound = [e for e in mod_graph.edges
                if e["provider"] in E.PLANNER_NODES
                and e["kind"] == "SECURITY_DEPENDENCY"]
@@ -622,14 +634,17 @@ def security_checks(mod_graph):
                            "property",
                    inbound, "R-PLANNER-02 (planner cannot allocate/authorize/"
                             "modify/invoke/bypass); R-TRUST-01 trust-table row "
-                            "'LLM / planner: No'"))
+                            "'LLM / planner: No'. Hard gate since addendum III "
+                            "(R-TRUST-04; V-03b applied)"))
     outbound = [e for e in mod_graph.edges
                 if e["provider"] in E.PLANNER_NODES
                 and e["consumer"] in E.PRODUCTION_NODES
                 and e["kind"] == "RUNTIME_DEPENDENCY"]
     checks.append(("SC-3", "No production component calls the planner at runtime",
                    outbound, "R-ARCH-01: the planner is upstream of the machine; "
-                             "the machine never calls back into `ror-agent`"))
+                             "the machine never calls back into `ror-agent`. "
+                             "Hard gate since addendum III (R-TRUST-04; V-04d "
+                             "applied)"))
     return checks
 
 
@@ -672,16 +687,21 @@ def forbidden_block_citations():
     """Which documents cite the frozen dependency-direction blocks?
 
     `Red-on-Rust.md` L39757-39790 is §13 'Dependency Graph' and L39807-39828 is
-    §14 'Forbidden Dependency Edges'.  V-02 claims no obligation, atomic record
-    or finding cites them; this recomputes that claim on every run.
+    §14 'Forbidden Dependency Edges'.  V-02's audit-time claim was that no
+    obligation, atomic record or finding cites them.  Addendum III changed one
+    thing: spec/06 C-85 cites L39807-39828 §14 as the *provenance* of the
+    spec/07 §6 hinge edit (R-TRUST-05).  That single row is exempt (V-02 is
+    re-scoped, not suppressed); any other citation still fails the run.
     """
     hits = []
     for sub in ("req", "spec", "mod"):
         for path in sorted((ROOT / sub).glob("*.md")):
-            body = path.read_text()
-            for ln in FORBIDDEN_BLOCK_LINES:
-                if ln in body:
-                    hits.append((f"{sub}/{path.name}", ln))
+            for lineno, line in enumerate(path.read_text().splitlines(), 1):
+                if line.lstrip().startswith("| C-85 "):
+                    continue  # the exempt provenance row (addendum III)
+                for ln in FORBIDDEN_BLOCK_LINES:
+                    if ln in line:
+                        hits.append((f"{sub}/{path.name}", ln))
     return hits
 
 
@@ -1789,6 +1809,13 @@ def resolution_analysis(ctx):
     for fid, spec in E.RESOLUTIONS.items():
         rows = []
         for opt in spec["options"]:
+            if opt.get("applied") or opt.get("void"):
+                # applied: already in the baseline graphs (V-03b/V-04d/V-10a
+                # in force).  void: its premise is gone, so there is nothing
+                # left to mutate.  Either way measure as the baseline; the §7
+                # renderer marks the row APPLIED / VOID.
+                rows.append((opt, baseline))
+                continue
             ch = opt["change"]
             extra = ch.get("add_crate_edges", [])
             rekind = ch.get("rekind", {})
@@ -1850,6 +1877,8 @@ def gen_violations(ctx):
           + (", ".join(f"`{edge_line(o)}` [{o['kind']}]" for o in offenders) or "—")
           + " |")
     A("")
+    A("SC-1/SC-2/SC-3 are **hard gates** since addendum III (R-TRUST-04 closed "
+      "V-03/V-04): `dep/_graph.py` exits 1 if any of them regresses.\n")
     A("Authoritative boundary (providers permitted on a `SECURITY_DEPENDENCY`), "
       "from the R-TRUST-01 trust table:\n")
     for m, why in sorted(E.AUTHORITY.items()):
@@ -1868,11 +1897,21 @@ def gen_violations(ctx):
     for e in planner_sec:
         A(f"- `{edge_line(e)}` [{e['visibility']}] — {e['basis']}")
     A("")
-    A("This is finding **V-03** below: the planner appears as the *provider* of a "
-      "security property because the trust-model obligations cite the planner "
-      "prohibitions. The prohibitions are real and the enforcement is correctly "
-      "placed at the machine boundary (`spec/07` §3), but as recorded the graph "
-      "makes `ror-agent` a security dependency of `R-TRUST-01`.\n")
+    if planner_sec:
+        A("This is finding **V-03** below: the planner appears as the *provider* "
+          "of a security property because the trust-model obligations cite the "
+          "planner prohibitions. The prohibitions are real and the enforcement "
+          "is correctly placed at the machine boundary (`spec/07` §3), but as "
+          "recorded the graph makes `ror-agent` a security dependency of "
+          "`R-TRUST-01`.\n")
+    else:
+        A("Finding **V-03 is closed** — V-03b applied with addendum III "
+          "(R-TRUST-04; spec/06 C-84 records the underlying contradiction): no "
+          "`SECURITY_DEPENDENCY` has the planner as provider. The prohibition "
+          "records are homed at the enforcing boundary (MOD-03/06/08); the "
+          "former `MOD-13 -> MOD-01` edge and the withdrawn replay-composition "
+          "edges are kept as historical records in `dep/_edges.py` "
+          "`REHOMED_MODULE_EDGES`.\n")
 
     A("### 1.4 The frozen prohibitions are not tracked anywhere\n")
     hits = forbidden_block_citations()
@@ -1929,7 +1968,11 @@ def gen_violations(ctx):
               f"the {len(prose_only)} prose-only pairs; conversely the "
               f"{len(table_only)} table-only pairs are checked but declared in no "
               "module file, so a reader of `mod/` will not find them.")
-        A(f"- **decision required:** {f['decision']}")
+        if "status" in f:
+            A(f"- **decision:** {f['decision']}")
+            A(f"- **status:** {f['status']}")
+        else:
+            A(f"- **decision required:** {f['decision']}")
         A("")
 
     A("---\n\n## 3. Hidden dependencies\n")
@@ -2042,7 +2085,9 @@ def gen_violations(ctx):
           "Impl SCCs | HD-1 | Mutual pairs (full / impl) | SC failures |")
         A("|---|---|---|---|---|---|---|")
         for opt, m in spec["options"]:
-            A(f"| **{opt['id']}** {opt['label']} | "
+            mark = (f"**APPLIED — {opt['applied']}** " if opt.get("applied")
+                    else (f"**VOID — {opt['void']}** " if opt.get("void") else ""))
+            A(f"| **{opt['id']}** {mark}{opt['label']} | "
               f"{'acyclic' if m['acyclic'] else '**CYCLIC**'} | "
               f"{delta(m['impl_edges'], baseline['impl_edges'])} of "
               f"{m['module_edges']} | "
@@ -2053,7 +2098,9 @@ def gen_violations(ctx):
               f"{', '.join(m['sc_fail']) or 'none'} |")
         A("")
         for opt, m in spec["options"]:
-            A(f"- **{opt['id']}** — {opt['note']}")
+            appl = (f" — APPLIED ({opt['applied']})" if opt.get("applied")
+                    else (f" — VOID ({opt['void']})" if opt.get("void") else ""))
+            A(f"- **{opt['id']}**{appl} — {opt['note']}")
             if m["carries"]:
                 A("  - *Module edges that gain a crate realisation:* "
                   + ", ".join(f"`{p} -> {c}` ({k.replace('_DEPENDENCY', '')})"
@@ -2312,6 +2359,11 @@ def citation_inversions(ctx, docs):
                 a, b = m.group(1), m.group(2)
                 if a == b or (a, b) in edges:
                     continue
+                if (a, b) in E.REHOMED_MODULE_EDGES:
+                    # excluded from the module graph by design (V-03b/V-04d
+                    # applied, addendum III): generated prose still cites them
+                    # as historical records, which is not an inversion.
+                    continue
                 if (b, a) not in reverse_only:
                     continue
                 # quoting another document's notation is not an assertion of ours
@@ -2409,6 +2461,23 @@ def main():
         if fid not in E.FINDINGS:
             err(f"RESOLUTIONS offers options for {fid}, which is not a finding")
         for opt in spec["options"]:
+            if opt.get("applied") or opt.get("void"):
+                # applied: the mutation is already baked into the tables, so
+                # its drop targets are legitimately absent from mod_pairs —
+                # require it to match what the tables now record instead.
+                # void: the option's premise was removed by the applied one.
+                for pair in opt["change"].get("drop_module_edges", []):
+                    if tuple(pair) not in E.REHOMED_MODULE_EDGES:
+                        err(f"{opt['id']}: applied drop target "
+                            f"`{pair[0]} -> {pair[1]}` is not in "
+                            "REHOMED_MODULE_EDGES")
+                if opt.get("applied"):
+                    carried = {(a, b) for a, b, _k, _e in E.CRATE_EDGES}
+                    for p, c, _k in opt["change"].get("add_crate_edges", []):
+                        if (p, c) not in carried:
+                            err(f"{opt['id']}: applied add_crate_edge "
+                                f"`{p} -> {c}` is not in CRATE_EDGES")
+                continue
             for p, c, k in opt["change"].get("add_crate_edges", []):
                 if p not in crate_names or c not in crate_names:
                     err(f"{opt['id']}: `{p} -> {c}` is not a crate pair")
@@ -2526,6 +2595,10 @@ def main():
           f"section {len(fwd_sec)}/{len(section_graph.edges)}")
     print(f"hidden dependencies     : " + ", ".join(f"{h}={len(i) if not isinstance(i, dict) else sum(len(v) for v in i.values())}"
                                                    for h, _t, _w, i in hidden))
+    for c, _t, o, _b in sec_checks:
+        if o and c in ("SC-1", "SC-2", "SC-3"):
+            err(f"{c} fails with {len(o)} offender(s) — SC-1/SC-2/SC-3 are "
+                "hard gates since addendum III (R-TRUST-04)")
     failed = [c for c, _t, o, _b in sec_checks + ref_checks if o]
     print(f"independence checks     : "
           f"{len(sec_checks) + len(ref_checks) - len(failed)} pass, {len(failed)} fail"
