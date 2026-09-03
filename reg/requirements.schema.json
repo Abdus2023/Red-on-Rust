@@ -1,0 +1,513 @@
+{
+  "$defs": {
+    "evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "establishes": {
+          "enum": [
+            "SPECIFIED",
+            "IMPLEMENTED",
+            "TESTED",
+            "VERIFIED",
+            "PROVEN",
+            "NONE"
+          ],
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "source",
+            "test",
+            "differential",
+            "mutation",
+            "crash-matrix",
+            "proof",
+            "repository-integrity-gate"
+          ],
+          "type": "string"
+        },
+        "reference": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "reference",
+        "establishes"
+      ],
+      "type": "object"
+    },
+    "hash": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "provenance": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_home": {
+          "additionalProperties": false,
+          "properties": {
+            "document": {
+              "type": "string"
+            },
+            "document_hash": {
+              "$ref": "#/$defs/hash"
+            },
+            "section": {
+              "pattern": "^§[0-9]{2}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "document",
+            "section",
+            "document_hash"
+          ],
+          "type": "object"
+        },
+        "frozen_addendum": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "frozen_source": {
+          "additionalProperties": false,
+          "properties": {
+            "document": {
+              "const": "Red-on-Rust.md"
+            },
+            "document_hash": {
+              "$ref": "#/$defs/hash"
+            },
+            "line_ranges": {
+              "items": {
+                "pattern": "^L[0-9]+(–[0-9]+)?$",
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "document",
+            "line_ranges",
+            "document_hash"
+          ],
+          "type": "object"
+        },
+        "registry_row": {
+          "additionalProperties": false,
+          "properties": {
+            "document": {
+              "type": "string"
+            },
+            "document_hash": {
+              "$ref": "#/$defs/hash"
+            },
+            "provenance_cell": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "document",
+            "provenance_cell",
+            "document_hash"
+          ],
+          "type": "object"
+        },
+        "source_document": {
+          "const": "spec/01-canonical-specification.md"
+        },
+        "source_document_hash": {
+          "$ref": "#/$defs/hash"
+        },
+        "source_hash": {
+          "$ref": "#/$defs/hash"
+        },
+        "source_section": {
+          "pattern": "^S-[0-9]{2}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_document",
+        "source_section",
+        "source_hash",
+        "source_document_hash",
+        "canonical_home",
+        "registry_row",
+        "frozen_source",
+        "frozen_addendum"
+      ],
+      "type": "object"
+    },
+    "requirement": {
+      "additionalProperties": false,
+      "properties": {
+        "atomic_categories": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "atomic_records": {
+          "items": {
+            "pattern": "^REQ-[A-Z]+-[0-9]{3}$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "atomic_verification_methods": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "category": {
+          "pattern": "^[A-Z]+$",
+          "type": "string"
+        },
+        "category_basis": {
+          "type": "string"
+        },
+        "cleaned_section": {
+          "pattern": "^S-[0-9]{2}$",
+          "type": "string"
+        },
+        "dependencies": {
+          "items": {
+            "$ref": "#/$defs/rid"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "dependencies_source": {
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/evidence"
+          },
+          "type": "array"
+        },
+        "global_invariants": {
+          "items": {
+            "pattern": "^GI-(SEC|DET|REC)-[0-9]{2}$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "$ref": "#/$defs/rid"
+        },
+        "implementation_targets": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "implementation_targets_source": {
+          "type": "string"
+        },
+        "mutations": {
+          "items": {
+            "pattern": "^M[0-9]{3}$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "negative_guarantee": {
+          "type": "boolean"
+        },
+        "normative_level": {
+          "enum": [
+            "MUST",
+            "MUST NOT",
+            "SHOULD",
+            "SHOULD NOT",
+            "MAY",
+            "IS",
+            "NON-NORMATIVE",
+            "AMBIGUOUS"
+          ],
+          "type": "string"
+        },
+        "normative_level_basis": {
+          "type": "string"
+        },
+        "normative_levels_present": {
+          "items": {
+            "enum": [
+              "MUST",
+              "MUST NOT",
+              "SHOULD",
+              "SHOULD NOT",
+              "MAY",
+              "IS",
+              "NON-NORMATIVE",
+              "AMBIGUOUS"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "related_findings": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "section": {
+          "pattern": "^§[0-9]{2}$",
+          "type": "string"
+        },
+        "section_title": {
+          "type": "string"
+        },
+        "security_classification": {
+          "additionalProperties": false,
+          "properties": {
+            "atomic_security_impact_max": {
+              "enum": [
+                "none",
+                "low",
+                "medium",
+                "high",
+                "critical",
+                null
+              ],
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "atomic_security_impacts": {
+              "items": {
+                "enum": [
+                  "none",
+                  "low",
+                  "medium",
+                  "high",
+                  "critical"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "basis": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "gi_sec_homes": {
+              "items": {
+                "pattern": "^GI-SEC-[0-9]{2}$",
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "security_audit_addendum": {
+              "type": "boolean"
+            },
+            "status": {
+              "enum": [
+                "CLASSIFIED",
+                "UNCLASSIFIED"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "status",
+            "gi_sec_homes",
+            "atomic_security_impact_max",
+            "atomic_security_impacts",
+            "security_audit_addendum",
+            "basis"
+          ],
+          "type": "object"
+        },
+        "security_relevant": {
+          "type": "boolean"
+        },
+        "short_title": {
+          "type": "string"
+        },
+        "statement": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "SPECIFIED",
+            "IMPLEMENTED",
+            "TESTED",
+            "VERIFIED",
+            "PROVEN"
+          ],
+          "type": "string"
+        },
+        "status_source": {
+          "type": "string"
+        },
+        "test_targets": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "test_targets_source": {
+          "type": "string"
+        },
+        "verification_method": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "verification_method_source": {
+          "type": "string"
+        },
+        "verification_tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "section",
+        "section_title",
+        "cleaned_section",
+        "category",
+        "category_basis",
+        "atomic_categories",
+        "short_title",
+        "statement",
+        "normative_level",
+        "normative_levels_present",
+        "normative_level_basis",
+        "negative_guarantee",
+        "dependencies",
+        "dependencies_source",
+        "security_relevant",
+        "security_classification",
+        "global_invariants",
+        "implementation_targets",
+        "implementation_targets_source",
+        "test_targets",
+        "test_targets_source",
+        "verification_tags",
+        "mutations",
+        "verification_method",
+        "verification_method_source",
+        "atomic_verification_methods",
+        "evidence",
+        "status",
+        "status_source",
+        "atomic_records",
+        "related_findings",
+        "provenance"
+      ],
+      "type": "object"
+    },
+    "rid": {
+      "pattern": "^R-[A-Z]+-[0-9]{2}$",
+      "type": "string"
+    }
+  },
+  "$id": "https://red-on-rust/reg/requirements.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "authority_chain": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "conditional_verdicts": {
+      "additionalProperties": false,
+      "properties": {
+        "REF1": {
+          "const": "REF1-CONDITIONAL"
+        },
+        "V1": {
+          "const": "V1-CONDITIONAL"
+        }
+      },
+      "required": [
+        "REF1",
+        "V1"
+      ],
+      "type": "object"
+    },
+    "derived_artifact_notice": {
+      "type": "string"
+    },
+    "evidence_rule": {
+      "type": "string"
+    },
+    "normative_level_vocabulary": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "registry": {
+      "type": "string"
+    },
+    "requirement_count": {
+      "const": 184,
+      "type": "integer"
+    },
+    "requirements": {
+      "items": {
+        "$ref": "#/$defs/requirement"
+      },
+      "maxItems": 184,
+      "minItems": 184,
+      "type": "array"
+    },
+    "sources": {
+      "additionalProperties": {
+        "pattern": "^sha256:[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "type": "object"
+    },
+    "status_ladder": {
+      "const": [
+        "SPECIFIED",
+        "IMPLEMENTED",
+        "TESTED",
+        "VERIFIED",
+        "PROVEN"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "registry",
+    "derived_artifact_notice",
+    "authority_chain",
+    "status_ladder",
+    "normative_level_vocabulary",
+    "evidence_rule",
+    "conditional_verdicts",
+    "sources",
+    "requirement_count",
+    "requirements"
+  ],
+  "title": "Red-on-Rust machine-readable requirements registry",
+  "type": "object"
+}

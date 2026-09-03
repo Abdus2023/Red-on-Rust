@@ -57,6 +57,9 @@ CHECKERS: list[tuple[str, str]] = [
     ("final/_build.py", "FINAL1 specification compiler: re-renders the canonical set in memory and "
                         "fails on drift vs the committed final/*.md (verbatim-transcription identity, "
                         "reference-resolution and evidence-discipline battery; results in final/07)"),
+    ("reg/_compile.py", "R-REG requirements-registry compiler: recompiles reg/requirements.json from "
+                        "final/03 + spec/01 in memory, runs the 20-point identity/provenance/status "
+                        "battery (184/184, no promotion, hashes re-derived) and fails on drift vs reg/*"),
 ]
 
 # Extra arguments for individual checkers. The repository gate runs
