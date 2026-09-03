@@ -54,6 +54,9 @@ CHECKERS: list[tuple[str, str]] = [
     ("audit/_crash_consistency_checker.py", "audit gate: persistence causal ordering, T0-T6 matrix, no-silent-repair, recovery replay"),
     ("audit/_reference_independence_checker.py", "audit gate: ror-reference independence boundary (10 forbidden surfaces, 5 crate-edge forbiddens, distinct Ref* ids) + reports the semantic-coupling vectors (F-01..F-09) that could invalidate differential testing"),
     ("audit/_checker_mutations.py", "mutation-tests the checkers themselves"),
+    ("final/_build.py", "FINAL1 specification compiler: re-renders the canonical set in memory and "
+                        "fails on drift vs the committed final/*.md (verbatim-transcription identity, "
+                        "reference-resolution and evidence-discipline battery; results in final/07)"),
 ]
 
 # Extra arguments for individual checkers. The repository gate runs
@@ -72,6 +75,8 @@ NON_CHECKERS: dict[str, str] = {
     "req/_anchors.py":    "data module: shared provenance constants",
     "mod/_ownership.py":  "data module: the ownership map",
     "dep/_edges.py":      "data module: typed edge tables",
+    "final/_parse.py":    "data module: parsers for the cleaned spec/·req/·mod/·term/·audit/ inputs",
+    "final/_content.py":  "data module: curated FINAL1 tables (GI registry, glossary rows, reports)",
 }
 
 
