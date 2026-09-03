@@ -35,6 +35,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-ARCH-02 | Independent verification architecture | L41406–41424 | SPECIFIED | ror-differential | R-REF-01 |
 | R-ARCH-03 | Block has no path into step(); plan constructors private | L9086–9097, L39296–39318 | SPECIFIED | ror-compiler, ror-runtime | R-ORDER-03 (first security gate) |
 | R-ARCH-04 | Dependency direction (algebra→kernel→plan→actor→global→scheduler→host) | L9059–9085 | SPECIFIED | all | Cargo dependency review |
+| R-ARCH-05 | Isolation posture decided: ladder retired — in-process structural isolation is the frozen minimum with residual risk (host compromise = machine compromise) recorded; out-of-process host adapter (canonical-bytes effects/receipts) required where host not fully trusted; in-process executor testkit-only (C-93 resolved) | addendum (SEC-013) | SPECIFIED | ror-host | dependency/visibility hard gate; dual-host-mode differential |
 | R-PLANNER-01 | PlanProposal {observation_sequence, block, metadata}; LLMOutput ∈ Data | L27176–27198 | SPECIFIED | ror-agent | — |
 | R-PLANNER-02 | Planner cannot allocate/authorize/modify/invoke/bypass | L27271–27285, L37781–37790 | SPECIFIED | ror-agent | R-PLANNER-05(1) |
 | R-PLANNER-03 | Staleness check; StalePlan rejection, no state mutation | L27199–27236, L28373 | SPECIFIED | ror-agent, ror-runtime | R-PLANNER-05(2) |
@@ -80,6 +81,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-CAP-07 | Valid(c,t) incl. ancestor liveness; lazy revocation | L6434–6445, L6647–6656 | SPECIFIED | ror-kernel | CAP-REVOCATION-ANCESTOR, M004 |
 | R-CAP-08 | Algebra theorems 1–3 (stated, proof-sketch only) | L6422–6433, L6657–6671 | SPECIFIED | ror-kernel | property tests (NOT PROVEN) |
 | R-CAP-09 | Explicit logical time; no wall-clock | L6434–6436, L38858–38890 | SPECIFIED | ror-core, ror-runtime | determinism tests |
+| R-CAP-10 | AdmissibleConstraint defined: decidable well-formedness per semantic domain (O/S/Q/R/T); inadmissible constraint faults (InvalidConstraint), never identity/top-default; compile-time validation of attacker-authored constraints (C-94 resolved; M030) | addendum (SEC-014) | SPECIFIED | ror-kernel, ror-compiler | M030, compiler negative suite |
 
 ## S-10 (cont.) / S-11 Budget
 | ID | Obligation (short) | Provenance | Status | Impl→ | Verify→ |
@@ -89,6 +91,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-KERN-03 | Authority internals pub(crate)/inaccessible | L39397–39407 | SPECIFIED | ror-kernel | visibility + mutation M005-class |
 | R-KERN-04 | Possession-gated authorization: authorize(holder, cap, effect, t) resolves the CapRef through the actor capability context; global-arena no-holder authorize superseded; CapRef bits never suffice (C-77 resolved) | addendum (SEC-002) | SPECIFIED | ror-kernel | M021, brute-force CapRef exhaustion from a non-holder |
 | R-KERN-05 | CapabilityContext real frozen possession type; unit-type sketch superseded; snapshots carry capability context; recovery reconstructs possession before gate authorization | addendum (SEC-002) | SPECIFIED | ror-kernel, ror-persistence | snapshot/recovery round-trip of possession sets |
+| R-KERN-06 | Root-grant protocol frozen: Grant(source, authority, ceiling, t) with durable CapabilityGranted record, authority ≼ deployment ceiling, root minted once at initialization; Supervisor.host removed or issued-effect-only (R-HOST-02 binds all callers); planner I/O crate-separated (C-95 resolved) | addendum (SEC-015) | SPECIFIED | ror-kernel, ror-agent | PanicHost-wraps-all-handles conformance; grant audit test |
 | R-BUDGET-01 | B = ⟨C=⟨F,I,D⟩, R=⟨M,S⟩, W⟩ semantics | L8683–8700, L9161–9175 | SPECIFIED | ror-core | U-01 (D semantics) |
 | R-BUDGET-02 | Checked arithmetic; no saturating_sub | L9207–9245, L38044–38046 | SPECIFIED | ror-core | M007, M009 |
 | R-BUDGET-03 | ReserveOK / ReleaseOK predicates | L7487–7520, L8692–8696 | SPECIFIED | ror-core | reservation property tests |
@@ -97,6 +100,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-BUDGET-06 | Time advancement δ_t (pure=0, host/scheduler>0, t+δ_t ≤ W) | L8698–8700, L10164–10168 | SPECIFIED | ror-runtime | U-07 |
 | R-BUDGET-07 | CostModel contract; Consumable ≠ Reserved typing | L9155–9205, L10171–10177 | SPECIFIED | ror-core | — |
 | R-BUDGET-08 | ¬BudgetOK ⇒ fault(BudgetExhausted), no partial debit | L7345–7352, L7410–7419 | SPECIFIED | ror-runtime | Track C budget-gate test |
+| R-BUDGET-09 | Escrow disposition totality: every escrowed unit leaves via exactly one frozen path (Completed / host-failure consumption / durable Reconciled); live faults unified with crash reconciliation; logical-time deadline bound to Indeterminate; no quiescent strand (C-97 resolved; M035) | addendum (SEC-021) | SPECIFIED | ror-runtime, ror-persistence | M035, ledger liveness, mixed crash+live harness |
 
 ## S-12 Effects / S-13 Durability / S-14 Host
 | ID | Obligation (short) | Provenance | Status | Impl→ | Verify→ |
@@ -133,6 +137,7 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-ACTOR-07 | Deterministic concurrency theorem | L25759–25766 | SPECIFIED | ror-runtime | global differential (Track D) |
 | R-ACTOR-08 | No amplification / no teleportation theorems | L26048–26070 | SPECIFIED | ror-runtime | teleportation test, amplification test |
 | R-ACTOR-09 | Spawn transfers no capabilities by default (delegation is the only default path); explicit manifest + constraint compiler-checked, strictly attenuated; Authority(child) ≺ parent; trust_level phantom retracted; BudgetAllocationSpec bounds (C-82 resolved; M025) | addendum (SEC-006) | SPECIFIED | ror-runtime, ror-kernel | M025, spawn fan-out amplification tests |
+| R-ACTOR-10 | Mailbox resource admission: enqueue requires recipient capacity (M reservation; ReservedCapacityExceeded faults the sender, sender pays); payload-proportional send cost over canonical length; constructed value size bounded against constructor's M; footprint bounded by reserved M (C-96 resolved; M033) | addendum (SEC-019) | SPECIFIED | ror-runtime | M033, sender-flood stress, footprint-bounded property |
 | R-MARSHAL-01 | Recursive capability rejection in ordinary marshal | L41647–41658, L25674–25701, L37946–37951 | SPECIFIED | ror-runtime | MARSHAL-NO-RAW-CAPABILITY |
 | R-MARSHAL-02 | Explicit delegation only; DelegatedCapability envelope; ≼ parent | L25972–26001, L37953–37959 | SPECIFIED | ror-runtime, ror-kernel | Track C (delegation) |
 | R-MARSHAL-03 | MarshalledValue = canonical bytes; unmarshal(marshal(v)) = v | L25674–25701 | SPECIFIED | ror-runtime | Track B (marshalling) |
@@ -214,4 +219,4 @@ Every normative unit extracted from the frozen source. **Status** is evidence-ga
 | R-CLAIM-03 | Engineering response format; CONFLICT reporting | L38808–38846 | SPECIFIED | process | — |
 | R-CLAIM-04 | Start condition (no new semantic phase; reference alongside) | L38921–38928 | SPECIFIED | process | — |
 
-**Total: 168 obligations** (148 transcribed from the frozen source + 20 post-audit frozen addenda: R-ACTOR-09, R-CANON-12, R-CANON-13, R-COMPILE-06, R-CORE-11, R-CORE-12, R-CORE-13, R-EFFECT-08, R-HOST-06, R-KERN-04, R-KERN-05, R-MARSHAL-05, R-MARSHAL-06, R-PERSIST-07, R-PERSIST-08, R-PLANNER-06, R-PLANNER-07, R-RECOV-08, R-TRUST-04, R-TRUST-05). All `SPECIFIED`. None may be promoted without repository evidence per `00-overview.md` §2.
+**Total: 173 obligations** (148 transcribed from the frozen source + 25 post-audit frozen addenda: R-ARCH-05, R-ACTOR-09, R-ACTOR-10, R-BUDGET-09, R-CANON-12, R-CANON-13, R-CAP-10, R-COMPILE-06, R-CORE-11, R-CORE-12, R-CORE-13, R-EFFECT-08, R-HOST-06, R-KERN-04, R-KERN-05, R-KERN-06, R-MARSHAL-05, R-MARSHAL-06, R-PERSIST-07, R-PERSIST-08, R-PLANNER-06, R-PLANNER-07, R-RECOV-08, R-TRUST-04, R-TRUST-05). All `SPECIFIED`. None may be promoted without repository evidence per `00-overview.md` §2.

@@ -309,13 +309,12 @@ def main() -> int:
     # new X- entry.  The expectations are updated here explicitly rather than
     # left to fail, so that the growth of the registers is a recorded change and
     # not silent drift.  The post-audit frozen addenda grew the registers again:
-    # C-77 (SEC-001/SEC-002 remediation, addendum I), C-78…C-81
-    # (SEC-003/004/005/016/018, addendum II), C-82…C-85 (SEC-006/020/022,
-    # addendum III), and C-86…C-92 (SEC-007/008/009/010/011/012/017,
-    # addendum IV) — 76 -> 81 -> 85 -> 92, recorded for the same reason
+    # C-77 (addendum I), C-78…C-81 (addendum II), C-82…C-85 (addendum III),
+    # C-86…C-92 (addendum IV), and C-93…C-97 (SEC-013/014/015/019/021,
+    # addendum V) — 76 -> 81 -> 85 -> 92 -> 97, recorded for the same reason
     # (raw rows incl. the C-39 pointer; the index excludes it).
-    if len(c_ids) != 92:
-        err(f"expected 92 C- rows in spec/06, found {len(c_ids)}")
+    if len(c_ids) != 97:
+        err(f"expected 97 C- rows in spec/06, found {len(c_ids)}")
     if len(u_ids) != 28:
         err(f"expected 28 U- headings in spec/09, found {len(u_ids)}")
 

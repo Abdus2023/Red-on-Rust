@@ -1,12 +1,18 @@
 # Addendum V — final freeze (SEC-013 / 014 / 015 / 019 / 021) — register closed
 
-**Status: DRAFT FOR SPECIFICATION-OWNER ADOPTION — not applied.** The exact
-edit set lives in `audit/spec_addendum5.py` (this draft is generated from its
-constants; the two cannot drift). Dry run = full-fidelity: a `git archive`
-sandbox of HEAD receives the edits and the entire verification stack
-(`audit/spec_check.py`, `spec/_build_index.py`, `req/_validate.py`) runs
-there. `--apply` executes in place; rollback is `git revert`. With adoption,
-all 23 audit findings are frozen at the specification level.
+**Status: APPLIED** via `audit/spec_addendum5.py --apply` (adoption commit on
+`arena/01a063c4-red-on-rust`; post-apply verification on the real tree:
+173 obligations / 173 matrix rows / 148 records, `spec/_check.py` D1=0 exit 0
+(warnings identical to the pre-apply set), index rebuilt at 173/96/35/19,
+`req/_validate.py` exit 0 / ERRORS 0, applier idempotency guard armed). With
+adoption, **all 23 audit findings are frozen at the specification level**.
+This file is retained as the review record of exactly what was adopted and
+why; rollback is `git revert` of the adoption commit. The exact edit set
+lives in `audit/spec_addendum5.py` (this draft was generated from its
+constants, so the two cannot drift); its dry run is full-fidelity — a
+`git archive` sandbox of HEAD receives the edits and the entire verification
+stack (`audit/spec_check.py`, `spec/_build_index.py`, `req/_validate.py`)
+runs there.
 
 ## 1. What this freezes (report §6 item 8)
 

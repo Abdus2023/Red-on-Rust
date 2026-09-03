@@ -31,12 +31,12 @@
     },
     "id_schemes": {
       "S-NN": "specification section (24)",
-      "R-AREA-NN": "normative requirement/obligation (168; 148 source-transcribed + 20 post-audit frozen addenda)",
-      "C-NN": "contradiction/ambiguity finding (91 indexed; 92 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
+      "R-AREA-NN": "normative requirement/obligation (173; 148 source-transcribed + 25 post-audit frozen addenda)",
+      "C-NN": "contradiction/ambiguity finding (96 indexed; 97 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
       "U-NN": "unresolved item requiring explicit decision (28)",
       "M-NN": "milestone M0-M11",
       "TAG": "source verification-obligation tags (19; 17 frozen-source + 2 post-audit addenda)",
-      "M0NN": "baseline mutation registry (32; 18 baseline + 14 post-audit: M019–M029, M031, M032, M034)",
+      "M0NN": "baseline mutation registry (35; 18 baseline + 17 post-audit: M019–M035)",
       "ROR-NNN": "first-sprint tasks (16)"
     },
     "documents": {
@@ -45,7 +45,7 @@
       "03-obligation-matrix.md": "all requirements with stable IDs, status, provenance",
       "04-dependency-graph.md": "section/object/verification dependency graphs + DOT",
       "05-terminology.md": "glossary, normalization rules, under-specified terms",
-      "06-contradictions-ambiguities.md": "findings C-01..C-92 with severity and status",
+      "06-contradictions-ambiguities.md": "findings C-01..C-97 with severity and status",
       "07-implementation-mapping.md": "obligations -> crates/modules; actual repo state; milestone crosswalk",
       "08-verification-mapping.md": "obligations -> tags/tests/evidence; claim ladder per theorem",
       "09-unresolved-decisions.md": "items U-01..U-34 requiring explicit architectural decisions",
@@ -129,7 +129,8 @@
         "R-ARCH-01",
         "R-ARCH-02",
         "R-ARCH-03",
-        "R-ARCH-04"
+        "R-ARCH-04",
+        "R-ARCH-05"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -254,7 +255,8 @@
         "R-CAP-06",
         "R-CAP-07",
         "R-CAP-08",
-        "R-CAP-09"
+        "R-CAP-09",
+        "R-CAP-10"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -274,7 +276,8 @@
         "R-KERN-02",
         "R-KERN-03",
         "R-KERN-04",
-        "R-KERN-05"
+        "R-KERN-05",
+        "R-KERN-06"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -299,7 +302,8 @@
         "R-BUDGET-05",
         "R-BUDGET-06",
         "R-BUDGET-07",
-        "R-BUDGET-08"
+        "R-BUDGET-08",
+        "R-BUDGET-09"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -397,7 +401,8 @@
         "R-ACTOR-06",
         "R-ACTOR-07",
         "R-ACTOR-08",
-        "R-ACTOR-09"
+        "R-ACTOR-09",
+        "R-ACTOR-10"
       ],
       "provenance": {
         "file": "Red-on-Rust.md",
@@ -1181,6 +1186,28 @@
         "Cargo dependency review"
       ],
       "related_findings": []
+    },
+    {
+      "id": "R-ARCH-05",
+      "section": "S-04",
+      "title": "Isolation posture decided; ladder retired (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-host"
+      ],
+      "verification": [
+        "dependency/visibility hard gate",
+        "dual-host-mode differential"
+      ],
+      "related_findings": [
+        "C-93"
+      ]
     },
     {
       "id": "R-PLANNER-01",
@@ -1979,6 +2006,29 @@
       ]
     },
     {
+      "id": "R-CAP-10",
+      "section": "S-09",
+      "title": "AdmissibleConstraint defined; fault never identity (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel",
+        "ror-compiler"
+      ],
+      "verification": [
+        "M030",
+        "compiler negative suite"
+      ],
+      "related_findings": [
+        "C-94"
+      ]
+    },
+    {
       "id": "R-KERN-01",
       "section": "S-10",
       "title": "CapRef opaque, generation-safe, private fields, kernel-only construction",
@@ -2085,6 +2135,29 @@
       ],
       "related_findings": [
         "C-77"
+      ]
+    },
+    {
+      "id": "R-KERN-06",
+      "section": "S-10",
+      "title": "Root-grant protocol; Supervisor.host; planner-I/O separation (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-kernel",
+        "ror-agent"
+      ],
+      "verification": [
+        "PanicHost-wraps-all-handles conformance",
+        "grant audit test"
+      ],
+      "related_findings": [
+        "C-95"
       ]
     },
     {
@@ -2267,6 +2340,30 @@
         "Track C budget-gate test"
       ],
       "related_findings": []
+    },
+    {
+      "id": "R-BUDGET-09",
+      "section": "S-11",
+      "title": "Escrow disposition totality incl. live faults (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime",
+        "ror-persistence"
+      ],
+      "verification": [
+        "M035",
+        "ledger liveness",
+        "mixed crash+live harness"
+      ],
+      "related_findings": [
+        "C-97"
+      ]
     },
     {
       "id": "R-EFFECT-01",
@@ -2880,6 +2977,29 @@
       ],
       "related_findings": [
         "C-82"
+      ]
+    },
+    {
+      "id": "R-ACTOR-10",
+      "section": "S-15",
+      "title": "Mailbox resource admission; payload-proportional cost (frozen addendum)",
+      "provenance": {
+        "file": "01-canonical-specification.md",
+        "line_ranges": [],
+        "note": "post-audit frozen addendum (SEC-001/SEC-002); no source transcription"
+      },
+      "status": "SPECIFIED",
+      "dependencies": [],
+      "implementation": [
+        "ror-runtime"
+      ],
+      "verification": [
+        "M033",
+        "sender-flood stress",
+        "footprint-bounded property"
+      ],
+      "related_findings": [
+        "C-96"
       ]
     },
     {
@@ -5821,6 +5941,88 @@
           "30542"
         ]
       }
+    },
+    {
+      "id": "C-93",
+      "title": "C-19/U-05 record the isolation ladder (in-process / WASM / OS-process) as an open surface question; the security consequence — the frozen architecture gives a misbehaving host memory adjacency to the entire machine (same process, same address space; \"Partial\" trust is enforced by no structure at all), and the ladder is neither implemented nor retired — is absent from the register (audit SEC-013)",
+      "severity": "MAJOR",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "1292-1313",
+          "1297"
+        ]
+      }
+    },
+    {
+      "id": "C-94",
+      "title": "AMB-12/U-09 record AdmissibleConstraint as a named-but-undefined premise of every attenuation transition (L8717–8723, orphaned trait L10171), with Constraint authored inside untrusted Blocks (L12177–12181) and the Invalid/InvalidConstraint fault drift (C-56); the security consequence — under the ⊤-default an inadmissible constraint silently does nothing, so spawn/delegate recipients hold unattenuated parent authority while the event log records a narrowed derivation (authority laundering with a clean audit trail), and the fault path is equally undefined — is absent (audit SEC-014)",
+      "severity": "MAJOR",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "8717-8723",
+          "7858",
+          "10068",
+          "10171",
+          "12177-12181"
+        ]
+      }
+    },
+    {
+      "id": "C-95",
+      "title": "No frozen protocol says who may call authority construction, with what policy, under what ceiling, or how a grant is recorded (L3118–3160 names \"an enclosing supervisor, policy engine, or fresh delegation event\" — the channel itself is unspecified); Supervisor holds a bare host: Box<dyn HostExecutor> (L26807–26812); and the crate hosting untrusted planner I/O (ror-agent) links compiler and runtime directly — the trust boundary is drawn through the middle of a crate (audit SEC-015)",
+      "severity": "MAJOR",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "3118-3160",
+          "263",
+          "26807-26812"
+        ]
+      }
+    },
+    {
+      "id": "C-96",
+      "title": "The frozen send transition debits only the sender's consumables and never checks or reserves the recipient's memory at enqueue (push_back unconditional; no mailbox capacity field exists in the corpus); no rule makes send cost payload-proportional while Value includes unbounded Bytes/String; a never-Receiveing child retains its M reservation while its mailbox grows uncharged — the machine conserves budget while its actual memory footprint is unbounded relative to every frozen dimension (audit SEC-019)",
+      "severity": "MAJOR",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "8780-8786",
+          "25702-25730",
+          "26007-26030",
+          "10168",
+          "2066",
+          "25573-25615"
+        ]
+      }
+    },
+    {
+      "id": "C-97",
+      "title": "Escrow disposition rules exist only for completion, host-failure receipts, crash-recovery reconciliation, and T1 discard; no rule anywhere disposes of escrow for {Issued, ¬Completed} in a live machine whose actor faulted, was halted by the (unfrozen) fatal-fault policy, or whose partial-trust host simply never answers — never answering is inside the host's declared behavior envelope, and the mismatch-fault variant is attacker-reachable via corrupted receipts (audit SEC-021)",
+      "severity": "MAJOR",
+      "status": "resolved-by-addendum",
+      "resolved_into": "U-none",
+      "provenance": {
+        "file": "Red-on-Rust.md",
+        "line_ranges": [
+          "23546-23552",
+          "23574-23580",
+          "25486-25490",
+          "35159-35176",
+          "41823-41841",
+          "26807-26817"
+        ]
+      }
     }
   ],
   "unresolved": [
@@ -6322,6 +6524,27 @@
       ]
     },
     {
+      "id": "M030",
+      "defect": "inadmissible constraint treated as top",
+      "kills_evidence_for": [
+        "R-CAP-10"
+      ]
+    },
+    {
+      "id": "M033",
+      "defect": "enqueue without recipient capacity check",
+      "kills_evidence_for": [
+        "R-ACTOR-10"
+      ]
+    },
+    {
+      "id": "M035",
+      "defect": "stranded escrow silently reclaimed without reconciliation",
+      "kills_evidence_for": [
+        "R-BUDGET-09"
+      ]
+    },
+    {
       "id": "M026",
       "defect": "accept future-tagged proposal",
       "kills_evidence_for": [
@@ -6644,6 +6867,8 @@
         "R-KERN-03",
         "R-KERN-04",
         "R-KERN-05",
+        "R-KERN-06",
+        "R-CAP-10",
         "R-MARSHAL-05"
       ]
     },
@@ -6682,7 +6907,8 @@
         "R-CORE-11",
         "R-CORE-12",
         "R-HOST-06",
-        "R-CORE-13"
+        "R-CORE-13",
+        "R-BUDGET-09"
       ]
     },
     {
@@ -6710,7 +6936,9 @@
         "R-MARSHAL-03",
         "R-MARSHAL-04",
         "R-MARSHAL-06",
-        "R-ACTOR-09"
+        "R-ACTOR-09",
+        "R-ACTOR-10",
+        "R-ARCH-05"
       ]
     },
     {
@@ -7005,6 +7233,8 @@
         "R-KERN-03",
         "R-KERN-04",
         "R-KERN-05",
+        "R-KERN-06",
+        "R-CAP-10",
         "R-PERSIST-07",
         "R-CORE-11",
         "R-TRUST-03"
@@ -7052,7 +7282,10 @@
         "R-ACTOR-09",
         "R-CORE-12",
         "R-CORE-13",
-        "R-HOST-06"
+        "R-HOST-06",
+        "R-ACTOR-10",
+        "R-BUDGET-09",
+        "R-ARCH-05"
       ],
       "depends_on": [
         "ror-core",
@@ -7118,7 +7351,8 @@
         "R-PLANNER-05",
         "R-PLANNER-06",
         "R-PLANNER-07",
-        "R-RECOV-08"
+        "R-RECOV-08",
+        "R-KERN-06"
       ],
       "depends_on": [
         "ror-core",

@@ -36,7 +36,7 @@ The master prompt §21 COVERAGE (L38544–38577) freezes this tag list; mileston
 | `EFFECT-RECEIPT-RESULT-NO-AUTHORITY` | R-EFFECT-08 (post-audit addendum) | Receipt-result admission: result payload is data-domain only, capability/closure-free at any nesting depth, verified before resumption (mutations M019, M020) | NONE |
 | `RECOVERY-REVOCATION-DURABLE` | R-PERSIST-07 (post-audit addendum) | Revocation survives crash: crash matrix T0–T6 with revocation committed before the crash point; revoked caps stay revoked; dangling/generation-mismatched CapRefs ⇒ `RecoveryFault` (mutation M023) | NONE |
 
-## 2. Mutation registry → obligation map (M001–M029, M031, M032, M034, R-TEST-04)
+## 2. Mutation registry → obligation map (M001–M035, R-TEST-04)
 
 | Mutant | Injected defect | Obligation it must kill evidence for |
 |---|---|---|
@@ -67,6 +67,9 @@ The master prompt §21 COVERAGE (L38544–38577) freezes this tag list; mileston
 | M025 | spawn clones parent context unattenuated | R-ACTOR-09 |
 | M032 | contains_capability skips `FunctionValue.env` | R-MARSHAL-06 |
 | M034 | release failure silently ignored (`unwrap` → `let _`) | R-CORE-12 |
+| M030 | inadmissible constraint treated as ⊤ | R-CAP-10 |
+| M033 | enqueue without recipient capacity check | R-ACTOR-10 |
+| M035 | stranded escrow silently reclaimed to `available` without reconciliation | R-BUDGET-09 |
 | M026 | accept future-tagged proposal | R-PLANNER-06 |
 | M027 | observation includes CapRef | R-PLANNER-07 |
 | M028 | reconciliation resolves Indeterminate as NotExecuted / releases escrow without admissible outcome | R-RECOV-08 |
