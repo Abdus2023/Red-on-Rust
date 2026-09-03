@@ -7359,7 +7359,8 @@
       "depends_on": [
         "ror-core",
         "ror-compiler",
-        "ror-runtime"
+        "ror-runtime",
+        "ror-persistence"
       ]
     },
     {

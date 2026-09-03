@@ -74,7 +74,8 @@ A repository-wide search of `req/*.md`, `spec/*.md` and `mod/*.md` for the line 
 - **severity:** BLOCKING
 - **constraint:** crate DAG completeness (R-REPO-02, R-ARCH-03)
 - L39962-39998 §17 freezes `fn execute(plan: &ExecutablePlan)` with `ExecutablePlan { ir, bounds, _sealed: Sealed }` and construction `pub(crate) fn finalize(...)` restricted to the compiler (L39947-39950 §16). `pub(crate)` privacy is per-crate, so the type must either be exported from `ror-compiler` (which requires the edge `ror-runtime -> ror-compiler`) or live in `ror-core` behind a seal that Rust cannot express as `pub(crate)`. `spec/07` §6 and `spec/10-index.json` state `ror-runtime -> ror-core, ror-kernel` only, i.e. they silently assume the second option without specifying the sealing mechanism. §13's diagram (L39762-39790) shows `ror-compiler -> ror-runtime`, i.e. the first.
-- **decision required:** Fix the crate home of `ExecutablePlan` and the sealing mechanism; add the resulting edge to `spec/07` §6. Needs a new `U-` item (no existing U-item covers it — `spec/09` has 16). L39831 is the only frozen sentence that speaks to the choice — it permits adjusting the compiler/kernel direction where implementation mechanics require it, provided the compiler never receives authority to execute effects — and no document in `spec/`, `req/` or `mod/` cites it. `dep/05` §7 prices both answers.
+- **decision:** Fix the crate home of `ExecutablePlan` and the sealing mechanism; add the resulting edge to `spec/07` §6. Needs a new `U-` item (no existing U-item covers it — `spec/09` has 16). L39831 is the only frozen sentence that speaks to the choice — it permits adjusting the compiler/kernel direction where implementation mechanics require it, provided the compiler never receives authority to execute effects — and no document in `spec/`, `req/` or `mod/` cites it. `dep/05` §7 prices both answers.
+- **status:** RESOLVED — V-01a applied (owner decision 2026-09-03, frozen addendum VI): ExecutablePlan + Sealed homed in ror-core; construction stays compiler-only via a PlanSeal token denied by clippy disallowed-methods outside ror-compiler (R-REPO-03 Track-B; R-ARCH-03 unchanged). No crate edge results — ror-runtime already depends on ror-core — so the compiler->runtime TYPE entry is closed as not-needed and removed from CRATE_MISSING_EDGES. The MOD-02 -> MOD-05 module edge remains a specification-layer statement. No U- item was created (the decision is taken, not deferred).
 
 ### V-02 — The frozen forbidden-edge list is not tracked by any obligation or atomic record
 
@@ -134,7 +135,8 @@ A repository-wide search of `req/*.md`, `spec/*.md` and `mod/*.md` for the line 
 - **severity:** MAJOR
 - **constraint:** crate DAG completeness (R-REPO-02)
 - `mod/_ownership.py` gives MOD-04's crate as 'ror-core (+ gates in ror-runtime / ror-kernel)' and `spec/07` §2 splits the budget obligations across `ror-core` (R-BUDGET-01…07) and the runtime gates. Eight of MOD-04's edges therefore have an undecidable crate realisation, including the two that close cycles (`MOD-03 <-> MOD-04` ceiling operand, `MOD-04 <-> MOD-11/12` escrow durability). `ror-core -> ror-kernel` is forbidden (L39821 §14), so the shared ceiling/operand types must live in `ror-core`; the gate *calls* must live in `ror-runtime`. That split is never stated.
-- **decision required:** Split MOD-04 into a `ror-core` algebra part and a `ror-runtime` gate part (two modules, or one module with an explicit two-crate home), then re-check the crate realisability of its edges.
+- **decision:** Split MOD-04 into a `ror-core` algebra part and a `ror-runtime` gate part (two modules, or one module with an explicit two-crate home), then re-check the crate realisability of its edges.
+- **status:** RESOLVED — explicit two-crate home stated (owner decision 2026-09-03, frozen addendum VI): algebra + operand types in ror-core, per-transition gate calls in ror-runtime, ror-kernel consumes core operand types (the R-REPO-02 'budget primitives' reading is superseded, quoted). MOD-04 stays one module; mod/04, the ownership map and spec/07 §3 state the split. Its edges' crate realisability is now decidable against spec/07 §6.
 
 ### V-10 — `mod/_ownership.MODULE_DEPS` asserts crate-level edges that `spec/07` §6 does not carry — one of them in a forbidden direction
 
@@ -142,7 +144,7 @@ A repository-wide search of `req/*.md`, `spec/*.md` and `mod/*.md` for the line 
 - **constraint:** crate DAG completeness (R-REPO-02) + forbidden edges (L39807-39828 §14)
 - `mod/_ownership.MODULE_DEPS` marks 23 of its 25 entries `crate`. Checked against `spec/07` §6 (`dep/_graph.py` ID-6), **5 imply a crate edge that no crate list carries**. Two are production couplings. (a) `MOD-11 -> MOD-08` — 'request step 14 calls `ror-persistence` append/sync' — needs `ror-persistence -> ror-runtime`, i.e. `ror-runtime` depending on `ror-persistence`. That call is the hinge of R-DUR-02 (no external effect before the journal is durable), so the single most load-bearing cross-crate call in the design is the one the crate list omits. (b) `MOD-03 -> MOD-04` — 'budget primitives co-located with ror-kernel; ceiling operand from the algebra' — needs `ror-core -> ror-kernel`, which L39821 §14 forbids outright; the note is independent evidence for V-09, because the module table itself treats MOD-04's primitives as kernel-resident while `crate_of_module()` homes MOD-04 in `ror-core`. The other three (`MOD-17 -> MOD-15`, `MOD-15 -> MOD-16`, `MOD-17 -> MOD-16`) have a non-crate home on at least one side (`tests/`, `mutations/registry.toml`), so they are dev couplings, but the `crate` label is wrong for them too.
 - **decision:** Add `ror-persistence -> ror-runtime` to `spec/07` §6, or state the journal-trait inversion explicitly (which flips the edge the other way and must then be checked against the persistence-before-runtime build order). Re-label the three test-side entries. Settle V-09 before deciding (b).
-- **status:** RESOLVED IN PART — V-10a applied with addendum III (R-TRUST-05, C-85): spec/07 §6 gains ror-persistence -> ror-runtime and CRATE_EDGES/`spec/10-index.json` carry it; V-10b is rejected. V-10c (the PlannerAccepted recording edge) remains open, and V-09's MOD-03 -> MOD-04 question is unaffected.
+- **status:** RESOLVED — V-10a applied with addendum III (R-TRUST-05, C-85) and V-10c applied with addendum VI (owner decision 2026-09-03): spec/07 §6 carries both ror-persistence -> ror-runtime (the hinge) and ror-persistence -> ror-agent (the PlannerAccepted recording); CRATE_EDGES/`spec/10-index.json` carry both; V-10b is rejected. V-09 is resolved separately (addendum VI).
 
 ### V-11 — The frozen trust table does not cover three modules the graph treats as security authorities — and the source states it twice, with different rows
 
@@ -158,9 +160,9 @@ A repository-wide search of `req/*.md`, `spec/*.md` and `mod/*.md` for the line 
 
 A dependency is *hidden* when it is real in the specification but invisible in the graph an implementer would read (`spec/07` §6 crate list, `mod/18` §0 module table, `spec/10-index.json`).
 
-### HD-1 — Production couplings no frozen crate edge can carry (24)
+### HD-1 — Production couplings no frozen crate edge can carry (23)
 
-24 module edges between production modules have no crate realisation: the specification states the coupling, but `spec/07` §6 has no edge that could carry it. Each is either a specification-layer statement (fine) or a missing crate edge (a finding).
+23 module edges between production modules have no crate realisation: the specification states the coupling, but `spec/07` §6 has no edge that could carry it. Each is either a specification-layer statement (fine) or a missing crate edge (a finding).
 
 | Item | Detail |
 |---|---|
@@ -185,7 +187,6 @@ A dependency is *hidden* when it is real in the specification but invisible in t
 | `MOD-11 -> MOD-01` | SEMANTIC_DEPENDENCY — would need crate edge ror-persistence -> ror-core (absent); 9 req |
 | `MOD-11 -> MOD-04` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-core (absent); 1 req |
 | `MOD-11 -> MOD-09` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-host (absent); prose+1 req |
-| `MOD-11 -> MOD-13` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-agent (absent); prose+2 req |
 | `MOD-12 -> MOD-01` | SEMANTIC_DEPENDENCY — would need crate edge ror-persistence -> ror-core (absent); 14 req |
 | `MOD-12 -> MOD-04` | PERSISTENCE_DEPENDENCY — would need crate edge ror-persistence -> ror-core (absent); 1 req |
 
@@ -199,14 +200,10 @@ The crate layer collapses each of these groups to a single node, so reading only
 | `ror-persistence` | `MOD-11 -> MOD-12`, `MOD-12 -> MOD-11` |
 | `ror-runtime` | `MOD-05 -> MOD-06`, `MOD-05 -> MOD-07`, `MOD-05 -> MOD-08`, `MOD-06 -> MOD-07`, `MOD-06 -> MOD-08`, `MOD-07 -> MOD-06`, `MOD-07 -> MOD-08`, `MOD-08 -> MOD-05` |
 
-### HD-3 — Required crate edges absent from every crate list (2)
+### HD-3 — Required crate edges absent from every crate list (0)
 
-Forced by the frozen text or by `mod/_ownership.MODULE_DEPS`; see `dep/05` V-01 and V-10 (V-10a applied — addendum III, R-TRUST-05 — so the hinge edge is carried; V-04's entry is withdrawn with the prose, V-04d). `dep/01` §1.2 shows the crate DAG absorbs the rest without becoming cyclic.
+Forced by the frozen text or by `mod/_ownership.MODULE_DEPS`; see all resolved as of addendum VI: V-10a/V-10c applied (spec/07 §6 carries both ror-persistence edges), V-01 closed by homing ExecutablePlan in ror-core (no edge needed), V-04d withdrew the host/agent entry. The list is empty and kept as the register of what was once missing.
 
-| Item | Detail |
-|---|---|
-| `ror-compiler -> ror-runtime` | TYPE_DEPENDENCY — REQ-ARCH-004/005 + L39962-39998 §17: `fn execute(plan: &ExecutablePlan)` with construction `pub(crate)`-restricted to the compiler (L39947-39950). The runtime must name `ExecutablePlan`, so either the type is exported from `ror-compiler` (this edge) or it lives in `ror-core` behind a seal. Neither `spec/07` §6 nor `spec/10-index.json` states which. |
-| `ror-persistence -> ror-agent` | PERSISTENCE_DEPENDENCY — mod/13-agent.md DEPENDENCIES 'MOD-11 (durable recording)': `PlannerAccepted` recording for exact replay (R-PLANNER-04, REQ-PLANNER-018). `ror-agent -> ror-persistence` appears in no crate list. |
 
 ### HD-4 — `spec/07` §6 edges missing from `spec/10-index.json` (2)
 
@@ -272,7 +269,7 @@ Test-time couplings between the verification layer and production crates. `ror-r
 |---|---|---|---|
 | ID-1 | `spec/04` arrow convention (provider -> consumer) | confirmed | `spec/04` DOT edge `S07->S08` is annotated 'S-08 depends on S-07' — the same convention as this document set. |
 | ID-2 | `mod/18` arrow convention (dependent -> dependency) | confirmed | `mod/18` §0 renders `MOD-02 COMPILER -> MOD-01 CORE [crate] ror-compiler -> ror-core`, i.e. the arrow points at the dependency — the OPPOSITE of `spec/04`. See V-06. |
-| ID-3 | §13 diagram edges absent from the frozen crate list | `ror-core -> ror-reference`, `ror-compiler -> ror-runtime`, `ror-runtime -> ror-persistence`, `ror-persistence -> ror-agent` | L39762-39790 §13 asserts `ror-runtime -> ror-persistence`, `ror-runtime -> ror-host` and `ror-persistence -> ror-agent`; the first contradicts `spec/07` §3 (request step 14 calls `ror-persistence` from `ror-runtime`). See V-04. |
+| ID-3 | §13 diagram edges absent from the frozen crate list | `ror-core -> ror-reference`, `ror-compiler -> ror-runtime`, `ror-runtime -> ror-persistence` | L39762-39790 §13 asserts `ror-runtime -> ror-persistence`, `ror-runtime -> ror-host` and `ror-persistence -> ror-agent`; the first contradicts `spec/07` §3 (request step 14 calls `ror-persistence` from `ror-runtime`). See V-04. |
 | ID-4 | `spec/10-index.json` `depends_on` entries that are not crate names | `ror-reference -> frozen semantics only (no production core deps)`, `ror-differential -> ror-runtime (black box)` | prose inside a machine-readable edge list; any consumer of the index reads a wrong node set. See V-05. |
 | ID-5 | documents citing `Red-on-Rust.md` L39757-39828 (§13 diagram / §14 forbidden edges) | none | none of `spec/03`, `spec/06`, `req/` or `mod/` cites the frozen dependency-direction blocks — the basis of V-02 and HD-5. |
 | ID-6 | `mod/_ownership.MODULE_DEPS` entries labelled `crate` whose implied crate edge no crate list carries | `MOD-03 -> MOD-04` (FORBIDDEN ror-kernel -> ror-core), `MOD-17 -> MOD-15` (tests/ -> ror-differential), `MOD-15 -> MOD-16` (ror-differential -> mutations/registry.toml), `MOD-17 -> MOD-16` (tests/ -> mutations/registry.toml) | 4 of the 23 `crate`-labelled entries (of 25 total). `MOD-11 -> MOD-08` is the step-14 durability call of R-DUR-02; `MOD-03 -> MOD-04` needs `ror-core -> ror-kernel`, which L39821 §14 forbids. The other three have a non-crate home (`tests/`, `mutations/registry.toml`) on one side. See V-10, HD-3. |
@@ -318,7 +315,7 @@ The direction question that matters is **ID-3/V-04**: `Red-on-Rust.md` L39762-39
 
 V-01, V-03 and V-04 are the three findings that leave the module layer with no partial order at all (`dep/02` §2.2). Each option below is a mutation of the graph **as recorded** — a crate edge added to `spec/07` §6, a module edge re-recorded with another kind, or a prose declaration withdrawn. **None of them is applied, and none is a recommendation**: the decision belongs to the specification owner. What this layer contributes is the price of each answer, recomputed from the mutated graph rather than estimated. Deltas are against the graph as recorded.
 
-**As recorded:** crate layer acyclic; 54 of 134 module edges have a crate realisation (the implementation graph of `dep/02` §2.1), with 3 non-trivial SCCs; HD-1 = 24; 39 mutual pairs, 5 of them inside that implementation graph; security failures none.
+**As recorded:** crate layer acyclic; 55 of 134 module edges have a crate realisation (the implementation graph of `dep/02` §2.1), with 3 non-trivial SCCs; HD-1 = 23; 39 mutual pairs, 5 of them inside that implementation graph; security failures none.
 
 ### 7.1 V-01 — `ExecutablePlan` has no determined crate home, so a required crate edge is undecided
 
@@ -326,12 +323,11 @@ V-01, V-03 and V-04 are the three findings that leave the module layer with no p
 
 | Option | Crate DAG | Impl graph (edges a crate edge can carry) | Impl SCCs | HD-1 | Mutual pairs (full / impl) | SC failures |
 |---|---|---|---|---|---|---|
-| **V-01a** Home it in `ror-core`, behind a seal | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
-| **V-01b** Export it from `ror-compiler` | acyclic | 55 (+1) of 134 | 3 | 23 (-1) | 39 / 5 | none |
+| **V-01a** **APPLIED — owner decision 2026-09-03 — addendum VI; in force** Home it in `ror-core`, behind a seal | acyclic | 55 of 134 | 3 | 23 | 39 / 5 | none |
+| **V-01b** **VOID — V-01a applied — the type is homed in ror-core; no compiler -> runtime edge is added** Export it from `ror-compiler` | acyclic | 55 of 134 | 3 | 23 | 39 / 5 | none |
 
-- **V-01a** — No new crate edge: the runtime already depends on `ror-core`. The open part is the mechanism, not the direction — L39947-39950 §16 restricts construction to `pub(crate) fn finalize`, and `pub(crate)` is per-crate, so a `ror-core` home needs a seal Rust cannot express that way. As recorded the module edge stays `MOD-02 -> MOD-05`, which would then overstate who owns the type.
-- **V-01b** — Adds `ror-compiler -> ror-runtime`, i.e. the runtime names the compiler's type — the direction §13's diagram already draws. §14 L39826 forbids only the reverse (the compiler depending on the runtime), and L39831 permits adjusting the compiler/kernel direction where implementation mechanics require it, provided the compiler never receives authority to execute effects, which a type dependency does not grant.
-  - *Module edges that gain a crate realisation:* `MOD-02 -> MOD-05` (TYPE).
+- **V-01a** — APPLIED (owner decision 2026-09-03 — addendum VI; in force) — No new crate edge: the runtime already depends on `ror-core`. The open part is the mechanism, not the direction — L39947-39950 §16 restricts construction to `pub(crate) fn finalize`, and `pub(crate)` is per-crate, so a `ror-core` home needs a seal Rust cannot express that way. As recorded the module edge stays `MOD-02 -> MOD-05`, which would then overstate who owns the type.
+- **V-01b** — VOID (V-01a applied — the type is homed in ror-core; no compiler -> runtime edge is added) — Adds `ror-compiler -> ror-runtime`, i.e. the runtime names the compiler's type — the direction §13's diagram already draws. §14 L39826 forbids only the reverse (the compiler depending on the runtime), and L39831 permits adjusting the compiler/kernel direction where implementation mechanics require it, provided the compiler never receives authority to execute effects, which a type dependency does not grant.
 
 ### 7.2 V-03 — Security dependencies whose provider is the LLM/planner module
 
@@ -339,9 +335,9 @@ V-01, V-03 and V-04 are the three findings that leave the module layer with no p
 
 | Option | Crate DAG | Impl graph (edges a crate edge can carry) | Impl SCCs | HD-1 | Mutual pairs (full / impl) | SC failures |
 |---|---|---|---|---|---|---|
-| **V-03a** Keep as recorded | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
-| **V-03b** **APPLIED — addendum III (R-TRUST-04) — in force** Re-home the obligations onto the enforcing boundary and drop the planner as provider | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
-| **V-03c** **VOID — V-03b applied — the pair is re-homed, so this option's premise (keep the pair and rekind it) no longer exists** Keep the pair, record it as specification-layer | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
+| **V-03a** Keep as recorded | acyclic | 55 of 134 | 3 | 23 | 39 / 5 | none |
+| **V-03b** **APPLIED — addendum III (R-TRUST-04) — in force** Re-home the obligations onto the enforcing boundary and drop the planner as provider | acyclic | 55 of 134 | 3 | 23 | 39 / 5 | none |
+| **V-03c** **VOID — V-03b applied — the pair is re-homed, so this option's premise (keep the pair and rekind it) no longer exists** Keep the pair, record it as specification-layer | acyclic | 55 of 134 | 3 | 23 | 39 / 5 | none |
 
 - **V-03a** — SC-1 and SC-2 stay FAIL: on 14 obligations the LLM/planner module is the provider of a security property. The architecture is sound — enforcement sits at the machine boundary (`spec/07` §3) — so what is unsound is the record, not the design.
 - **V-03b** — APPLIED (addendum III (R-TRUST-04) — in force) — The coupling does not vanish: `MOD-03 -> MOD-01` already exists (SEMANTIC, 13 req), so the invariant stays in the graph with an authoritative provider. This is what F-PLANNER-TRUST's verdict recommends.
@@ -353,10 +349,10 @@ V-01, V-03 and V-04 are the three findings that leave the module layer with no p
 
 | Option | Crate DAG | Impl graph (edges a crate edge can carry) | Impl SCCs | HD-1 | Mutual pairs (full / impl) | SC failures |
 |---|---|---|---|---|---|---|
-| **V-04a** The agent depends on the host | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
-| **V-04b** The host depends on the agent | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
-| **V-04c** Carry both prose declarations as they stand | **CYCLIC** | 54 of 134 | 3 | 24 | 39 / 5 | none |
-| **V-04d** **APPLIED — addendum III (R-TRUST-04/R-ARCH-01) — in force** Neither crate owns it — the conformance suite composes the two | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
+| **V-04a** The agent depends on the host | acyclic | 55 of 134 | 3 | 23 | 39 / 5 | none |
+| **V-04b** The host depends on the agent | acyclic | 55 of 134 | 3 | 23 | 39 / 5 | none |
+| **V-04c** Carry both prose declarations as they stand | **CYCLIC** | 55 of 134 | 3 | 23 | 39 / 5 | none |
+| **V-04d** **APPLIED — addendum III (R-TRUST-04/R-ARCH-01) — in force** Neither crate owns it — the conformance suite composes the two | acyclic | 55 of 134 | 3 | 23 | 39 / 5 | none |
 
 - **V-04a** — Carries `MOD-09 -> MOD-13` (R8-replay-composition) and leaves `MOD-13 -> MOD-09` uncarried.
   - *Build order:* `ror-host` 8 → 7, `ror-agent` 7 → 8. Full order becomes: ror-core, ror-compiler, ror-kernel, ror-persistence, ror-reference, ror-runtime, ror-host, ror-agent, ror-testkit, ror-differential.
@@ -370,18 +366,16 @@ V-01, V-03 and V-04 are the three findings that leave the module layer with no p
 
 | Option | Crate DAG | Impl graph (edges a crate edge can carry) | Impl SCCs | HD-1 | Mutual pairs (full / impl) | SC failures |
 |---|---|---|---|---|---|---|
-| **V-10a** **APPLIED — addendum III (R-TRUST-05, C-85) — in force** The machine calls the journal | acyclic | 54 of 134 | 3 | 24 | 39 / 5 | none |
-| **V-10b** Journal-trait inversion | **CYCLIC** | 58 (+4) of 134 | 2 (-1) | 20 (-4) | 39 / 6 (+1) | none |
-| **V-10c** Add only the `PlannerAccepted` recording edge | acyclic | 55 (+1) of 134 | 3 | 23 (-1) | 39 / 5 | none |
-| **V-10d** For reference: every edge HD-3 lists, at once | acyclic | 56 (+2) of 134 | 3 | 22 (-2) | 39 / 5 | none |
+| **V-10a** **APPLIED — addendum III (R-TRUST-05, C-85) — in force** The machine calls the journal | acyclic | 55 of 134 | 3 | 23 | 39 / 5 | none |
+| **V-10b** Journal-trait inversion | **CYCLIC** | 59 (+4) of 134 | 2 (-1) | 19 (-4) | 39 / 6 (+1) | none |
+| **V-10c** **APPLIED — owner decision 2026-09-03 — addendum VI; in force** Add only the `PlannerAccepted` recording edge | acyclic | 55 of 134 | 3 | 23 | 39 / 5 | none |
+| **V-10d** For reference: every edge HD-3 lists, at once | acyclic | 55 of 134 | 3 | 23 | 39 / 5 | none |
 
 - **V-10a** — APPLIED (addendum III (R-TRUST-05, C-85) — in force) — Adds `ror-persistence -> ror-runtime`, i.e. the runtime depends on the durable layer — what request step 14 does when it calls append/sync, and what R-DUR-02 / `spec/07` §3 make the hinge of the durability transaction: no effect before the journal is durable. §14 forbids neither direction here. One of the edges it carries, `MOD-11 -> MOD-08`, is already labelled a **crate** dependency by `mod/_ownership.MODULE_DEPS`.
 - **V-10b** — `ror-runtime` owns the journal trait and `ror-persistence` implements it, which flips the edge to `ror-runtime -> ror-persistence` — the direction §13's diagram draws. V-10's decision warns this must be checked against the build order; the reordering it causes is measured below rather than guessed.
   - *Module edges that gain a crate realisation:* `MOD-06 -> MOD-12` (TYPE), `MOD-07 -> MOD-12` (TYPE), `MOD-08 -> MOD-11` (SEMANTIC), `MOD-08 -> MOD-12` (SEMANTIC).
-- **V-10c** — Adds `ror-persistence -> ror-agent` for the `PlannerAccepted` recording `mod/13-agent.md` declares (R-PLANNER-04, REQ-PLANNER-018). Independent of the durability direction, so it can be decided separately.
-  - *Module edges that gain a crate realisation:* `MOD-11 -> MOD-13` (PERSISTENCE).
+- **V-10c** — APPLIED (owner decision 2026-09-03 — addendum VI; in force) — Adds `ror-persistence -> ror-agent` for the `PlannerAccepted` recording `mod/13-agent.md` declares (R-PLANNER-04, REQ-PLANNER-018). Independent of the durability direction, so it can be decided separately.
 - **V-10d** — Not a single decision — it assumes V-01b and V-04a as well — but it is the row that answers `dep/01` §1.2's claim that the crate DAG absorbs all four missing edges without becoming cyclic, and check 7 tests exactly that on every run.
-  - *Module edges that gain a crate realisation:* `MOD-02 -> MOD-05` (TYPE), `MOD-11 -> MOD-13` (PERSISTENCE).
 
 ### 7.5 What is not priced here
 

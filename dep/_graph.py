@@ -566,10 +566,11 @@ def hidden_dependencies(mod_graph, prose_pairs, mdeps, witnesses, crate_index,
     # HD-3: crate edges required but absent
     hd.append(("HD-3", "Required crate edges absent from every crate list",
                "Forced by the frozen text or by `mod/_ownership.MODULE_DEPS`; see "
-               "`dep/05` V-01 and V-10 (V-10a applied — addendum III, "
-               "R-TRUST-05 — so the hinge edge is carried; V-04's entry is "
-               "withdrawn with the prose, V-04d). `dep/01` §1.2 shows the "
-               "crate DAG absorbs the rest without becoming cyclic.",
+               "all resolved as of addendum VI: V-10a/V-10c applied "
+               "(spec/07 §6 carries both ror-persistence edges), V-01 closed "
+               "by homing ExecutablePlan in ror-core (no edge needed), V-04d "
+               "withdrew the host/agent entry. The list is empty and kept as "
+               "the register of what was once missing.",
                E.CRATE_MISSING_EDGES))
     # HD-4: crate edges in spec/07 §6 but missing from the machine-readable index
     idx_edges = {(c["name"], d) for c in crate_index["crates"] for d in c["depends_on"]

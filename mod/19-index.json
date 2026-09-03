@@ -330,7 +330,7 @@
       "id": "MOD-04",
       "domain": "BUDGET",
       "title": "Budget algebra and resource accounting",
-      "crate": "ror-core (+ gates in ror-runtime / ror-kernel)",
+      "crate": "ror-core (algebra + operand types) + ror-runtime (gate calls)",
       "file": "04-budget.md",
       "obligations": [
         "R-BUDGET-01",

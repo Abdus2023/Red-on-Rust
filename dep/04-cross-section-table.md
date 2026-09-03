@@ -391,10 +391,10 @@ Rows are modules; columns are the seven edge kinds. A cell reads `has ↓ / give
 | `SEMANTIC_DEPENDENCY` | 0 | 28 | 228 | 5 |
 | `SECURITY_DEPENDENCY` | 1 | 6 | 68 | 7 |
 | `SERIALIZATION_DEPENDENCY` | 1 | 4 | 71 | 2 |
-| `PERSISTENCE_DEPENDENCY` | 1 | 10 | 75 | 3 |
+| `PERSISTENCE_DEPENDENCY` | 2 | 10 | 75 | 3 |
 | `VERIFICATION_DEPENDENCY` | 3 | 49 | 247 | 6 |
 | `RUNTIME_DEPENDENCY` | 3 | 17 | 166 | 7 |
-| **total** | 16 | 134 | 927 | 34 |
+| **total** | 17 | 134 | 927 | 34 |
 
 ## 4. Crate × kind
 
@@ -404,9 +404,9 @@ Rows are modules; columns are the seven edge kinds. A cell reads `has ↓ / give
 | `ror-compiler` | `ror-core` (TYPE) | `ror-agent` (RUNTIME) |
 | `ror-kernel` | `ror-core` (TYPE) | `ror-runtime` (SECURITY) |
 | `ror-runtime` | `ror-core` (TYPE), `ror-kernel` (SECURITY), `ror-persistence` (PERSISTENCE) | `ror-agent` (RUNTIME), `ror-differential` (VERIFICATION), `ror-host` (RUNTIME) |
-| `ror-persistence` | `ror-core` (SERIALIZATION), `ror-core` (TYPE) | `ror-runtime` (PERSISTENCE) |
+| `ror-persistence` | `ror-core` (SERIALIZATION), `ror-core` (TYPE) | `ror-agent` (PERSISTENCE), `ror-runtime` (PERSISTENCE) |
 | `ror-host` | `ror-core` (TYPE), `ror-runtime` (RUNTIME) | — |
-| `ror-agent` | `ror-compiler` (RUNTIME), `ror-core` (TYPE), `ror-runtime` (RUNTIME) | — |
+| `ror-agent` | `ror-compiler` (RUNTIME), `ror-core` (TYPE), `ror-persistence` (PERSISTENCE), `ror-runtime` (RUNTIME) | — |
 | `ror-reference` | — | `ror-differential` (VERIFICATION) |
 | `ror-differential` | `ror-reference` (VERIFICATION), `ror-runtime` (VERIFICATION), `ror-testkit` (VERIFICATION) | — |
 | `ror-testkit` | `ror-core` (TYPE) | `ror-differential` (VERIFICATION) |

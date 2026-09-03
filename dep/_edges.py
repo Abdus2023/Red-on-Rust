@@ -200,6 +200,10 @@ CRATE_EDGES = [
      "spec/07 §6; R-PLANNER-02 (proposals must pass the compiler)"),
     ("ror-runtime", "ror-agent", "RUNTIME_DEPENDENCY",
      "spec/07 §6; REQ-ARCH-001 stage order (planner -> machine boundary)"),
+    ("ror-persistence", "ror-agent", "PERSISTENCE_DEPENDENCY",
+     "spec/07 §6 (addendum VI, V-10c applied): PlannerAccepted durable "
+     "recording (R-PLANNER-04, REQ-PLANNER-018); mod/13-agent.md DEPENDENCIES "
+     "'MOD-11 (durable recording)'"),
     ("ror-persistence", "ror-runtime", "PERSISTENCE_DEPENDENCY",
      "spec/07 §6 (addendum III, R-TRUST-05): request step-14 durable "
      "append/sync — the R-DUR-02 hinge, no effect before the journal is "
@@ -218,18 +222,14 @@ CRATE_EDGES = [
 # Edges the specification *requires* but that no frozen crate list states.
 # provider -> consumer, with the requirement that forces the edge.
 CRATE_MISSING_EDGES = [
-    ("ror-compiler", "ror-runtime", "TYPE_DEPENDENCY",
-     "REQ-ARCH-004/005 + L39962-39998 §17: `fn execute(plan: &ExecutablePlan)` "
-     "with construction `pub(crate)`-restricted to the compiler (L39947-39950). "
-     "The runtime must name `ExecutablePlan`, so either the type is exported "
-     "from `ror-compiler` (this edge) or it lives in `ror-core` behind a seal. "
-     "Neither `spec/07` §6 nor `spec/10-index.json` states which."),
-    ("ror-persistence", "ror-agent", "PERSISTENCE_DEPENDENCY",
-     "mod/13-agent.md DEPENDENCIES 'MOD-11 (durable recording)': `PlannerAccepted` "
-     "recording for exact replay (R-PLANNER-04, REQ-PLANNER-018). `ror-agent -> "
-     "ror-persistence` appears in no crate list."),
+    # Empty as of addendum VI (owner decisions 2026-09-03):
     # V-10a applied (addendum III, R-TRUST-05): the ror-persistence ->
-    # ror-runtime hinge edge is now carried by spec/07 §6 and CRATE_EDGES.
+    # ror-runtime hinge edge is carried by spec/07 §6 and CRATE_EDGES.
+    # V-10c applied (addendum VI): the ror-persistence -> ror-agent
+    # PlannerAccepted recording edge is carried the same way.
+    # V-01 closed as NOT NEEDED (V-01a applied, addendum VI): ExecutablePlan
+    # is homed in ror-core behind a seal, so no ror-compiler -> ror-runtime
+    # type edge exists or is required.
     # V-04d applied (R-TRUST-04): the host/agent replay composition is a
     # test-time concern; the ror-host -> ror-agent "required" edge is
     # withdrawn with the prose declarations (no crate edge needed).
@@ -558,6 +558,9 @@ FINDINGS = {
                  "never receives authority to execute effects — and no document "
                  "in `spec/`, `req/` or `mod/` cites it. `dep/05` §7 prices both "
                  "answers.",
+        status=(
+            "RESOLVED — V-01a applied (owner decision 2026-09-03, frozen addendum VI): ExecutablePlan + Sealed homed in ror-core; construction stays compiler-only via a PlanSeal token denied by clippy disallowed-methods outside ror-compiler (R-REPO-03 Track-B; R-ARCH-03 unchanged). No crate edge results — ror-runtime already depends on ror-core — so the compiler->runtime TYPE entry is closed as not-needed and removed from CRATE_MISSING_EDGES. The MOD-02 -> MOD-05 module edge remains a specification-layer statement. No U- item was created (the decision is taken, not deferred)."
+        ),
     ),
     "V-02": dict(
         title="The frozen forbidden-edge list is not tracked by any obligation or "
@@ -733,6 +736,9 @@ FINDINGS = {
                  "gate part (two modules, or one module with an explicit "
                  "two-crate home), then re-check the crate realisability of its "
                  "edges.",
+        status=(
+            "RESOLVED — explicit two-crate home stated (owner decision 2026-09-03, frozen addendum VI): algebra + operand types in ror-core, per-transition gate calls in ror-runtime, ror-kernel consumes core operand types (the R-REPO-02 'budget primitives' reading is superseded, quoted). MOD-04 stays one module; mod/04, the ownership map and spec/07 §3 state the split. Its edges' crate realisability is now decidable against spec/07 §6."
+        ),
     ),
     "V-08": dict(
         title="`ror-compiler -> ror-kernel` is required by the compiler's own "
@@ -783,11 +789,12 @@ FINDINGS = {
                  "persistence-before-runtime build order). Re-label the three "
                  "test-side entries. Settle V-09 before deciding (b).",
         status=(
-            "RESOLVED IN PART — V-10a applied with addendum III (R-TRUST-05, "
-            "C-85): spec/07 §6 gains ror-persistence -> ror-runtime and "
-            "CRATE_EDGES/`spec/10-index.json` carry it; V-10b is rejected. "
-            "V-10c (the PlannerAccepted recording edge) remains open, and "
-            "V-09's MOD-03 -> MOD-04 question is unaffected."),
+            "RESOLVED — V-10a applied with addendum III (R-TRUST-05, C-85) "
+            "and V-10c applied with addendum VI (owner decision 2026-09-03): "
+            "spec/07 §6 carries both ror-persistence -> ror-runtime (the "
+            "hinge) and ror-persistence -> ror-agent (the PlannerAccepted "
+            "recording); CRATE_EDGES/`spec/10-index.json` carry both; V-10b "
+            "is rejected. V-09 is resolved separately (addendum VI)."),
     ),
     "V-11": dict(
         title="The frozen trust table does not cover three modules the graph "
@@ -852,6 +859,7 @@ RESOLUTIONS = {
         question="Where does `ExecutablePlan` live, and how is it sealed?",
         options=[
             dict(id="V-01a",
+                 applied="owner decision 2026-09-03 — addendum VI; in force",
                  label="Home it in `ror-core`, behind a seal",
                  change={},
                  note="No new crate edge: the runtime already depends on "
@@ -863,6 +871,8 @@ RESOLUTIONS = {
                       "`MOD-02 -> MOD-05`, which would then overstate who owns "
                       "the type."),
             dict(id="V-01b",
+                 void="V-01a applied — the type is homed in ror-core; no "
+                      "compiler -> runtime edge is added",
                  label="Export it from `ror-compiler`",
                  change=dict(add_crate_edges=[
                      ("ror-compiler", "ror-runtime", "TYPE_DEPENDENCY")]),
@@ -973,6 +983,7 @@ RESOLUTIONS = {
                       "checked against the build order; the reordering it "
                       "causes is measured below rather than guessed."),
             dict(id="V-10c",
+                 applied="owner decision 2026-09-03 — addendum VI; in force",
                  label="Add only the `PlannerAccepted` recording edge",
                  change=dict(add_crate_edges=[
                      ("ror-persistence", "ror-agent", "PERSISTENCE_DEPENDENCY")]),

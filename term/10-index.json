@@ -10319,7 +10319,7 @@
    "doc_sites": [
     {
      "file": "spec/01-canonical-specification.md",
-     "line": 490,
+     "line": 494,
      "text": "Block → parse → NormalizedAST",
      "note": "the single-ordering rendering"
     },
@@ -11830,7 +11830,7 @@
    "doc_sites": [
     {
      "file": "spec/01-canonical-specification.md",
-     "line": 156,
+     "line": 160,
      "text": "plus `StalePlan` at the planner boundary",
      "note": "normative R-CALC-06 — source-supported and kept; its annotation now says used-but-undeclared, not phantom"
     },
@@ -12282,7 +12282,7 @@
     },
     {
      "file": "spec/01-canonical-specification.md",
-     "line": 156,
+     "line": 160,
      "text": "The frozen fault taxonomy is the Rust `Fault` enum",
      "note": "R-CALC-06 states a flat variant list that matches neither reading of `HostFault`"
     }

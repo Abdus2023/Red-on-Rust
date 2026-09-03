@@ -165,6 +165,14 @@
     },
     {
      "provider": "ror-persistence",
+     "consumer": "ror-agent",
+     "kind": "PERSISTENCE_DEPENDENCY",
+     "visibility": "spec/07 §6",
+     "basis": "spec/07 §6 (addendum VI, V-10c applied): PlannerAccepted durable recording (R-PLANNER-04, REQ-PLANNER-018); mod/13-agent.md DEPENDENCIES 'MOD-11 (durable recording)'",
+     "evidence": "spec/07 §6 (addendum VI, V-10c applied): PlannerAccepted durable recording (R-PLANNER-04, REQ-PLANNER-018); mod/13-agent.md DEPENDENCIES 'MOD-11 (durable recording)'"
+    },
+    {
+     "provider": "ror-persistence",
      "consumer": "ror-runtime",
      "kind": "PERSISTENCE_DEPENDENCY",
      "visibility": "spec/07 §6",
@@ -266,20 +274,7 @@
      "present": false
     }
    ],
-   "missing_required_edges": [
-    {
-     "provider": "ror-compiler",
-     "consumer": "ror-runtime",
-     "kind": "TYPE_DEPENDENCY",
-     "why": "REQ-ARCH-004/005 + L39962-39998 §17: `fn execute(plan: &ExecutablePlan)` with construction `pub(crate)`-restricted to the compiler (L39947-39950). The runtime must name `ExecutablePlan`, so either the type is exported from `ror-compiler` (this edge) or it lives in `ror-core` behind a seal. Neither `spec/07` §6 nor `spec/10-index.json` states which."
-    },
-    {
-     "provider": "ror-persistence",
-     "consumer": "ror-agent",
-     "kind": "PERSISTENCE_DEPENDENCY",
-     "why": "mod/13-agent.md DEPENDENCIES 'MOD-11 (durable recording)': `PlannerAccepted` recording for exact replay (R-PLANNER-04, REQ-PLANNER-018). `ror-agent -> ror-persistence` appears in no crate list."
-    }
-   ],
+   "missing_required_edges": [],
    "diagram_edges_L39762_39790": [
     {
      "provider": "ror-core",
@@ -1679,7 +1674,7 @@
    },
    "implementation": {
     "definition": "crate_of[provider] == crate_of[consumer], or (crate_of[provider], crate_of[consumer]) is a frozen crate edge of spec/07 S6",
-    "edge_count": 54,
+    "edge_count": 55,
     "edges": [
      {
       "provider": "MOD-01",
@@ -2148,6 +2143,15 @@
       "visibility": "prose+11 req",
       "basis": "durable records, journal chain, snapshot content or recovery classification (R-DUR-*, R-PERSIST-*, R-RECOV-*)",
       "evidence": "witnesses: REQ-DUR-007 -> REQ-RECOV-016, REQ-DUR-010 -> REQ-RECOV-004, REQ-DUR-010 -> REQ-RECOV-022 ..."
+     },
+     {
+      "provider": "MOD-11",
+      "consumer": "MOD-13",
+      "kind": "PERSISTENCE_DEPENDENCY",
+      "rule": "R10-durability",
+      "visibility": "prose+2 req",
+      "basis": "durable records, journal chain, snapshot content or recovery classification (R-DUR-*, R-PERSIST-*, R-RECOV-*)",
+      "evidence": "witnesses: REQ-DUR-001 -> REQ-PLANNER-008, REQ-PERSIST-006 -> REQ-PLANNER-006"
      },
      {
       "provider": "MOD-12",
@@ -8117,10 +8121,6 @@
      [
       "ror-runtime",
       "ror-persistence"
-     ],
-     [
-      "ror-persistence",
-      "ror-agent"
      ]
     ],
     "note": "L39762-39790 §13 asserts `ror-runtime -> ror-persistence`, `ror-runtime -> ror-host` and `ror-persistence -> ror-agent`; the first contradicts `spec/07` §3 (request step 14 calls `ror-persistence` from `ror-runtime`). See V-04."
@@ -8256,7 +8256,7 @@
   {
    "id": "HD-1",
    "title": "Production couplings no frozen crate edge can carry",
-   "why": "24 module edges between production modules have no crate realisation: the specification states the coupling, but `spec/07` §6 has no edge that could carry it. Each is either a specification-layer statement (fine) or a missing crate edge (a finding).",
+   "why": "23 module edges between production modules have no crate realisation: the specification states the coupling, but `spec/07` §6 has no edge that could carry it. Each is either a specification-layer statement (fine) or a missing crate edge (a finding).",
    "items": [
     [
      "MOD-02",
@@ -8385,12 +8385,6 @@
      "would need crate edge ror-persistence -> ror-host (absent); prose+1 req"
     ],
     [
-     "MOD-11",
-     "MOD-13",
-     "PERSISTENCE_DEPENDENCY",
-     "would need crate edge ror-persistence -> ror-agent (absent); prose+2 req"
-    ],
-    [
      "MOD-12",
      "MOD-01",
      "SEMANTIC_DEPENDENCY",
@@ -8476,21 +8470,8 @@
   {
    "id": "HD-3",
    "title": "Required crate edges absent from every crate list",
-   "why": "Forced by the frozen text or by `mod/_ownership.MODULE_DEPS`; see `dep/05` V-01 and V-10 (V-10a applied — addendum III, R-TRUST-05 — so the hinge edge is carried; V-04's entry is withdrawn with the prose, V-04d). `dep/01` §1.2 shows the crate DAG absorbs the rest without becoming cyclic.",
-   "items": [
-    [
-     "ror-compiler",
-     "ror-runtime",
-     "TYPE_DEPENDENCY",
-     "REQ-ARCH-004/005 + L39962-39998 §17: `fn execute(plan: &ExecutablePlan)` with construction `pub(crate)`-restricted to the compiler (L39947-39950). The runtime must name `ExecutablePlan`, so either the type is exported from `ror-compiler` (this edge) or it lives in `ror-core` behind a seal. Neither `spec/07` §6 nor `spec/10-index.json` states which."
-    ],
-    [
-     "ror-persistence",
-     "ror-agent",
-     "PERSISTENCE_DEPENDENCY",
-     "mod/13-agent.md DEPENDENCIES 'MOD-11 (durable recording)': `PlannerAccepted` recording for exact replay (R-PLANNER-04, REQ-PLANNER-018). `ror-agent -> ror-persistence` appears in no crate list."
-    ]
-   ]
+   "why": "Forced by the frozen text or by `mod/_ownership.MODULE_DEPS`; see all resolved as of addendum VI: V-10a/V-10c applied (spec/07 §6 carries both ror-persistence edges), V-01 closed by homing ExecutablePlan in ror-core (no edge needed), V-04d withdrew the host/agent entry. The list is empty and kept as the register of what was once missing.",
+   "items": []
   },
   {
    "id": "HD-4",
@@ -8730,7 +8711,8 @@
    "severity": "BLOCKING",
    "constraint": "crate DAG completeness (R-REPO-02, R-ARCH-03)",
    "body": "L39962-39998 §17 freezes `fn execute(plan: &ExecutablePlan)` with `ExecutablePlan { ir, bounds, _sealed: Sealed }` and construction `pub(crate) fn finalize(...)` restricted to the compiler (L39947-39950 §16). `pub(crate)` privacy is per-crate, so the type must either be exported from `ror-compiler` (which requires the edge `ror-runtime -> ror-compiler`) or live in `ror-core` behind a seal that Rust cannot express as `pub(crate)`. `spec/07` §6 and `spec/10-index.json` state `ror-runtime -> ror-core, ror-kernel` only, i.e. they silently assume the second option without specifying the sealing mechanism. §13's diagram (L39762-39790) shows `ror-compiler -> ror-runtime`, i.e. the first.",
-   "decision": "Fix the crate home of `ExecutablePlan` and the sealing mechanism; add the resulting edge to `spec/07` §6. Needs a new `U-` item (no existing U-item covers it — `spec/09` has 16). L39831 is the only frozen sentence that speaks to the choice — it permits adjusting the compiler/kernel direction where implementation mechanics require it, provided the compiler never receives authority to execute effects — and no document in `spec/`, `req/` or `mod/` cites it. `dep/05` §7 prices both answers."
+   "decision": "Fix the crate home of `ExecutablePlan` and the sealing mechanism; add the resulting edge to `spec/07` §6. Needs a new `U-` item (no existing U-item covers it — `spec/09` has 16). L39831 is the only frozen sentence that speaks to the choice — it permits adjusting the compiler/kernel direction where implementation mechanics require it, provided the compiler never receives authority to execute effects — and no document in `spec/`, `req/` or `mod/` cites it. `dep/05` §7 prices both answers.",
+   "status": "RESOLVED — V-01a applied (owner decision 2026-09-03, frozen addendum VI): ExecutablePlan + Sealed homed in ror-core; construction stays compiler-only via a PlanSeal token denied by clippy disallowed-methods outside ror-compiler (R-REPO-03 Track-B; R-ARCH-03 unchanged). No crate edge results — ror-runtime already depends on ror-core — so the compiler->runtime TYPE entry is closed as not-needed and removed from CRATE_MISSING_EDGES. The MOD-02 -> MOD-05 module edge remains a specification-layer statement. No U- item was created (the decision is taken, not deferred)."
   },
   "V-02": {
    "title": "The frozen forbidden-edge list is not tracked by any obligation or atomic record",
@@ -8789,7 +8771,8 @@
    "severity": "MAJOR",
    "constraint": "crate DAG completeness (R-REPO-02)",
    "body": "`mod/_ownership.py` gives MOD-04's crate as 'ror-core (+ gates in ror-runtime / ror-kernel)' and `spec/07` §2 splits the budget obligations across `ror-core` (R-BUDGET-01…07) and the runtime gates. Eight of MOD-04's edges therefore have an undecidable crate realisation, including the two that close cycles (`MOD-03 <-> MOD-04` ceiling operand, `MOD-04 <-> MOD-11/12` escrow durability). `ror-core -> ror-kernel` is forbidden (L39821 §14), so the shared ceiling/operand types must live in `ror-core`; the gate *calls* must live in `ror-runtime`. That split is never stated.",
-   "decision": "Split MOD-04 into a `ror-core` algebra part and a `ror-runtime` gate part (two modules, or one module with an explicit two-crate home), then re-check the crate realisability of its edges."
+   "decision": "Split MOD-04 into a `ror-core` algebra part and a `ror-runtime` gate part (two modules, or one module with an explicit two-crate home), then re-check the crate realisability of its edges.",
+   "status": "RESOLVED — explicit two-crate home stated (owner decision 2026-09-03, frozen addendum VI): algebra + operand types in ror-core, per-transition gate calls in ror-runtime, ror-kernel consumes core operand types (the R-REPO-02 'budget primitives' reading is superseded, quoted). MOD-04 stays one module; mod/04, the ownership map and spec/07 §3 state the split. Its edges' crate realisability is now decidable against spec/07 §6."
   },
   "V-10": {
    "title": "`mod/_ownership.MODULE_DEPS` asserts crate-level edges that `spec/07` §6 does not carry — one of them in a forbidden direction",
@@ -8797,7 +8780,7 @@
    "constraint": "crate DAG completeness (R-REPO-02) + forbidden edges (L39807-39828 §14)",
    "body": "`mod/_ownership.MODULE_DEPS` marks 23 of its 25 entries `crate`. Checked against `spec/07` §6 (`dep/_graph.py` ID-6), **5 imply a crate edge that no crate list carries**. Two are production couplings. (a) `MOD-11 -> MOD-08` — 'request step 14 calls `ror-persistence` append/sync' — needs `ror-persistence -> ror-runtime`, i.e. `ror-runtime` depending on `ror-persistence`. That call is the hinge of R-DUR-02 (no external effect before the journal is durable), so the single most load-bearing cross-crate call in the design is the one the crate list omits. (b) `MOD-03 -> MOD-04` — 'budget primitives co-located with ror-kernel; ceiling operand from the algebra' — needs `ror-core -> ror-kernel`, which L39821 §14 forbids outright; the note is independent evidence for V-09, because the module table itself treats MOD-04's primitives as kernel-resident while `crate_of_module()` homes MOD-04 in `ror-core`. The other three (`MOD-17 -> MOD-15`, `MOD-15 -> MOD-16`, `MOD-17 -> MOD-16`) have a non-crate home on at least one side (`tests/`, `mutations/registry.toml`), so they are dev couplings, but the `crate` label is wrong for them too.",
    "decision": "Add `ror-persistence -> ror-runtime` to `spec/07` §6, or state the journal-trait inversion explicitly (which flips the edge the other way and must then be checked against the persistence-before-runtime build order). Re-label the three test-side entries. Settle V-09 before deciding (b).",
-   "status": "RESOLVED IN PART — V-10a applied with addendum III (R-TRUST-05, C-85): spec/07 §6 gains ror-persistence -> ror-runtime and CRATE_EDGES/`spec/10-index.json` carry it; V-10b is rejected. V-10c (the PlannerAccepted recording edge) remains open, and V-09's MOD-03 -> MOD-04 question is unaffected."
+   "status": "RESOLVED — V-10a applied with addendum III (R-TRUST-05, C-85) and V-10c applied with addendum VI (owner decision 2026-09-03): spec/07 §6 carries both ror-persistence -> ror-runtime (the hinge) and ror-persistence -> ror-agent (the PlannerAccepted recording); CRATE_EDGES/`spec/10-index.json` carry both; V-10b is rejected. V-09 is resolved separately (addendum VI)."
   },
   "V-11": {
    "title": "The frozen trust table does not cover three modules the graph treats as security authorities — and the source states it twice, with different rows",

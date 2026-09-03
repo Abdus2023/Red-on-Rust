@@ -52,9 +52,12 @@ Normative text home: `spec/01` S-11; atomic renderings
 - **Budget fault** (R-BUDGET-08): any failed gate ⇒ `fault(BudgetExhausted)`; **no
   partial debit**; fault transitions preserve `C` and `R` (REQ-BUDGET-032).
 
-Crate contract (mirrored by pointer): budget types and algebra in `ror-core`;
-enforcement gates called from `ror-runtime`; budget *primitives* co-located with the
-kernel (`ror-kernel`) per R-REPO-02 (normative text in `spec/01` S-22).
+Crate contract (mirrored by pointer; restated by addendum VI — `dep/05` V-09
+resolved): budget types and algebra in `ror-core`; enforcement gates called from
+`ror-runtime`; the kernel CONSUMES the core-defined operand types — the earlier
+wording "budget *primitives* co-located with the kernel (`ror-kernel`) per
+R-REPO-02" is superseded (quoted here; no budget algebra or gate lives in
+`ror-kernel`, since `ror-core → ror-kernel` is forbidden by §14's frozen list).
 
 ## NON-NORMATIVE-CONTENT
 
@@ -90,8 +93,8 @@ kernel (`ror-kernel`) per R-REPO-02 (normative text in `spec/01` S-22).
 - Consumers: MOD-05 (every gated transition), MOD-06 (spawn escrow/teleportation
   laws), MOD-08 (gates 7–10, 13, completion accounting), MOD-11 (escrow durability),
   MOD-12 (post-crash revalidation).
-- Crate edges: types in `ror-core`; gates via `ror-runtime`; primitives in
-  `ror-kernel` (`spec/07` §2/§6).
+- Crate edges: types in `ror-core`; gates via `ror-runtime`; the kernel consumes
+  core operand types (addendum VI; `spec/07` §2/§6).
 - Blocking open items: **U-01** (operational meaning of the `D` consumable — AMB-01;
   exhaustion behavior is not testable until decided), **U-07** (per-transition `δ_t`
   values — AMB-19), **U-03** (spawn split policy, with MOD-06 — AMB-03).

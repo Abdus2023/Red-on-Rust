@@ -24,7 +24,7 @@ MODULES = [
     ("MOD-01", "CORE",          "Core semantics, central invariants, trust model",                 "ror-core",                 "01-core.md"),
     ("MOD-02", "COMPILER",      "Compilation boundary (Block to ExecutablePlan)",                  "ror-compiler",             "02-compiler.md"),
     ("MOD-03", "CAPABILITY",    "Capability algebra and capability kernel",                        "ror-kernel",               "03-capability.md"),
-    ("MOD-04", "BUDGET",        "Budget algebra and resource accounting",                          "ror-core (+ gates in ror-runtime / ror-kernel)", "04-budget.md"),
+    ("MOD-04", "BUDGET",        "Budget algebra and resource accounting",                          "ror-core (algebra + operand types) + ror-runtime (gate calls)", "04-budget.md"),
     ("MOD-05", "EVALUATOR",     "Explicit CEK evaluation machine",                                 "ror-runtime",              "05-evaluator.md"),
     ("MOD-06", "ACTOR",         "Actor isolation, spawn, mailboxes, marshalling boundary",         "ror-runtime",              "06-actor.md"),
     ("MOD-07", "SCHEDULER",     "Deterministic scheduling and wakeups",                            "ror-runtime",              "07-scheduler.md"),

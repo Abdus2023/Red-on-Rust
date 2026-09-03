@@ -46,6 +46,8 @@ Maps every obligation to its **normative implementation home** (the crate/module
 | R-DUR-02 (issuance transaction) | `ror-persistence` append+sync API called from `ror-runtime` | The 2×fsync ordering is the security-critical part. |
 | R-RECOV-03/04 (recovery) | `ror-persistence` (production) + `ror-reference` (independent recovery oracle) | Independence is structural: two implementations, one contract. |
 | R-PLANNER-03 (staleness) | `ror-agent` proposal intake + `ror-runtime` boundary check | The check lives at the machine boundary, not in the LLM integration. |
+| R-ARCH-03 (plan constructors private) | `ExecutablePlan` homed in `ror-core` behind `PlanSeal`; `finalize` compiler-only (addendum VI, `dep/05` V-01 resolved) | Seal = clippy `disallowed-methods` on the token constructor everywhere except `ror-compiler` (Track-B); no new crate edge — `ror-runtime` already depends on `ror-core`. |
+| R-BUDGET-01…09 (budget crate home) | algebra + operand types in `ror-core`; gate calls in `ror-runtime`; `ror-kernel` consumes core types (addendum VI, `dep/05` V-09 resolved) | `ror-core → ror-kernel` is forbidden by §14's frozen list, so shared types must be core-resident. |
 | R-KERN-03 (authority privacy) | `ror-kernel` visibility (`pub(crate) AuthorityNode`) | Enforced by Rust visibility + dependency direction (kernel cannot depend on runtime). |
 
 ## 4. Milestone → obligation → crate crosswalk
@@ -95,7 +97,7 @@ ror-kernel → ror-core
 ror-runtime → ror-core, ror-kernel, ror-persistence
 ror-persistence → ror-core
 ror-host → ror-core, ror-runtime (adapter boundary)
-ror-agent → ror-core, ror-compiler, ror-runtime
+ror-agent → ror-core, ror-compiler, ror-runtime, ror-persistence
 ror-reference → (frozen semantics only; NO ror-runtime/ror-kernel/ror-persistence/ror-host deps for core logic)
 ror-differential → ror-reference, ror-runtime (as black-box SUT), ror-testkit
 ror-testkit → ror-core (+ test-only deps)
@@ -105,5 +107,7 @@ Addendum III (R-TRUST-05; spec/06 C-85): `ror-runtime` gains `ror-persistence` �
 request step 14's durable append/sync is the hinge of R-DUR-02 (`HostInvoked ⇒
 DurableIssued`, no external effect before the journal is durable). This is the
 only edge §14's frozen list does not forbid in either direction.
+
+Owner decision (addendum VI, `dep/05` V-10c applied): `ror-agent` gains `ror-persistence` — the `PlannerAccepted` durable recording (R-PLANNER-04, REQ-PLANNER-018).
 
 Forbidden edges (R-SCOPE-04, R-REF-02): any `ror-reference → {production step/authorize/budget/recover/encode/scheduler}` core-logic call.
