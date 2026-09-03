@@ -5882,7 +5882,7 @@ COLLISIONS += [
       ["T-65", "T-64", "T-68"],
       ["C-09", "AMB-24"], "", True,
       [("README.md", 12, "Implementation:     IN PROGRESS", "the README's first status block"),
-       ("README.md", 803, "Implementation     READY", "the README's last status block")]),
+       ("README.md", 815, "Implementation     READY", "the README's last status block")]),
 ]
 
 
@@ -6296,7 +6296,7 @@ COLLISIONS += [
        ("req/03-ambiguous.md", 189, "`README.md` L22–28 vs L656–661",
         "the same defective citations, repeated"),
        ("README.md", 12, "Implementation:     IN PROGRESS", "the real first status block"),
-       ("README.md", 803, "Implementation     READY", "the real last status block")]),
+       ("README.md", 815, "Implementation     READY", "the real last status block")]),
     X(xid="X-64",
       title="`Fault::StalePlan` is used by the frozen source at L28373 but is a variant of none of the seven `Fault` declarations",
       kind="UNDECLARED-VARIANT",
@@ -7110,7 +7110,7 @@ COLLISIONS += [
          "U-30, the decision this finding needs"),
         ("term/00-overview.md", 175, "| `term/_terms.py T-79…T-81, N-28` |",
          "the §6 row recording T-79's creation"),
-        ("README.md", 136, "(`X-01`…`X-87`, of which 4 are BLOCKING)",
+        ("README.md", 148, "(`X-01`…`X-87`, of which 4 are BLOCKING)",
          "the README's collision-register count, updated by this pass"),
       ]),
     X(xid="X-77",

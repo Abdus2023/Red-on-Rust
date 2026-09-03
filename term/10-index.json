@@ -11358,7 +11358,7 @@
     },
     {
      "file": "README.md",
-     "line": 803,
+     "line": 815,
      "text": "Implementation     READY",
      "note": "the README's last status block"
     }
@@ -12110,7 +12110,7 @@
     },
     {
      "file": "README.md",
-     "line": 803,
+     "line": 815,
      "text": "Implementation     READY",
      "note": "the real last status block"
     }
@@ -13629,7 +13629,7 @@
     },
     {
      "file": "README.md",
-     "line": 136,
+     "line": 148,
      "text": "(`X-01`…`X-87`, of which 4 are BLOCKING)",
      "note": "the README's collision-register count, updated by this pass"
     }

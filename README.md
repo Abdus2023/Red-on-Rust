@@ -35,7 +35,7 @@ The frozen source (`Red-on-Rust.md`) has been canonicalized into the document se
 A fifth directory, `audit/`, holds **adversarial audits of the frozen specification**.
 These are review artifacts, not normative text: an audit may file register rows
 (`C-…`, `U-…`) and propose remediation, but it never issues frozen semantics
-(R-SCOPE-03). Four passes are complete:
+(R-SCOPE-03). Five passes are complete:
 
 - `audit/authority-trust-external-effect-audit.md` — **authority, trust-boundary and
   external-effect gating** (`SEC-001`…`SEC-023`: 3 CRITICAL, 5 HIGH, 3 MEDIUM-HIGH,
@@ -90,6 +90,18 @@ These are review artifacts, not normative text: an audit may file register rows
   inconsistent `D` debit models — plus the unfrozen `DeadlineExceeded` firing point. Its
   remediation is addendum IX (`R-CAP-11`, `R-BUDGET-15/16`): C-100/C-112…C-115 re-graded
   `resolved-by-addendum`, U-01/U-07/U-36 resolved, R-BUDGET-12 folded, U-38 untouched.
+- `audit/persistence-crash-consistency-audit.md` — **effect causality and the T0–T6
+  crash matrix** (`Issued ⇒ Prepared`, `Completed ⇒ Issued`, `Reconciled ⇒ Issued`;
+  `HostInvoked ⇒ DurableIssued`; `Prepared ∧ ¬Issued ⇒ Discard`;
+  `Issued ∧ ¬Completed ⇒ Indeterminate`, never auto-`NotExecuted`;
+  `Invalid(D) ⇒ RecoveryFault`, no silent repair). Verdict: **the persistence
+  contract satisfies the requested crash-consistency property**, provided the frozen
+  addenda are treated as normative (R-DUR-06/07, R-RECOV-09, R-HOST-06 make T1/T2–T4/T5
+  implementable). The only substantive residual is the existing recovery-step
+  granularity discrepancy AMB-27/REQ-RECOV-021 (reconciliation inside `Recover(D)`
+  vs after `RecoveryComplete`). This pass filed no new `C-`/`U-` rows; it added
+  `audit/_crash_consistency_checker.py` as a mechanical gate so a future weakening of
+  any verified clause fails `check.py`.
 
 A second organization, `mod/`, splits the same specification into **17 semantic
 modules** (`MOD-01 CORE` … `MOD-17 VERIFICATION`) by architectural responsibility
