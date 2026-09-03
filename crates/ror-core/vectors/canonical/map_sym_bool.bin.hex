@@ -1,0 +1,8 @@
+# Map { Symbol(1)→Bool(false), Symbol(2)→Bool(true) } as a Value envelope.
+# Derived from R-CANON-04/06 (complete nested envelopes; semantic key order).
+# Narrative sketch tag-0x07 form is non-normative; this is the conforming form.
+01 00 00 00 00 29 07 00 00 00 02
+01 20 00 00 00 04 00 00 00 01
+01 00 00 00 00 02 01 00
+01 20 00 00 00 04 00 00 00 02
+01 00 00 00 00 02 01 01

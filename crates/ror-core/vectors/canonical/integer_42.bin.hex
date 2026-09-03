@@ -1,0 +1,3 @@
+# R-CANON-11 normative golden vector: Value::Integer(42)
+# Full canonical bytes (15 bytes). Whitespace and '#' comments ignored by the loader.
+01 00 00 00 00 09 02 00 00 00 00 00 00 00 2A
