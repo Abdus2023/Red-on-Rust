@@ -408,6 +408,14 @@ bears the SEC-004/012/020 bundle) instead of C-78/C-80; and GAP-18's own row tex
 corrected — `Fault::TypeError` **is** declared (L17788/L18125/L22415/L26865, named in
 the L23319 elision), so it is the U-08 enumeration-incompleteness class, not the X-69
 used-but-undeclared class. No register rows were changed by this revision.
+**No new checker mutation was added by this pass** (recorded so the negative result is
+auditable): every defect class it surfaced falls under an existing fixture — K01/K02/
+K04 (register growth without count updates), K06 (term/ anchor displacement, which
+the filing itself triggered), K12/K13 (prose-summary drift), K14/K16 (in-place ID
+renumbering), M036 (body rotation against the normative layer, the C-103 class). The
+harness was adjusted rather than extended: the K01/K02/K04 fixture IDs were moved past
+the IDs this filing took (C-103/C-104/U-39 → C-110/C-111/U-90) so those fixtures keep
+exercising their named pins.
 
 ---
 
