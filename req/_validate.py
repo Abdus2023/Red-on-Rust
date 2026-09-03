@@ -323,8 +323,10 @@ def main() -> int:
     # the exact silent drift these assertions exist to prevent.
     if len(c_ids) != 102:
         err(f"expected 102 C- rows in spec/06, found {len(c_ids)}")
-    if len(u_ids) != 31:
-        err(f"expected 31 U- headings in spec/09, found {len(u_ids)}")
+    # U-38 added by the same audit's checker-mutation pass (spec/08 M036 /
+    # spec/_check.py severity wiring) -- 31 -> 32.
+    if len(u_ids) != 32:
+        err(f"expected 32 U- headings in spec/09, found {len(u_ids)}")
 
     # 7c-bis. The prose summary line must agree with the rows it summarises.
     # spec/06 opens its summary with "<n> findings (<m> rows ...)".  Both numbers

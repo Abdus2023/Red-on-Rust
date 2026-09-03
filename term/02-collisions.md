@@ -1847,7 +1847,7 @@ Yes, but owned by U-08 and now widened by X-69: does `StalePlan` join the declar
 |---|---|---|
 | `mod/06-actor.md`:103 | `MarshalFault::CapabilityRequiresDelegation` | cites only the turn-[32] variant set |
 | `req/01-registry-part1-foundations.md`:301 | `Err(MarshalFault::CapabilityRequiresDelegation)` | REQ postcondition citing only the turn-[32] set |
-| `spec/08-verification-mapping.md`:87 | `MarshalFault` | verification mapping that assumes a single variant set |
+| `spec/08-verification-mapping.md`:119 | `MarshalFault` | verification mapping that assumes a single variant set |
 
 ### The collision
 

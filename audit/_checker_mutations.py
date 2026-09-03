@@ -148,7 +148,7 @@ def m_drop_c_row(root: Path) -> bool:
 
 def m_add_u_heading(root: Path) -> bool:
     """A new unresolved decision with no index entry and no count update."""
-    block = ("\n### U-38 — Injected mutation decision\n\n"
+    block = ("\n### U-39 — Injected mutation decision\n\n"
              "- **Where:** R-CORE-08.\n"
              "- **State of source:** injected by audit/_checker_mutations.py.\n"
              "- **Decision needed:** none; this is a test fixture.\n"
@@ -278,6 +278,32 @@ def m_summary_not_updated(root: Path) -> bool:
     return True
 
 
+def m036_rotate_obligation_body(root: Path) -> bool:
+    """M036 (spec/08 registry): rotate one spec/01 obligation body onto adjacent
+    content, leaving both IDs in place.
+
+    This is the SEC-023 class -- a stable ID denoting a different rule than its
+    body -- and `spec/_check.py` exists specifically to detect it.  Measured
+    result: DETECTED (one extra D3 warning) but NOT killed, because only D1
+    hard-fails while D2/D3 warn.  With 36 adjudicated warnings already standing,
+    37 is camouflage.  Filed as U-38; expected to SURVIVE until that is decided.
+    """
+    p = root / "spec/01-canonical-specification.md"
+    txt = p.read_text(encoding="utf-8")
+    obl = list(re.finditer(r"^\*\*(R-[A-Z]+-\d+)[^*]*\*\*.*$", txt, re.M))
+    if len(obl) < 2:
+        return False
+    a, b = obl[len(obl) // 2], obl[len(obl) // 2 + 1]
+    ta = re.match(r"^(\*\*R-[A-Z]+-\d+[^*]*\*\*)(.*)$", a.group(0), re.S)
+    tb = re.match(r"^(\*\*R-[A-Z]+-\d+[^*]*\*\*)(.*)$", b.group(0), re.S)
+    if not (ta and tb):
+        return False
+    txt = txt.replace(a.group(0), ta.group(1) + tb.group(2), 1)
+    txt = txt.replace(b.group(0), tb.group(1) + ta.group(2), 1)
+    p.write_text(txt, encoding="utf-8")
+    return True
+
+
 MUTATIONS = [
     Mutation("K01", "finding row added, not indexed",
              "The completeness gate must reject a register row absent from 10-index.json.",
@@ -321,6 +347,12 @@ MUTATIONS = [
              m_wrong_summary_count,
              regression_for="the 74/76-vs-102 drift this harness found",
              tags=["docs", "regression"]),
+    Mutation("M036", "rotate a spec/01 obligation body onto adjacent content",
+             "The SEC-023 class. spec/_check.py detects it (one D3 warning) but exits 0: "
+             "only D1 hard-fails, and 36 adjudicated warnings camouflage the 37th. U-38.",
+             m036_rotate_obligation_body,
+             regression_for="SEC-023 normative-layer content substitution",
+             tags=["normative", "known-survivor"]),
     Mutation("K13", "row added, prose summary left unchanged",
              "The exact drift that occurred: rows accrete, the figure stays put.",
              m_summary_not_updated,
@@ -384,7 +416,7 @@ def main() -> int:
         print("green")
     print()
 
-    killed, survived, inapplicable = [], [], []
+    killed, survived, inapplicable, known = [], [], [], []
 
     for mut in selected:
         print(f"{mut.mid}  {mut.title}")
@@ -414,6 +446,9 @@ def main() -> int:
                 if first:
                     print(f"      -> {first[:140]}")
                 killed.append((mut, killer))
+            elif "known-survivor" in mut.tags:
+                print("      SURVIVED (known, filed) <-- expected: see U-38")
+                known.append(mut)
             else:
                 print("      SURVIVED  <-- gap: no checker rejects this")
                 survived.append(mut)
@@ -423,7 +458,13 @@ def main() -> int:
     total = len(killed) + len(survived)
     rate = (100.0 * len(killed) / total) if total else 0.0
     print(f"killed {len(killed)}/{total}  ({rate:.0f}%)"
+          + (f"   known survivors {len(known)}" if known else "")
           + (f"   inapplicable {len(inapplicable)}" if inapplicable else ""))
+    if known:
+        print("\nKNOWN SURVIVORS (filed, not silently tolerated):")
+        for m in known:
+            print(f"  {m.mid}  {m.title}")
+            print(f"       {m.rationale}")
     if survived:
         print("\nSURVIVING MUTANTS -- each is a defect the checkers cannot see:")
         for m in survived:

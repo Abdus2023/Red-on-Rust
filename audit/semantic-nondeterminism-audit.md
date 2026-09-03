@@ -837,11 +837,78 @@ Additive; none rewrites frozen text. Per R-SCOPE-03 all supersessions quote rath
 
 ---
 
+## 9. Addendum — mutation testing the checkers (and one surviving mutant)
+
+Landing §7's register entries exposed **four defects in this repository's own
+checkers**, all of one family: *a check that silently under-counts instead of
+failing*. `req/_validate.py` asserted a count against a `C-\d{2}` pattern and
+reported 99 where there were 102; `spec/_build_index.py` carried five such
+patterns — one of them in the completeness gate whose stated purpose is that
+"the next pass cannot silently reopen the gap", which **passed while omitting
+three rows** — and two `max()` calls compared IDs as strings, so `"C-99" >
+"C-102"`. All are fixed. But `spec/01` R-TEST-06 requires that the mutation
+framework validate itself before being trusted, and nothing tested the
+checkers, so the fixes rested on the same footing as the defects.
+
+`audit/_checker_mutations.py` closes that: 14 defects the registers would
+realistically acquire, each applied to a scratch copy, each required to be
+rejected by some checker. A green baseline is required first, so a red tree
+cannot pass everything vacuously. **13 of 14 are killed.**
+
+Two results are worth recording beyond the pass/fail.
+
+**(a) A drift no checker could see — including one this audit introduced.**
+`spec/06`'s summary line read "74 findings (76 rows)" against 97 actual rows;
+it was stale before this work began. The first revision of the §7 addendum
+added five to that base and wrote "79 in 81". Both figures were wrong; the
+mechanical count is 101 findings / 102 rows. Every gate counted the table and
+none read the prose, so the error propagated through a pass whose entire
+subject is undetected divergence. Corrected, with the superseded figures quoted
+(R-SCOPE-03); `req/_validate.py` now re-derives the count and fails on any live
+prose figure that disagrees, while still permitting quoted historical ones.
+
+**(b) M036 survives, and its survival is the SEC-023 defect one layer up.**
+The prior audit proposed mutations M019–**M036**; `spec/08` and `spec/10-index.json`
+both stopped at M035, so M036 was never registered. It is the only mutation in
+the registry that can be measured today, because its detector — `spec/_check.py`,
+promoted from `audit/spec_check.py` as the SEC-023 remediation — exists and runs
+green. Measured:
+
+| Rotations injected (adjacent-pair body swaps, IDs left in place) | Hard-failed | Warn-only | Undetected |
+|---|---|---|---|
+| 12, spread across all 173 obligations | **0** | 12 | 0 |
+
+Each rotation *is* detected — it raises a `D3` warning — but `spec/_check.py`
+**exits 0**, because only `D1` (records layer: `Original` vs `Normalized`)
+hard-fails. `D2` and `D3`, the checks that compare the `spec/01` **body**
+against the frozen source and the matrix, warn by default. The tree carries 36
+adjudicated warnings (18×D2, 18×D3), so a rotation yields 37 under an unchanged
+`OK with warnings` summary — camouflage, not signal.
+
+SEC-023 (CRITICAL) found 48 obligations whose stable ID denoted a different rule
+than their body. Its remediation built the detector and then wired the
+body-comparison half of it to a non-failing severity. `MutationKillRate` for the
+one measurable mutant in the registry is **0%** — recorded in `spec/08` §2 and
+filed as **U-38**, whose disposition is a CI-policy decision with a real cost
+(promoting D2/D3 hard-fails the 36 adjudicated cases), not a mechanical patch.
+The audit recommends an explicit allow-list keyed by obligation ID, so that each
+tolerated warning is a recorded decision and *any new warning fails the build*.
+
+This addendum issues no frozen text. M036 is registered in `spec/08` as a
+**known, filed survivor** — the harness reports it as such rather than counting
+it as a pass or letting it disappear into a kill-rate denominator.
+
+---
+
 ## 8. Statement of audit limits
 
 - **This is a specification audit.** The repository contains no implementation (`spec/00` status discipline; every obligation `SPECIFIED`). No finding here is a claim about code behaviour; each is a claim that the frozen text **admits** a nondeterministic implementation, or fails to determine an outcome. Where a finding says "an implementer will," that is a claim about what the text licenses, not an observation.
 - **No finding claims DT is unachievable.** All sixteen are closable, most by freezing a decision already scoped in `spec/09`. The architecture is sound; the enumeration of inputs is incomplete.
 - **Findings are not promoted beyond `SPECIFIED`.** No verification claim, no evidence status change, no promotion on the status ladder is asserted by this document. §6 proposes tests; it does not report results.
 - **On external effects, this audit asserts only §5.4** and asserts it in the required form: replay proves machine-state and event reproduction, subject to explicit external-effect reconciliation. **It does not claim, anywhere, that replay reproduces the external world.**
+- **On §9.** The 13/14 kill rate is a floor on the checkers' sensitivity to *these*
+  defects, not a guarantee of completeness; and M036's 0% is a measurement of one
+  mutation against one detector, not a `MutationKillRate` for the specification
+  (R-CLAIM-01 — nothing here is promoted).
 - **Coverage.** All fifteen requested categories were checked; every one is reported, including the two with no finding (DET-017 floating point, DET-018 environment variables), so that the negative results are auditable rather than silently omitted. Where a category's risk is real but indirect (network timing — see DET-005 and the `Indeterminate` discussion in §5.4; thread scheduling — DET-014), it is filed at the severity the frozen text supports rather than inflated.
 - **Method.** Mechanical search across all 42,312 source lines plus the five canonical organizations, followed by hand-reading of every hit in operative context. Counts stated (13 `SchedulerTrace` occurrences; 0 `f64`/`f32`; 0 `std::env`; six `ReplayHost` declarations) are grep-verified at commit `3d00818` and are re-checkable by the commands recorded alongside each finding.

@@ -33,10 +33,10 @@
       "S-NN": "specification section (24)",
       "R-AREA-NN": "normative requirement/obligation (173; 148 source-transcribed + 25 post-audit frozen addenda)",
       "C-NN": "contradiction/ambiguity finding (101 indexed; 102 rows in spec/06, incl. pointer C-39 which duplicates C-25)",
-      "U-NN": "unresolved item requiring explicit decision (31)",
+      "U-NN": "unresolved item requiring explicit decision (32)",
       "M-NN": "milestone M0-M11",
       "TAG": "source verification-obligation tags (19; 17 frozen-source + 2 post-audit addenda)",
-      "M0NN": "baseline mutation registry (35; 18 baseline + 17 post-audit: M019–M035)",
+      "M0NN": "baseline mutation registry (36; 18 baseline + 18 post-audit: M019–M036; M036 is registered and currently SURVIVING — see spec/08 §2 and U-38)",
       "ROR-NNN": "first-sprint tasks (16)"
     },
     "documents": {
@@ -48,7 +48,7 @@
       "06-contradictions-ambiguities.md": "findings C-01..C-102 with severity and status",
       "07-implementation-mapping.md": "obligations -> crates/modules; actual repo state; milestone crosswalk",
       "08-verification-mapping.md": "obligations -> tags/tests/evidence; claim ladder per theorem",
-      "09-unresolved-decisions.md": "items U-01..U-37 requiring explicit architectural decisions",
+      "09-unresolved-decisions.md": "items U-01..U-38 requiring explicit architectural decisions",
       "10-index.json": "this file (machine-readable index)"
     }
   },
@@ -6476,6 +6476,17 @@
         "R-CANON-05",
         "R-CAP-06",
         "R-REF-05"
+      ]
+    },
+    {
+      "id": "U-38",
+      "title": "spec/_check.py severity wiring: D2/D3 warn where the SEC-023 class lives",
+      "blocking": "PRE-MILESTONE",
+      "section": "S-01;S-24;S-21",
+      "affects": [
+        "R-SCOPE-03",
+        "R-CLAIM-02",
+        "R-TEST-04"
       ]
     }
   ],
