@@ -254,7 +254,7 @@ findings = [
  ("C-34","property tests prove the code obeys the calculus (un-corrected claim)","MAJOR","resolved-by-later-text","U-none","37331;28246-28268;37444-37452;38955"),
  ("C-35","Compilation judgment: 4 judgments vs 1 combined","MINOR","resolved-by-later-text","U-22 (gap)","1953-1981;3874-3905"),
  ("C-36","Spawn isolation/trust parameter vs budget parameter","MINOR","resolved-by-later-text","U-05","3850;12161"),
- ("C-37","Deterministic interleaving wording for scheduler","INFO","info","U-none","41641;25769"),
+ ("C-37","Deterministic interleaving wording for scheduler","INFO","info","U-none","41832;27618;25765"),
  ("C-38","observation_sequence vs current_planning_epoch check","MINOR","open","U-13","27236;28373;27918"),
  ("C-40","Recover(D) unqualified vs qualified theorem","MAJOR","resolved-by-later-text","U-none","26133;27551-27569"),
  ("C-41","15A frozen declared before duplicate-key patch","MINOR","resolved-by-later-text","U-none","33266;34987-35024"),

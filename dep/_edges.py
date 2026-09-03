@@ -827,7 +827,11 @@ FINDINGS = {
             "finding identified. Red-on-Rust.md L41827-41838 and README.md "
             "are frozen at 12 rows, so ID-7 keeps reading the frozen table "
             "and the three authority rows (MOD-06/08/10) are stated at spec "
-            "level. C-37's provenance line remains to be fixed."),
+            "level. C-37's provenance line is fixed in place: both its "
+            "citations were defective (L41641 is the determinism-theorem "
+            "passage, L25769 a section heading; the real rows are L41832 "
+            "(governing table), L27618 (superseded table) and L25765 "
+            "(lockstep) — superseded wording quoted in the row)."),
     ),
 }
 
