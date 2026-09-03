@@ -106,7 +106,13 @@ issuance step calls `ror-persistence` append/sync (R-DUR-02).
 - Crate edges: `ror-runtime` orchestrating; durable step via `ror-persistence`.
 - Blocking open items: **U-06** (effect-property classes ↔ replay/reconciliation
   rules — AMB-20), **U-21** (`Op`/`Target`/`Params` domains), **U-01/U-07**
-  (budget premises), **U-02** (`Constraint`/digest encodings upstream).
+  (budget premises), **U-02** (`Constraint`/digest encodings upstream), **U-39**
+  (two frozen 16-step protocols — this module owns R-EFFECT-01, and `spec/01` S-12
+  still quotes the superseded host-before-Issued order; `spec/06` C-103; M5),
+  **U-42** (live journal/fsync failure at step 14 — R-EFFECT-04's five assertions
+  are unsatisfiable after s12/s13 on the current order; `spec/06` C-106; with
+  MOD-11; M5), **U-41/U-43** (durable record payload and persistence boundaries —
+  `spec/06` C-105/C-107/C-109; with MOD-11/12; M10 reconstruction evidence).
 
 ## INVARIANTS
 
@@ -194,4 +200,6 @@ refines — D-12, D-08); R-DUR-01 (MOD-11 owns the durable-before-host statement
 R-HOST-02 (MOD-09: host performs only issued effects); R-CALC-04/05 (MOD-01 owns the
 descriptor/cost types); R-BUDGET-04/08 (MOD-04 owns the gate predicates); R-RECOV-02
 (MOD-12 classifies in-flight effects after a crash). Open items: U-06 (this module,
-blocking M5/M7 reconciliation behavior), U-01/U-07 (MOD-04), U-21 (MOD-01/03/10).
+blocking M5/M7 reconciliation behavior), U-01/U-07 (MOD-04), U-21 (MOD-01/03/10),
+U-44 (request-frame verification tags — GAP-06: Track A's request-args LTR and
+non-capability short-circuit are untagged obligation classes; MOD-05/17-side).

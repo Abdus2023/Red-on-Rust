@@ -94,7 +94,9 @@ normative text in `spec/01` S-22).
 - Blocking open items: **U-04** (formal `await` retraction affects the frozen
   surface; with MOD-01), **U-02** (canonical encoding of frames/environments for
   snapshots blocks serializability evidence; with MOD-10/11), **U-01/U-07** (budget
-  premises of call/request transitions).
+  premises of call/request transitions), **U-40** (step-10 deadline predicate of
+  request transitions — R-BUDGET-06's post-advance form vs REQ-EFFECT-012's weak
+  form, `spec/06` C-104; with MOD-04/08).
 
 ## INVARIANTS
 
@@ -179,4 +181,6 @@ central; operative R-KERN-03 in MOD-03 — references only, no authority interna
 R-CALC-01/02/03/08 (MOD-01 — the term and configuration types), R-EFFECT-02 (MOD-08 —
 every active transition is gated), R-BUDGET-06/08 (MOD-04 — time deltas and fault
 replacement on gate failure). Open items: U-04 (with MOD-01), U-02 (machine-state
-encoding, SERIALIZATION-side), U-07 (δ_t values, BUDGET-side).
+encoding, SERIALIZATION-side), U-07 (δ_t values, BUDGET-side), U-44 (request-frame
+verification tags — REQUEST-ARGS-LTR / REQUEST-NON-CAP-SHORT-CIRCUIT are untagged;
+MOD-08/17-side).

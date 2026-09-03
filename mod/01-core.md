@@ -91,7 +91,13 @@ authority storage, or LLM integration (normative text in `spec/01` S-22; not res
   R-CORE-08's own statement; with MOD-07), **U-04** (`await` formal retraction record),
   **U-08/U-14** (`Fault`/error-variant enumeration), **U-09** (machine `Value` vs
   canonical `Value` domain collision; `AdmissibleConstraint` status), **U-21**
-  (`Op`/`Target`/`Params` domains), **U-05** (isolation ladder status, with MOD-06).
+  (`Op`/`Target`/`Params` domains), **U-05** (isolation ladder status, with MOD-06),
+  **U-39** (two frozen 16-step request protocols — R-EFFECT-01's S-12 form vs the
+  master-prompt form; `spec/06` C-103; with MOD-08), **U-42** (live journal/fsync
+  failure semantics and a declared `PersistenceError` fault — extends R-CORE-12/13;
+  `spec/06` C-106; with MOD-08/11), **U-41/U-43** (durable issuance payload and
+  persistence boundaries — R-DUR/R-PERSIST scope; `spec/06` C-105/C-107/C-109;
+  with MOD-11/12).
   Related ambiguity register: AMB-17, AMB-21, AMB-22, AMB-23, AMB-24, AMB-29.
 
 ## INVARIANTS

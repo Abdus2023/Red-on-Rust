@@ -106,7 +106,13 @@ journal, recovery engine housing (R-REPO-02).
 - Blocking open items: **U-02** (machine-state canonical encodings block snapshot
   byte-stability — with MOD-10), **U-16** (sequence relationship), **U-17**
   (snapshot queue vs reconstruction, with MOD-12/07), **U-15** (reconciliation record
-  outcome variants, MOD-12-side).
+  outcome variants, MOD-12-side), **U-41** (durable issuance payload — `Prepared`/
+  `Issued` carry no effect/cost, so escrow survival and T1 budget restore lack a
+  durable source of truth; `spec/06` C-105; with MOD-08), **U-42** (live journal/
+  fsync failure — no declared fault, no rollback, no record kind for a journal-driven
+  commit; `spec/06` C-106; with MOD-08), **U-43** (snapshot cadence vs the s12–s14b
+  issue section and `next_effect_id` reconstruction; `spec/06` C-107/C-109;
+  with MOD-12).
 
 ## INVARIANTS
 
@@ -203,4 +209,5 @@ Owned elsewhere, binding PERSISTENCE: R-CANON-01/02/09 (MOD-10 — payloads, che
 digests), R-EFFECT-03 step 14 (MOD-08), R-RECOV-01…07 (MOD-12 — consumes `D = ⟨S, L,
 H⟩` produced here), R-PLANNER-02 (MOD-13 — planner cannot bypass persistence),
 R-ORDER-03 property 4 (MOD-17 — host-after-durability gate evidence). Open items:
-U-02, U-16, U-17, U-15 (MOD-12-side), AMB-02/09/14/27.
+U-02, U-16, U-17, U-15 (MOD-12-side), U-41/U-42/U-43 (request-pipeline issuances,
+MOD-08/12-side), AMB-02/09/14/27.

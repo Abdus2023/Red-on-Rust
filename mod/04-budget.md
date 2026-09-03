@@ -97,7 +97,11 @@ R-REPO-02" is superseded (quoted here; no budget algebra or gate lives in
   core operand types (addendum VI; `spec/07` §2/§6).
 - Blocking open items: **U-01** (operational meaning of the `D` consumable — AMB-01;
   exhaustion behavior is not testable until decided), **U-07** (per-transition `δ_t`
-  values — AMB-19), **U-03** (spawn split policy, with MOD-06 — AMB-03).
+  values — AMB-19), **U-03** (spawn split policy, with MOD-06 — AMB-03), **U-40**
+  (step-10 deadline predicate: `t + δ_t(req) ≤ W` per R-BUDGET-06/v0.3 vs the weak
+  `t ≤ W` — `spec/06` C-104; with MOD-08; M5 deadline conformance), **U-45**
+  (adoption of the R-BUDGET-10…14 resource-accounting proposal — `spec/06` C-108;
+  its five-path escrow normal form conflicts with this module's R-BUDGET-09 totality).
 
 ## INVARIANTS
 
@@ -186,4 +190,5 @@ R-EFFECT-05/07 (MOD-08 computes the actual charges; this module owns the account
 law they must satisfy); R-DUR-05 (MOD-11 owns the durability of the escrow record);
 R-PLANNER-02 (MOD-13: planner cannot modify budgets — enforcement at this module's
 API surface). Open items: U-01, U-07 (this module, blocking), U-03 (with MOD-06),
-U-13 (epoch/timestamps, MOD-13-side).
+U-13 (epoch/timestamps, MOD-13-side), U-40 (deadline predicate, MOD-08-side),
+U-45 (R-BUDGET-10…14 adoption, audit proposal — not normative until decided).

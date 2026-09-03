@@ -111,7 +111,11 @@ plus `spec/00` §2 (status ladder). This module owns:
 - Repository homes: `tests/`, `scripts/`, `mutations/registry.toml`, `vectors/`,
   and the workspace skeleton itself.
 - Blocking open items: none originate here; every other module's U-items are *this*
-  module's concern (they are "stop and report" points).
+  module's concern (they are "stop and report" points). **U-44** is the one item that
+  does originate here: whether R-TEST-07's frozen tag set gains the request-frame
+  obligation tags `REQUEST-ARGS-LTR` and `REQUEST-NON-CAP-SHORT-CIRCUIT` is a
+  verification-register decision (audit GAP-06; with MOD-05/08; coverage, not
+  blocking).
 
 ## INVARIANTS
 

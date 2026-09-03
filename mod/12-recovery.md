@@ -113,7 +113,12 @@ independent recovery oracle in `ror-reference` (R-REPO-02).
   is declared as a closed three-variant set at L26593–26597 per the registry
   correction; its admissibility per effect class remains open with U-06), **U-02**
   (snapshot decode depends on unfrozen machine-state encodings), **U-17** (queue
-  authority), **U-06** (effect classes gate reconciliation behavior).
+  authority), **U-06** (effect classes gate reconciliation behavior), **U-41**
+  (T1 "budget restored" / T2–T4 identity / T5 continuation resumption have no durable
+  source of truth in the issuance records — `spec/06` C-105; with MOD-08/11; M10
+  reconstruction evidence), **U-43** (snapshot-cadence and completion-boundary
+  decisions determine which T-row a given persistence state belongs to —
+  `spec/06` C-107/C-109; with MOD-11).
 
 ## INVARIANTS
 
@@ -203,4 +208,5 @@ D-06/D-07), R-PERSIST-02/05/06 (MOD-11 detection points that raise `RecoveryFaul
 here), R-DUR-04/05 (MOD-11 classification and escrow statements this module applies),
 R-HOST-03/04 (MOD-09 replay ordering underlies recovery replay), R-TEST-08/R-TEST-11
 (MOD-17 harness + acceptance). Open items: U-15, U-06 (this module, blocking M7/M10),
-U-17, U-02, AMB-09, AMB-27.
+U-17, U-02, U-41/U-43 (request-pipeline reconstruction evidence, MOD-08/11-side),
+AMB-09, AMB-27.
