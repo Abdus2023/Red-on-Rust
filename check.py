@@ -50,6 +50,7 @@ CHECKERS: list[tuple[str, str]] = [
     ("req/_validate.py",     "register sizes, prose-count gates, cross-reference tokens"),
     ("req/_coverage.py",     "omission audit: normative-looking source lines cited by no record"),
     ("term/_reanchor.py",    "living-document line anchors resolve uniquely"),
+    ("audit/_conservation_checker.py", "mechanically verifies resource conservation and transition atomicity for Op-01..Op-22"),
     ("audit/_checker_mutations.py", "mutation-tests the checkers themselves"),
 ]
 
