@@ -14,6 +14,7 @@
 //! M3 evaluation adds: `Lambda` / `Call` (R-CEK-04/05).
 //! Later constructors remain AST-only until later milestones.
 
+use crate::capability::Constraint;
 use crate::types::{CapRef, Symbol};
 
 /// Opaque delegated-capability handle (R-CALC-01).
@@ -61,6 +62,9 @@ pub enum Value {
     /// Opaque capability reference. Evaluator must not inspect authority.
     Capability(CapRef),
     DelegatedCapability(DelegatedCapability),
+    /// Constraint value for `Expr::Attenuate { constraint: Box<Expr> }` (R-CALC-02).
+    /// Not an authority; narrowing request only (R-CAP-04). M4 surface.
+    Constraint(Constraint),
 }
 
 /// Frozen expression AST (R-CALC-02).
@@ -179,14 +183,15 @@ impl Environment {
     }
 }
 
-/// Machine-local fault identity for pure CEK (M2/M3 subset).
+/// Machine-local fault identity for pure CEK (M2/M3/M4 subset).
 ///
 /// Full trust-boundary fault taxonomy (R-CORE-13) is broader; this enum is the
 /// **evaluator-local** surface needed by pure transitions. Provisional under
-/// open fault OADs — not a claim that U-08 is closed.
+/// open fault OADs — **U-08 remains OPEN**. Not a claim that R-CALC-06 is closed.
 ///
-/// `ArityMismatch` realises R-CEK-05 / REQ-CEK-014 `fault(F_arity)` with a
-/// deterministic label shared by production and reference (preflight disclosure).
+/// `ArityMismatch` realises R-CEK-05 / REQ-CEK-014 `fault(F_arity)`.
+/// `CapabilityRevoked` / `InvalidConstraint` are M4 provisional labels
+/// (REQ-CAP-023 / R-CAP-10 name tension with AMB-08).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Fault {
     UnboundVariable(Symbol),
@@ -200,8 +205,12 @@ pub enum Fault {
         expected: usize,
         actual: usize,
     },
-    /// Expression outside the current pure-subset evaluator (M4+ forms, fuel).
-    /// Name retained from M2; does not mean M3 Lambda/Call are unsupported.
+    /// E-AttenuateDenied when ¬Valid (REQ-CAP-023). Provisional label; U-08 OPEN.
+    CapabilityRevoked,
+    /// Inadmissible constraint (R-CAP-10). Provisional label; U-08 OPEN.
+    InvalidConstraint,
+    /// Expression outside the current evaluator surface (M5+ forms, fuel).
+    /// Name retained from M2; does not mean M3/M4 forms are unsupported.
     UnsupportedInM2 {
         form: &'static str,
     },
@@ -210,6 +219,7 @@ pub enum Fault {
 /// Helpers for building pure-subset expressions in tests and fixtures.
 pub mod sugar {
     use super::{Expr, Symbol, Value};
+    use crate::types::CapRef;
 
     pub fn unit() -> Expr {
         Expr::Value(Value::Unit)
@@ -262,6 +272,22 @@ pub mod sugar {
             func: Box::new(func),
             args,
         }
+    }
+
+    /// `Expr::Attenuate { cap, constraint }` (R-CALC-02). No body/name fields.
+    pub fn attenuate(cap: Expr, constraint: Expr) -> Expr {
+        Expr::Attenuate {
+            cap: Box::new(cap),
+            constraint: Box::new(constraint),
+        }
+    }
+
+    pub fn constraint_v(c: super::Constraint) -> Expr {
+        Expr::Value(Value::Constraint(c))
+    }
+
+    pub fn capability_v(cap: CapRef) -> Expr {
+        Expr::Value(Value::Capability(cap))
     }
 }
 

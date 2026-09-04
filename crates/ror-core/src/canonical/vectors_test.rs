@@ -66,10 +66,7 @@ mod golden {
     #[test]
     fn golden_capref_kernel_only() {
         let bytes = load_hex_file("capref_5_2.bin.hex");
-        let cap = CapRef {
-            index: 5,
-            generation: 2,
-        };
+        let cap = CapRef::from_kernel_parts(5, 2);
         assert_eq!(decode_cap_ref_kernel(&bytes).unwrap(), cap);
         assert_eq!(
             decode_data_value(&bytes),

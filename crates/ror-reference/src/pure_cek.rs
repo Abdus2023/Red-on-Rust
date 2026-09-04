@@ -1,13 +1,19 @@
-//! Reference pure CEK (M2 + M3).
+//! Reference pure CEK (M2 + M3 + M4 Attenuate).
 //!
 //! Independently authored transition relation (R-REF-02). Does not import or
-//! call `ror_runtime`. Shared domain types only from `ror-core`.
+//! call `ror_runtime` / `ror_kernel`. Shared domain types only from `ror-core`.
+//! M4 attenuation uses [`crate::cap_algebra::RefCapabilityStore`].
 //!
 //! M2: Value/Var/Let/Seq/If.
 //! M3: Lambda/Call — lexical capture, LTR args, arity-before-args.
+//! M4: Attenuate via independent reference store.
 
+use ror_core::capability::LogicalTime;
 use ror_core::machine::{Environment, Expr, Fault, FunctionValue, Value};
+use ror_core::types::CapRef;
 use ror_core::Symbol;
+
+use crate::cap_algebra::RefCapabilityStore;
 
 pub const REF_MAX_STEPS_DEFAULT: u64 = 1_000_000;
 
@@ -40,6 +46,16 @@ pub enum RefKont {
         rest: Vec<Expr>,
         caller_env: Environment,
     },
+    /// M4: waiting for capability value of Attenuate.
+    WaitingAttCap {
+        constraint: Expr,
+        saved_env: Environment,
+    },
+    /// M4: waiting for constraint value; then derive.
+    WaitingAttConstraint {
+        parent: CapRef,
+        saved_env: Environment,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -55,6 +71,7 @@ pub struct RefState {
     pub env: Environment,
     pub kont: Vec<RefKont>,
     pub outcome: RefOutcome,
+    pub logical_time: LogicalTime,
 }
 
 impl RefState {
@@ -64,23 +81,29 @@ impl RefState {
             env: Environment::empty(),
             kont: Vec::new(),
             outcome: RefOutcome::Running,
+            logical_time: LogicalTime::ZERO,
         }
+    }
+
+    pub fn at_time(mut self, t: LogicalTime) -> Self {
+        self.logical_time = t;
+        self
     }
 }
 
 /// One reference transition. Returns false when already terminal.
-pub fn step(state: &mut RefState) -> bool {
+pub fn step(state: &mut RefState, store: &mut RefCapabilityStore) -> bool {
     if !matches!(state.outcome, RefOutcome::Running) {
         return false;
     }
 
     let expr = std::mem::replace(&mut state.expr, Expr::Value(Value::Unit));
     match expr {
-        Expr::Value(v) => deliver(state, v),
+        Expr::Value(v) => deliver(state, v, store),
         Expr::Var(sym) => match state.env.lookup(sym) {
             Some(v) => {
                 let v = v.clone();
-                deliver(state, v);
+                deliver(state, v, store);
             }
             None => {
                 state.outcome = RefOutcome::Fault(Fault::UnboundVariable(sym));
@@ -123,7 +146,7 @@ pub fn step(state: &mut RefState) -> bool {
                 body,
                 env: state.env.clone(),
             });
-            deliver(state, f);
+            deliver(state, f, store);
         }
         Expr::Call { func, args } => {
             let caller = state.env.clone();
@@ -133,8 +156,13 @@ pub fn step(state: &mut RefState) -> bool {
             });
             state.expr = *func;
         }
-        Expr::Attenuate { .. } => {
-            state.outcome = RefOutcome::Fault(Fault::UnsupportedInM2 { form: "Attenuate" });
+        Expr::Attenuate { cap, constraint } => {
+            let saved = state.env.clone();
+            state.kont.push(RefKont::WaitingAttCap {
+                constraint: *constraint,
+                saved_env: saved,
+            });
+            state.expr = *cap;
         }
         Expr::Request { .. } => {
             state.outcome = RefOutcome::Fault(Fault::UnsupportedInM2 { form: "Request" });
@@ -159,7 +187,7 @@ pub fn step(state: &mut RefState) -> bool {
 }
 
 /// Deliver a value to the top kont or halt (reference value-return).
-fn deliver(state: &mut RefState, value: Value) {
+fn deliver(state: &mut RefState, value: Value, store: &mut RefCapabilityStore) {
     match state.kont.pop() {
         None => {
             state.outcome = RefOutcome::Halted(value);
@@ -200,38 +228,39 @@ fn deliver(state: &mut RefState, value: Value) {
         Some(RefKont::WaitingOp {
             arg_exprs,
             caller_env,
-        }) => match value {
-            Value::Function(function) => {
-                // Arity before any argument evaluation.
-                if arg_exprs.len() != function.params.len() {
-                    state.outcome = RefOutcome::Fault(Fault::ArityMismatch {
-                        expected: function.params.len(),
-                        actual: arg_exprs.len(),
+        }) => {
+            let function = match value {
+                Value::Function(f) => f,
+                other => {
+                    state.outcome = RefOutcome::Fault(Fault::TypeError {
+                        expected: "Function",
+                        actual: kind_of(&other),
                     });
                     return;
                 }
-                if arg_exprs.is_empty() {
-                    install_body(state, function, Vec::new());
-                    return;
-                }
-                let mut rest = arg_exprs;
-                let first = rest.remove(0);
-                state.kont.push(RefKont::WaitingArg {
-                    function,
-                    got: Vec::new(),
-                    rest,
-                    caller_env: caller_env.clone(),
+            };
+            if arg_exprs.len() != function.params.len() {
+                state.outcome = RefOutcome::Fault(Fault::ArityMismatch {
+                    expected: function.params.len(),
+                    actual: arg_exprs.len(),
                 });
-                state.env = caller_env;
-                state.expr = first;
+                return;
             }
-            other => {
-                state.outcome = RefOutcome::Fault(Fault::TypeError {
-                    expected: "Function",
-                    actual: kind_of(&other),
-                });
+            if arg_exprs.is_empty() {
+                install_body(state, function, Vec::new());
+                return;
             }
-        },
+            let mut rest = arg_exprs;
+            let first = rest.remove(0);
+            state.kont.push(RefKont::WaitingArg {
+                function,
+                got: Vec::new(),
+                rest,
+                caller_env: caller_env.clone(),
+            });
+            state.env = caller_env;
+            state.expr = first;
+        }
         Some(RefKont::WaitingArg {
             function,
             mut got,
@@ -252,6 +281,48 @@ fn deliver(state: &mut RefState, value: Value) {
             });
             state.env = caller_env;
             state.expr = next;
+        }
+        Some(RefKont::WaitingAttCap {
+            constraint,
+            saved_env,
+        }) => {
+            let parent = match value {
+                Value::Capability(c) => c,
+                other => {
+                    state.outcome = RefOutcome::Fault(Fault::TypeError {
+                        expected: "Capability",
+                        actual: kind_of(&other),
+                    });
+                    return;
+                }
+            };
+            state.kont.push(RefKont::WaitingAttConstraint {
+                parent,
+                saved_env: saved_env.clone(),
+            });
+            state.env = saved_env;
+            state.expr = constraint;
+        }
+        Some(RefKont::WaitingAttConstraint { parent, saved_env }) => {
+            let constraint = match value {
+                Value::Constraint(c) => c,
+                other => {
+                    state.outcome = RefOutcome::Fault(Fault::TypeError {
+                        expected: "Constraint",
+                        actual: kind_of(&other),
+                    });
+                    return;
+                }
+            };
+            match store.derive(parent, &constraint, state.logical_time) {
+                Ok(child) => {
+                    state.env = saved_env;
+                    deliver(state, Value::Capability(child), store);
+                }
+                Err(f) => {
+                    state.outcome = RefOutcome::Fault(f);
+                }
+            }
         }
     }
 }
@@ -279,16 +350,27 @@ fn kind_of(v: &Value) -> &'static str {
         Value::Function(_) => "Function",
         Value::Capability(_) => "Capability",
         Value::DelegatedCapability(_) => "DelegatedCapability",
+        Value::Constraint(_) => "Constraint",
     }
 }
 
 pub fn evaluate(expr: Expr, max_steps: u64) -> Result<Value, Fault> {
-    let mut state = RefState::new(expr);
+    let mut store = RefCapabilityStore::new();
+    evaluate_with_store(expr, max_steps, &mut store, LogicalTime::ZERO)
+}
+
+pub fn evaluate_with_store(
+    expr: Expr,
+    max_steps: u64,
+    store: &mut RefCapabilityStore,
+    t: LogicalTime,
+) -> Result<Value, Fault> {
+    let mut state = RefState::new(expr).at_time(t);
     for _ in 0..max_steps {
         if !matches!(state.outcome, RefOutcome::Running) {
             break;
         }
-        step(&mut state);
+        step(&mut state, store);
     }
     match state.outcome {
         RefOutcome::Halted(v) => Ok(v),

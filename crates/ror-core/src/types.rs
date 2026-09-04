@@ -12,6 +12,10 @@
 //! R-CANON-03/05 (frozen). Integer field widths on the wire are `u32`/`u64`/`i64`
 //! as named by those requirements; U-37 remains OPEN for *semantic* quantities
 //! outside this codec.
+//!
+//! **M4 CapRef opacity (R-KERN-01):** fields are private. Forming a bit-pattern
+//! does not grant authority — only a live arena entry validated by the kernel
+//! does. The sole constructors are kernel mint and the kernel-mediated codec.
 
 use std::collections::BTreeMap;
 
@@ -19,14 +23,36 @@ use std::collections::BTreeMap;
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Ord, PartialOrd)]
 pub struct Symbol(pub u32);
 
-/// Opaque capability reference payload shape (R-CANON-05).
+/// Opaque capability reference (R-KERN-01 / R-CANON-05).
 ///
 /// Standalone envelope tag `0x30`. The *data* decoder rejects this tag
 /// (R-CANON-12); only the kernel-mediated codec path may produce or consume it.
+///
+/// Fields are **private**. There is no public free constructor for untrusted
+/// code. Kernel mint uses [`CapRef::from_kernel_parts`]; the codec uses the
+/// same path (kernel-mediated). Bits alone never imply authority.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct CapRef {
-    pub index: u32,
-    pub generation: u32,
+    index: u32,
+    generation: u32,
+}
+
+impl CapRef {
+    /// Kernel / kernel-mediated codec construction (R-KERN-01, R-CANON-12).
+    ///
+    /// **Not** an untrusted mint API: forming bits does not create authority.
+    /// Ordinary evaluation must obtain CapRefs only via kernel `grant`/`derive`.
+    pub fn from_kernel_parts(index: u32, generation: u32) -> Self {
+        Self { index, generation }
+    }
+
+    pub fn index(&self) -> u32 {
+        self.index
+    }
+
+    pub fn generation(&self) -> u32 {
+        self.generation
+    }
 }
 
 /// Actor identity payload: `u64` big-endian (R-CANON-05), tag `0x40`.

@@ -2,12 +2,15 @@
 //!
 //! **M2:** Value / Var / Let / Seq / If.
 //! **M3:** Lambda / Call (R-CEK-04/05, REQ-CEK-008…017).
+//! **M4:** Attenuate (R-CAP-*, REQ-CAP-022/023) via kernel derive.
 //!
 //! No recursive evaluator calls for nesting depth (REQ-CEK-002): nesting lives
 //! in [`Continuation`]. Frames are in-memory only (U-02 OPEN).
 
+use ror_core::capability::LogicalTime;
 use ror_core::machine::{Environment, Expr, Fault, FunctionValue, Value};
 use ror_core::Symbol;
+use ror_kernel::{kernel_fault_to_eval, CapabilityKernel};
 
 /// Default fuel for [`evaluate`]. Not a semantic budget (MOD-04 deferred).
 pub const CEK_MAX_STEPS_DEFAULT: u64 = 1_000_000;
@@ -44,6 +47,18 @@ pub enum PureFrame {
         evaluated: Vec<Value>,
         remaining: Vec<Expr>,
         caller_env: Environment,
+    },
+    /// M4: after evaluating `cap`, evaluate `constraint` (R-CALC-02 order).
+    /// Frame is in-memory only (U-02). Not the R-CEK-03 `{name,body,env}` binder
+    /// form — Expr has no body/name (M4 preflight §8).
+    AttenuateCap {
+        constraint: Expr,
+        env: Environment,
+    },
+    /// M4: after both values, call kernel.derive (REQ-CAP-022/025).
+    AttenuateConstraint {
+        parent: ror_core::types::CapRef,
+        env: Environment,
     },
 }
 
@@ -84,6 +99,8 @@ pub struct EvalState {
     pub expr: Expr,
     pub env: Environment,
     pub continuation: Continuation,
+    /// Explicit logical time for kernel calls (R-CAP-09). Not wall-clock.
+    pub logical_time: LogicalTime,
 }
 
 impl EvalState {
@@ -92,6 +109,7 @@ impl EvalState {
             expr,
             env: Environment::empty(),
             continuation: Continuation::empty(),
+            logical_time: LogicalTime::ZERO,
         }
     }
 
@@ -100,7 +118,13 @@ impl EvalState {
             expr,
             env,
             continuation: Continuation::empty(),
+            logical_time: LogicalTime::ZERO,
         }
+    }
+
+    pub fn at_time(mut self, t: LogicalTime) -> Self {
+        self.logical_time = t;
+        self
     }
 }
 
@@ -113,11 +137,13 @@ pub enum StepResult {
 }
 
 /// One pure CEK transition. Stack depth is O(1) in program nesting.
-pub fn step(state: &mut EvalState) -> StepResult {
+///
+/// `kernel` is required for Attenuate (REQ-CAP-022). M2/M3 paths do not touch it.
+pub fn step(state: &mut EvalState, kernel: &mut CapabilityKernel) -> StepResult {
     let expr = std::mem::replace(&mut state.expr, Expr::Value(Value::Unit));
     match expr {
-        Expr::Value(v) => continue_with_value(state, v),
-        Expr::Var(symbol) => lookup_variable(state, symbol),
+        Expr::Value(v) => continue_with_value(state, v, kernel),
+        Expr::Var(symbol) => lookup_variable(state, symbol, kernel),
         Expr::Let { name, value, body } => enter_let(state, name, *value, *body),
         Expr::Seq { first, second } => enter_seq(state, *first, *second),
         Expr::If {
@@ -125,9 +151,9 @@ pub fn step(state: &mut EvalState) -> StepResult {
             then_branch,
             else_branch,
         } => enter_if(state, *condition, *then_branch, *else_branch),
-        Expr::Lambda { params, body } => enter_lambda(state, params, *body),
+        Expr::Lambda { params, body } => enter_lambda(state, params, *body, kernel),
         Expr::Call { func, args } => enter_call(state, *func, args),
-        Expr::Attenuate { .. } => StepResult::Fault(Fault::UnsupportedInM2 { form: "Attenuate" }),
+        Expr::Attenuate { cap, constraint } => enter_attenuate(state, *cap, *constraint),
         Expr::Request { .. } => StepResult::Fault(Fault::UnsupportedInM2 { form: "Request" }),
         Expr::Spawn { .. } => StepResult::Fault(Fault::UnsupportedInM2 { form: "Spawn" }),
         Expr::Send { .. } => StepResult::Fault(Fault::UnsupportedInM2 { form: "Send" }),
@@ -137,11 +163,25 @@ pub fn step(state: &mut EvalState) -> StepResult {
     }
 }
 
-/// Drive the machine to Halt or Fault.
+/// Drive the machine to Halt or Fault (no kernel — M2/M3 pure paths).
+///
+/// Attenuate without a kernel faults as Unsupported. Prefer
+/// [`evaluate_with_kernel`] for M4 programs.
 pub fn evaluate(expr: Expr, max_steps: u64) -> Result<Value, Fault> {
-    let mut state = EvalState::new(expr);
+    let mut kernel = CapabilityKernel::new();
+    evaluate_with_kernel(expr, max_steps, &mut kernel, LogicalTime::ZERO)
+}
+
+/// M4-aware evaluate: shared kernel + logical time (R-CAP-09).
+pub fn evaluate_with_kernel(
+    expr: Expr,
+    max_steps: u64,
+    kernel: &mut CapabilityKernel,
+    t: LogicalTime,
+) -> Result<Value, Fault> {
+    let mut state = EvalState::new(expr).at_time(t);
     for _ in 0..max_steps {
-        match step(&mut state) {
+        match step(&mut state, kernel) {
             StepResult::Continue => continue,
             StepResult::Halted(v) => return Ok(v),
             StepResult::Fault(f) => return Err(f),
@@ -151,14 +191,23 @@ pub fn evaluate(expr: Expr, max_steps: u64) -> Result<Value, Fault> {
 }
 
 /// R-CEK-02 value-return: sole path that pops a frame or halts (REQ-CEK-023).
-fn continue_with_value(state: &mut EvalState, value: Value) -> StepResult {
+fn continue_with_value(
+    state: &mut EvalState,
+    value: Value,
+    kernel: &mut CapabilityKernel,
+) -> StepResult {
     match state.continuation.pop() {
         None => StepResult::Halted(value),
-        Some(frame) => resume_frame(state, frame, value),
+        Some(frame) => resume_frame(state, frame, value, kernel),
     }
 }
 
-fn resume_frame(state: &mut EvalState, frame: PureFrame, value: Value) -> StepResult {
+fn resume_frame(
+    state: &mut EvalState,
+    frame: PureFrame,
+    value: Value,
+    kernel: &mut CapabilityKernel,
+) -> StepResult {
     match frame {
         PureFrame::LetValue { name, body, env } => {
             state.env = env.extend(name, value);
@@ -182,6 +231,12 @@ fn resume_frame(state: &mut EvalState, frame: PureFrame, value: Value) -> StepRe
             remaining,
             caller_env,
         } => resume_call_argument(state, function, evaluated, remaining, caller_env, value),
+        PureFrame::AttenuateCap { constraint, env } => {
+            resume_attenuate_cap(state, constraint, env, value)
+        }
+        PureFrame::AttenuateConstraint { parent, env } => {
+            resume_attenuate_constraint(state, parent, env, value, kernel)
+        }
     }
 }
 
@@ -245,11 +300,15 @@ fn resume_if(
     StepResult::Continue
 }
 
-fn lookup_variable(state: &mut EvalState, symbol: Symbol) -> StepResult {
+fn lookup_variable(
+    state: &mut EvalState,
+    symbol: Symbol,
+    kernel: &mut CapabilityKernel,
+) -> StepResult {
     match state.env.lookup(symbol) {
         Some(value) => {
             let v = value.clone();
-            continue_with_value(state, v)
+            continue_with_value(state, v, kernel)
         }
         None => StepResult::Fault(Fault::UnboundVariable(symbol)),
     }
@@ -258,14 +317,82 @@ fn lookup_variable(state: &mut EvalState, symbol: Symbol) -> StepResult {
 // --- M3 Lambda (R-CEK-04) ----------------------------------------------------
 
 /// Lambda: capture current env; produce FunctionValue; ordinary value-return.
-fn enter_lambda(state: &mut EvalState, params: Vec<Symbol>, body: Expr) -> StepResult {
+fn enter_lambda(
+    state: &mut EvalState,
+    params: Vec<Symbol>,
+    body: Expr,
+    kernel: &mut CapabilityKernel,
+) -> StepResult {
     let closure = Value::Function(FunctionValue {
         params,
         body: Box::new(body),
         env: state.env.clone(),
     });
     // Does not halt immediately — goes through value-return (REQ-CEK-012).
-    continue_with_value(state, closure)
+    continue_with_value(state, closure, kernel)
+}
+
+// --- M4 Attenuate (REQ-CAP-022/023, R-CALC-02) --------------------------------
+
+/// Enter Attenuate: evaluate `cap` first, then constraint (Call-style order).
+fn enter_attenuate(state: &mut EvalState, cap: Expr, constraint: Expr) -> StepResult {
+    let env = state.env.clone();
+    state.continuation.push(PureFrame::AttenuateCap {
+        constraint,
+        env: env.clone(),
+    });
+    state.expr = cap;
+    StepResult::Continue
+}
+
+fn resume_attenuate_cap(
+    state: &mut EvalState,
+    constraint: Expr,
+    env: Environment,
+    value: Value,
+) -> StepResult {
+    let parent = match value {
+        Value::Capability(c) => c,
+        other => {
+            return StepResult::Fault(Fault::TypeError {
+                expected: "Capability",
+                actual: value_kind(&other),
+            });
+        }
+    };
+    state.continuation.push(PureFrame::AttenuateConstraint {
+        parent,
+        env: env.clone(),
+    });
+    state.env = env;
+    state.expr = constraint;
+    StepResult::Continue
+}
+
+fn resume_attenuate_constraint(
+    state: &mut EvalState,
+    parent: ror_core::types::CapRef,
+    env: Environment,
+    value: Value,
+    kernel: &mut CapabilityKernel,
+) -> StepResult {
+    let constraint = match value {
+        Value::Constraint(c) => c,
+        other => {
+            return StepResult::Fault(Fault::TypeError {
+                expected: "Constraint",
+                actual: value_kind(&other),
+            });
+        }
+    };
+    // Single atomic kernel.derive (REQ-CAP-025). δ_t = 0 (R-BUDGET-16).
+    match kernel.derive(parent, &constraint, state.logical_time) {
+        Ok(child) => {
+            state.env = env;
+            continue_with_value(state, Value::Capability(child), kernel)
+        }
+        Err(kf) => StepResult::Fault(kernel_fault_to_eval(kf)),
+    }
 }
 
 // --- M3 Call (R-CEK-05) ------------------------------------------------------
@@ -377,6 +504,7 @@ fn value_kind(v: &Value) -> &'static str {
         Value::Function(_) => "Function",
         Value::Capability(_) => "Capability",
         Value::DelegatedCapability(_) => "DelegatedCapability",
+        Value::Constraint(_) => "Constraint",
     }
 }
 
@@ -388,6 +516,11 @@ mod tests {
 
     fn run(expr: Expr) -> Result<MValue, Fault> {
         evaluate(expr, CEK_MAX_STEPS_DEFAULT)
+    }
+
+    fn step_once(state: &mut EvalState) -> StepResult {
+        let mut k = CapabilityKernel::new();
+        step(state, &mut k)
     }
 
     // ----- M2 regression -----------------------------------------------------
@@ -405,7 +538,7 @@ mod tests {
             var(1),
             Environment::empty().extend(Symbol(1), MValue::Integer(7)),
         );
-        assert_eq!(step(&mut st), StepResult::Halted(MValue::Integer(7)));
+        assert_eq!(step_once(&mut st), StepResult::Halted(MValue::Integer(7)));
         assert_eq!(run(var(99)), Err(Fault::UnboundVariable(Symbol(99))));
     }
 
@@ -430,13 +563,13 @@ mod tests {
     #[test]
     fn seq_order_observable_via_state() {
         let mut st = EvalState::new(seq(int(1), int(2)));
-        assert_eq!(step(&mut st), StepResult::Continue);
+        assert_eq!(step_once(&mut st), StepResult::Continue);
         assert_eq!(st.expr, int(1));
         assert_eq!(st.continuation.len(), 1);
-        assert_eq!(step(&mut st), StepResult::Continue);
+        assert_eq!(step_once(&mut st), StepResult::Continue);
         assert_eq!(st.expr, int(2));
         assert_eq!(st.continuation.len(), 0);
-        assert_eq!(step(&mut st), StepResult::Halted(MValue::Integer(2)));
+        assert_eq!(step_once(&mut st), StepResult::Halted(MValue::Integer(2)));
     }
 
     #[test]
@@ -472,16 +605,16 @@ mod tests {
     fn continuation_plus_one_on_let_entry() {
         let mut st = EvalState::new(let_(1, int(1), var(1)));
         let before = st.continuation.len();
-        assert_eq!(step(&mut st), StepResult::Continue);
+        assert_eq!(step_once(&mut st), StepResult::Continue);
         assert_eq!(st.continuation.len(), before + 1);
     }
 
     #[test]
     fn continuation_minus_one_on_resume() {
         let mut st = EvalState::new(let_(1, int(1), var(1)));
-        step(&mut st);
+        step_once(&mut st);
         let before = st.continuation.len();
-        assert_eq!(step(&mut st), StepResult::Continue);
+        assert_eq!(step_once(&mut st), StepResult::Continue);
         assert_eq!(st.continuation.len(), before - 1);
     }
 
@@ -492,10 +625,10 @@ mod tests {
             second: int(9),
             env: Environment::empty(),
         });
-        assert_eq!(step(&mut st), StepResult::Continue);
+        assert_eq!(step_once(&mut st), StepResult::Continue);
         assert_eq!(st.expr, int(9));
         assert!(st.continuation.is_empty());
-        assert_eq!(step(&mut st), StepResult::Halted(MValue::Integer(9)));
+        assert_eq!(step_once(&mut st), StepResult::Halted(MValue::Integer(9)));
     }
 
     #[test]
@@ -730,11 +863,11 @@ mod tests {
     fn call_order_func_before_args_via_state() {
         let mut st = EvalState::new(call(lambda(&[1], var(1)), vec![int(42)]));
         // enter Call → CallFunction frame, expr = lambda
-        assert_eq!(step(&mut st), StepResult::Continue);
+        assert_eq!(step_once(&mut st), StepResult::Continue);
         assert!(matches!(st.expr, Expr::Lambda { .. }));
         assert_eq!(st.continuation.len(), 1);
         // lambda → Function value → resume CallFunction → arity OK → CallArgument
-        assert_eq!(step(&mut st), StepResult::Continue);
+        assert_eq!(step_once(&mut st), StepResult::Continue);
         // now either applying 0-step into arg eval
         assert_eq!(st.continuation.len(), 1);
         assert!(matches!(
@@ -827,7 +960,7 @@ mod tests {
 
     fn evaluate_state(state: &mut EvalState, max_steps: u64) -> Result<MValue, Fault> {
         for _ in 0..max_steps {
-            match step(state) {
+            match step(state, &mut CapabilityKernel::new()) {
                 StepResult::Continue => continue,
                 StepResult::Halted(v) => return Ok(v),
                 StepResult::Fault(f) => return Err(f),

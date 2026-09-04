@@ -4,6 +4,7 @@
 //!
 //! - **M1:** Phase-15A *data-domain* canonical serialization (R-CANON-01…13).
 //! - **M2:** machine-domain types for pure CEK ([`machine`]) — R-CALC-01/02/03.
+//! - **M4:** capability algebra domain types ([`capability`]) — R-CAP-*; no mint.
 //!
 //! **U-09:** [`types::Value`] (data domain) and [`machine::Value`] (machine domain)
 //! are deliberately distinct. There is no collapsing conversion.
@@ -12,6 +13,7 @@
 //! `Op`/`Target`/`Params` (U-21), provisional ABI U-29/U-30/U-37.
 
 pub mod canonical;
+pub mod capability;
 pub mod digest;
 pub mod machine;
 pub mod types;
@@ -21,6 +23,9 @@ pub use canonical::{
     encode_cap_ref_kernel, encode_data, encode_data_value, envelope, round_trip_data,
     CanonicalDecode, CanonicalEncode, CanonicalError, CanonicalPayload, ReadCursor,
     CANONICAL_VERSION, TAG_ACTOR_ID, TAG_CAP_REF, TAG_EFFECT_ID, TAG_SYMBOL, TAG_VALUE,
+};
+pub use capability::{
+    Authority, CapabilityContext, Constraint, Lifetime, LogicalTime, Op, OpAuthority,
 };
 pub use digest::{sha256, Digest, EffectDigest, StateDigest};
 pub use machine::{Environment, Expr, Fault, FunctionValue};

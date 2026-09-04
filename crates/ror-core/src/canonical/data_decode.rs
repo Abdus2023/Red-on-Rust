@@ -100,10 +100,7 @@ mod tests {
 
     #[test]
     fn capref_standalone_rejected_by_data_path() {
-        let cap = CapRef {
-            index: 5,
-            generation: 2,
-        };
+        let cap = CapRef::from_kernel_parts(5, 2);
         let bytes = encode_cap_ref_kernel(&cap).unwrap();
         assert_eq!(
             bytes,
@@ -122,11 +119,7 @@ mod tests {
     #[test]
     fn capability_discriminant_rejected() {
         // Manually craft Value envelope with TAG_CAPABILITY payload.
-        let cap_env = encode_cap_ref_kernel(&CapRef {
-            index: 1,
-            generation: 1,
-        })
-        .unwrap();
+        let cap_env = encode_cap_ref_kernel(&CapRef::from_kernel_parts(1, 1)).unwrap();
         let mut payload = vec![Value::TAG_CAPABILITY];
         payload.extend_from_slice(&cap_env);
         let bytes = crate::canonical::envelope(TAG_VALUE, &payload).unwrap();
@@ -215,10 +208,7 @@ mod tests {
 
     #[test]
     fn encode_refuses_capability_value() {
-        let v = Value::Capability(CapRef {
-            index: 0,
-            generation: 0,
-        });
+        let v = Value::Capability(CapRef::from_kernel_parts(0, 0));
         assert_eq!(encode_data(&v), Err(CanonicalError::CapabilityInData));
     }
 }

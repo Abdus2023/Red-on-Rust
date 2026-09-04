@@ -138,15 +138,16 @@ impl CanonicalPayload for CapRef {
     const TYPE_TAG: u8 = TAG_CAP_REF;
 
     fn encode_payload(&self, out: &mut Vec<u8>) -> Result<(), CanonicalError> {
-        out.extend_from_slice(&self.index.to_be_bytes());
-        out.extend_from_slice(&self.generation.to_be_bytes());
+        out.extend_from_slice(&self.index().to_be_bytes());
+        out.extend_from_slice(&self.generation().to_be_bytes());
         Ok(())
     }
 
     fn decode_payload(cursor: &mut ReadCursor<'_>) -> Result<Self, CanonicalError> {
         let index = cursor.read_u32_be()?;
         let generation = cursor.read_u32_be()?;
-        Ok(CapRef { index, generation })
+        // Kernel-mediated path only (R-CANON-12 / R-KERN-01). Bits ≠ authority.
+        Ok(CapRef::from_kernel_parts(index, generation))
     }
 }
 impl CanonicalEncode for CapRef {}
