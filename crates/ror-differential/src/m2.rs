@@ -117,4 +117,32 @@ mod tests {
         assert_eq!(a, b);
         assert_eq!(a, c);
     }
+
+    #[test]
+    fn if_untaken_branch_not_evaluated() {
+        assert_agree(if_(bool_v(true), int(1), var(99)));
+        assert_agree(if_(bool_v(false), var(99), int(2)));
+    }
+
+    #[test]
+    fn let_value_in_outer_env_and_shadow_restore() {
+        // value-side unbound
+        assert_agree(let_(1, var(1), int(1)));
+        // shadow does not leak: seq(inner let x=2 in x, x) under outer x=1 → 1
+        assert_agree(let_(1, int(1), seq(let_(1, int(2), var(1)), var(1))));
+    }
+
+    #[test]
+    fn harness_calls_distinct_evaluators() {
+        // Sanity: production and reference paths are separately invoked (not a
+        // single shared engine). Agreement on a value does not prove identity
+        // of implementation; disagreement on a crafted mismatch would surface
+        // if one path were stubbed to the other. Here we only lock the API shape.
+        let e = int(123);
+        let p = observe_production(e.clone());
+        let r = observe_reference(e);
+        assert_eq!(p, Observation::Halted(Value::Integer(123)));
+        assert_eq!(r, Observation::Halted(Value::Integer(123)));
+        assert_eq!(p, r);
+    }
 }

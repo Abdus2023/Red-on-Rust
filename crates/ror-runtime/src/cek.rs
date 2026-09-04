@@ -448,4 +448,70 @@ mod tests {
             Err(Fault::UnboundVariable(Symbol(1)))
         );
     }
+
+    /// Untaken `If` branch must not be evaluated (canonical branch selection).
+    #[test]
+    fn if_untaken_branch_not_evaluated() {
+        // if true then 1 else <unbound>  → 1 (else never stepped)
+        assert_eq!(
+            run(if_(bool_v(true), int(1), var(99))),
+            Ok(MValue::Integer(1))
+        );
+        // if false then <unbound> else 2 → 2
+        assert_eq!(
+            run(if_(bool_v(false), var(99), int(2))),
+            Ok(MValue::Integer(2))
+        );
+    }
+
+    /// Let value is evaluated under the *outer* environment (before binding).
+    #[test]
+    fn let_value_evaluated_in_outer_env() {
+        // outer x=7; let x = x in x  → value-expr sees outer 7, body sees 7
+        let mut st = EvalState::with_env(
+            let_(1, var(1), var(1)),
+            Environment::empty().extend(Symbol(1), MValue::Integer(7)),
+        );
+        assert_eq!(
+            evaluate_state(&mut st, CEK_MAX_STEPS_DEFAULT),
+            Ok(MValue::Integer(7))
+        );
+
+        // no outer x: let x = x in 1 → unbound while evaluating value
+        assert_eq!(
+            run(let_(1, var(1), int(1))),
+            Err(Fault::UnboundVariable(Symbol(1)))
+        );
+    }
+
+    /// Shadowing restores outer binding for expressions after the inner let completes
+    /// only via Seq/continuation structure (body of outer sees outer after inner finishes
+    /// is N/A for single-result Let). Check: outer body after nested let uses outer.
+    /// `let x=1 in seq(let x=2 in x, x)` → second x is outer 1.
+    #[test]
+    fn let_shadow_does_not_leak_past_inner_body() {
+        let e = let_(1, int(1), seq(let_(1, int(2), var(1)), var(1)));
+        assert_eq!(run(e), Ok(MValue::Integer(1)));
+    }
+
+    /// Environment::extend does not mutate the parent (lexical isolation).
+    #[test]
+    fn env_extend_preserves_parent() {
+        let parent = Environment::empty().extend(Symbol(1), MValue::Integer(1));
+        let child = parent.extend(Symbol(2), MValue::Integer(2));
+        assert_eq!(parent.lookup(Symbol(2)), None);
+        assert_eq!(child.lookup(Symbol(2)), Some(&MValue::Integer(2)));
+        assert_eq!(parent.lookup(Symbol(1)), Some(&MValue::Integer(1)));
+    }
+
+    fn evaluate_state(state: &mut EvalState, max_steps: u64) -> Result<MValue, Fault> {
+        for _ in 0..max_steps {
+            match step(state) {
+                StepResult::Continue => continue,
+                StepResult::Halted(v) => return Ok(v),
+                StepResult::Fault(f) => return Err(f),
+            }
+        }
+        Err(Fault::UnsupportedInM2 { form: "step_limit" })
+    }
 }
