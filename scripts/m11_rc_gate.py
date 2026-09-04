@@ -7,9 +7,19 @@ Orchestrates repository-supported commands only:
   - M10 crash matrix (cargo test -p ror-differential m10)
   - M9 mutation campaign (scripts/m9_mutation_run.py) — registry untouched
   - M5 hinge (cargo test -p ror-runtime --lib effects::tests)
+  - R-ORDER-02 defect predicate (scripts/m11_rc_defect_predicate.py) — RF-02
 
 Does NOT promote R-REG, close OADs, or claim VERIFIED/PROVEN.
-Exit 0 iff all required stages pass.
+
+Fail-closed on:
+  - any stage exit ≠ 0
+  - mutation parse failure
+  - missing/malformed defect register (via defect predicate)
+  - open applicable high defects (R-ORDER-02 «zero open high defects pass»)
+
+Exit 0 iff all required stages pass INCLUDING the defect predicate.
+Historical rejected review 96b6d0b remains immutable evidence of the prior
+oracle that could PASS while open BLOCKING/MAJOR rows remained.
 """
 
 from __future__ import annotations
@@ -27,6 +37,10 @@ if _tc.is_dir():
     ENV["PATH"] = f"{_tc}:{ENV.get('PATH', '')}"
 ENV["RUSTUP_TOOLCHAIN"] = ENV.get("RUSTUP_TOOLCHAIN", "ror-stable")
 ENV["CARGO_TERM_COLOR"] = "never"
+
+# Import sibling predicate module (same directory).
+sys.path.insert(0, str(REPO / "scripts"))
+from m11_rc_defect_predicate import evaluate_defect_predicate  # noqa: E402
 
 
 def run(cmd: list[str], timeout: int = 1800) -> tuple[int, str]:
@@ -156,7 +170,6 @@ def main() -> int:
     # Reference independence spot-check
     ref_toml = (REPO / "crates" / "ror-reference" / "Cargo.toml").read_text()
     forbidden = ["ror-runtime", "ror-persistence", "ror-host", "ror-kernel", "ror-agent"]
-    # only look under [dependencies]
     dep_sec = ref_toml.split("[dependencies]", 1)[-1].split("[", 1)[0]
     ref_ok = all(f not in dep_sec for f in forbidden) and "ror-core" in dep_sec
     if not ref_ok:
@@ -186,15 +199,57 @@ def main() -> int:
         }
     )
 
+    # RF-02: R-ORDER-02 defect predicate — fail closed; never trust prior PASS flag
+    print("[M11-RC] defect_predicate: evaluate_defect_predicate(reading=all)", flush=True)
+    defect = evaluate_defect_predicate(reading="all")
+    defect_ok = bool(defect.ok) and not defect.fail_closed
+    # fail_closed True ⇒ ok already False; still force overall false
+    if defect.fail_closed or not defect.ok:
+        overall = False
+        defect_ok = False
+    stages.append(
+        {
+            "name": "defect_predicate_r_order_02",
+            "cmd": [
+                "m11_rc_defect_predicate.evaluate_defect_predicate",
+                f"reading={defect.governing_reading}",
+                defect.register_path,
+            ],
+            "exit": 0 if defect_ok else 1,
+            "pass": defect_ok,
+            "tail": defect.detail,
+            "open_blocking": defect.open_blocking,
+            "open_major": defect.open_major,
+            "rows_parsed": defect.rows_parsed,
+            "fail_closed": defect.fail_closed,
+        }
+    )
+    print(
+        f"  → defect_ok={defect_ok} fail_closed={defect.fail_closed} detail={defect.detail}",
+        flush=True,
+    )
+
     report = {
-        "schema": "m11-rc-gate-v1",
+        "schema": "m11-rc-gate-v2",
         "authority": "R-ORDER-02 / R-TEST-10 / R-TEST-11",
+        "oracle_version": "v2-rf02-defect-predicate",
+        "supersedes_oracle": "v1 (pre-corrective; review 96b6d0b)",
         "overall_pass": overall,
         "stages": stages,
         "r_test_11": {
             "c1_observe_p_eq_observe_r": "see m11_in_process EXH/PROP/DIFF",
             "c2_mutation_kill_rate_100": mut_ok,
             "c3_recover_p_eq_recover_r": "see m11_in_process CRASH/DIFF + m10_matrix",
+        },
+        "r_order_02_defect": {
+            "ok": defect.ok,
+            "fail_closed": defect.fail_closed,
+            "governing_reading": defect.governing_reading,
+            "open_blocking": defect.open_blocking,
+            "open_major": defect.open_major,
+            "detail": defect.detail,
+            "register_path": defect.register_path,
+            "rows_parsed": defect.rows_parsed,
         },
         "mutation": {
             "killed": mut.get("killed"),
@@ -206,11 +261,15 @@ def main() -> int:
             "F-04 OPEN",
             "U-35 OPEN",
             "M10 L-01/L-02 carried",
-            "open MAJOR defect board not closed",
+            "open MAJOR/BLOCKING register rows evaluated by defect predicate",
             "evidence is TESTED not VERIFIED/PROVEN",
             "stress deep-call uses 50k (low end of 50k-100k floor)",
+            "historical review 96b6d0b immutable; v1 oracle results stale for v2 claims",
         ],
-        "note": "RC gate PASS means required executable stages green; not formal proof.",
+        "note": (
+            "RC gate PASS requires defect predicate ok under R-ORDER-02. "
+            "Not formal proof. Not production ready."
+        ),
     }
     out_path = Path("/tmp/m11-rc-report.json")
     out_path.write_text(json.dumps(report, indent=2) + "\n")
