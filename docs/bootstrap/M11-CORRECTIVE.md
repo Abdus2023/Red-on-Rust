@@ -303,7 +303,7 @@ Unchanged disclosures (not converted to pass):
 | Role | SHA | Subject |
 |---|---|---|
 | Immutable rejected review | `96b6d0b` | M11 REVIEW — REJECTED |
-| Corrective (this operation) | `4c1f633` | RF-01 violated; RF-02 defect predicate fail-closed (YELLOW) |
+| Corrective (this operation) | `cbf93a4` | RF-01 violated; RF-02 defect predicate fail-closed (YELLOW) |
 
 Further amend commits after push, if any, extend this table without rewriting `96b6d0b`.
 
