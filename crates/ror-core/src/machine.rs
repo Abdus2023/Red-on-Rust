@@ -209,8 +209,30 @@ pub enum Fault {
     CapabilityRevoked,
     /// Inadmissible constraint (R-CAP-10). Provisional label; U-08 OPEN.
     InvalidConstraint,
-    /// Expression outside the current evaluator surface (M5+ forms, fuel).
-    /// Name retained from M2; does not mean M3/M4 forms are unsupported.
+    /// Authorization failed (R-CAP-06 / gate 6). Provisional; U-08 OPEN.
+    Unauthorized,
+    /// Budget gate failed (R-BUDGET-08 shape). Provisional; U-08 OPEN.
+    BudgetExhausted,
+    /// Deadline gate failed. Provisional; U-08 OPEN.
+    DeadlineExceeded,
+    /// Host policy denied (R-HOST-01). Provisional; U-08 OPEN.
+    HostPolicyDenied,
+    /// Persistence append/sync failure (R-DUR-07). Provisional; U-08 OPEN.
+    PersistenceError,
+    /// Receipt causal mismatch (R-EFFECT-06). Provisional; U-08 OPEN.
+    ReplayCorruption,
+    /// Receipt payload admission failed (R-EFFECT-08). Provisional; U-08 OPEN.
+    InvalidReceipt,
+    /// Host execution failed (mapped code). Provisional; U-08 OPEN.
+    HostFault {
+        code: u32,
+    },
+    /// Effect canonicalization / domain error. Provisional; U-08 OPEN.
+    EffectError {
+        reason: &'static str,
+    },
+    /// Expression outside the current evaluator surface (M6+ forms, fuel).
+    /// Name retained from M2; does not mean M3/M4/M5 forms are unsupported.
     UnsupportedInM2 {
         form: &'static str,
     },
@@ -288,6 +310,15 @@ pub mod sugar {
 
     pub fn capability_v(cap: CapRef) -> Expr {
         Expr::Value(Value::Capability(cap))
+    }
+
+    pub fn request(capability: Expr, operation: Expr, target: Expr, params: Vec<Expr>) -> Expr {
+        Expr::Request {
+            capability: Box::new(capability),
+            operation: Box::new(operation),
+            target: Box::new(target),
+            params,
+        }
     }
 }
 

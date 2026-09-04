@@ -3,19 +3,23 @@
 //! **M2:** Value / Var / Let / Seq / If.
 //! **M3:** Lambda / Call (R-CEK-04/05, REQ-CEK-008…017).
 //! **M4:** Attenuate (R-CAP-*, REQ-CAP-022/023) via kernel derive.
+//! **M5:** Request (R-CORE-14 / R-CEK-03 Request* frames).
 //!
 //! No recursive evaluator calls for nesting depth (REQ-CEK-002): nesting lives
 //! in [`Continuation`]. Frames are in-memory only (U-02 OPEN).
 
 use ror_core::capability::LogicalTime;
 use ror_core::machine::{Environment, Expr, Fault, FunctionValue, Value};
+use ror_core::types::CapRef;
 use ror_core::Symbol;
 use ror_kernel::{kernel_fault_to_eval, CapabilityKernel};
+
+use crate::effects::{default_effect_cost, effect_from_values, EffectServices, RequestOutcome};
 
 /// Default fuel for [`evaluate`]. Not a semantic budget (MOD-04 deferred).
 pub const CEK_MAX_STEPS_DEFAULT: u64 = 1_000_000;
 
-/// Pure-subset continuation frames (R-CEK-03): M2 frames + M3 Call* frames.
+/// Pure-subset continuation frames (R-CEK-03): M2–M5 frames.
 ///
 /// Not a wire type (U-02 OPEN). Treat layout as provisional.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -57,8 +61,39 @@ pub enum PureFrame {
     },
     /// M4: after both values, call kernel.derive (REQ-CAP-022/025).
     AttenuateConstraint {
-        parent: ror_core::types::CapRef,
+        parent: CapRef,
         env: Environment,
+    },
+    /// M5: after capability value — require CapRef then eval operation
+    /// (R-CEK-03 RequestCapability; R-EFFECT-04 non-cap short-circuit).
+    RequestCapability {
+        operation: Expr,
+        target: Expr,
+        params: Vec<Expr>,
+        env: Environment,
+    },
+    /// M5: after operation value — eval target (R-CEK-03 RequestTarget-ish).
+    RequestOperation {
+        capability: CapRef,
+        target: Expr,
+        params: Vec<Expr>,
+        caller_env: Environment,
+    },
+    /// M5: after target value — begin params LTR (R-CORE-14 §3).
+    RequestTarget {
+        capability: CapRef,
+        operation: Value,
+        params: Vec<Expr>,
+        caller_env: Environment,
+    },
+    /// M5: evaluating params left-to-right (R-CEK-03 RequestArgument; REQUEST-ARGS-LTR).
+    RequestArgument {
+        capability: CapRef,
+        operation: Value,
+        target: Value,
+        evaluated: Vec<Value>,
+        remaining: Vec<Expr>,
+        caller_env: Environment,
     },
 }
 
@@ -136,14 +171,23 @@ pub enum StepResult {
     Fault(Fault),
 }
 
-/// One pure CEK transition. Stack depth is O(1) in program nesting.
+/// One pure CEK transition (M2–M4). Request without services faults Unsupported.
 ///
 /// `kernel` is required for Attenuate (REQ-CAP-022). M2/M3 paths do not touch it.
 pub fn step(state: &mut EvalState, kernel: &mut CapabilityKernel) -> StepResult {
+    step_with_effects(state, kernel, None)
+}
+
+/// CEK transition with optional M5 effect services (Request path).
+pub fn step_with_effects(
+    state: &mut EvalState,
+    kernel: &mut CapabilityKernel,
+    effects: Option<&mut EffectServices<'_>>,
+) -> StepResult {
     let expr = std::mem::replace(&mut state.expr, Expr::Value(Value::Unit));
     match expr {
-        Expr::Value(v) => continue_with_value(state, v, kernel),
-        Expr::Var(symbol) => lookup_variable(state, symbol, kernel),
+        Expr::Value(v) => continue_with_value(state, v, kernel, effects),
+        Expr::Var(symbol) => lookup_variable(state, symbol, kernel, effects),
         Expr::Let { name, value, body } => enter_let(state, name, *value, *body),
         Expr::Seq { first, second } => enter_seq(state, *first, *second),
         Expr::If {
@@ -151,10 +195,15 @@ pub fn step(state: &mut EvalState, kernel: &mut CapabilityKernel) -> StepResult 
             then_branch,
             else_branch,
         } => enter_if(state, *condition, *then_branch, *else_branch),
-        Expr::Lambda { params, body } => enter_lambda(state, params, *body, kernel),
+        Expr::Lambda { params, body } => enter_lambda(state, params, *body, kernel, effects),
         Expr::Call { func, args } => enter_call(state, *func, args),
         Expr::Attenuate { cap, constraint } => enter_attenuate(state, *cap, *constraint),
-        Expr::Request { .. } => StepResult::Fault(Fault::UnsupportedInM2 { form: "Request" }),
+        Expr::Request {
+            capability,
+            operation,
+            target,
+            params,
+        } => enter_request(state, *capability, *operation, *target, params),
         Expr::Spawn { .. } => StepResult::Fault(Fault::UnsupportedInM2 { form: "Spawn" }),
         Expr::Send { .. } => StepResult::Fault(Fault::UnsupportedInM2 { form: "Send" }),
         Expr::Receive => StepResult::Fault(Fault::UnsupportedInM2 { form: "Receive" }),
@@ -173,6 +222,7 @@ pub fn evaluate(expr: Expr, max_steps: u64) -> Result<Value, Fault> {
 }
 
 /// M4-aware evaluate: shared kernel + logical time (R-CAP-09).
+/// Request without effect services faults as UnsupportedInM2.
 pub fn evaluate_with_kernel(
     expr: Expr,
     max_steps: u64,
@@ -190,15 +240,35 @@ pub fn evaluate_with_kernel(
     Err(Fault::UnsupportedInM2 { form: "step_limit" })
 }
 
+/// M5-aware evaluate: kernel + effect services for Request (R-CORE-14).
+pub fn evaluate_request(
+    expr: Expr,
+    max_steps: u64,
+    kernel: &mut CapabilityKernel,
+    t: LogicalTime,
+    effects: &mut EffectServices<'_>,
+) -> Result<Value, Fault> {
+    let mut state = EvalState::new(expr).at_time(t);
+    for _ in 0..max_steps {
+        match step_with_effects(&mut state, kernel, Some(effects)) {
+            StepResult::Continue => continue,
+            StepResult::Halted(v) => return Ok(v),
+            StepResult::Fault(f) => return Err(f),
+        }
+    }
+    Err(Fault::UnsupportedInM2 { form: "step_limit" })
+}
+
 /// R-CEK-02 value-return: sole path that pops a frame or halts (REQ-CEK-023).
 fn continue_with_value(
     state: &mut EvalState,
     value: Value,
     kernel: &mut CapabilityKernel,
+    effects: Option<&mut EffectServices<'_>>,
 ) -> StepResult {
     match state.continuation.pop() {
         None => StepResult::Halted(value),
-        Some(frame) => resume_frame(state, frame, value, kernel),
+        Some(frame) => resume_frame(state, frame, value, kernel, effects),
     }
 }
 
@@ -207,6 +277,7 @@ fn resume_frame(
     frame: PureFrame,
     value: Value,
     kernel: &mut CapabilityKernel,
+    effects: Option<&mut EffectServices<'_>>,
 ) -> StepResult {
     match frame {
         PureFrame::LetValue { name, body, env } => {
@@ -237,6 +308,37 @@ fn resume_frame(
         PureFrame::AttenuateConstraint { parent, env } => {
             resume_attenuate_constraint(state, parent, env, value, kernel)
         }
+        PureFrame::RequestCapability {
+            operation,
+            target,
+            params,
+            env,
+        } => resume_request_capability(state, operation, target, params, env, value),
+        PureFrame::RequestOperation {
+            capability,
+            target,
+            params,
+            caller_env,
+        } => resume_request_operation(state, capability, target, params, caller_env, value),
+        PureFrame::RequestTarget {
+            capability,
+            operation,
+            params,
+            caller_env,
+        } => resume_request_target(
+            state, capability, operation, params, caller_env, value, kernel, effects,
+        ),
+        PureFrame::RequestArgument {
+            capability,
+            operation,
+            target,
+            evaluated,
+            remaining,
+            caller_env,
+        } => resume_request_argument(
+            state, capability, operation, target, evaluated, remaining, caller_env, value, kernel,
+            effects,
+        ),
     }
 }
 
@@ -304,11 +406,12 @@ fn lookup_variable(
     state: &mut EvalState,
     symbol: Symbol,
     kernel: &mut CapabilityKernel,
+    effects: Option<&mut EffectServices<'_>>,
 ) -> StepResult {
     match state.env.lookup(symbol) {
         Some(value) => {
             let v = value.clone();
-            continue_with_value(state, v, kernel)
+            continue_with_value(state, v, kernel, effects)
         }
         None => StepResult::Fault(Fault::UnboundVariable(symbol)),
     }
@@ -322,6 +425,7 @@ fn enter_lambda(
     params: Vec<Symbol>,
     body: Expr,
     kernel: &mut CapabilityKernel,
+    effects: Option<&mut EffectServices<'_>>,
 ) -> StepResult {
     let closure = Value::Function(FunctionValue {
         params,
@@ -329,7 +433,7 @@ fn enter_lambda(
         env: state.env.clone(),
     });
     // Does not halt immediately — goes through value-return (REQ-CEK-012).
-    continue_with_value(state, closure, kernel)
+    continue_with_value(state, closure, kernel, effects)
 }
 
 // --- M4 Attenuate (REQ-CAP-022/023, R-CALC-02) --------------------------------
@@ -389,9 +493,178 @@ fn resume_attenuate_constraint(
     match kernel.derive(parent, &constraint, state.logical_time) {
         Ok(child) => {
             state.env = env;
-            continue_with_value(state, Value::Capability(child), kernel)
+            continue_with_value(state, Value::Capability(child), kernel, None)
         }
         Err(kf) => StepResult::Fault(kernel_fault_to_eval(kf)),
+    }
+}
+
+// --- M5 Request (R-CORE-14 / R-CEK-03) ----------------------------------------
+
+/// Enter Request: evaluate capability first (R-EFFECT-04 short-circuit on non-cap).
+fn enter_request(
+    state: &mut EvalState,
+    capability: Expr,
+    operation: Expr,
+    target: Expr,
+    params: Vec<Expr>,
+) -> StepResult {
+    let env = state.env.clone();
+    state.continuation.push(PureFrame::RequestCapability {
+        operation,
+        target,
+        params,
+        env: env.clone(),
+    });
+    state.expr = capability;
+    StepResult::Continue
+}
+
+/// After capability value: non-cap → TypeError before target/params (REQUEST-NON-CAP-SHORT-CIRCUIT).
+fn resume_request_capability(
+    state: &mut EvalState,
+    operation: Expr,
+    target: Expr,
+    params: Vec<Expr>,
+    env: Environment,
+    value: Value,
+) -> StepResult {
+    let cap = match value {
+        Value::Capability(c) => c,
+        other => {
+            return StepResult::Fault(Fault::TypeError {
+                expected: "Capability",
+                actual: value_kind(&other),
+            });
+        }
+    };
+    state.continuation.push(PureFrame::RequestOperation {
+        capability: cap,
+        target,
+        params,
+        caller_env: env.clone(),
+    });
+    state.env = env;
+    state.expr = operation;
+    StepResult::Continue
+}
+
+fn resume_request_operation(
+    state: &mut EvalState,
+    capability: CapRef,
+    target: Expr,
+    params: Vec<Expr>,
+    caller_env: Environment,
+    value: Value,
+) -> StepResult {
+    // Operation value held; evaluate target next.
+    state.continuation.push(PureFrame::RequestTarget {
+        capability,
+        operation: value,
+        params,
+        caller_env: caller_env.clone(),
+    });
+    state.env = caller_env;
+    state.expr = target;
+    StepResult::Continue
+}
+
+#[allow(clippy::too_many_arguments)]
+fn resume_request_target(
+    state: &mut EvalState,
+    capability: CapRef,
+    operation: Value,
+    params: Vec<Expr>,
+    caller_env: Environment,
+    value: Value,
+    kernel: &mut CapabilityKernel,
+    effects: Option<&mut EffectServices<'_>>,
+) -> StepResult {
+    let mut remaining = params;
+    if remaining.is_empty() {
+        return finish_request(
+            state,
+            capability,
+            operation,
+            value,
+            Vec::new(),
+            kernel,
+            effects,
+        );
+    }
+    let first = remaining.remove(0);
+    state.continuation.push(PureFrame::RequestArgument {
+        capability,
+        operation,
+        target: value,
+        evaluated: Vec::new(),
+        remaining,
+        caller_env: caller_env.clone(),
+    });
+    state.env = caller_env;
+    state.expr = first;
+    StepResult::Continue
+}
+
+#[allow(clippy::too_many_arguments)]
+fn resume_request_argument(
+    state: &mut EvalState,
+    capability: CapRef,
+    operation: Value,
+    target: Value,
+    mut evaluated: Vec<Value>,
+    mut remaining: Vec<Expr>,
+    caller_env: Environment,
+    value: Value,
+    kernel: &mut CapabilityKernel,
+    effects: Option<&mut EffectServices<'_>>,
+) -> StepResult {
+    evaluated.push(value);
+    if remaining.is_empty() {
+        return finish_request(
+            state, capability, operation, target, evaluated, kernel, effects,
+        );
+    }
+    let next = remaining.remove(0);
+    state.continuation.push(PureFrame::RequestArgument {
+        capability,
+        operation,
+        target,
+        evaluated,
+        remaining,
+        caller_env: caller_env.clone(),
+    });
+    state.env = caller_env;
+    state.expr = next;
+    StepResult::Continue
+}
+
+/// Construct Effect and run gates 4–16 (or fault if no services).
+#[allow(clippy::too_many_arguments)]
+fn finish_request(
+    state: &mut EvalState,
+    capability: CapRef,
+    operation: Value,
+    target: Value,
+    params: Vec<Value>,
+    kernel: &mut CapabilityKernel,
+    effects: Option<&mut EffectServices<'_>>,
+) -> StepResult {
+    let effects = match effects {
+        Some(e) => e,
+        None => return StepResult::Fault(Fault::UnsupportedInM2 { form: "Request" }),
+    };
+    let cost = default_effect_cost();
+    let effect = match effect_from_values(capability, &operation, &target, &params, cost) {
+        Ok(e) => e,
+        Err(f) => return StepResult::Fault(f),
+    };
+    match effects.run(kernel, state.logical_time, effect) {
+        RequestOutcome::Completed { value, .. } => {
+            continue_with_value(state, value, kernel, Some(effects))
+        }
+        RequestOutcome::HostFailed { fault, .. } => StepResult::Fault(fault),
+        RequestOutcome::Denied(fault) => StepResult::Fault(fault),
     }
 }
 

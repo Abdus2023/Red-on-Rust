@@ -5,6 +5,7 @@
 //! - **M1:** Phase-15A *data-domain* canonical serialization (R-CANON-01…13).
 //! - **M2:** machine-domain types for pure CEK ([`machine`]) — R-CALC-01/02/03.
 //! - **M4:** capability algebra domain types ([`capability`]) — R-CAP-*; no mint.
+//! - **M5:** effect domain types ([`effect`]) — R-CALC-04/05; no host I/O here.
 //!
 //! **U-09:** [`types::Value`] (data domain) and [`machine::Value`] (machine domain)
 //! are deliberately distinct. There is no collapsing conversion.
@@ -15,6 +16,7 @@
 pub mod canonical;
 pub mod capability;
 pub mod digest;
+pub mod effect;
 pub mod machine;
 pub mod types;
 
@@ -28,6 +30,11 @@ pub use capability::{
     Authority, CapabilityContext, Constraint, Lifetime, LogicalTime, Op, OpAuthority,
 };
 pub use digest::{sha256, Digest, EffectDigest, StateDigest};
+pub use effect::{
+    op_from_i64, op_from_tag, Consumable, Effect, EffectCost, EffectIdAlloc, EffectReceipt,
+    EffectRequest, HostFaultCode, IssuanceRecord, Params, ReceiptValue, Reserved, Target,
+    ThinBudget,
+};
 pub use machine::{Environment, Expr, Fault, FunctionValue};
 /// Data-domain `Value` (Phase 15A). For machine values use [`machine::Value`].
 pub use types::{ActorId, CapRef, EffectId, Symbol, Value};

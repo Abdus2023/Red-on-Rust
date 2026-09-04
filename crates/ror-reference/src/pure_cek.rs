@@ -1,21 +1,39 @@
-//! Reference pure CEK (M2 + M3 + M4 Attenuate).
+//! Reference pure CEK (M2 + M3 + M4 Attenuate + M5 Request).
 //!
 //! Independently authored transition relation (R-REF-02). Does not import or
 //! call `ror_runtime` / `ror_kernel`. Shared domain types only from `ror-core`.
 //! M4 attenuation uses [`crate::cap_algebra::RefCapabilityStore`].
+//! M5 Request uses [`crate::effect_model`] (independent journal/host).
 //!
 //! M2: Value/Var/Let/Seq/If.
 //! M3: Lambda/Call — lexical capture, LTR args, arity-before-args.
 //! M4: Attenuate via independent reference store.
+//! M5: Request — capability first, non-cap SC, params LTR, gates + Issued.
 
-use ror_core::capability::LogicalTime;
+use ror_core::capability::{CapabilityContext, LogicalTime};
+use ror_core::effect::{EffectIdAlloc, ThinBudget};
 use ror_core::machine::{Environment, Expr, Fault, FunctionValue, Value};
-use ror_core::types::CapRef;
+use ror_core::types::{ActorId, CapRef};
 use ror_core::Symbol;
 
 use crate::cap_algebra::RefCapabilityStore;
+use crate::effect_model::{
+    ref_default_cost, ref_effect_from_values, ref_run_pipeline, RefHost, RefJournal,
+    RefRequestOutcome,
+};
 
 pub const REF_MAX_STEPS_DEFAULT: u64 = 1_000_000;
+
+/// Reference effect services bundle (independent of production EffectServices).
+pub struct RefEffectServices<'a> {
+    pub journal: &'a mut RefJournal,
+    pub host: &'a mut dyn RefHost,
+    pub budget: &'a mut ThinBudget,
+    pub ids: &'a mut EffectIdAlloc,
+    pub actor: ActorId,
+    pub possession: &'a CapabilityContext,
+    pub host_policy_ok: bool,
+}
 
 /// Reference continuation cell — distinct type from production frames.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -56,6 +74,33 @@ pub enum RefKont {
         parent: CapRef,
         saved_env: Environment,
     },
+    /// M5: waiting for capability of Request (non-cap short-circuit).
+    WaitingReqCap {
+        operation: Expr,
+        target: Expr,
+        params: Vec<Expr>,
+        saved_env: Environment,
+    },
+    WaitingReqOp {
+        capability: CapRef,
+        target: Expr,
+        params: Vec<Expr>,
+        caller_env: Environment,
+    },
+    WaitingReqTarget {
+        capability: CapRef,
+        operation: Value,
+        params: Vec<Expr>,
+        caller_env: Environment,
+    },
+    WaitingReqArg {
+        capability: CapRef,
+        operation: Value,
+        target: Value,
+        got: Vec<Value>,
+        rest: Vec<Expr>,
+        caller_env: Environment,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -93,17 +138,26 @@ impl RefState {
 
 /// One reference transition. Returns false when already terminal.
 pub fn step(state: &mut RefState, store: &mut RefCapabilityStore) -> bool {
+    step_with_effects(state, store, None)
+}
+
+/// Reference transition with optional M5 effect services.
+pub fn step_with_effects(
+    state: &mut RefState,
+    store: &mut RefCapabilityStore,
+    effects: Option<&mut RefEffectServices<'_>>,
+) -> bool {
     if !matches!(state.outcome, RefOutcome::Running) {
         return false;
     }
 
     let expr = std::mem::replace(&mut state.expr, Expr::Value(Value::Unit));
     match expr {
-        Expr::Value(v) => deliver(state, v, store),
+        Expr::Value(v) => deliver(state, v, store, effects),
         Expr::Var(sym) => match state.env.lookup(sym) {
             Some(v) => {
                 let v = v.clone();
-                deliver(state, v, store);
+                deliver(state, v, store, effects);
             }
             None => {
                 state.outcome = RefOutcome::Fault(Fault::UnboundVariable(sym));
@@ -140,13 +194,12 @@ pub fn step(state: &mut RefState, store: &mut RefCapabilityStore) -> bool {
             state.expr = *condition;
         }
         Expr::Lambda { params, body } => {
-            // Capture current env; deliver Function via ordinary value path.
             let f = Value::Function(FunctionValue {
                 params,
                 body,
                 env: state.env.clone(),
             });
-            deliver(state, f, store);
+            deliver(state, f, store, effects);
         }
         Expr::Call { func, args } => {
             let caller = state.env.clone();
@@ -164,8 +217,20 @@ pub fn step(state: &mut RefState, store: &mut RefCapabilityStore) -> bool {
             });
             state.expr = *cap;
         }
-        Expr::Request { .. } => {
-            state.outcome = RefOutcome::Fault(Fault::UnsupportedInM2 { form: "Request" });
+        Expr::Request {
+            capability,
+            operation,
+            target,
+            params,
+        } => {
+            let saved = state.env.clone();
+            state.kont.push(RefKont::WaitingReqCap {
+                operation: *operation,
+                target: *target,
+                params,
+                saved_env: saved,
+            });
+            state.expr = *capability;
         }
         Expr::Spawn { .. } => {
             state.outcome = RefOutcome::Fault(Fault::UnsupportedInM2 { form: "Spawn" });
@@ -187,7 +252,12 @@ pub fn step(state: &mut RefState, store: &mut RefCapabilityStore) -> bool {
 }
 
 /// Deliver a value to the top kont or halt (reference value-return).
-fn deliver(state: &mut RefState, value: Value, store: &mut RefCapabilityStore) {
+fn deliver(
+    state: &mut RefState,
+    value: Value,
+    store: &mut RefCapabilityStore,
+    effects: Option<&mut RefEffectServices<'_>>,
+) {
     match state.kont.pop() {
         None => {
             state.outcome = RefOutcome::Halted(value);
@@ -317,12 +387,158 @@ fn deliver(state: &mut RefState, value: Value, store: &mut RefCapabilityStore) {
             match store.derive(parent, &constraint, state.logical_time) {
                 Ok(child) => {
                     state.env = saved_env;
-                    deliver(state, Value::Capability(child), store);
+                    deliver(state, Value::Capability(child), store, effects);
                 }
                 Err(f) => {
                     state.outcome = RefOutcome::Fault(f);
                 }
             }
+        }
+        Some(RefKont::WaitingReqCap {
+            operation,
+            target,
+            params,
+            saved_env,
+        }) => {
+            let cap = match value {
+                Value::Capability(c) => c,
+                other => {
+                    state.outcome = RefOutcome::Fault(Fault::TypeError {
+                        expected: "Capability",
+                        actual: kind_of(&other),
+                    });
+                    return;
+                }
+            };
+            state.kont.push(RefKont::WaitingReqOp {
+                capability: cap,
+                target,
+                params,
+                caller_env: saved_env.clone(),
+            });
+            state.env = saved_env;
+            state.expr = operation;
+        }
+        Some(RefKont::WaitingReqOp {
+            capability,
+            target,
+            params,
+            caller_env,
+        }) => {
+            state.kont.push(RefKont::WaitingReqTarget {
+                capability,
+                operation: value,
+                params,
+                caller_env: caller_env.clone(),
+            });
+            state.env = caller_env;
+            state.expr = target;
+        }
+        Some(RefKont::WaitingReqTarget {
+            capability,
+            operation,
+            params,
+            caller_env,
+        }) => {
+            let mut rest = params;
+            if rest.is_empty() {
+                finish_ref_request(
+                    state,
+                    store,
+                    effects,
+                    capability,
+                    operation,
+                    value,
+                    Vec::new(),
+                );
+                return;
+            }
+            let first = rest.remove(0);
+            state.kont.push(RefKont::WaitingReqArg {
+                capability,
+                operation,
+                target: value,
+                got: Vec::new(),
+                rest,
+                caller_env: caller_env.clone(),
+            });
+            state.env = caller_env;
+            state.expr = first;
+        }
+        Some(RefKont::WaitingReqArg {
+            capability,
+            operation,
+            target,
+            mut got,
+            mut rest,
+            caller_env,
+        }) => {
+            got.push(value);
+            if rest.is_empty() {
+                finish_ref_request(state, store, effects, capability, operation, target, got);
+                return;
+            }
+            let next = rest.remove(0);
+            state.kont.push(RefKont::WaitingReqArg {
+                capability,
+                operation,
+                target,
+                got,
+                rest,
+                caller_env: caller_env.clone(),
+            });
+            state.env = caller_env;
+            state.expr = next;
+        }
+    }
+}
+
+fn finish_ref_request(
+    state: &mut RefState,
+    store: &mut RefCapabilityStore,
+    effects: Option<&mut RefEffectServices<'_>>,
+    capability: CapRef,
+    operation: Value,
+    target: Value,
+    params: Vec<Value>,
+) {
+    let effects = match effects {
+        Some(e) => e,
+        None => {
+            state.outcome = RefOutcome::Fault(Fault::UnsupportedInM2 { form: "Request" });
+            return;
+        }
+    };
+    let effect = match ref_effect_from_values(
+        capability,
+        &operation,
+        &target,
+        &params,
+        ref_default_cost(),
+    ) {
+        Ok(e) => e,
+        Err(f) => {
+            state.outcome = RefOutcome::Fault(f);
+            return;
+        }
+    };
+    match ref_run_pipeline(
+        store,
+        effects.journal,
+        effects.host,
+        effects.budget,
+        effects.ids,
+        effects.actor,
+        effects.possession,
+        state.logical_time,
+        effects.host_policy_ok,
+        effect,
+    ) {
+        RefRequestOutcome::Completed { value, .. } => {
+            deliver(state, value, store, Some(effects));
+        }
+        RefRequestOutcome::HostFailed { fault, .. } | RefRequestOutcome::Denied(fault) => {
+            state.outcome = RefOutcome::Fault(fault);
         }
     }
 }
@@ -371,6 +587,28 @@ pub fn evaluate_with_store(
             break;
         }
         step(&mut state, store);
+    }
+    match state.outcome {
+        RefOutcome::Halted(v) => Ok(v),
+        RefOutcome::Fault(f) => Err(f),
+        RefOutcome::Running => Err(Fault::UnsupportedInM2 { form: "step_limit" }),
+    }
+}
+
+/// M5-aware reference evaluate with effect services.
+pub fn evaluate_request_ref(
+    expr: Expr,
+    max_steps: u64,
+    store: &mut RefCapabilityStore,
+    t: LogicalTime,
+    effects: &mut RefEffectServices<'_>,
+) -> Result<Value, Fault> {
+    let mut state = RefState::new(expr).at_time(t);
+    for _ in 0..max_steps {
+        if !matches!(state.outcome, RefOutcome::Running) {
+            break;
+        }
+        step_with_effects(&mut state, store, Some(effects));
     }
     match state.outcome {
         RefOutcome::Halted(v) => Ok(v),
