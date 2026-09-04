@@ -695,4 +695,247 @@ mod tests {
         ));
         assert!(journal.is_durably_issued(EffectId(0)));
     }
+
+    #[test]
+    fn receipt_value_is_unit_data_only() {
+        // M019/M020 oracle: completed value must be data-domain (Unit here), never Cap/Fn.
+        let mut k = CapabilityKernel::new();
+        let (cap, possession) = setup_cap(&mut k);
+        let mut journal = MemoryJournal::new();
+        let mut host = TestHost::ok();
+        let mut budget = ThinBudget::generous();
+        let mut ids = EffectIdAlloc::new();
+        let out = run_with_memory_journal(
+            &mut k,
+            &mut journal,
+            &mut host,
+            &mut budget,
+            &mut ids,
+            ActorId(0),
+            &possession,
+            LogicalTime::ZERO,
+            true,
+            sample_effect(cap),
+        );
+        match out {
+            RequestOutcome::Completed { value, .. } => {
+                assert!(
+                    matches!(
+                        value,
+                        Value::Unit
+                            | Value::Bool(_)
+                            | Value::Integer(_)
+                            | Value::String(_)
+                            | Value::Bytes(_)
+                    ),
+                    "R-EFFECT-08 data-only receipt, got {value:?}"
+                );
+            }
+            other => panic!("expected complete, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn host_fail_does_not_release_escrow() {
+        // M008/M035 oracle: HostFailed must not silently restore available escrow.
+        let mut k = CapabilityKernel::new();
+        let (cap, possession) = setup_cap(&mut k);
+        let mut journal = MemoryJournal::new();
+        let mut host = TestHost::deny();
+        let mut budget = ThinBudget::with_available(100);
+        let before = budget.available.units;
+        let mut ids = EffectIdAlloc::new();
+        let out = run_with_memory_journal(
+            &mut k,
+            &mut journal,
+            &mut host,
+            &mut budget,
+            &mut ids,
+            ActorId(0),
+            &possession,
+            LogicalTime::ZERO,
+            true,
+            sample_effect(cap),
+        );
+        assert!(matches!(out, RequestOutcome::HostFailed { .. }));
+        // escrow charged (issue+complete_max = 2 for default cost 1+1)
+        assert!(
+            budget.available.units < before,
+            "escrow must remain charged on indeterminate host fail; available {} vs before {}",
+            budget.available.units,
+            before
+        );
+    }
+
+    #[test]
+    fn deny_path_effect_id_not_consumed() {
+        // M010 oracle: unauthorized deny must not advance EffectId allocator.
+        let mut k = CapabilityKernel::new();
+        let (cap, _poss) = setup_cap(&mut k);
+        let empty = CapabilityContext::empty();
+        let mut journal = MemoryJournal::new();
+        let mut host = PanicHost { invoked: false };
+        let mut budget = ThinBudget::generous();
+        let mut ids = EffectIdAlloc::new();
+        let before = ids.peek_next();
+        let out = run_with_memory_journal(
+            &mut k,
+            &mut journal,
+            &mut host,
+            &mut budget,
+            &mut ids,
+            ActorId(0),
+            &empty,
+            LogicalTime::ZERO,
+            true,
+            sample_effect(cap),
+        );
+        assert!(matches!(out, RequestOutcome::Denied(Fault::Unauthorized)));
+        assert_eq!(
+            ids.peek_next(),
+            before,
+            "M010: EffectId must not allocate before auth success"
+        );
+    }
+
+    #[test]
+    fn completed_receipt_not_deadline_denied() {
+        // M041 oracle: successful host completion must not be re-denied by deadline gate.
+        let mut k = CapabilityKernel::new();
+        let (cap, possession) = setup_cap(&mut k);
+        let mut journal = MemoryJournal::new();
+        let mut host = TestHost::ok();
+        let mut budget = ThinBudget::generous();
+        // deadline far enough for request gate, but if receipt re-checks with δ_t it may still pass
+        // Use W = 1: request at t=0 with δ_t=1 ok (t_after=1 <=1); receipt re-check t+1=1 ok.
+        // Use W = 0 would deny at request. Use W=1 and advance logical time context...
+        // Pipeline uses same logical_time for request; receipt mutant adds DELTA_T_RECEIPT.
+        // t=0, W=1: request t+1=1<=1 OK; receipt t+1=1<=1 OK — still passes.
+        // t=0, W=1 with DELTA_T_RECEIPT extra: still 1.
+        // Need: request uses δ_t=1 against W=1 ok; receipt adds another +1 → 2 > 1.
+        budget.deadline = Some(LogicalTime(1));
+        let mut ids = EffectIdAlloc::new();
+        let out = run_with_memory_journal(
+            &mut k,
+            &mut journal,
+            &mut host,
+            &mut budget,
+            &mut ids,
+            ActorId(0),
+            &possession,
+            LogicalTime::ZERO,
+            true,
+            sample_effect(cap),
+        );
+        assert!(
+            matches!(out, RequestOutcome::Completed { .. }),
+            "post-issue receipt must settle, not DeadlineExceeded: {out:?}"
+        );
+    }
+
+    #[test]
+    fn mismatched_receipt_digest_is_corruption() {
+        // M017/M018 oracle: tampered effect_digest must not complete.
+        struct BadDigestHost;
+        impl HostExecutor for BadDigestHost {
+            fn execute(&mut self, request: &EffectRequest) -> Result<EffectReceipt, HostError> {
+                Ok(EffectReceipt {
+                    id: request.id,
+                    effect_digest: EffectDigest::of_bytes(b"tampered"),
+                    result: Ok(ReceiptValue::Unit),
+                })
+            }
+        }
+        let mut k = CapabilityKernel::new();
+        let (cap, possession) = setup_cap(&mut k);
+        let mut journal = MemoryJournal::new();
+        let mut host = BadDigestHost;
+        let mut budget = ThinBudget::generous();
+        let mut ids = EffectIdAlloc::new();
+        let out = run_with_memory_journal(
+            &mut k,
+            &mut journal,
+            &mut host,
+            &mut budget,
+            &mut ids,
+            ActorId(0),
+            &possession,
+            LogicalTime::ZERO,
+            true,
+            sample_effect(cap),
+        );
+        assert!(
+            matches!(
+                out,
+                RequestOutcome::HostFailed {
+                    fault: Fault::ReplayCorruption,
+                    ..
+                }
+            ),
+            "expected ReplayCorruption, got {out:?}"
+        );
+    }
+
+    #[test]
+    fn host_invoked_exactly_once_on_success() {
+        // M037 oracle: single host execute after durable Issued (no pre-sync call).
+        let mut k = CapabilityKernel::new();
+        let (cap, possession) = setup_cap(&mut k);
+        let mut journal = MemoryJournal::new();
+        let mut host = TestHost::ok();
+        let mut budget = ThinBudget::generous();
+        let mut ids = EffectIdAlloc::new();
+        let out = run_with_memory_journal(
+            &mut k,
+            &mut journal,
+            &mut host,
+            &mut budget,
+            &mut ids,
+            ActorId(0),
+            &possession,
+            LogicalTime::ZERO,
+            true,
+            sample_effect(cap),
+        );
+        assert!(matches!(out, RequestOutcome::Completed { .. }));
+        assert_eq!(
+            host.calls.len(),
+            1,
+            "host must run exactly once after Issued"
+        );
+    }
+
+    #[test]
+    fn budget_charge_matches_issue_plus_complete_max_only() {
+        // M042 oracle: no double duration debit beyond issue+complete_max.
+        let mut k = CapabilityKernel::new();
+        let (cap, possession) = setup_cap(&mut k);
+        let mut journal = MemoryJournal::new();
+        let mut host = TestHost::ok();
+        let mut budget = ThinBudget::with_available(100);
+        let before = budget.available.units;
+        let mut ids = EffectIdAlloc::new();
+        let eff = sample_effect(cap);
+        let need = eff.cost.issue_plus_complete_max().unwrap().units;
+        let out = run_with_memory_journal(
+            &mut k,
+            &mut journal,
+            &mut host,
+            &mut budget,
+            &mut ids,
+            ActorId(0),
+            &possession,
+            LogicalTime::ZERO,
+            true,
+            eff,
+        );
+        assert!(matches!(out, RequestOutcome::Completed { .. }));
+        assert_eq!(
+            budget.available.units,
+            before - need,
+            "M042: charged {} expected {}",
+            before - budget.available.units,
+            need
+        );
+    }
 }

@@ -177,7 +177,7 @@ pub fn issued(
 mod tests {
     use super::*;
     use ror_core::digest::EffectDigest;
-    use ror_core::effect::EffectCost;
+    use ror_core::effect::{EffectCost, IssuanceRecord};
     use ror_core::types::{ActorId, EffectId};
 
     #[test]
@@ -193,6 +193,24 @@ mod tests {
             .unwrap();
         j.sync().unwrap();
         assert!(j.is_durably_issued(id));
+    }
+
+    #[test]
+    fn issued_preserves_cost() {
+        // M038 oracle: Issued record must carry full cost (escrow SoT), not drop it.
+        let id = EffectId(7);
+        let d = EffectDigest::of_bytes(b"fx");
+        let c = EffectCost::new(3, 5, 1);
+        let rec = issued(id, ActorId(2), d, b"fx".to_vec(), c);
+        match rec {
+            IssuanceRecord::Issued {
+                cost, effect_bytes, ..
+            } => {
+                assert_eq!(cost, c);
+                assert_eq!(effect_bytes, b"fx");
+            }
+            other => panic!("expected Issued, got {other:?}"),
+        }
     }
 
     #[test]

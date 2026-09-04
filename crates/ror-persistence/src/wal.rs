@@ -403,4 +403,19 @@ mod tests {
             WalError::SequenceRegression { .. } | WalError::SequenceGap { .. }
         ));
     }
+
+    #[test]
+    fn verify_checksum_detects_tamper() {
+        // M016 oracle: tampered checksum must fail verify_checksum.
+        let f = WalFrame::new(
+            &CHECKSUM_SEED,
+            WalSequence(1),
+            WalKind::Event,
+            b"x".to_vec(),
+        );
+        assert!(f.verify_checksum(&CHECKSUM_SEED).is_ok());
+        let mut bad = f.clone();
+        bad.checksum[0] ^= 0xff;
+        assert!(bad.verify_checksum(&CHECKSUM_SEED).is_err());
+    }
 }

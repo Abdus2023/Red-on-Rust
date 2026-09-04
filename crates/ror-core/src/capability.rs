@@ -463,4 +463,26 @@ mod tests {
     fn empty_constraint_not_admissible() {
         assert!(!admissible_constraint_shape(&Constraint::empty()));
     }
+
+    #[test]
+    fn authorized_rejects_over_ceiling() {
+        // M005 oracle: cost_units above resource ceiling must fail (R-CAP-06).
+        let mut a = Authority::empty();
+        let (op, auth) = full_op(Op::FileRead, vec![1], 5);
+        a.insert(op, auth);
+        let ok = EffectDesc {
+            op: Op::FileRead,
+            target: 1,
+            param_tag: 0,
+            cost_units: 5,
+        };
+        let over = EffectDesc {
+            op: Op::FileRead,
+            target: 1,
+            param_tag: 0,
+            cost_units: 6,
+        };
+        assert!(authorized(&a, &ok, LogicalTime::ZERO));
+        assert!(!authorized(&a, &over, LogicalTime::ZERO));
+    }
 }

@@ -1,0 +1,389 @@
+# Derived consumer of final/04 §2 mutation registry (R-TEST-04).
+# NOT an authority — canonical source is final/04-verification-registry.md.
+# Additive: M001–M018 baseline + M019–M042 post-audit.
+# schema_version tracks consumer format only.
+
+schema_version = 1
+authority = "final/04-verification-registry.md §2"
+requirement = "R-TEST-04"
+kill_gate = "R-TEST-05"
+method = "R-TEST-06"
+
+[[mutant]]
+id = "M001"
+defect = "reverse argument evaluation"
+obligations = ["R-CEK-05"]
+component = "ror-runtime"
+security = false
+differential = true
+equiv = false
+
+[[mutant]]
+id = "M002"
+defect = "skip arity precheck"
+obligations = ["R-CEK-05"]
+component = "ror-runtime"
+security = false
+differential = true
+equiv = false
+
+[[mutant]]
+id = "M003"
+defect = "allow non-function application"
+obligations = ["R-CEK-05"]
+component = "ror-runtime"
+security = false
+differential = true
+equiv = false
+
+[[mutant]]
+id = "M004"
+defect = "accept revoked capability"
+obligations = ["R-CAP-07", "R-CORE-03"]
+component = "ror-kernel"
+security = true
+differential = true
+equiv = false
+
+[[mutant]]
+id = "M005"
+defect = "omit capability ceiling"
+obligations = ["R-CAP-06"]
+component = "ror-core"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M006"
+defect = "permit capability amplification"
+obligations = ["R-CAP-05", "R-CORE-04"]
+component = "ror-kernel"
+security = true
+differential = true
+equiv = false
+
+[[mutant]]
+id = "M007"
+defect = "omit budget gate"
+obligations = ["R-BUDGET-04", "R-BUDGET-08"]
+component = "ror-runtime"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M008"
+defect = "release indeterminate escrow"
+obligations = ["R-DUR-05"]
+component = "ror-runtime"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M009"
+defect = "permit negative resources"
+obligations = ["R-BUDGET-02"]
+component = "ror-core"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M010"
+defect = "allocate EffectId before authorization"
+obligations = ["R-EFFECT-03", "R-EFFECT-04"]
+component = "ror-runtime"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M011"
+defect = "schedule blocked actor"
+obligations = ["R-ACTOR-04"]
+component = "ror-runtime"
+security = false
+differential = true
+equiv = false
+
+[[mutant]]
+id = "M012"
+defect = "duplicate runnable queue entry"
+obligations = ["R-ACTOR-04"]
+component = "ror-runtime"
+security = false
+differential = true
+equiv = false
+
+[[mutant]]
+id = "M013"
+defect = "break mailbox FIFO"
+obligations = ["R-ACTOR-06"]
+component = "ror-runtime"
+security = false
+differential = true
+equiv = false
+
+[[mutant]]
+id = "M014"
+defect = "accept duplicate canonical map key"
+obligations = ["R-CANON-06"]
+component = "ror-core"
+security = false
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M015"
+defect = "ignore WAL sequence gap"
+obligations = ["R-PERSIST-06"]
+component = "ror-persistence"
+security = true
+differential = true
+equiv = false
+
+[[mutant]]
+id = "M016"
+defect = "ignore checksum mismatch"
+obligations = ["R-PERSIST-02"]
+component = "ror-persistence"
+security = true
+differential = true
+equiv = false
+
+[[mutant]]
+id = "M017"
+defect = "accept mismatched EffectDigest"
+obligations = ["R-EFFECT-06", "R-DUR-03"]
+component = "ror-runtime"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M018"
+defect = "resume after corrupted receipt"
+obligations = ["R-EFFECT-06"]
+component = "ror-runtime"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M019"
+defect = "resume with Value::Capability result"
+obligations = ["R-EFFECT-08"]
+component = "ror-runtime"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M020"
+defect = "resume with closure result"
+obligations = ["R-EFFECT-08"]
+component = "ror-runtime"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M021"
+defect = "authorize without possession check"
+obligations = ["R-KERN-04"]
+component = "ror-kernel"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M022"
+defect = "unmarshal accepts capability payload"
+obligations = ["R-CANON-12"]
+component = "ror-core"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M023"
+defect = "recovery resurrects revoked capability"
+obligations = ["R-PERSIST-07"]
+component = "ror-persistence"
+security = true
+differential = true
+equiv = false
+
+[[mutant]]
+id = "M024"
+defect = "receive-side registration without kernel revalidation"
+obligations = ["R-MARSHAL-05"]
+component = "ror-runtime"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M025"
+defect = "spawn clones parent context unattenuated"
+obligations = ["R-ACTOR-09"]
+component = "ror-runtime"
+security = true
+differential = true
+equiv = false
+
+[[mutant]]
+id = "M026"
+defect = "accept future-tagged proposal"
+obligations = ["R-PLANNER-06"]
+component = "ror-agent"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M027"
+defect = "observation includes CapRef"
+obligations = ["R-PLANNER-07"]
+component = "ror-agent"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M028"
+defect = "reconciliation resolves Indeterminate as NotExecuted / releases escrow without admissible outcome"
+obligations = ["R-RECOV-08"]
+component = "ror-persistence"
+security = true
+differential = true
+equiv = false
+
+[[mutant]]
+id = "M029"
+defect = "replay skips result-digest verification"
+obligations = ["R-HOST-06"]
+component = "ror-host"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M030"
+defect = "inadmissible constraint treated as ⊤"
+obligations = ["R-CAP-10"]
+component = "ror-kernel"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M031"
+defect = "component uses the superseded LE grammar"
+obligations = ["R-CANON-13"]
+component = "ror-core"
+security = false
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M032"
+defect = "contains_capability skips FunctionValue.env"
+obligations = ["R-MARSHAL-06"]
+component = "ror-runtime"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M033"
+defect = "enqueue without recipient capacity check"
+obligations = ["R-ACTOR-10"]
+component = "ror-runtime"
+security = false
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M034"
+defect = "release failure silently ignored (unwrap → let _)"
+obligations = ["R-CORE-12"]
+component = "ror-runtime"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M035"
+defect = "stranded escrow silently reclaimed to available without reconciliation"
+obligations = ["R-BUDGET-09"]
+component = "ror-runtime"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M036"
+defect = "rotate one spec/01 obligation body onto adjacent content (IDs left in place)"
+obligations = ["R-SCOPE-03", "R-CLAIM-02"]
+component = "document"
+security = false
+differential = false
+equiv = false
+kind = "document"
+
+[[mutant]]
+id = "M037"
+defect = "in-memory s12–s13 mutations committed before the journal-driven append+fsync (host-visible pre-durability)"
+obligations = ["R-DUR-07"]
+component = "ror-runtime"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M038"
+defect = "issuance records carry {id, actor, digest} only (loss of the escrow/effect source of truth)"
+obligations = ["R-DUR-06"]
+component = "ror-persistence"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M039"
+defect = "Remains-Indeterminate treated as a terminal disposition (stranded escrow survives the logical-time bound)"
+obligations = ["R-BUDGET-11"]
+component = "ror-runtime"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M040"
+defect = "δ_t table violation: a time-capable transition kind advances logical time without its frozen δ_t"
+obligations = ["R-BUDGET-16"]
+component = "ror-runtime"
+security = false
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M041"
+defect = "post-deadline EffectReceipt routed through the normal deadline gate (rejected) instead of R-RECOV-08 settlement"
+obligations = ["R-BUDGET-16", "R-RECOV-08"]
+component = "ror-runtime"
+security = true
+differential = false
+equiv = false
+
+[[mutant]]
+id = "M042"
+defect = "cost_C(E)'s duration component debits D in addition to the transition's ΔD := δ_t (double charge)"
+obligations = ["R-BUDGET-15"]
+component = "ror-runtime"
+security = false
+differential = false
+equiv = false

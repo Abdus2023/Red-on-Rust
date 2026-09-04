@@ -228,6 +228,11 @@ impl Environment {
     pub fn is_empty(&self) -> bool {
         self.bindings.is_empty()
     }
+
+    /// Deterministic binding iteration (innermost last). Used by marshal walk.
+    pub fn bindings(&self) -> &[(Symbol, Value)] {
+        &self.bindings
+    }
 }
 
 /// Machine-local fault identity for pure CEK (M2/M3/M4 subset).

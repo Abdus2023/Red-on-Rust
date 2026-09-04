@@ -353,10 +353,19 @@ pub fn finish_empty_runnable_pub(g: &mut GlobalState) -> GlobalStep {
 // --- Marshal (R-MARSHAL-01 / R-CORE-07) ---------------------------------------
 
 /// Recursive capability / closure rejection for ordinary messages.
+/// Capability / delegated / nested-authority reachability (R-MARSHAL-06).
+///
+/// For `FunctionValue`, walks the **lexical env** (M032). Closure *type*
+/// rejection for ordinary messages is separate ([`contains_closure`]).
 pub fn machine_contains_capability(v: &Value) -> bool {
     match v {
         Value::Capability(_) | Value::DelegatedCapability(_) => true,
-        Value::Function(_) => true, // M6 safety: reject closures in messages
+        // R-MARSHAL-06 / M032: must walk FunctionValue.env (not skip).
+        Value::Function(f) => f
+            .env
+            .bindings()
+            .iter()
+            .any(|(_, val)| machine_contains_capability(val)),
         Value::Constraint(_) => false,
         Value::List(xs) | Value::Tuple(xs) => xs.iter().any(machine_contains_capability),
         Value::Unit
@@ -368,9 +377,18 @@ pub fn machine_contains_capability(v: &Value) -> bool {
     }
 }
 
+/// Closures are rejected in ordinary messages (R-MARSHAL-01) independent of env.
+pub fn contains_closure(v: &Value) -> bool {
+    match v {
+        Value::Function(_) => true,
+        Value::List(xs) | Value::Tuple(xs) => xs.iter().any(contains_closure),
+        _ => false,
+    }
+}
+
 /// Ordinary message admission (R-MARSHAL-01).
 pub fn marshal_message(v: &Value) -> Result<Value, Fault> {
-    if machine_contains_capability(v) {
+    if contains_closure(v) || machine_contains_capability(v) {
         return Err(Fault::MarshalCapabilityRejected);
     }
     Ok(v.clone())
@@ -918,6 +936,21 @@ mod tests {
     }
 
     #[test]
+    fn machine_contains_capability_walks_function_env() {
+        // M032 oracle: env-captured CapRef must be detected (R-MARSHAL-06).
+        let cap = Value::Capability(CapRef::from_kernel_parts(1, 0));
+        let env = Environment::empty().extend(ror_core::Symbol(1), cap);
+        let f = Value::Function(FunctionValue {
+            params: vec![],
+            body: Box::new(unit()),
+            env,
+        });
+        assert!(machine_contains_capability(&f));
+        // Nested in list without the Function type path still walks via Function arm.
+        assert!(machine_contains_capability(&Value::List(vec![f])));
+    }
+
+    #[test]
     fn runnable_at_most_once() {
         let mut q = RunnableQueue::new();
         assert!(q.enqueue_back(ActorId(1)));
@@ -970,6 +1003,15 @@ mod tests {
             scheduler_turn(&mut g, &mut k).unwrap(),
             GlobalStep::Deadlock
         );
+    }
+
+    #[test]
+    fn blocked_status_not_schedulable() {
+        // M011 oracle: Blocked/Pending/Terminal must not be is_schedulable.
+        assert!(!ActorStatus::Blocked.is_schedulable());
+        assert!(!ActorStatus::Pending.is_schedulable());
+        assert!(!ActorStatus::Terminal.is_schedulable());
+        assert!(ActorStatus::Runnable.is_schedulable());
     }
 
     #[test]
@@ -1034,6 +1076,24 @@ mod tests {
         assert!(g.actors.get(&child).unwrap().caps.slots().is_empty());
         assert_eq!(g.actors.get(&p).unwrap().budget_units, 90);
         assert_eq!(g.actors.get(&child).unwrap().budget_units, 10);
+    }
+
+    #[test]
+    fn spawn_empty_manifest_does_not_clone_parent_caps() {
+        // M025 oracle: empty manifest ⇒ empty child caps even if parent holds caps.
+        let mut g = GlobalState::new();
+        let mut k = CapabilityKernel::new();
+        let p = g.spawn_root(unit(), 100);
+        let auth = single_op_authority(Op::FileRead, vec![1], 10, Lifetime::always());
+        let cap = k.grant_root_always(auth);
+        g.actors.get_mut(&p).unwrap().caps.insert(cap);
+        assert!(!g.actors.get(&p).unwrap().caps.slots().is_empty());
+        let child =
+            spawn_child(&mut g, &mut k, p, unit(), SpawnBudgetSpec::new(10, 8), &[]).unwrap();
+        assert!(
+            g.actors.get(&child).unwrap().caps.slots().is_empty(),
+            "M025: must not clone parent caps on empty manifest"
+        );
     }
 
     #[test]

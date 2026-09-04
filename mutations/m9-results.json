@@ -1,0 +1,566 @@
+{
+  "registered": 42,
+  "non_equivalent": 42,
+  "killed": 42,
+  "survived": 0,
+  "equivalent": 0,
+  "not_run": 0,
+  "inconclusive": 0,
+  "kill_rate_percent": 100,
+  "critical_survived": false,
+  "results": [
+    {
+      "mid": "M001",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": true,
+      "kill_evidence": "targeted_tests_failed+differential_tests_failed",
+      "security": false,
+      "obligations": [
+        "R-CEK-05"
+      ],
+      "defect": "reverse argument evaluation"
+    },
+    {
+      "mid": "M002",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": true,
+      "kill_evidence": "targeted_tests_failed+differential_tests_failed",
+      "security": false,
+      "obligations": [
+        "R-CEK-05"
+      ],
+      "defect": "skip arity precheck"
+    },
+    {
+      "mid": "M003",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": true,
+      "kill_evidence": "targeted_tests_failed+differential_tests_failed",
+      "security": false,
+      "obligations": [
+        "R-CEK-05"
+      ],
+      "defect": "allow non-function application"
+    },
+    {
+      "mid": "M004",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": true,
+      "kill_evidence": "targeted_tests_failed+differential_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-CAP-07",
+        "R-CORE-03"
+      ],
+      "defect": "accept revoked capability"
+    },
+    {
+      "mid": "M005",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-CAP-06"
+      ],
+      "defect": "omit capability ceiling"
+    },
+    {
+      "mid": "M006",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": true,
+      "kill_evidence": "targeted_tests_failed+differential_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-CAP-05",
+        "R-CORE-04"
+      ],
+      "defect": "permit capability amplification"
+    },
+    {
+      "mid": "M007",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-BUDGET-04",
+        "R-BUDGET-08"
+      ],
+      "defect": "omit budget gate"
+    },
+    {
+      "mid": "M008",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-DUR-05"
+      ],
+      "defect": "release indeterminate escrow"
+    },
+    {
+      "mid": "M009",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-BUDGET-02"
+      ],
+      "defect": "permit negative resources"
+    },
+    {
+      "mid": "M010",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-EFFECT-03",
+        "R-EFFECT-04"
+      ],
+      "defect": "allocate EffectId before authorization"
+    },
+    {
+      "mid": "M011",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": false,
+      "obligations": [
+        "R-ACTOR-04"
+      ],
+      "defect": "schedule blocked actor"
+    },
+    {
+      "mid": "M012",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": true,
+      "kill_evidence": "targeted_tests_failed+differential_tests_failed",
+      "security": false,
+      "obligations": [
+        "R-ACTOR-04"
+      ],
+      "defect": "duplicate runnable queue entry"
+    },
+    {
+      "mid": "M013",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": true,
+      "kill_evidence": "targeted_tests_failed+differential_tests_failed",
+      "security": false,
+      "obligations": [
+        "R-ACTOR-06"
+      ],
+      "defect": "break mailbox FIFO"
+    },
+    {
+      "mid": "M014",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": false,
+      "obligations": [
+        "R-CANON-06"
+      ],
+      "defect": "accept duplicate canonical map key"
+    },
+    {
+      "mid": "M015",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-PERSIST-06"
+      ],
+      "defect": "ignore WAL sequence gap"
+    },
+    {
+      "mid": "M016",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-PERSIST-02"
+      ],
+      "defect": "ignore checksum mismatch"
+    },
+    {
+      "mid": "M017",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-EFFECT-06",
+        "R-DUR-03"
+      ],
+      "defect": "accept mismatched EffectDigest"
+    },
+    {
+      "mid": "M018",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-EFFECT-06"
+      ],
+      "defect": "resume after corrupted receipt"
+    },
+    {
+      "mid": "M019",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-EFFECT-08"
+      ],
+      "defect": "resume with Value::Capability result"
+    },
+    {
+      "mid": "M020",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-EFFECT-08"
+      ],
+      "defect": "resume with closure result"
+    },
+    {
+      "mid": "M021",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-KERN-04"
+      ],
+      "defect": "authorize without possession check"
+    },
+    {
+      "mid": "M022",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-CANON-12"
+      ],
+      "defect": "unmarshal accepts capability payload"
+    },
+    {
+      "mid": "M023",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-PERSIST-07"
+      ],
+      "defect": "recovery resurrects revoked capability"
+    },
+    {
+      "mid": "M024",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-MARSHAL-05"
+      ],
+      "defect": "receive-side registration without kernel revalidation"
+    },
+    {
+      "mid": "M025",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-ACTOR-09"
+      ],
+      "defect": "spawn clones parent context unattenuated"
+    },
+    {
+      "mid": "M026",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-PLANNER-06"
+      ],
+      "defect": "accept future-tagged proposal"
+    },
+    {
+      "mid": "M027",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-PLANNER-07"
+      ],
+      "defect": "observation includes CapRef"
+    },
+    {
+      "mid": "M028",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": true,
+      "kill_evidence": "targeted_tests_failed+differential_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-RECOV-08"
+      ],
+      "defect": "reconciliation resolves Indeterminate as NotExecuted / releases escrow without admissible outcome"
+    },
+    {
+      "mid": "M029",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-HOST-06"
+      ],
+      "defect": "replay skips result-digest verification"
+    },
+    {
+      "mid": "M030",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-CAP-10"
+      ],
+      "defect": "inadmissible constraint treated as \u22a4"
+    },
+    {
+      "mid": "M031",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": false,
+      "obligations": [
+        "R-CANON-13"
+      ],
+      "defect": "component uses the superseded LE grammar"
+    },
+    {
+      "mid": "M032",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-MARSHAL-06"
+      ],
+      "defect": "contains_capability skips FunctionValue.env"
+    },
+    {
+      "mid": "M033",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": false,
+      "obligations": [
+        "R-ACTOR-10"
+      ],
+      "defect": "enqueue without recipient capacity check"
+    },
+    {
+      "mid": "M034",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-CORE-12"
+      ],
+      "defect": "release failure silently ignored (unwrap \u2192 let _)"
+    },
+    {
+      "mid": "M035",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-BUDGET-09"
+      ],
+      "defect": "stranded escrow silently reclaimed to available without reconciliation"
+    },
+    {
+      "mid": "M036",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "audit/_checker_mutations.py -k M036 exit 0 (mutant killed by gate)",
+      "security": false,
+      "obligations": [
+        "R-SCOPE-03",
+        "R-CLAIM-02"
+      ],
+      "defect": "rotate obligation body"
+    },
+    {
+      "mid": "M037",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-DUR-07"
+      ],
+      "defect": "in-memory s12\u2013s13 mutations committed before the journal-driven append+fsync (host-visible pre-durability)"
+    },
+    {
+      "mid": "M038",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-DUR-06"
+      ],
+      "defect": "issuance records carry {id, actor, digest} only (loss of the escrow/effect source of truth)"
+    },
+    {
+      "mid": "M039",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-BUDGET-11"
+      ],
+      "defect": "Remains-Indeterminate treated as a terminal disposition (stranded escrow survives the logical-time bound)"
+    },
+    {
+      "mid": "M040",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": false,
+      "obligations": [
+        "R-BUDGET-16"
+      ],
+      "defect": "\u03b4_t table violation: a time-capable transition kind advances logical time without its frozen \u03b4_t"
+    },
+    {
+      "mid": "M041",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": true,
+      "obligations": [
+        "R-BUDGET-16",
+        "R-RECOV-08"
+      ],
+      "defect": "post-deadline EffectReceipt routed through the normal deadline gate (rejected) instead of R-RECOV-08 settlement"
+    },
+    {
+      "mid": "M042",
+      "classification": "KILLED",
+      "build_ok": true,
+      "targeted_failed": true,
+      "differential_failed": false,
+      "kill_evidence": "targeted_tests_failed",
+      "security": false,
+      "obligations": [
+        "R-BUDGET-15"
+      ],
+      "defect": "cost_C(E)'s duration component debits D in addition to the transition's \u0394D := \u03b4_t (double charge)"
+    }
+  ]
+}

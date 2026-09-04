@@ -110,6 +110,21 @@ pub fn host_error_code(e: &HostError) -> ror_core::effect::HostFaultCode {
     e.code()
 }
 
+/// R-HOST-06: replay/completion must verify result digest against recorded bytes.
+///
+/// `expected` is the digest bound at issuance / completion record time.
+/// Skipping this check is mutant M029.
+pub fn verify_result_digest(
+    expected: &ror_core::digest::EffectDigest,
+    result_bytes: &[u8],
+) -> Result<(), HostError> {
+    let got = ror_core::digest::EffectDigest::of_bytes(result_bytes);
+    if got != *expected {
+        return Err(HostError::ReplayFault);
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -164,5 +179,12 @@ mod tests {
         let r = h.execute(&sample_req()).unwrap();
         assert_eq!(r.id, EffectId(0));
         assert_eq!(r.result, Ok(ReceiptValue::Integer(7)));
+    }
+
+    #[test]
+    fn result_digest_mismatch_rejected() {
+        let expected = EffectDigest::of_bytes(b"good");
+        assert!(verify_result_digest(&expected, b"good").is_ok());
+        assert!(verify_result_digest(&expected, b"bad").is_err());
     }
 }
