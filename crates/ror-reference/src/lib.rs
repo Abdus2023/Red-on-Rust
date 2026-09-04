@@ -2,15 +2,22 @@
 
 //! Independent reference model (MOD-14).
 //!
-//! M2+M3 pure CEK + M4 capability algebra + M5 effect/request mirror.
+//! M2+M3 pure CEK + M4 capability algebra + M5 effect/request mirror + M6 actors.
 //! Transition code is authored here independently — it does **not** call
 //! `ror-runtime` or `ror-kernel` (R-REF-02 / R-SCOPE-04).
 //! Shared fixtures/types come from `ror-core` only.
 
+pub mod actor_model;
 pub mod cap_algebra;
 pub mod effect_model;
 pub mod pure_cek;
 
+pub use actor_model::{
+    ref_admit_delegation, ref_contains_capability, ref_issue_delegation, ref_marshal,
+    ref_receive_or_block, ref_run_until_quiescent, ref_scheduler_turn, ref_send,
+    ref_send_delegation, ref_spawn_child, RefActor, RefActorStatus, RefGlobal, RefGlobalStep,
+    RefMachineEvent, RefMailbox, RefRunnable, RefSpawnBudget,
+};
 pub use cap_algebra::{RefAuthority, RefCapabilityStore, RefOpAuthority};
 pub use effect_model::{
     ref_default_cost, ref_effect_from_values, ref_run_pipeline, RefHost, RefJournal, RefMockHost,

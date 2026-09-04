@@ -17,21 +17,57 @@
 use crate::capability::Constraint;
 use crate::types::{CapRef, Symbol};
 
-/// Opaque delegated-capability handle (R-CALC-01).
+/// Opaque delegated-capability handle (R-CALC-01 / R-MARSHAL-05).
 ///
-/// Construction authority is the marshaller; M2 pure CEK never constructs it.
-/// Representation is an implementation choice (U-09/U-30 open) — not a wire ABI.
+/// Construction authority is the marshaller / kernel-adjacent runtime path;
+/// pure CEK never constructs it. Representation is an implementation choice
+/// (U-09/U-30 open) — not a wire ABI.
+///
+/// Carries the derived child CapRef bits and the intended recipient ActorId.
+/// Ordinary Send rejects this via marshal; only the dedicated delegation
+/// admission path may register it into a recipient context.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct DelegatedCapability {
     pub(crate) index: u32,
     pub(crate) generation: u32,
+    /// Intended recipient (data ActorId). Revalidated at receive.
+    pub(crate) target_actor: u64,
 }
 
 impl DelegatedCapability {
     /// Test/kernel-adjacent constructor. Not a public authority mint.
     #[doc(hidden)]
     pub fn provisional(index: u32, generation: u32) -> Self {
-        Self { index, generation }
+        Self {
+            index,
+            generation,
+            target_actor: 0,
+        }
+    }
+
+    /// Kernel-constructed envelope from a derived child CapRef (R-MARSHAL-05).
+    pub fn from_derived(child: CapRef, target_actor: u64) -> Self {
+        Self {
+            index: child.index(),
+            generation: child.generation(),
+            target_actor,
+        }
+    }
+
+    pub fn child_cap(&self) -> CapRef {
+        CapRef::from_kernel_parts(self.index, self.generation)
+    }
+
+    pub fn target_actor(&self) -> u64 {
+        self.target_actor
+    }
+
+    pub fn index(&self) -> u32 {
+        self.index
+    }
+
+    pub fn generation(&self) -> u32 {
+        self.generation
     }
 }
 
@@ -112,19 +148,30 @@ pub enum Expr {
         target: Box<Expr>,
         params: Vec<Expr>,
     },
-    /// Later milestone — not evaluated in M2.
+    /// M6 — spawn child actor (R-ACTOR-05/09).
     Spawn {
         expr: Box<Expr>,
         initial_budget: Box<Expr>,
         capabilities: Vec<Expr>,
     },
-    /// Later milestone — not evaluated in M2.
+    /// M6 — async send (R-ACTOR-06).
     Send {
         target: Box<Expr>,
         message: Box<Expr>,
     },
-    /// Later milestone — not evaluated in M2.
+    /// M6 — blocking receive (R-ACTOR-06).
     Receive,
+    /// M6 — explicit capability delegation (R-MARSHAL-05 addendum; L-M6-DELEG-AST).
+    ///
+    /// Evaluates by `kernel.derive` and yields a kernel-constructed
+    /// [`DelegatedCapability`] envelope — never a plain `Value::Capability`
+    /// transferable by ordinary Send.
+    Delegate {
+        capability: Box<Expr>,
+        constraint: Box<Expr>,
+        /// Target actor identity (data id; not authority).
+        target: Box<Expr>,
+    },
     /// Later milestone — not evaluated in M2.
     Yield,
     /// Later milestone — not evaluated in M2.
@@ -231,8 +278,14 @@ pub enum Fault {
     EffectError {
         reason: &'static str,
     },
-    /// Expression outside the current evaluator surface (M6+ forms, fuel).
-    /// Name retained from M2; does not mean M3/M4/M5 forms are unsupported.
+    /// Ordinary marshal rejected capability-bearing payload (R-MARSHAL-01). U-08 OPEN.
+    MarshalCapabilityRejected,
+    /// Mailbox capacity admission failed (R-ACTOR-10). Sender pays. U-08 OPEN.
+    ReservedCapacityExceeded,
+    /// Send target is not a live actor. Provisional; U-08 / L-M6-TERM.
+    ActorNotFound,
+    /// Expression outside the current evaluator surface (M7+ forms, fuel).
+    /// Name retained from M2; does not mean M3–M6 forms are unsupported.
     UnsupportedInM2 {
         form: &'static str,
     },
@@ -318,6 +371,37 @@ pub mod sugar {
             operation: Box::new(operation),
             target: Box::new(target),
             params,
+        }
+    }
+
+    pub fn spawn(expr: Expr, initial_budget: Expr, capabilities: Vec<Expr>) -> Expr {
+        Expr::Spawn {
+            expr: Box::new(expr),
+            initial_budget: Box::new(initial_budget),
+            capabilities,
+        }
+    }
+
+    pub fn send(target: Expr, message: Expr) -> Expr {
+        Expr::Send {
+            target: Box::new(target),
+            message: Box::new(message),
+        }
+    }
+
+    pub fn receive() -> Expr {
+        Expr::Receive
+    }
+
+    pub fn actor_id_v(id: u64) -> Expr {
+        Expr::Value(Value::Integer(id as i64))
+    }
+
+    pub fn delegate(capability: Expr, constraint: Expr, target: Expr) -> Expr {
+        Expr::Delegate {
+            capability: Box::new(capability),
+            constraint: Box::new(constraint),
+            target: Box::new(target),
         }
     }
 }

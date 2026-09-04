@@ -6,6 +6,7 @@
 //! - **M2:** machine-domain types for pure CEK ([`machine`]) — R-CALC-01/02/03.
 //! - **M4:** capability algebra domain types ([`capability`]) — R-CAP-*; no mint.
 //! - **M5:** effect domain types ([`effect`]) — R-CALC-04/05; no host I/O here.
+//! - **M6:** ActorId allocator shell; actor runtime lives in `ror-runtime`.
 //!
 //! **U-09:** [`types::Value`] (data domain) and [`machine::Value`] (machine domain)
 //! are deliberately distinct. There is no collapsing conversion.
@@ -37,4 +38,4 @@ pub use effect::{
 };
 pub use machine::{Environment, Expr, Fault, FunctionValue};
 /// Data-domain `Value` (Phase 15A). For machine values use [`machine::Value`].
-pub use types::{ActorId, CapRef, EffectId, Symbol, Value};
+pub use types::{ActorId, ActorIdAlloc, CapRef, EffectId, Symbol, Value};

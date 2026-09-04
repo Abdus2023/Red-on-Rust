@@ -282,6 +282,11 @@ impl RefCapabilityStore {
     pub fn authority_snapshot(&self, cap: CapRef) -> Option<RefAuthority> {
         self.resolve(cap).ok().map(|n| n.authority.clone())
     }
+
+    /// Parent linkage for cascade / delegation revalidation tests.
+    pub fn parent_of(&self, cap: CapRef) -> Option<CapRef> {
+        self.resolve(cap).ok().and_then(|n| n.parent)
+    }
 }
 
 #[cfg(test)]

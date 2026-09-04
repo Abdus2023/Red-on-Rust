@@ -56,8 +56,37 @@ impl CapRef {
 }
 
 /// Actor identity payload: `u64` big-endian (R-CANON-05), tag `0x40`.
+///
+/// **R-ACTOR-03:** allocated by monotonic counter only. Bits ≠ authority.
+/// **No reuse** of terminated ids (M6 preflight: do not implement recycling).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Ord, PartialOrd)]
 pub struct ActorId(pub u64);
+
+/// Monotonic ActorId allocator (R-ACTOR-03). No wall-clock / random / reuse.
+#[derive(Clone, Debug, Default)]
+pub struct ActorIdAlloc {
+    next: u64,
+}
+
+impl ActorIdAlloc {
+    pub fn new() -> Self {
+        Self { next: 0 }
+    }
+
+    pub fn with_start(start: u64) -> Self {
+        Self { next: start }
+    }
+
+    pub fn allocate(&mut self) -> ActorId {
+        let id = ActorId(self.next);
+        self.next = self.next.saturating_add(1);
+        id
+    }
+
+    pub fn peek_next(&self) -> u64 {
+        self.next
+    }
+}
 
 /// Effect identity payload: `u64` big-endian (R-CANON-05), tag `0x41`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Ord, PartialOrd)]

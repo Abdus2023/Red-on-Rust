@@ -241,6 +241,9 @@ pub fn step_with_effects(
         Expr::Receive => {
             state.outcome = RefOutcome::Fault(Fault::UnsupportedInM2 { form: "Receive" });
         }
+        Expr::Delegate { .. } => {
+            state.outcome = RefOutcome::Fault(Fault::UnsupportedInM2 { form: "Delegate" });
+        }
         Expr::Yield => {
             state.outcome = RefOutcome::Fault(Fault::UnsupportedInM2 { form: "Yield" });
         }

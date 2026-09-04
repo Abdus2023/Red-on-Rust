@@ -204,9 +204,12 @@ pub fn step_with_effects(
             target,
             params,
         } => enter_request(state, *capability, *operation, *target, params),
+        // Spawn/Send/Receive/Delegate require GlobalState — owned by actor module.
+        // Bare single-threaded CEK still faults them (no ambient actor context).
         Expr::Spawn { .. } => StepResult::Fault(Fault::UnsupportedInM2 { form: "Spawn" }),
         Expr::Send { .. } => StepResult::Fault(Fault::UnsupportedInM2 { form: "Send" }),
         Expr::Receive => StepResult::Fault(Fault::UnsupportedInM2 { form: "Receive" }),
+        Expr::Delegate { .. } => StepResult::Fault(Fault::UnsupportedInM2 { form: "Delegate" }),
         Expr::Yield => StepResult::Fault(Fault::UnsupportedInM2 { form: "Yield" }),
         Expr::Halt => StepResult::Fault(Fault::UnsupportedInM2 { form: "Halt" }),
     }
