@@ -1323,4 +1323,289 @@ mod tests {
             Err(Fault::MarshalCapabilityRejected)
         );
     }
+
+    // --- Addendum matrix coverage (M6-C) ------------------------------------
+
+    /// T01/T02/T03 property: uniqueness + monotonic + no reuse across many allocs.
+    #[test]
+    fn property_actor_id_unique_monotonic_no_reuse() {
+        let mut a = ActorIdAlloc::new();
+        let mut seen = BTreeSet::new();
+        let mut prev = None;
+        for _ in 0..256 {
+            let id = a.allocate();
+            assert!(seen.insert(id), "reuse {id:?}");
+            if let Some(p) = prev {
+                assert!(id.0 > p, "non-monotonic {p} -> {}", id.0);
+            }
+            prev = Some(id.0);
+        }
+        // No recycling API: peek continues past last.
+        assert_eq!(a.peek_next(), 256);
+    }
+
+    /// T04: actor creation isolates env and starts Runnable on queue.
+    #[test]
+    fn actor_creation_isolated_runnable() {
+        let mut g = GlobalState::new();
+        let a = g.spawn_root(unit(), 3);
+        let st = g.actors.get(&a).unwrap();
+        assert_eq!(st.status, ActorStatus::Runnable);
+        assert!(st.env.is_empty());
+        assert!(st.caps.slots().is_empty());
+        assert!(st.mailbox.is_empty());
+        assert!(g.runnable.contains(a));
+        assert_eq!(st.parent, None);
+    }
+
+    /// T09: multiple senders preserve per-mailbox FIFO (not global total order).
+    #[test]
+    fn multiple_senders_mailbox_fifo() {
+        let mut g = GlobalState::new();
+        let r = g.spawn_root(receive(), 10);
+        let s1 = {
+            let id = g.ids.allocate();
+            g.actors.insert(
+                id,
+                ActorState::new(id, unit(), CapabilityContext::empty(), 1, 64, None),
+            );
+            g.actors.get_mut(&id).unwrap().status = ActorStatus::Terminal;
+            id
+        };
+        let s2 = {
+            let id = g.ids.allocate();
+            g.actors.insert(
+                id,
+                ActorState::new(id, unit(), CapabilityContext::empty(), 1, 64, None),
+            );
+            g.actors.get_mut(&id).unwrap().status = ActorStatus::Terminal;
+            id
+        };
+        send_async(&mut g, s1, r, Value::Integer(1)).unwrap();
+        send_async(&mut g, s2, r, Value::Integer(2)).unwrap();
+        send_async(&mut g, s1, r, Value::Integer(3)).unwrap();
+        assert_eq!(
+            g.actors.get(&r).unwrap().mailbox.as_slice_order(),
+            vec![Value::Integer(1), Value::Integer(2), Value::Integer(3)]
+        );
+    }
+
+    /// T18: one transition per scheduler turn (selection event count == turns).
+    #[test]
+    fn one_transition_per_turn() {
+        let mut g = GlobalState::new();
+        let mut k = CapabilityKernel::new();
+        g.spawn_root(unit(), 1);
+        g.spawn_root(unit(), 1);
+        let before = g
+            .events
+            .iter()
+            .filter(|e| matches!(e, MachineEvent::ActorSelected { .. }))
+            .count();
+        let _ = scheduler_turn(&mut g, &mut k).unwrap();
+        let mid = g
+            .events
+            .iter()
+            .filter(|e| matches!(e, MachineEvent::ActorSelected { .. }))
+            .count();
+        assert_eq!(mid, before + 1);
+        let _ = scheduler_turn(&mut g, &mut k).unwrap();
+        let after = g
+            .events
+            .iter()
+            .filter(|e| matches!(e, MachineEvent::ActorSelected { .. }))
+            .count();
+        assert_eq!(after, mid + 1);
+    }
+
+    /// T23/T24: GlobalStep Deadlock without Pending is pure Deadlock.
+    #[test]
+    fn deadlock_without_pending() {
+        let mut g = GlobalState::new();
+        let mut k = CapabilityKernel::new();
+        assert_eq!(
+            scheduler_turn(&mut g, &mut k).unwrap(),
+            GlobalStep::Deadlock
+        );
+        // With only terminal actors:
+        let a = g.spawn_root(unit(), 1);
+        g.terminate(a).unwrap();
+        assert_eq!(
+            scheduler_turn(&mut g, &mut k).unwrap(),
+            GlobalStep::Deadlock
+        );
+        assert!(!g.events.iter().any(|e| matches!(
+            e,
+            MachineEvent::QuiescenceReconcile { .. } | MachineEvent::EffectIndeterminate { .. }
+        )));
+    }
+
+    /// T25–T31: Deadlock∧Pending → Quiescence; Indeterminate; δ_t=0; no budget mut; Pending survives.
+    #[test]
+    fn quiescence_indeterminate_no_time_or_budget_mut() {
+        let mut g = GlobalState::new();
+        let mut k = CapabilityKernel::new();
+        let a = g.spawn_root(unit(), 99);
+        g.set_pending(a).unwrap();
+        let t_before = g.logical_time;
+        let b_before = g.actors.get(&a).unwrap().budget_units;
+        let step = scheduler_turn(&mut g, &mut k).unwrap();
+        match step {
+            GlobalStep::QuiescenceReconciled { pending } => assert_eq!(pending, vec![a]),
+            other => panic!("{other:?}"),
+        }
+        assert_eq!(g.logical_time, t_before); // δ_t = 0
+        assert_eq!(g.actors.get(&a).unwrap().budget_units, b_before); // ΔD/budget = 0
+        assert_eq!(g.actors.get(&a).unwrap().status, ActorStatus::Pending); // survives
+        assert!(g.events.iter().any(|e| matches!(
+            e,
+            MachineEvent::EffectIndeterminate { actor } if *actor == a
+        )));
+        // Deadlock alone does not mutate actor status (already Pending).
+        assert!(!matches!(
+            g.actors.get(&a).unwrap().status,
+            ActorStatus::Terminal | ActorStatus::Runnable | ActorStatus::Blocked
+        ));
+    }
+
+    /// T20 mutation: select pending killed (defensive skip → Quiescence/Deadlock path).
+    #[test]
+    fn mutation_intent_no_schedule_pending() {
+        let mut g = GlobalState::new();
+        let mut k = CapabilityKernel::new();
+        let a = g.spawn_root(unit(), 1);
+        g.set_pending(a).unwrap();
+        // Illegal enqueue of pending.
+        g.runnable.enqueue_back(a);
+        let step = scheduler_turn(&mut g, &mut k).unwrap();
+        // Stale head dropped; empty → QuiescenceReconciled (still has Pending).
+        assert!(matches!(step, GlobalStep::QuiescenceReconciled { .. }));
+        assert_eq!(g.actors.get(&a).unwrap().status, ActorStatus::Pending);
+    }
+
+    /// T21 mutation: select terminal killed.
+    #[test]
+    fn mutation_intent_no_schedule_terminal() {
+        let mut g = GlobalState::new();
+        let mut k = CapabilityKernel::new();
+        let a = g.spawn_root(unit(), 1);
+        g.terminate(a).unwrap();
+        g.runnable.enqueue_back(a);
+        assert_eq!(
+            scheduler_turn(&mut g, &mut k).unwrap(),
+            GlobalStep::Deadlock
+        );
+    }
+
+    /// MUT-09: ActorId reuse not available — allocator never returns prior id.
+    #[test]
+    fn mutation_intent_actor_id_reuse_impossible() {
+        let mut a = ActorIdAlloc::new();
+        let first = a.allocate();
+        let _ = a.allocate();
+        // No free/recycle API on ActorIdAlloc.
+        assert_ne!(a.allocate(), first);
+        assert!(a.peek_next() > first.0);
+    }
+
+    /// MUT-12/15: Deadlock observation does not cancel Pending → NotExecuted.
+    #[test]
+    fn mutation_intent_pending_not_cancelled_on_deadlock() {
+        let mut g = GlobalState::new();
+        let mut k = CapabilityKernel::new();
+        let a = g.spawn_root(unit(), 5);
+        g.set_pending(a).unwrap();
+        let _ = scheduler_turn(&mut g, &mut k).unwrap();
+        // Still Pending (not Terminal, not dropped).
+        assert_eq!(g.actors.get(&a).unwrap().status, ActorStatus::Pending);
+        assert!(g.actors.contains_key(&a));
+    }
+
+    /// MUT-13: logical time not advanced by QuiescenceReconcile.
+    #[test]
+    fn mutation_intent_no_time_advance_on_quiescence() {
+        let mut g = GlobalState::new();
+        let mut k = CapabilityKernel::new();
+        g.logical_time = LogicalTime::new(7);
+        let a = g.spawn_root(unit(), 1);
+        g.set_pending(a).unwrap();
+        let _ = scheduler_turn(&mut g, &mut k).unwrap();
+        assert_eq!(g.logical_time, LogicalTime::new(7));
+    }
+
+    /// T15: nested capability in tuple rejected.
+    #[test]
+    fn nested_capability_in_tuple_rejected() {
+        let nested = Value::Tuple(vec![
+            Value::Integer(1),
+            Value::List(vec![Value::Capability(CapRef::from_kernel_parts(0, 0))]),
+        ]);
+        assert_eq!(
+            marshal_message(&nested),
+            Err(Fault::MarshalCapabilityRejected)
+        );
+    }
+
+    /// T10: async send does not block sender; receiver may still be blocked until wake.
+    #[test]
+    fn async_send_nonblocking_sender() {
+        let mut g = GlobalState::new();
+        let mut k = CapabilityKernel::new();
+        let r = g.spawn_root(receive(), 10);
+        let _ = scheduler_turn(&mut g, &mut k).unwrap(); // r blocked
+        let s = g.spawn_root(unit(), 10);
+        // Send succeeds while r is blocked; s remains runnable until its turn.
+        send_async(&mut g, s, r, Value::Integer(9)).unwrap();
+        assert_eq!(g.actors.get(&s).unwrap().status, ActorStatus::Runnable);
+        assert_eq!(g.actors.get(&r).unwrap().status, ActorStatus::Runnable); // woken
+    }
+
+    /// Spawn δ_t = 0 (R-BUDGET-16).
+    #[test]
+    fn spawn_does_not_advance_logical_time() {
+        let mut g = GlobalState::new();
+        let mut k = CapabilityKernel::new();
+        g.logical_time = LogicalTime::new(3);
+        let p = g.spawn_root(unit(), 50);
+        spawn_child(&mut g, &mut k, p, unit(), SpawnBudgetSpec::new(5, 8), &[]).unwrap();
+        assert_eq!(g.logical_time, LogicalTime::new(3));
+    }
+
+    /// State machine: only Runnable is schedulable (RQ-01…04).
+    #[test]
+    fn state_machine_schedulability() {
+        assert!(ActorStatus::Runnable.is_schedulable());
+        assert!(!ActorStatus::Blocked.is_schedulable());
+        assert!(!ActorStatus::Pending.is_schedulable());
+        assert!(!ActorStatus::Terminal.is_schedulable());
+    }
+
+    /// Isolation: two actors do not share env/mailbox (R-ACTOR-01).
+    #[test]
+    fn actor_isolation_disjoint_mailbox_env() {
+        let mut g = GlobalState::new();
+        let a = g.spawn_root(unit(), 1);
+        let b = g.spawn_root(unit(), 1);
+        let sa = g.actors.get_mut(&a).unwrap();
+        sa.env = Environment::empty().extend(ror_core::Symbol(1), Value::Integer(1));
+        sa.mailbox.try_enqueue(Value::Integer(7)).unwrap();
+        let sb = g.actors.get(&b).unwrap();
+        assert!(sb.env.is_empty());
+        assert!(sb.mailbox.is_empty());
+        assert_ne!(
+            g.actors.get(&a).unwrap().mailbox.as_slice_order(),
+            sb.mailbox.as_slice_order()
+        );
+    }
+
+    /// Clear pending resumes to runnable (canonical completion path).
+    #[test]
+    fn pending_clear_resumes_runnable() {
+        let mut g = GlobalState::new();
+        let a = g.spawn_root(unit(), 1);
+        g.set_pending(a).unwrap();
+        g.clear_pending_to_runnable(a).unwrap();
+        assert_eq!(g.actors.get(&a).unwrap().status, ActorStatus::Runnable);
+        assert!(g.runnable.contains(a));
+    }
 }
