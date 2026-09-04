@@ -7,12 +7,14 @@
 //! - **M4:** Attenuate / capability algebra (independent reference store)
 //! - **M5:** Request / effects / durable-before-host
 //! - **M6:** Actors / mailbox FIFO / scheduler / quiescence
+//! - **M7:** WAL / snapshot / recovery classification (R-RECOV-04)
 
 pub mod m2;
 pub mod m3;
 pub mod m4;
 pub mod m5;
 pub mod m6;
+pub mod m7;
 
 pub use m2::{compare_m2, observe_production, observe_reference, Observation, M2_DIFF_MAX_STEPS};
 pub use m4::{compare_m4, observe_production_m4, observe_reference_m4};
@@ -20,4 +22,8 @@ pub use m5::{compare_m5, observe_production_m5, observe_reference_m5};
 pub use m6::{
     compare_m6, observe_production_m6, observe_reference_m6, ActorObservation, StatusLabel,
     TerminalLabel,
+};
+pub use m7::{
+    compare_m7, fixture_completed, fixture_issued_indeterminate, fixture_prepared_discard,
+    fixture_snapshot_t6, observe_production_m7, observe_reference_m7, RecoveryObservation,
 };

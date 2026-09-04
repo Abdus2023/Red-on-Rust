@@ -2,15 +2,17 @@
 
 //! Independent reference model (MOD-14).
 //!
-//! M2+M3 pure CEK + M4 capability algebra + M5 effect/request mirror + M6 actors.
+//! Covers M2–M6 observation mirrors plus M7 independent recovery (R-RECOV-04).
+//!
 //! Transition code is authored here independently — it does **not** call
-//! `ror-runtime` or `ror-kernel` (R-REF-02 / R-SCOPE-04).
+//! `ror-runtime`, `ror-kernel`, or `ror-persistence` (R-REF-02 / R-SCOPE-04).
 //! Shared fixtures/types come from `ror-core` only.
 
 pub mod actor_model;
 pub mod cap_algebra;
 pub mod effect_model;
 pub mod pure_cek;
+pub mod recovery_model;
 
 pub use actor_model::{
     ref_admit_delegation, ref_contains_capability, ref_issue_delegation, ref_marshal,
@@ -26,4 +28,8 @@ pub use effect_model::{
 pub use pure_cek::{
     evaluate, evaluate_request_ref, evaluate_with_store, step, step_with_effects,
     RefEffectServices, RefKont, RefOutcome, RefState, REF_MAX_STEPS_DEFAULT,
+};
+pub use recovery_model::{
+    ref_digest_of, ref_effect_id, ref_recover, RefEffectClass, RefRecoveryFault,
+    RefRecoveryObservation,
 };
