@@ -1,4 +1,6 @@
-//! M2 pure-subset differential observations.
+//! M2 pure-subset differential observations (Value/Var/Let/Seq/If).
+//!
+//! M3 cases live in [`crate::m3`].
 
 use ror_core::machine::{Expr, Fault, Value};
 use ror_reference::{evaluate as ref_eval, REF_MAX_STEPS_DEFAULT};
@@ -42,7 +44,6 @@ pub fn compare_m2(expr: Expr) -> Result<(), (Observation, Observation)> {
 mod tests {
     use super::*;
     use ror_core::machine::sugar::{bool_v, if_, int, let_, seq, unit, var};
-    use ror_core::Symbol;
 
     fn assert_agree(expr: Expr) {
         compare_m2(expr).expect("production/reference divergence");
@@ -79,7 +80,7 @@ mod tests {
     fn if_family() {
         assert_agree(if_(bool_v(true), int(1), int(0)));
         assert_agree(if_(bool_v(false), int(1), int(0)));
-        assert_agree(if_(int(1), int(2), int(3))); // type error both sides
+        assert_agree(if_(int(1), int(2), int(3)));
     }
 
     #[test]
@@ -94,18 +95,6 @@ mod tests {
             int(5),
             let_(2, if_(bool_v(true), var(1), int(0)), seq(var(2), var(1))),
         ));
-    }
-
-    #[test]
-    fn m3_forms_both_fault() {
-        assert_agree(Expr::Lambda {
-            params: vec![Symbol(0)],
-            body: Box::new(var(0)),
-        });
-        assert_agree(Expr::Call {
-            func: Box::new(int(1)),
-            args: vec![int(2)],
-        });
     }
 
     #[test]
@@ -126,18 +115,12 @@ mod tests {
 
     #[test]
     fn let_value_in_outer_env_and_shadow_restore() {
-        // value-side unbound
         assert_agree(let_(1, var(1), int(1)));
-        // shadow does not leak: seq(inner let x=2 in x, x) under outer x=1 → 1
         assert_agree(let_(1, int(1), seq(let_(1, int(2), var(1)), var(1))));
     }
 
     #[test]
     fn harness_calls_distinct_evaluators() {
-        // Sanity: production and reference paths are separately invoked (not a
-        // single shared engine). Agreement on a value does not prove identity
-        // of implementation; disagreement on a crafted mismatch would surface
-        // if one path were stubbed to the other. Here we only lock the API shape.
         let e = int(123);
         let p = observe_production(e.clone());
         let r = observe_reference(e);

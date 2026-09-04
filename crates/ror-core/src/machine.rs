@@ -9,11 +9,10 @@
 //! **U-02 boundary.** No byte codecs, wire tags, or snapshot encodings are
 //! defined here for frames, environments, or machine values.
 //!
-//! **M2 vs M3.** [`Expr`] declares the full frozen surface (R-CALC-02). M2
-//! evaluation implements only `Value` / `Var` / `Let` / `Seq` / `If`.
-//! `Lambda` / `Call` and later constructors are present as AST nodes so the
-//! type matches the frozen surface; their CEK transitions are **M3+** and
-//! must fault as unsupported in pure M2 evaluators.
+//! **M2 vs M3.** [`Expr`] declares the full frozen surface (R-CALC-02).
+//! M2 evaluation: `Value` / `Var` / `Let` / `Seq` / `If`.
+//! M3 evaluation adds: `Lambda` / `Call` (R-CEK-04/05).
+//! Later constructors remain AST-only until later milestones.
 
 use crate::types::{CapRef, Symbol};
 
@@ -180,11 +179,14 @@ impl Environment {
     }
 }
 
-/// Machine-local fault identity for pure CEK (M2 subset).
+/// Machine-local fault identity for pure CEK (M2/M3 subset).
 ///
 /// Full trust-boundary fault taxonomy (R-CORE-13) is broader; this enum is the
 /// **evaluator-local** surface needed by pure transitions. Provisional under
 /// open fault OADs — not a claim that U-08 is closed.
+///
+/// `ArityMismatch` realises R-CEK-05 / REQ-CEK-014 `fault(F_arity)` with a
+/// deterministic label shared by production and reference (preflight disclosure).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Fault {
     UnboundVariable(Symbol),
@@ -192,7 +194,14 @@ pub enum Fault {
         expected: &'static str,
         actual: &'static str,
     },
-    /// Expression or frame outside the M2 pure-subset evaluator.
+    /// Call arity mismatch (R-CEK-05 / REQ-CEK-014). Raised **before** any
+    /// argument evaluation.
+    ArityMismatch {
+        expected: usize,
+        actual: usize,
+    },
+    /// Expression outside the current pure-subset evaluator (M4+ forms, fuel).
+    /// Name retained from M2; does not mean M3 Lambda/Call are unsupported.
     UnsupportedInM2 {
         form: &'static str,
     },
@@ -238,6 +247,20 @@ pub mod sugar {
             condition: Box::new(condition),
             then_branch: Box::new(then_branch),
             else_branch: Box::new(else_branch),
+        }
+    }
+
+    pub fn lambda(params: &[u32], body: Expr) -> Expr {
+        Expr::Lambda {
+            params: params.iter().copied().map(Symbol).collect(),
+            body: Box::new(body),
+        }
+    }
+
+    pub fn call(func: Expr, args: Vec<Expr>) -> Expr {
+        Expr::Call {
+            func: Box::new(func),
+            args,
         }
     }
 }

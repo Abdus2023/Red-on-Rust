@@ -2,11 +2,9 @@
 
 //! Independent reference model (MOD-14).
 //!
-//! M2 pure-subset CEK mirror for differential comparison against production.
-//! Transition code is authored here independently — it does **not** call
-//! `ror-runtime` (R-REF-02). Shared fixtures/types come from `ror-core` only.
-//!
-//! **M3 boundary:** Lambda/Call are not implemented.
+//! M2+M3 pure CEK mirror for differential comparison. Transition code is
+//! authored here independently — it does **not** call `ror-runtime` (R-REF-02).
+//! Shared fixtures/types come from `ror-core` only.
 
 pub mod pure_cek;
 
