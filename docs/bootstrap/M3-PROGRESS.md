@@ -245,3 +245,93 @@ NEXT = M3 IMPLEMENTATION REVIEW
 ```
 
 Not M4. Do not promote R-REG. Do not resolve U-02/U-09.
+
+---
+
+## 30. Control addendum — arity-order gate & source-of-truth (post-implementation audit)
+
+This section records the **M3 IMPLEMENTATION CONTROL ADDENDUM** lookup against canonical authority.
+It does **not** change CEK semantics. Implementation commit `087c289` was verified to already
+implement the canonically established ordering.
+
+### 30.1 M3 ARITY-ORDER GATE
+
+```text
+M3 ARITY-ORDER GATE
+```
+
+| Field | Record |
+|---|---|
+| **Canonical ordering** | After operator evaluates to `FunctionValue`, arity is checked **BEFORE any argument expression is evaluated**. On mismatch: `fault(F_arity)` / `Fault::ArityMismatch`; **0** argument evaluations. |
+| **Outcome** | **ARITY ORDER = CANONICALLY ESTABLISHED** (Outcome 1) |
+| **Evidence** | See SOURCE-OF-TRUTH RECORD below |
+| **Requirement IDs** | R-CEK-05; R-ORDER-02 (M3 acceptance includes arity precheck) |
+| **Atomic obligation IDs** | **REQ-CEK-014** (primary); REQ-CEK-013 (LTR sequence constrained by 014); tag `CEK-CALL-ARITY-PRECHECK` |
+| **OAD interaction** | **NOT APPLICABLE** — no open OAD decides arity-vs-args order |
+| **Implementation consequence** | In `resume_call_function` / reference `WaitingOp` delivery: compare `args.len()` to `params.len()` **before** pushing `CallArgument` / `WaitingArg` or stepping any arg expr |
+| **Differentiating test** | `call(lambda(&[], int(1)), vec![var(99)])` → `ArityMismatch{expected:0,actual:1}` **not** `UnboundVariable(99)`. Companion: correct arity + unbound arg → `UnboundVariable`. Production: `arity_mismatch_before_arg_eval` + `arity_ok_then_arg_fault`. Differential: `m3::arity_before_arg_eval`. |
+
+```text
+ARITY-ORDER GATE = PASS
+```
+
+### 30.2 SOURCE-OF-TRUTH RECORD — arity ordering
+
+| Field | Content |
+|---|---|
+| **Question** | When a `Call` has an arity mismatch, are argument expressions evaluated before the arity mismatch is produced, or is arity checked before argument evaluation? |
+| **Canonical requirement(s)** | **R-CEK-05** (`final/01` S-08): steps (1) eval func; (2) args LTR; (3) pre-check arity — mismatch ⇒ `fault(F_arity)` **before frame stack allocation**; (4) bind; (5) body. Reading: arity gate sits after function value is known and **before** argument evaluation / CallArgument frames. |
+| **Atomic obligation(s)** | **REQ-CEK-014**: “Arity mismatch is detected immediately after function evaluation and **BEFORE any argument evaluation**.” Postcondition: “mismatch faults before any argument is evaluated.” Verification: `CEK-CALL-ARITY-PRECHECK`; mutation M002. **REQ-CEK-013**: LTR `function → arg₀ → … → apply` — depends on REQ-CEK-014 (arity does not reorder past the precheck). |
+| **Canonical section** | `final/01` R-CEK-05; `req/01-registry-part2-semantics.md` REQ-CEK-013/014; `final/04` tag `CEK-CALL-ARITY-PRECHECK`: “Arity mismatch after function eval, **before any arg eval**; 0 arg evals, 0 host calls, 0 budget mutations on mismatch”. |
+| **Relevant OAD** | None OPEN that selects arity order. |
+| **Relevant invariant** | Security: evaluating args first could later trigger effects/budget on a call that cannot proceed (REQ-CEK-014 SECURITY-IMPACT). Pure M3 has no effects yet; ordering still frozen. |
+| **Relevant dependency authority** | MOD-05 / `ror-runtime`; no new edges. |
+| **Authoritative interpretation** | **Arity check BEFORE argument evaluation.** Sequence of separable events: (a) operator evaluation → FunctionValue; (b) arity determination; (c) iff match, argument evaluation LTR; (d) parameter binding in closure env; (e) body evaluation; (f) result via value-return. |
+| **Implementation consequence** | Already present in `087c289` production + reference; no edit required. |
+| **Test consequence** | Distinguishing tests already present (see gate table). Reversal (eval unbound arg then arity) would fail those tests. |
+| **Evidence limitation** | Fault label `ArityMismatch` is deterministic shared P/R spelling for `F_arity` (preflight disclosure); not an OAD resolution. Full M002 mutation harness may run in a later gate. |
+
+### 30.3 Event separation (implemented)
+
+| Event | Production locus | Reference locus |
+|---|---|---|
+| Operator evaluation | `enter_call` → eval func under caller env | `Call` → `WaitingOp` |
+| Arity determination | `resume_call_function` before any arg | `WaitingOp` + Function branch before arg kont |
+| Argument evaluation | `CallArgument` frames, LTR | `WaitingArg` |
+| Parameter binding | `apply_function` extends closure env | `install_body` |
+| Body evaluation | `state.expr = body` | `state.expr = body` |
+| Result propagation | `continue_with_value` / residual K | `deliver` / residual kont |
+
+### 30.4 Pre-edit checklist status (audit against addendum)
+
+Completed as **post-facto verification** that `087c289` was authorized by M3-PREFLIGHT and matches canonical arity order. Blocking items:
+
+| Item | Status |
+|---|---|
+| Repository identity / start from `759fb26` preflight | **PASS** (impl parent) |
+| M3-PREFLIGHT / M2-REVIEW / M2-PROGRESS read | **PASS** |
+| R-ORDER-02, R-CEK-04/05, REQ-CEK-008…017 located | **PASS** |
+| Arity-ordering resolved (canonical) | **PASS** |
+| U-02 / U-09 OPEN preserved | **PASS** |
+| Reference independence | **PASS** |
+| No OAD silent resolve / no R-REG promotion / no canonical edit | **PASS** |
+| Security pure / M4 excluded | **PASS** |
+| Distinguishing arity tests | **PASS** |
+| Toolchain 1.88.0 ror-stable | **PASS** |
+
+```text
+PRE-EDIT AUTHORIZATION = GRANTED
+(authorization basis: M3-PREFLIGHT GREEN WITH DISCLOSED LIMITATIONS @ 759fb26;
+ arity-order gate PASS against REQ-CEK-014 / R-CEK-05 / CEK-CALL-ARITY-PRECHECK;
+ implementation 087c289 conforms — no semantic repair required)
+```
+
+### 30.5 Non-negotiable rule compliance
+
+```text
+CANONICAL DECISION EXISTS (arity before args)
+        ↓
+IMPLEMENT IT  — done in 087c289; verified by this audit
+```
+
+No canonical decision was invented. No CEK change in this control-addendum commit.
