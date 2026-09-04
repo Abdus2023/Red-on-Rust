@@ -4,3 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+# Shared domain types only (MOD-01). No production evaluator (R-REF-02).
+# Forbidden deps (runtime/kernel/persistence/host/agent) are intentionally absent.
+ror-core = { path = "../ror-core" }

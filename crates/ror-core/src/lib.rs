@@ -2,16 +2,18 @@
 
 //! Red-on-Rust core crate.
 //!
-//! M1 scope: frozen Phase-15A *data-domain* canonical serialization
-//! (R-CANON-01…13) over the types the wire format names.
+//! - **M1:** Phase-15A *data-domain* canonical serialization (R-CANON-01…13).
+//! - **M2:** machine-domain types for pure CEK ([`machine`]) — R-CALC-01/02/03.
 //!
-//! **Not closed here:** machine-state encodings (U-02), unified machine vs
-//! data `Value` (U-09), `Op`/`Target`/`Params` (U-21), and provisional ABI
-//! questions U-29/U-30/U-37. Public items that touch those OADs are documented
-//! as provisional—do not treat them as milestone-stable API.
+//! **U-09:** [`types::Value`] (data domain) and [`machine::Value`] (machine domain)
+//! are deliberately distinct. There is no collapsing conversion.
+//!
+//! **Not closed:** machine-state encodings (U-02), unified Value (U-09),
+//! `Op`/`Target`/`Params` (U-21), provisional ABI U-29/U-30/U-37.
 
 pub mod canonical;
 pub mod digest;
+pub mod machine;
 pub mod types;
 
 pub use canonical::{
@@ -21,4 +23,6 @@ pub use canonical::{
     CANONICAL_VERSION, TAG_ACTOR_ID, TAG_CAP_REF, TAG_EFFECT_ID, TAG_SYMBOL, TAG_VALUE,
 };
 pub use digest::{sha256, Digest, EffectDigest, StateDigest};
+pub use machine::{Environment, Expr, Fault, FunctionValue};
+/// Data-domain `Value` (Phase 15A). For machine values use [`machine::Value`].
 pub use types::{ActorId, CapRef, EffectId, Symbol, Value};
