@@ -1,613 +1,735 @@
 # M5 Implementation Review
 
-**Operation type:** M5 IMPLEMENTATION REVIEW (evidence reconciliation + security-boundary audit).  
-**Primary classification:** **ACCEPTED WITH DISCLOSED EVIDENCE LIMITATIONS**  
-**Next authorized operation:** **M6 PREFLIGHT** (do **not** implement M6 in this operation).
+**Operation:** Consolidated M5 IMPLEMENTATION REVIEW (gate matrix + evidence records).  
+**Subject implementation:** `f178562` — `feat: implement M5 request effects and host boundary`  
+**Preflight:** `b64fb9a` — GREEN WITH DISCLOSED LIMITATIONS  
+**Branch:** `arena/01a06993-red-on-rust`  
+**Classification:** **M5 IMPLEMENTATION = ACCEPTED WITH DISCLOSED EVIDENCE LIMITATIONS**  
+**Next:** **M6 PREFLIGHT**
 
-Evidence labels: **FACT** | **DERIVED** | **DISCLOSED LIMITATION** | **TEST** | **PASS** | **PASS WITH LIMITATION**
+Evidence labels follow PART II: `PASS` | `PASS-DISCLOSED` | `FAIL-*` | `BLOCK-*`.
 
 ---
 
-## 1. Review identity
+## 1. Review Identity
 
 | Item | Value | Class |
 |---|---|---|
 | Branch | `arena/01a06993-red-on-rust` | FACT |
-| HEAD at review start | `f1785629d745da176b30de8e5dc5c7c9562701e1` | FACT |
-| Subject | `feat: implement M5 request effects and host boundary` | FACT |
-| Working tree | clean (pre-review-report) | FACT |
-| Toolchain | `ror-stable` rustc **1.88.0** | FACT |
-| Reviewer posture | Review only — no M5 reimplementation; no M6/M7; no OAD/R-REG mutation | FACT |
-
-Identity gate **PASS**.
-
----
-
-## 2. Reviewed commit
-
-| Item | Value | Class |
-|---|---|---|
-| M5 implementation | **`f178562`** | FACT |
-| M5 preflight | **`b64fb9a`** (`docs/bootstrap/M5-PREFLIGHT.md`) | FACT |
-| M4 review | **`96ce46e`** | FACT |
+| Implementation under review | **`f178562`** (`f1785629d745da176b30de8e5dc5c7c9562701e1`) | FACT |
+| Preflight ancestor | `b64fb9a` | FACT |
+| M4 review ancestor | `96ce46e` | FACT |
 | Transition | `b64fb9a` → `f178562` (15 files, +3170/−32) | FACT |
-| Progress artifact | `docs/bootstrap/M5-PROGRESS.md` @ `f178562` | FACT |
+| Working tree at gate run | clean (pre this report rewrite) | FACT |
+| Toolchain | `ror-stable` rustc **1.88.0** | FACT |
+| Review posture | Review only — no M5 reimplementation; no M6/M7; no OAD/R-REG mutation | FACT |
 
-No other tip was reviewed as M5. **PASS**.
+**Note (G-01):** The *implementation identity* required by the mission is **`f178562`**. Repository tip may include subsequent **review-only** commits that only add/update `docs/bootstrap/M5-REVIEW.md`. Those do not change the reviewed binary semantics.
 
 ---
 
-## 3. Authority sources
+## 2. Canonical Authorities
 
-| Source | Role |
+| Source | Use |
 |---|---|
-| `final/01` | Normative homes: **R-CORE-14**, R-CORE-06, R-EFFECT-*, R-DUR-*, R-HOST-*, R-CALC-04/05, R-CEK-03, R-CANON-09, R-TRUST-05, R-ORDER-02 |
-| `final/03` | Requirement registry rows (SPECIFIED) |
-| `final/04` | Verification tags: `EFFECT-ISSUE-DURABLE-BEFORE-HOST`, `REQUEST-ARGS-LTR`, `REQUEST-NON-CAP-SHORT-CIRCUIT`; M5 milestone row |
-| `final/05` | **GI-SEC-07** `HostInvoked(E) ⇒ DurableIssued(E)` (definitional home R-DUR-01) |
+| `final/01` | R-CORE-14, R-CORE-06, R-EFFECT-*, R-DUR-*, R-HOST-*, R-CALC-04/05, R-CEK-03, R-CANON-09, R-TRUST-05, R-ORDER-02 |
+| `final/03` | Registry rows (SPECIFIED) |
+| `final/04` | `EFFECT-ISSUE-DURABLE-BEFORE-HOST`, `REQUEST-ARGS-LTR`, `REQUEST-NON-CAP-SHORT-CIRCUIT`; M5 milestone |
+| `final/05` | **GI-SEC-07** (home R-DUR-01) |
 | `final/08` | Evidence ceiling 184 × SPECIFIED |
-| `final/09` | OADs: U-39…U-44 RESOLVED; U-02/U-08/U-09/U-21/U-31 OPEN |
-| `dep/10-graph.json` | Dependency integrity / findings |
-| `mod/18-ownership-matrix.md` | MOD-08 EFFECT, MOD-09 HOST, MOD-11 PERSISTENCE ownership + crate edges |
-| `reg/requirements.json` / `status-transitions.json` / `R-REG-VERDICT.md` | R-REG ladder |
-| `docs/bootstrap/M5-PREFLIGHT.md` / `M5-PROGRESS.md` / `M4-REVIEW.md` | Prior boundary + disclosures |
+| `final/09` | OADs U-39…U-44 RESOLVED; U-02/U-08/U-09/U-21/U-31 OPEN |
+| `dep/10-graph.json` | Dependency integrity |
+| `mod/18-ownership-matrix.md` | MOD-08/09/11 ownership; crate edges |
+| `reg/requirements.json`, `status-transitions.json`, `R-REG-VERDICT.md` | R-REG ladder |
+| `docs/bootstrap/M5-PREFLIGHT.md`, `M5-PROGRESS.md`, `M4-REVIEW.md` | Boundary + prior disclosures |
 
-**Source-of-truth procedure:** requirement → verification tag → invariant → OAD → ownership → dep graph → implementation. Code/tests are **not** authority.
-
-**Governing protocol (FACT — R-CORE-14 SUPERSEDES historical R-EFFECT-01 host-before-Issued listing):**
+**Governing rule (R-CORE-14 SUPERSEDES historical R-EFFECT-01 host-before-Issued prose):**
 
 ```text
-(1) eval capability → (2) eval target → (3) args LTR → (4) Effect+Digest
-→ (5) Valid → (6) Authorize → (7) ceiling → (8) budget → (9) reservation
-→ (10) deadline t+δ_t(req)≤W → (11) host policy → (12) EffectId
-→ (13) commit issue/reserve → (14) durable issuance → (15) Pending
-→ (16) host
-HostInvoked(E) ⇒ DurableIssued(E)   # no ordering exception
+HostInvoked(E) ⇒ DurableIssued(E)     # no ordering exception
+16-step: cap → target → args LTR → Effect+Digest → Valid → Authorize
+       → ceiling → budget → reserve → deadline → host policy
+       → EffectId → escrow → durable issuance → Pending → host
 ```
 
----
-
-## 4. M5 scope
-
-| Surface | Review status | Verdict |
-|---|---|---|
-| `Expr::Request` | REQUIRED | **PASS** (R-CALC-02 frozen AST) |
-| Request CEK frames | REQUIRED | **PASS WITH LIMITATION** (extra `RequestOperation`; see §9) |
-| Argument ordering LTR | REQUIRED | **PASS** |
-| Non-cap short-circuit | REQUIRED | **PASS** |
-| Capability authorization | REQUIRED | **PASS** (M4 algebra consumed) |
-| Effect / EffectCost / Digest / Id | REQUIRED | **PASS WITH LIMITATION** (U-21 provisional bytes) |
-| Effect gates 5–16 | REQUIRED | **PASS WITH LIMITATION** (thin ceiling/Pending/completion) |
-| Prepared / Issued / issuance API | REQUIRED | **PASS WITH LIMITATION** (MemoryJournal test double) |
-| HostExecutor / HostPolicy / adapters | REQUIRED | **PASS** |
-| Receipts / completion | REQUIRED | **PASS WITH LIMITATION** (thin completion journal) |
-| Failure semantics | REQUIRED | **PASS WITH LIMITATION** (U-08 provisional labels) |
-| Reference + differential + mutation | REQUIRED | **PASS** |
-| M1–M4 regression | REQUIRED | **PASS** |
-| Actors / scheduler / full WAL / snapshots / T0–T6 recovery | FORBIDDEN | **ABSENT** (comments only) |
-| OAD close / R-REG promotion / PROVEN | FORBIDDEN | **ABSENT** |
-
-Canonical M5 name (R-ORDER-02): **Effects** — 16-step request, issuance, receipts, host mock. **PASS**.
+Code/tests are **not** authority.
 
 ---
 
-## 5. Baseline gates
+## 3. M5 Scope
 
-Reproduced this review @ `f178562` / `ror-stable` 1.88.0:
-
-| Command | Result | Class |
-|---|---|---|
-| `cargo fmt --check` | **PASS** (exit 0) | FACT |
-| `cargo check --workspace` | **PASS** | FACT |
-| `cargo test --workspace` | **PASS** — **160** passed, **0** failed | FACT |
-| `cargo clippy --workspace --all-targets --all-features -- -D warnings` | **PASS** | FACT |
-| `#![forbid(unsafe_code)]` all crates; no `unsafe` bodies | **PASS** | FACT |
-| No crates.io deps (path-only workspace) | **PASS** | FACT |
-| Reference independence (`use ror_{runtime,kernel,host,persistence}` absent in `ror-reference`) | **PASS** | FACT |
-| R-REG | **184 × SPECIFIED**; `status-transitions.transitions` length **0** | FACT |
-
-Progress claim of 160 tests / green gates **confirmed**. **PASS**.
-
-Package spot-checks: `ror-differential` 57 (incl. m2–m5); `ror-runtime` 51; `ror-core` 30; `ror-kernel` 8; `ror-reference` 9; `ror-host` 3; `ror-persistence` 2 — all green.
-
----
-
-## 6. Diff classification (`b64fb9a..f178562`)
-
-| Path | Class |
+| In scope (authorized) | Out of scope (forbidden) |
 |---|---|
-| `crates/ror-core/src/effect.rs` (new) | **M5-required** domain types |
-| `crates/ror-core/src/{lib,machine}.rs` | **M5-required** exports / Fault / sugar::request |
-| `crates/ror-runtime/src/{cek,effects,lib}.rs` | **M5-required** Request CEK + gate pipeline |
-| `crates/ror-persistence/src/lib.rs` | **M5-required** issuance journal API |
-| `crates/ror-host/src/lib.rs` | **M5-required** host adapters |
-| `crates/ror-reference/src/{effect_model,pure_cek,lib}.rs` | **M5-required** independent model |
-| `crates/ror-differential/src/m5.rs` + lib/Cargo | **test-only** / harness |
-| `docs/bootstrap/M5-PROGRESS.md` | **documentation** |
+| `Expr::Request`, Request CEK, LTR, non-cap SC | Actors, scheduler, mailboxes |
+| Effect / cost / digest / id | Full WAL framing |
+| Gates 5–16 thin path | Snapshots, T0–T6 recovery engine |
+| Prepared/Issued issuance API | M6/M7 semantics as “done” |
+| HostExecutor mock/replay/panic | OAD close, R-REG promotion, PROVEN |
+| Receipts thin; reference + differential | |
 
-No unexplained M6 actor scheduler, no WAL recovery engine, no snapshot protocol implementation. T0–T6 appears only as “not M7” documentation. **PASS**.
+Diff `b64fb9a..f178562`: only M5-required / supporting / test / docs. No out-of-scope production recovery or actor runtime. **G-03 PASS.**
 
 ---
 
-## 7. Core effect types
+## 4. Gate Summary
 
-| Type | Ownership | Fields / invariants | Verdict |
-|---|---|---|---|
-| `Effect` | MOD-01 shells / MOD-08 use | `CapRef, Op, Target, Params, EffectCost` (R-CALC-04) | **PASS** (U-21 provisional Op/Target/Params) |
-| `EffectCost` | R-CALC-05 | `issue, complete_max, reserve` | **PASS** |
-| `EffectDigest` | R-CANON-09 | `SHA-256(canonical_bytes(effect))` via in-tree `digest.rs` | **PASS WITH LIMITATION** — bytes are fixed BE layout, not full 15A `CanonicalEncode(Effect)` envelope (**DISCLOSE** U-21 / L-M5-ENC) |
-| `EffectId` / `EffectIdAlloc` | R-EFFECT-03 | monotonic `u64`; no wall-clock/RNG | **PASS** |
-| `EffectRequest` | host-facing | id, actor, digest, effect_bytes, cost, effect — **no Authority** | **PASS** |
-| `IssuanceRecord::{Prepared,Issued,Completed}` | R-DUR-06 | carries effect_bytes + cost triple | **PASS** |
-| `EffectReceipt` / `ReceiptValue` | R-EFFECT-06/08 | id+digest; data-only variants | **PASS WITH LIMITATION** — admission by construction of enum; no recursive `contains_capability` over nested machine Values beyond ReceiptValue surface |
-
-Constructor visibility: domain constructors public for tests/fixtures; authority mint remains kernel-side. CapRef forgery still possible at type level (`from_kernel_parts` public — **M4 carry**) but Valid+possession gates bind. **PASS WITH LIMITATION**.
-
-No second semantic serializer (JSON/Debug-as-identity) found on the effect path. **PASS**.
-
----
-
-## 8. Request CEK
-
-| Check | Evidence | Verdict |
+| Gate | Status | Evidence (one-line) |
 |---|---|---|
-| Frozen AST `Request { capability, operation, target, params }` | `machine.rs` | **PASS** |
-| Enter: evaluate capability first | `enter_request` → `RequestCapability` frame | **PASS** |
-| Non-cap → `TypeError` before target/params | `resume_request_capability` | **PASS** |
-| Params one-per-step LTR | `RequestArgument` remaining queue | **PASS** |
-| Without `EffectServices` → Unsupported | `finish_request` | **PASS** (pure evaluate path) |
-| M3 Call arity-before-args unchanged | Call path intact; m3 differential green | **PASS** |
+| G-01 Repository Identity | **PASS** | Impl `f178562`; branch; clean tree; toolchain 1.88.0 |
+| G-02 Canonical Authority Alignment | **PASS-DISCLOSED** | R-CORE-14 order; R-EFFECT-01 historical superseded; provisional U-21 bytes |
+| G-03 M5 Scope | **PASS** | Diff classification; no M6/M7 engine |
+| G-04 Request CEK | **PASS-DISCLOSED** | Cap-first, LTR, non-cap SC; extra `RequestOperation` frame (D-M5-03) |
+| G-05 Effect Representation | **PASS-DISCLOSED** | R-CALC-04/05 shapes; BE `canonical_bytes` + in-tree SHA-256 |
+| G-06 Effect Gate Ordering | **PASS-DISCLOSED** | §6 table; thin ceiling/Pending/completion |
+| G-07 Capability Authorization | **PASS-DISCLOSED** | M4 algebra; CapRef public ctor carry |
+| G-08 Durable Issuance | **PASS-DISCLOSED** | Prepared→Issued+sync; MemoryJournal substrate |
+| G-09 Host Causal Security Hinge | **PASS** | Call graph + fail paths + mutation KILLED |
+| G-10 Host Authority Boundary | **PASS** | No mint/broaden; Host≠Issuer |
+| G-11 Receipts / Completion | **PASS-DISCLOSED** | id+digest validate; thin completion/tests |
+| G-12 Reference Independence | **PASS** | No forbidden imports; independent pipeline |
+| G-13 Differential / Mutation | **PASS-DISCLOSED** | m5 suite; hinge mutation KILLED; no global kill rate |
+| G-14 Determinism | **PASS** | LogicalTime; no wall-clock/rng on path |
+| G-15 Dependency Authority | **PASS-DISCLOSED** | runtime→persistence; HostExecutor trait packaging |
+| G-16 Regression M1–M4 | **PASS** | Workspace 160; package suites green |
+| G-17 OAD Integrity | **PASS** | OPEN OADs unchanged; no silent close |
+| G-18 R-REG Ceiling | **PASS** | 184 × SPECIFIED; transitions empty |
+| G-19 Repository Gates | **PASS** | fmt/check/test/clippy reproduced |
+| G-20 Evidence Integrity | **PASS-DISCLOSED** | Records below; residual thin test holes disclosed |
 
-Frames are in-memory only (U-02 OPEN). **PASS**.
-
----
-
-## 9. Request ordering
-
-### 9.1 Capability-first / non-cap short-circuit
-
-| Case | Expected (REQUEST-NON-CAP-SHORT-CIRCUIT) | Observed | Verdict |
-|---|---|---|---|
-| Non-cap capability position | Fault before target/params; no EffectId/budget/log/host | `non_cap_short_circuit_agrees` (P+R); journal empty; host calls empty | **PASS** |
-| Cap OK + unbound first param | Fault on param LTR; no host/journal | `args_ltr_fault_stops_before_later_params` | **PASS** |
-
-### 9.2 Operation expression vs R-CORE-14 step list
-
-- **R-CORE-14** lists steps (1) capability (2) target (3) arguments — does not name “evaluate operation”.
-- **R-CALC-02** freezes `operation: Box<Expr>`.
-- **R-CEK-03** frames: `RequestCapability { operation, target, params, env }`, `RequestTarget { capability, operation, params, … }` (operation already a **value** at RequestTarget), `RequestArgument { … }`.
-- **M5-PREFLIGHT D-M5-03:** DERIVED authorization to evaluate operation Expr → Op (U-21).
-
-**Implementation:** capability → **operation** → target → params LTR (`RequestOperation` frame is an extra name relative to the three frozen R-CEK-03 Request* frames).
-
-**Verdict:** **PASS WITH LIMITATION** — not a STOP conflict given preflight D-M5-03 and R-CEK-03 implying operation-as-value before target; disclosed as frame-set extension under U-02/U-21. Does not reorder host-before-Issued or non-cap SC.
-
-### 9.3 Args LTR
-
-Distinguished by first-param unbound vs later-param unevaluated (`args_ltr_fault_stops_before_later_params`). **PASS**.
+**No BLOCK-\* gates.**
 
 ---
 
-## 10. Capability authorization
+## 5. Evidence Records
 
+### Evidence Record: G-01
+
+**Gate:** G-01 — Repository Identity  
+**Status:** PASS  
+
+**Canonical authority:** Process / mission identity gate  
+**Canonical rule:** Review only commit `f178562` on fixed branch; clean tree.  
+**Implementation location:** git `f178562`; branch `arena/01a06993-red-on-rust`  
+**Implementation behavior:** M5 impl tip; review docs may succeed it.  
+**Test / evidence location:** `git rev-parse` / `git log` / `git show --stat f178562` (this review)  
+**Observed result:** Implementation = `f178562`; branch match; tree clean before report edit; rustc 1.88.0  
+**Security relevance:** NONE  
+**Evidence class:** OTHER  
+**Evidence limitation:** NONE (impl identity); tip may advance for review-only docs  
+**OAD impact:** NONE  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Identity of the reviewed implementation is correct.
+
+---
+
+### Evidence Record: G-02
+
+**Gate:** G-02 — Canonical Authority Alignment  
+**Status:** PASS-DISCLOSED  
+
+**Canonical authority:** `final/01` R-CORE-14, R-EFFECT-*, R-DUR-*, R-HOST-*; `final/05` GI-SEC-07  
+**Canonical rule:** Master-prompt 16-step order; HostInvoked⇒DurableIssued; R-EFFECT-01 historical host-before-Issued SUPERSEDED.  
+**Implementation location:** `ror-runtime` cek+effects; persistence; host  
+**Implementation behavior:** Implements R-CORE-14 order (with disclosed thin/provisional surfaces).  
+**Test / evidence location:** §6 table; effects unit tests; m5 differential  
+**Observed result:** Alignment with R-CORE-14; no silent elevation of impl to authority  
+**Security relevance:** HIGH  
+**Evidence class:** IMPLEMENTATION | TEST  
+**Evidence limitation:** U-21 effect byte layout; thin Pending/completion; D-M5-03 operation eval  
+**OAD impact:** U-21 OPEN (representation)  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Canonical alignment holds under disclosed provisional representations.
+
+---
+
+### Evidence Record: G-03
+
+**Gate:** G-03 — M5 Scope  
+**Status:** PASS  
+
+**Canonical authority:** R-ORDER-02 M5 row; M5-PREFLIGHT MAY/MUST NOT  
+**Canonical rule:** Effects only — not actors/WAL recovery.  
+**Implementation location:** diff `b64fb9a..f178562` 15 paths  
+**Implementation behavior:** Request/effect/issuance/host/reference/diff only  
+**Test / evidence location:** `git diff --stat`; code search WalFrame/Snapshot/scheduler absent as engines  
+**Observed result:** No M6/M7 production semantics  
+**Security relevance:** MEDIUM  
+**Evidence class:** IMPLEMENTATION  
+**Evidence limitation:** NONE  
+**OAD impact:** NONE  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Scope boundary respected.
+
+---
+
+### Evidence Record: G-04
+
+**Gate:** G-04 — Request CEK  
+**Status:** PASS-DISCLOSED  
+
+**Canonical authority:** R-CALC-02; R-CEK-03; R-CORE-14 §§1–3; REQUEST-ARGS-LTR; REQUEST-NON-CAP-SHORT-CIRCUIT; R-CEK-05 (M3)  
+**Canonical rule:** Cap first; non-cap SC before target/params; args LTR one/step; M3 arity-before-args preserved.  
+**Implementation location:** `crates/ror-runtime/src/cek.rs` (`enter_request`, `resume_request_*`, `finish_request`)  
+**Implementation behavior:** Cap → TypeError if non-cap → operation expr → target → params LTR → pipeline  
+**Test / evidence location:** `m5::non_cap_short_circuit_agrees`; `m5::args_ltr_fault_stops_before_later_params`; m3 differential suite  
+**Observed result:** SC and LTR hold; Call arity order unchanged  
+**Security relevance:** HIGH  
+**Evidence class:** IMPLEMENTATION | TEST | DIFFERENTIAL  
+**Evidence limitation:** Extra `RequestOperation` frame vs three frozen R-CEK-03 Request* names (preflight D-M5-03 / U-02)  
+**OAD impact:** U-02 OPEN  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Request CEK semantics correct; frame-name extension disclosed.
+
+---
+
+### Evidence Record: G-05
+
+**Gate:** G-05 — Effect Representation  
+**Status:** PASS-DISCLOSED  
+
+**Canonical authority:** R-CALC-04/05; R-CANON-09; R-EFFECT-03; R-DUR-06  
+**Canonical rule:** Effect immutable; EffectCost triple; Digest=SHA-256(canonical_bytes); monotonic EffectId; issuance carries effect_bytes+cost.  
+**Implementation location:** `crates/ror-core/src/effect.rs`; `digest.rs` SHA-256  
+**Implementation behavior:** Domain types; BE field layout for `canonical_bytes`; `EffectIdAlloc` monotonic; no JSON/Debug identity  
+**Test / evidence location:** `effect::tests::digest_deterministic`; `effect_id_monotonic`; m5 digest equality  
+**Observed result:** Single SHA-256 path; no alternate semantic codec  
+**Security relevance:** HIGH  
+**Evidence class:** IMPLEMENTATION | TEST  
+**Evidence limitation:** Fixed BE layout ≠ full 15A `CanonicalEncode(Effect)` envelope (U-21)  
+**OAD impact:** U-21 OPEN  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Representation adequate for M5 with provisional encoding disclosed.
+
+---
+
+### Evidence Record: G-06
+
+**Gate:** G-06 — Effect Gate Ordering  
+**Status:** PASS-DISCLOSED  
+
+**Canonical authority:** R-CORE-14; R-EFFECT-04/05; final/04 M5  
+**Canonical rule:** 16-step sequence; no host-before-Issued reorder.  
+**Implementation location:** CEK steps 1–4; `run_effect_pipeline` gates 5–16  
+**Implementation behavior:** See §6 table  
+**Test / evidence location:** effects unit matrix; m5 differential  
+**Observed result:** Order matches R-CORE-14; host only at 16 after 14  
+**Security relevance:** CRITICAL  
+**Evidence class:** IMPLEMENTATION | TEST  
+**Evidence limitation:** Thin ceiling dual-gate; thin Pending; thin completion  
+**OAD impact:** NONE (ordering); U-08 labels  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Gate order correct; depth limitations disclosed.
+
+---
+
+### Evidence Record: G-07
+
+**Gate:** G-07 — Capability Authorization  
+**Status:** PASS-DISCLOSED  
+
+**Canonical authority:** R-CAP-06/07; R-CORE-11; R-KERN-04; M4 review disclosures  
+**Canonical rule:** CapRef≠Authority; bits≠authority; Valid+possession+Authorized; no Request mint.  
+**Implementation location:** `CapabilityKernel::valid_result` / `authorize_algebra`; M4 arena  
+**Implementation behavior:** Gates 5–6 consume M4; host has no grant/derive  
+**Test / evidence location:** `unauthorized_no_host_agrees`; m4 `capref_bits_are_not_authority`; kernel tests  
+**Observed result:** No authority bypass; forgery fails Valid  
+**Security relevance:** CRITICAL  
+**Evidence class:** IMPLEMENTATION | TEST | DIFFERENTIAL  
+**Evidence limitation:** `CapRef::from_kernel_parts` still public (M4 carry)  
+**OAD impact:** U-31 OPEN (fields)  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Authorization path sound; CapRef visibility disclosure retained.
+
+---
+
+### Evidence Record: G-08
+
+**Gate:** G-08 — Durable Issuance  
+**Status:** PASS-DISCLOSED  
+
+**Canonical authority:** R-DUR-01/02/03/06/07  
+**Canonical rule:** Prepared then Issued with sync barriers; Issued⇒Prepared; payload effect_bytes+cost.  
+**Implementation location:** `ror-persistence` `IssuanceJournal`/`MemoryJournal`; `run_effect_pipeline`  
+**Implementation behavior:** append Prepared→sync→append Issued→sync; causal check  
+**Test / evidence location:** persistence tests; `happy_path_issued_before_host`; `persist_fail_no_host`  
+**Observed result:** Causal order holds; payload fields present  
+**Security relevance:** CRITICAL  
+**Evidence class:** IMPLEMENTATION | TEST  
+**Evidence limitation:** MemoryJournal = in-process durable vector after sync (not disk fsync); R-DUR-07 id/budget mutate-then-rollback vs strict journal-first  
+**OAD impact:** NONE  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Issuance protocol correct under authorized thin journal substrate.
+
+---
+
+### Evidence Record: G-09
+
+**Gate:** G-09 — Host Causal Security Hinge  
+**Status:** PASS  
+
+**Canonical authority:** R-DUR-01; R-CORE-06; GI-SEC-07; R-TRUST-05; tag EFFECT-ISSUE-DURABLE-BEFORE-HOST  
+**Canonical rule:** `HostInvoked(E) ⇒ DurableIssued(E)`; no execute before durable Issued.  
+**Implementation location:** `crates/ror-runtime/src/effects.rs` `run_effect_pipeline` (sole production `host.execute`)  
+**Implementation behavior:** execute only after Issued+sync Ok; denies/persist fail return earlier  
+**Test / evidence location:**  
+- Positive: `effects::happy_path_issued_before_host`; `m5::happy_path_agrees` + `is_durably_issued`  
+- Persist fail: `effects::persist_fail_no_host` + PanicHost  
+- Deny matrix: unauthorized/budget/deadline/host_policy + PanicHost  
+- Mutation: `m5::mutation_intent_host_before_issued_killed` (`should_panic` GI-SEC-07)  
+- Negative helper: `illegal_host_before_issued` (test-only)  
+**Observed result:** No production path HostInvoked without prior durable Issued barrier  
+**Security relevance:** CRITICAL  
+**Evidence class:** IMPLEMENTATION | TEST | MUTATION | DIFFERENTIAL  
+**Evidence limitation:** NONE for the hinge predicate on the production pipeline (journal substrate disclosed under G-08)  
+**OAD impact:** NONE  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Hinge holds; see §7 for full causal proof.
+
+---
+
+### Evidence Record: G-10
+
+**Gate:** G-10 — Host Authority Boundary  
+**Status:** PASS  
+
+**Canonical authority:** R-HOST-01/02/03; R-KERN-06 (host issued-only)  
+**Canonical rule:** HostExecutor/HostPolicy ≠ AuthorityIssuer; only issued effects.  
+**Implementation location:** `ror-host` Mock/Deny/Replay/Panic; gate 11 `host_policy_ok`  
+**Implementation behavior:** Adapters execute/deny/replay only; no kernel mint APIs  
+**Test / evidence location:** host unit tests; `host_policy_deny_no_host`; `host_deny_after_issued`  
+**Observed result:** No authority mint/broaden/inspect via host  
+**Security relevance:** CRITICAL  
+**Evidence class:** IMPLEMENTATION | TEST  
+**Evidence limitation:** NONE  
+**OAD impact:** NONE  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Host authority boundary intact.
+
+---
+
+### Evidence Record: G-11
+
+**Gate:** G-11 — Receipts / Completion  
+**Status:** PASS-DISCLOSED  
+
+**Canonical authority:** R-EFFECT-06/07/08  
+**Canonical rule:** Validate id+digest; admit data-only results; distinct faults; completion accounting.  
+**Implementation location:** `validate_and_complete`; `ReceiptValue` enum  
+**Implementation behavior:** Mismatch → ReplayCorruption; PolicyDenied/HostFault mapping; data-only by construction  
+**Test / evidence location:** code path; `host_deny_after_issued`; happy path Unit receipt  
+**Observed result:** Identity validation present; distinct deny classes preserved  
+**Security relevance:** HIGH  
+**Evidence class:** IMPLEMENTATION | TEST  
+**Evidence limitation:** Thin EffectCompleted journal; few dedicated wrong-id/duplicate receipt unit cases; nested contains_capability depth thin  
+**OAD impact:** U-08 OPEN  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Receipt identity gate present; completion depth disclosed thin.
+
+---
+
+### Evidence Record: G-12
+
+**Gate:** G-12 — Reference Independence  
+**Status:** PASS  
+
+**Canonical authority:** R-REF-02; R-SCOPE-04  
+**Canonical rule:** Reference must not import production runtime/kernel/host/persistence transition code.  
+**Implementation location:** `ror-reference` Cargo.toml + `effect_model` + `pure_cek`  
+**Implementation behavior:** Independent Request konts + `ref_run_pipeline`; core types only  
+**Test / evidence location:** `rg 'use ror_(runtime|kernel|host|persistence)' crates/ror-reference` → empty; ref unit tests  
+**Observed result:** Independence holds  
+**Security relevance:** MEDIUM  
+**Evidence class:** IMPLEMENTATION | TEST  
+**Evidence limitation:** Shared `admissible_constraint_wrt_parent` (M4 carry) — not shared effect CEK  
+**OAD impact:** NONE  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Reference independence preserved.
+
+---
+
+### Evidence Record: G-13
+
+**Gate:** G-13 — Differential / Property / Mutation Evidence  
+**Status:** PASS-DISCLOSED  
+
+**Canonical authority:** final/04 M5; EFFECT-ISSUE-DURABLE-BEFORE-HOST  
+**Canonical rule:** P↔R observations; adversarial hinge coverage; no inflated kill-rate claims.  
+**Implementation location:** `crates/ror-differential/src/m5.rs`  
+**Implementation behavior:** compare accept/deny/LTR/id/digest/host counts; mutation panics  
+**Test / evidence location:** 12 m5 tests incl. `mutation_intent_host_before_issued_killed` (KILLED)  
+**Observed result:** Differential green; hinge mutation killed  
+**Security relevance:** HIGH  
+**Evidence class:** DIFFERENTIAL | MUTATION  
+**Evidence limitation:** No global mutation score; thin ceiling/receipt negative matrix  
+**OAD impact:** NONE  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Required M5 evidence present without overclaim.
+
+---
+
+### Evidence Record: G-14
+
+**Gate:** G-14 — Determinism  
+**Status:** PASS  
+
+**Canonical authority:** R-EFFECT-03; R-BUDGET-16; R-CORE-08 direction; R-CAP-09  
+**Canonical rule:** Monotonic EffectId; logical time; stable digests; no wall-clock/rng semantics.  
+**Implementation location:** EffectIdAlloc; LogicalTime deadline; digest SHA-256  
+**Implementation behavior:** Counters and pure hashes only  
+**Test / evidence location:** `rg SystemTime|Instant::now|thread_rng|rand` crates → none; monotonic id tests  
+**Observed result:** Deterministic identity and gates  
+**Security relevance:** MEDIUM  
+**Evidence class:** IMPLEMENTATION | TEST  
+**Evidence limitation:** NONE  
+**OAD impact:** NONE  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Determinism requirements met.
+
+---
+
+### Evidence Record: G-15
+
+**Gate:** G-15 — Dependency Authority  
+**Status:** PASS-DISCLOSED  
+
+**Canonical authority:** mod/18; R-TRUST-05; R-REPO-02  
+**Canonical rule:** runtime→persistence hinge; host→runtime adapter; reference forbidden prod edges.  
+**Implementation location:** Cargo.toml edges; `HostExecutor` trait in runtime, impls in host  
+**Implementation behavior:** Matches ownership directions; cycle avoided without reverse forbidden edge  
+**Test / evidence location:** Cargo manifests; mod/18 edges listed in §9  
+**Observed result:** No FORBIDDEN required edge  
+**Security relevance:** HIGH  
+**Evidence class:** IMPLEMENTATION  
+**Evidence limitation:** Trait packaging in runtime (L-M5-04) — ownership of *adapters* still host  
+**OAD impact:** NONE  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Dependencies reconcile with canonical ownership under packaging disclosure.
+
+---
+
+### Evidence Record: G-16
+
+**Gate:** G-16 — Regression  
+**Status:** PASS  
+
+**Canonical authority:** R-ORDER-02 prior milestones; M4-REVIEW carry  
+**Canonical rule:** M1–M4 remain green.  
+**Implementation location:** workspace tests  
+**Implementation behavior:** Unchanged M1–M4 semantics under M5 additions  
+**Test / evidence location:** `cargo test --workspace` → **160 passed / 0 failed**; differential m2/m3/m4 green; kernel 8; core 30; runtime 51  
+**Observed result:** All green  
+**Security relevance:** MEDIUM  
+**Evidence class:** TEST | DIFFERENTIAL  
+**Evidence limitation:** NONE  
+**OAD impact:** NONE  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** No M1–M4 regression.
+
+---
+
+### Evidence Record: G-17
+
+**Gate:** G-17 — OAD Integrity  
+**Status:** PASS  
+
+**Canonical authority:** `final/09`  
+**Canonical rule:** No silent close of U-02/U-08/U-09/U-21/U-31/AMB-12.  
+**Implementation location:** progress/review disclosures; provisional labels  
+**Implementation behavior:** Workarounds classified; OADs remain OPEN  
+**Test / evidence location:** `final/09` status rows; this report §11  
+**Observed result:** No silent resolution  
+**Security relevance:** LOW  
+**Evidence class:** OTHER  
+**Evidence limitation:** NONE  
+**OAD impact:** OPEN items listed §11  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** OAD governance intact.
+
+---
+
+### Evidence Record: G-18
+
+**Gate:** G-18 — R-REG Evidence Ceiling  
+**Status:** PASS  
+
+**Canonical authority:** `reg/requirements.json`; final/08; R-REG-VERDICT  
+**Canonical rule:** 184 × SPECIFIED; no promotion from tests alone.  
+**Implementation location:** registry files (unmodified by M5)  
+**Implementation behavior:** No status transitions in M5 commits  
+**Test / evidence location:** Python count Counter SPECIFIED=184; transitions list length 0  
+**Observed result:** Ceiling held  
+**Security relevance:** NONE  
+**Evidence class:** OTHER  
+**Evidence limitation:** NONE  
+**OAD impact:** NONE  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Evidence ceiling not inflated.
+
+---
+
+### Evidence Record: G-19
+
+**Gate:** G-19 — Repository Gates  
+**Status:** PASS  
+
+**Canonical authority:** R-REPO-03 / process gates  
+**Canonical rule:** fmt, check, test, clippy -D warnings; unsafe forbid; dep/ref gates.  
+**Implementation location:** workspace  
+**Implementation behavior:** Clean under ror-stable 1.88.0  
+**Test / evidence location:**  
 ```text
-CapRef
-  → kernel.valid_result (gate 5)
-  → possession (CapabilityContext.contains)
-  → authorize_algebra → authorized(Authority, EffectDesc, t)  # R-CAP-06
-```
-
-- Consumes **M4** kernel algebra; no second authority model.
-- `CapRef ≠ AuthorityNode`; bits ≠ authority (m4 `capref_bits_are_not_authority` still green).
-- `CapRef::from_kernel_parts` remains **public** — **carry M4 disclosure**; not silently tightened or claimed closed.
-- Host/persistence do not mint CapRefs.
-
-**PASS** (with CapRef visibility disclosure).
+cargo fmt --check                          → PASS
+cargo check --workspace                   → PASS
+cargo test --workspace                    → 160 passed, 0 failed
+cargo clippy --workspace --all-targets --all-features -- -D warnings → PASS
+#![forbid(unsafe_code)] all crates        → PASS
+no crates.io deps                         → PASS
+reference independence                    → PASS
+```  
+**Observed result:** All green (reproduced this consolidation)  
+**Security relevance:** LOW  
+**Evidence class:** TEST  
+**Evidence limitation:** NONE  
+**OAD impact:** NONE  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Repository gates satisfied.
 
 ---
 
-## 11. Effect gate ordering (canonical vs implementation)
+### Evidence Record: G-20
 
-| Step | Canonical (R-CORE-14) | Implementation | Test evidence | Verdict |
+**Gate:** G-20 — Evidence Integrity  
+**Status:** PASS-DISCLOSED  
+
+**Canonical authority:** Review process PART IV  
+**Canonical rule:** Material claims need authority + location + evidence + class; no unsupported PASS.  
+**Implementation location:** This document §§4–7  
+**Implementation behavior:** G-01…G-20 recorded; hinge expanded in §7  
+**Test / evidence location:** Records above  
+**Observed result:** Every gate has evidence location; residual thin tests disclosed not hidden  
+**Security relevance:** MEDIUM  
+**Evidence class:** OTHER  
+**Evidence limitation:** Some negative receipt/ceiling cases thin (called out, not claimed PASS without note)  
+**OAD impact:** NONE  
+**R-REG impact:** NONE — status remains SPECIFIED  
+**Reviewer conclusion:** Evidence integrity adequate for ACCEPTED WITH DISCLOSED LIMITATIONS.
+
+---
+
+## 6. Canonical 16-Step Comparison
+
+| Step | Canonical (R-CORE-14) | Implementation | Evidence | Verdict |
 |---|---|---|---|---|
-| 1 | Evaluate capability | CEK `RequestCapability` | non-cap SC | **PASS** |
-| 2 | Evaluate target | After operation value; `RequestTarget` | CEK | **PASS WITH LIMITATION** (§9.2) |
-| 3 | Args LTR | `RequestArgument` | m5 LTR fault | **PASS** |
-| 4 | Construct Effect + Digest | `effect_from_values` + `canonical_bytes` + SHA-256 | digest tests | **PASS WITH LIMITATION** (BE layout) |
-| 5 | Valid CapRef | `valid_result` | unauthorized/revoked paths | **PASS** |
-| 6 | Authorize exact effect + possession | `authorize_algebra(Some(possession),…)` | unauthorized_no_host | **PASS** |
-| 7 | Capability ceiling | Folded into authorize `cost_units ≤ R` (R-CAP-06) | algebra ceiling tests M4; **no dedicated M5 outside-ceiling Request case** | **PASS WITH LIMITATION** |
-| 8 | Runtime budget issue+complete_max | `issue_plus_complete_max` vs `ThinBudget.available` | budget_deny_no_host | **PASS** (thin) |
-| 9 | Runtime reservation | reserve slots check | code path | **PASS** (thin; limited dedicated cases) |
-| 10 | Deadline `t+δ_t(req)≤W` | `DELTA_T_REQUEST=1`; LogicalTime only | `deny_deadline_never_hosts` | **PASS** |
-| 11 | Host policy | `host_policy_ok` fail-early | host_policy_deny_no_host | **PASS** |
-| 12 | Allocate EffectId | `EffectIdAlloc::allocate` after gates 5–11 | monotonic tests; deny paths do not allocate | **PASS** |
-| 13 | Commit issue/reserve escrow | debit available + reserved | rollback on persist fail | **PASS WITH LIMITATION** (see §17 R-DUR-07 order) |
-| 14 | Durable Prepared→Issued + 2 syncs | append+sync ×2 via `IssuanceJournal` | happy_path; persist_fail | **PASS** (MemoryJournal durability model) |
-| 15 | Actor Pending | **thin / absent multi-actor state** | harness only | **PASS WITH LIMITATION** (M6) |
-| 16 | Host invocation | `HostExecutor::execute` **only after** step 14 | hinge tests §18 | **PASS** |
-
-No unexplained reorder of host before Issued. Historical R-EFFECT-01 host-before-Issued form correctly **not** implemented (R-CORE-14 wins). **PASS WITH LIMITATION** overall.
+| 1 | Evaluate capability | `enter_request` → cap expr | non-cap SC tests | **PASS** |
+| 2 | Evaluate target | After operation value | CEK frames | **PASS-DISCLOSED** (op eval inserted; D-M5-03) |
+| 3 | Args LTR | `RequestArgument` | m5 LTR unbound | **PASS** |
+| 4 | Effect + Digest | `effect_from_values` + SHA-256 | digest tests | **PASS-DISCLOSED** (BE layout) |
+| 5 | Valid CapRef | `valid_result` | deny paths | **PASS** |
+| 6 | Authorize + possession | `authorize_algebra` | unauthorized_no_host | **PASS** |
+| 7 | Ceiling | via `cost_units≤R` in authorize | M4 ceiling + thin M5 case | **PASS-DISCLOSED** |
+| 8 | Budget issue+complete_max | ThinBudget check | budget_deny_no_host | **PASS** |
+| 9 | Reservation | reserve slots | code path | **PASS-DISCLOSED** |
+| 10 | Deadline t+δ_t≤W | LogicalTime + δ_t=1 | deny_deadline_never_hosts | **PASS** |
+| 11 | Host policy | `host_policy_ok` | host_policy_deny_no_host | **PASS** |
+| 12 | EffectId alloc | after gates 5–11 | monotonic; deny no id | **PASS** |
+| 13 | Commit escrow | debit then journal | rollback on fail | **PASS-DISCLOSED** (R-DUR-07 order) |
+| 14 | Durable issuance | Prepared+sync, Issued+sync | happy + persist_fail | **PASS** |
+| 15 | Actor Pending | thin / harness absent multi-actor | preflight D-M5-04 | **PASS-DISCLOSED** |
+| 16 | Host | execute after 14 only | G-09 | **PASS** |
 
 ---
 
-## 12. Effect ceiling
+## 7. Durable Issued → Host Security Analysis
 
-- Canonical: R-CAP-06 / gate 7 — cost within authority resource ceiling.
-- Implementation: `EffectDesc.cost_units = issue+complete_max` checked inside `authorized`.
-- Runtime budget (gate 8) is a **separate** consumable pool (`ThinBudget`).
-- Dedicated Request-level “outside ceiling but within ThinBudget” differential case: **not present** (M4 resource amplify rejected at derive; effect-path ceiling relies on authorize).
-
-**PASS WITH LIMITATION** — dual-gate intent present; dedicated M5 ceiling kill case thin (preflight noted M005 primarily M5; residual evidence gap).
-
----
-
-## 13. Budget / reservation
-
-| Aspect | Status |
-|---|---|
-| `EffectCost` triple | Canonical shape **PASS** |
-| Gate 8 affordability | `issue+complete_max` **PASS** |
-| Gate 9 reservation | slot compare **PASS** (thin) |
-| Escrow debit | saturating sub on thin counters **PASS WITH LIMITATION** |
-| Default cost `EffectCost::new(1,1,0)` when AST has no cost | **DISCLOSED** (L-M5-01 / progress) |
-| Full MOD-04 conservation harness | **DEFERRED** / thin |
-
-No second cost model. **PASS WITH LIMITATION**.
-
----
-
-## 14. Deadline
-
-- Predicate: `t + δ_t(req) ≤ W` with `δ_t=1` (R-BUDGET-16 / R-CORE-14).
-- Type: `LogicalTime` only.
-- Search of M5 path: **no** `SystemTime` / `Instant::now` / `UNIX_EPOCH` / `thread_rng`.
-
-**PASS**.
-
----
-
-## 15. Host policy
-
-| Check | Verdict |
-|---|---|
-| Gate 11 fail-early before EffectId/journal/host | **PASS** (`host_policy_ok == false` → Denied; PanicHost never invoked) |
-| Host ≠ AuthorityIssuer | **PASS** (no kernel grant/derive in host crate) |
-| Host cannot broaden capability | **PASS** (no authority APIs) |
-| DenyHost after Issued still possible (defense in depth) | **PASS** (`host_deny_after_issued` → HostFailed **with** durable Issued) |
-
-**PASS**.
-
----
-
-## 16. EffectId
-
-| Check | Verdict |
-|---|---|
-| Monotonic 0,1,2 successive successes | **PASS** (runtime + m5) |
-| No wall-clock / random IDs | **PASS** |
-| Deny before step 12 does not allocate | **PASS** (R-EFFECT-04; unauthorized/budget/policy tests; `peek_next` rollback on persist fail restores pre-s12) |
-| Untrusted Request cannot supply EffectId | **PASS** (allocator machine-side only) |
-
-**PASS**.
-
----
-
-## 17. Prepared / Issued
-
-### 17.1 Causal order (R-DUR-02/03)
+### Canonical rule
 
 ```text
-append(Prepared) → sync → append(Issued) → sync → host
-Issued ⇒ Prepared   # MemoryJournal causal check
+HostInvoked(E) ⇒ DurableIssued(E)     # GI-SEC-07 / R-DUR-01 / R-CORE-06
 ```
 
-Payloads include `effect_bytes` + `EffectCost` (R-DUR-06). **PASS**.
-
-### 17.2 Durability model
-
-`MemoryJournal`: pending until `sync`; `is_durably_issued` inspects **durable** vector only — not a lone `issued: bool` flag without barrier. Acceptable as **authorized M5 test double** (preflight); not a disk fsync. **PASS WITH LIMITATION**.
-
-### 17.3 R-DUR-07 live failure vs strict journal-driven order
-
-Canonical (R-DUR-07): in-memory s12–s13 mutations **MUST NOT** occur before Prepared append+sync Ok (C-106); on failure → pre-s12 state; host never called.
-
-**Implementation:** allocates id + debits budget **then** append/sync; on error **rolls back** id/budget and returns `PersistenceError`; host not called (`persist_fail_no_host`).
-
-| Property | Status |
-|---|---|
-| Host never on persist fail | **PASS** (GI-SEC-07 intact) |
-| Observable pre-s12 restoration after fail | **PASS** (rollback; id peek 0) |
-| Strict “no in-memory s12–13 before first sync Ok” | **PASS WITH LIMITATION** — temporary in-memory mutation then rollback, not journal-first commit |
-
-Not classified as GI-SEC-07 violation. Disclosed as **L-M5-DUR07-ORDER**. Second-sync failure API exists (`fail_next_sync`); runtime unit coverage emphasizes `fail_next_append` — residual evidence gap.
-
-No M7 recovery engine. **PASS WITH LIMITATION**.
-
----
-
-## 18. HARD GATE — Durable Issued before Host (GI-SEC-07 / R-DUR-01)
-
-### 18.1 Call graph (production)
+### Issuance path (exact)
 
 ```text
 evaluate_request / step_with_effects
   → finish_request
     → EffectServices::run
       → run_effect_pipeline
-          gates 5–11 (deny → return; no host)
-          allocate id; escrow
+          [gates 5–11; may Deny]
+          EffectIdAlloc::allocate
+          budget debit (escrow)
           journal.append(Prepared); journal.sync()
-          journal.append(Issued); journal.sync()
-          ctx.host.execute(&request)     # sole production HostExecutor call
-          validate_and_complete
+          journal.append(Issued);   journal.sync()
 ```
 
-`HostExecutor::execute` production call sites:
+### Host path (exact)
 
-| Site | Role |
+```text
+run_effect_pipeline
+  → ctx.host.execute(&EffectRequest)     # sole production call
+  → validate_and_complete
+```
+
+`illegal_host_before_issued` is **test-only** and not on the CEK path.
+
+### Pre-Issued negative / persist-failure
+
+| Case | HostInvoked | DurableIssued | Test |
+|---|---|---|---|
+| Unauthorized / budget / deadline / policy | false | false | effects + m5 + PanicHost |
+| `fail_next_append` | false | false | `persist_fail_no_host` |
+| Illegal direct execute | panic | n/a | `mutation_intent_host_before_issued_killed` |
+
+### Positive host after Issued
+
+| Case | HostInvoked | DurableIssued | Test |
+|---|---|---|---|
+| Happy path | true | true | `happy_path_*` + `is_durably_issued` |
+| Host deny after Issued | true (entered) | true | `host_deny_after_issued` |
+
+### Alternate host adapters checked
+
+MockHost, DenyHost, ReplayHost, PanicHost — none are reachable from production pipeline before Issued; PanicHost kills early invoke.
+
+### Mutation
+
+| Target | Result |
 |---|---|
-| `effects.rs` `run_effect_pipeline` after Issued sync | **sole production path** |
-| `illegal_host_before_issued` | **test-only** negative helper |
-| `ror-host` adapter impls | implementations, not callers |
-| unit/differential tests | harness |
+| Call host without durable Issued / remove guard equivalent | **KILLED** (`should_panic` GI-SEC-07) |
+| Skip auth then host | **KILLED** (Denied, `!invoked`, empty journal) |
 
-No CEK → host bypass; no host on gate deny; no host on persist fail.
+**No global kill rate claimed.**
 
-### 18.2 Adversarial evidence
+### Conclusion (one sentence)
 
-| Scenario | HostInvoked | DurableIssued | Evidence |
+**No reviewed production execution path produces `HostInvoked(E)` before `DurableIssued(E)`; the hinge is enforced by call order, Cargo ownership, failure short-circuits, and killed mutations.**
+
+---
+
+## 8. Reference Independence
+
+- Cargo: `ror-reference` → `ror-core` only.  
+- No `use ror_{runtime,kernel,host,persistence}`.  
+- Independent `ref_run_pipeline` + Request konts.  
+- Shared core admissibility helper: **M4 disclosure carried**.  
+
+**G-12 PASS.**
+
+---
+
+## 9. Dependency Reconciliation
+
+| Edge | Ownership | Cargo | Class |
 |---|---|---|---|
-| Happy path | true | true | `happy_path_issued_before_host`; m5 `happy_path_agrees`; post-assert `is_durably_issued` |
-| Unauthorized / budget / deadline / host-policy deny | false | false | PanicHost `invoked==false`; empty journal |
-| Persist append fail | false | false | `persist_fail_no_host` + PanicHost |
-| Illegal direct execute without Issued | panics | n/a | `mutation_intent_host_before_issued_killed` (`should_panic` GI-SEC-07) |
-| Host deny **after** Issued | true (execute entered) | true | `host_deny_after_issued` |
+| runtime → core | MOD-05/08 → MOD-01 | yes | REQUIRED |
+| runtime → kernel | gates 5–7 | yes | REQUIRED |
+| runtime → persistence | R-TRUST-05 step 14 | yes | REQUIRED |
+| host → core | MOD-09 → MOD-01 | yes | REQUIRED |
+| host → runtime | MOD-09 → MOD-08 | yes | REQUIRED |
+| persistence → core | MOD-11 → MOD-01 | yes | REQUIRED |
+| reference ↛ prod | R-REF-02 | absent | FORBIDDEN edge absent = good |
+| HostExecutor trait in runtime | packaging | yes | **PASS-DISCLOSED** (adapters remain host) |
 
-Structural Cargo: `ror-runtime → ror-persistence` (R-TRUST-05); `ror-host → ror-runtime` (mod/18 MOD-09→MOD-08). Host does not own the journal.
+**G-15 PASS-DISCLOSED.**
 
-### 18.3 Mutation intent
+---
 
-| Mutation target | Result | Killed by |
+## 10. M1–M4 Regression
+
+| Milestone | Result | Evidence |
 |---|---|---|
-| Remove durable-Issued requirement / call host early | PanicHost / should_panic | `mutation_intent_host_before_issued_killed` |
-| Skip authorization then host | Denied + `!invoked` + empty journal | `mutation_intent_skip_auth_killed` |
+| M1 | **PASS** | core 30 (canonical + SHA-256 KATs) |
+| M2 | **PASS** | differential m2; runtime CEK |
+| M3 | **PASS** | differential m3; arity-before-args |
+| M4 | **PASS** | differential m4 14 tests; kernel 8 |
+| Workspace | **PASS** | **160** total, 0 failed |
 
-**No global mutation kill rate claimed.**
-
-### 18.4 Hinge verdict
-
-**PASS** — no reviewed execution path yields `HostInvoked(E)` without prior durable Issued barrier on the production pipeline. MemoryJournal is a disclosed durability substrate limitation, not a host-before-Issued hole.
-
----
-
-## 19. Host adapters
-
-| Adapter | Before Issued? | Mints authority? | External I/O? | Determinism | Verdict |
-|---|---|---|---|---|---|
-| MockHost | only if caller violates hinge | no | no | yes | **PASS** |
-| DenyHost | same | no | no | yes | **PASS** |
-| ReplayHost | same; ordered queue; rebinds id+digest | no | no (trace only) | yes | **PASS** (R-HOST-03) |
-| PanicHost | any execute panics | no | no | harness | **PASS** |
-
-Replay does not become a live external-effect path. **PASS**.
-
-**HostExecutor trait location:** defined in `ror-runtime`, implemented in `ror-host` to avoid Cargo cycle while preserving `ror-host → ror-runtime` (mod/18). **PASS WITH LIMITATION** (L-M5-04 ownership packaging disclosure — not a forbidden reverse edge).
+**G-16 PASS.**
 
 ---
 
-## 20. Receipts
+## 11. OAD Reconciliation
 
-| Check | Implementation | Tests | Verdict |
-|---|---|---|---|
-| Validate id + digest (R-EFFECT-06) | `validate_and_complete` → `ReplayCorruption` | code path; **no dedicated wrong-id unit test** | **PASS WITH LIMITATION** |
-| Data-only result (R-EFFECT-08) | `ReceiptValue` enum excludes Cap/Fn | by construction | **PASS WITH LIMITATION** |
-| Host fault mapping | PolicyDenied / HostFault codes; no debug strings in values | host_deny_after_issued | **PASS** |
-
-**PASS WITH LIMITATION**.
-
----
-
-## 21. Completion / failure accounting
-
-| Class | Distinct fault/outcome | Host? | Issued? |
-|---|---|---|---|
-| Unauthorized / invalid cap | `Unauthorized` / `CapabilityRevoked` | no | no |
-| Budget / reserve | `BudgetExhausted` | no | no |
-| Deadline | `DeadlineExceeded` | no | no |
-| Host policy (gate 11) | `HostPolicyDenied` | no | no |
-| Persistence | `PersistenceError` | no | no (rollback) |
-| Host fail after Issued | `HostFailed` / `HostPolicyDenied` / `HostFault` | yes | **yes** |
-| Success | `Completed` + Value | yes | yes |
-| Receipt mismatch | `ReplayCorruption` | (host returned) | yes |
-
-Thin completion: no full `EffectCompleted` append+sync charge sequence (R-EFFECT-07 / R-RECOV-09 completion order) — **DISCLOSED** L-M5-03; full depth aligns with later persistence work. Does not retroactively erase Issued. **PASS WITH LIMITATION**.
-
----
-
-## 22. Reference independence
-
-| Rule | Evidence | Verdict |
+| OAD | Disposition | M5 |
 |---|---|---|
-| No prod runtime/kernel/host/persistence imports | mechanical `rg` clean | **PASS** |
-| Independent gate pipeline | `effect_model::ref_run_pipeline` | **PASS** |
-| Independent Request CEK konts | `pure_cek` WaitingReq* | **PASS** |
-| Shared `ror-core` types only | Cargo.toml | **PASS** |
-| Shared `admissible_constraint_wrt_parent` | M4 carry in cap_algebra | **DISCLOSED** (not expanded to shared effect CEK) |
+| U-39…U-44 | RESOLVED (addendum VII) | Used, not reopened |
+| U-02 | OPEN | Frames in-memory; RequestOperation name |
+| U-08 / U-14 | OPEN | Provisional faults |
+| U-09 | OPEN | Value domains split |
+| U-21 | OPEN | Op/Target/Params + BE bytes |
+| U-31 | OPEN | Authority fields |
+| AMB-12 | AMBIGUOUS registry | Attenuate still R-CAP-10; Request uses Authorized |
 
-**PASS**.
-
----
-
-## 23. Differential tests
-
-`ror-differential` m5 covers: accept, non-cap SC, unauthorized, budget deny, host-policy deny, EffectId monotonicity, digest equality, args LTR fault, host-before-Issued mutation, skip-auth mutation, M4 regression hook.
-
-Harness compares black-box `Observation` (halt/fault values), not internal frame pointers.
-
-**PASS** (receipt wrong-id / second-sync-fail / dedicated ceiling-out differential cases remain thin — disclosed).
+**G-17 PASS.**
 
 ---
 
-## 24. Security
-
-| Threat | Control | Verdict |
-|---|---|---|
-| Expr → host bypass | CEK + 16-step only | **PASS** |
-| Host before Issued | structural order + tests | **PASS** |
-| Capability amplification via Request | authorize uses M4 algebra; Request does not mint | **PASS** |
-| CapRef forgery | Valid + possession | **PASS** (bits public — disclosure) |
-| Host mints authority | no kernel APIs in host | **PASS** |
-| Receipt injects authority | ReceiptValue data-only | **PASS WITH LIMITATION** |
-| Effect identity collision | monotonic id + digest pair | **PASS** |
-| Wall-clock EffectId | absent | **PASS** |
-
-Central chain preserved:
+## 12. R-REG Reconciliation
 
 ```text
-Untrusted Request ↛ Authority
-Untrusted Request ↛ Host
-HostInvoked(E) ⇒ DurableIssued(E)
-HostExecutor ≠ AuthorityIssuer
+184 × SPECIFIED
+status-transitions.transitions length = 0
 ```
 
-**PASS**.
+Implementation + tests ≠ VERIFIED/PROVEN. **G-18 PASS.**
 
 ---
 
-## 25. Determinism
+## 13. Disclosed Limitations
 
-EffectId counter, EffectDigest SHA-256 over fixed bytes, LogicalTime deadline, ordered ReplayHost, BTree/Vec structures, no HashMap gate order, reference observations agree on seeded arenas.
-
-**PASS**.
-
----
-
-## 26. Dependency authority
-
-| Edge | Canonical | Cargo | Verdict |
-|---|---|---|---|
-| runtime → core | REQUIRED | yes | **PASS** |
-| runtime → kernel | REQUIRED (gates 5–7) | yes | **PASS** |
-| runtime → persistence | **R-TRUST-05 hinge** | yes | **PASS** |
-| host → core | REQUIRED | yes | **PASS** |
-| host → runtime | MOD-09 → MOD-08 | yes | **PASS** |
-| persistence → core | REQUIRED | yes | **PASS** |
-| reference ↛ {runtime,kernel,host,persistence} | FORBIDDEN | absent | **PASS** |
-| HostExecutor trait in runtime | packaging under host→runtime | yes | **PASS WITH LIMITATION** (§19) |
-
-No forbidden production reverse edge introduced. **PASS**.
-
----
-
-## 27. M4 regression
-
-Differential m4 suite green (derive, no-amp, revoke cascade, validity, attenuation, expiration, capref bits, mutations). Kernel unit tests green. CapRef opacity / machine≠data Value unchanged.
-
-**PASS**.
+| ID | Limitation |
+|---|---|
+| U-02 / RequestOperation | Extra CEK frame name vs three frozen Request* forms |
+| U-08 | Provisional Fault labels |
+| U-09 | Machine ≠ data Value |
+| U-21 / L-M5-ENC | BE effect bytes provisional |
+| U-31 | Authority field provisional |
+| D-M4-CapRef | `from_kernel_parts` public |
+| D-M4-Admiss | Shared admissibility helper |
+| D-M5-04 | Thin Pending (M6) |
+| D-M5-05 | Thin budget |
+| D-M5-06 | Issuance API ≠ M7 recovery |
+| L-M5-01 | Default EffectCost (1,1,0) |
+| L-M5-03 | Thin completion journal |
+| L-M5-04 | HostExecutor trait in runtime |
+| L-M5-DUR07-ORDER | Mutate-then-rollback vs journal-first |
+| L-M5-CEIL-TEST | Thin outside-ceiling Request cases |
+| L-M5-RCPT-TEST | Thin wrong-id receipt cases |
+| L-M5-SYNC2-TEST | Second-sync fail less covered than append fail |
+| Evidence class | Not SEMANTICALLY VERIFIED / PROVEN |
 
 ---
 
-## 28. M1–M3 regression
+## 14. Corrections
 
-- M1: core canonical + SHA-256 KATs still in workspace (30 core tests green).
-- M2/M3: differential m2/m3 green; runtime CEK suite green; arity-before-args preserved.
-
-**PASS**.
-
----
-
-## 29. OAD reconciliation
-
-| OAD | Status | M5 review |
-|---|---|---|
-| U-39…U-44 | RESOLVED (addendum VII) | Used; not re-opened |
-| U-02 | OPEN | Frames in-memory; extra RequestOperation name disclosed |
-| U-08 / U-14 | OPEN | Provisional Fault labels |
-| U-09 | OPEN | Domains split retained |
-| U-21 | OPEN | Op/Target/Params + BE effect bytes provisional |
-| U-31 | OPEN | Authority fields unchanged |
-| AMB-12 / REQ-CAP-024 | registry AMBIGUOUS | R-CAP-10 still governs attenuate; Request uses Authorized |
-
-**No silent OAD resolution.** **PASS**.
+| Kind | Action |
+|---|---|
+| Review report structure | Rewritten to consolidated gate/evidence format (this file) |
+| Semantic code | **None** |
+| `f178562` | **Not amended** |
+| OAD / R-REG / canonical | **Unchanged** |
 
 ---
 
-## 30. R-REG reconciliation
+## 15. Final Classification
 
 ```text
-reg/requirements.json → 184 × SPECIFIED   (computed this review)
-status-transitions.transitions → 0
+M5 IMPLEMENTATION = ACCEPTED WITH DISCLOSED EVIDENCE LIMITATIONS
 ```
 
-No status promotion in this milestone. Implementation + tests **≠** VERIFIED/PROVEN. **PASS**.
-
----
-
-## 31. Disclosed limitations
-
-| ID | Limitation | Class |
-|---|---|---|
-| U-02 | Request frames in-memory; RequestOperation extra vs three frozen Request* names | OPEN |
-| U-08 | Provisional Fault / HostFault labels | OPEN |
-| U-09 | Machine vs data Value | OPEN |
-| U-21 | Op/Target/Params; fixed BE `Effect::canonical_bytes` ≠ full 15A Effect envelope | OPEN |
-| U-31 | Authority field provisional | OPEN |
-| D-M4-CapRef | `CapRef::from_kernel_parts` public | CARRY |
-| D-M4-Admiss | Shared core admissibility helper | CARRY |
-| D-M5-04 | Thin Pending — multi-actor = M6 | DISCLOSED |
-| D-M5-05 | Thin budget algebra | DISCLOSED |
-| D-M5-06 | Issuance API only — not M7 recovery | DISCLOSED |
-| L-M5-01 | Default EffectCost (1,1,0) | DISCLOSED |
-| L-M5-03 | Thin completion journal / R-EFFECT-07 depth | DISCLOSED |
-| L-M5-04 | HostExecutor trait packaged in runtime | DISCLOSED |
-| L-M5-DUR07-ORDER | Id/budget mutate then rollback on persist fail (not strict journal-first) | DISCLOSED |
-| L-M5-CEIL-TEST | Dedicated outside-ceiling Request differential thin | DISCLOSED |
-| L-M5-RCPT-TEST | Wrong id/digest receipt unit tests thin | DISCLOSED |
-| L-M5-SYNC2-TEST | Second-sync failure path less covered than append fail | DISCLOSED |
-| Evidence | Tests ≠ SEMANTICALLY VERIFIED / PROVEN | DISCLOSED |
-
----
-
-## 32. Corrections
-
-Review-only artifact: this file. **No** semantic code changes, **no** OAD/R-REG/canonical edits, **no** amend of `f178562`.
-
-Progress report gate counts were **reproduced** and match (160 tests). No stale-hash correction required.
-
----
-
-## 33. Final classification
-
-```text
-M5 IMPLEMENTATION REVIEW = ACCEPTED WITH DISCLOSED EVIDENCE LIMITATIONS
-```
-
-**Rationale:**
-
-- Canonical M5 scope delivered under R-CORE-14 / R-ORDER-02.
-- **GI-SEC-07 / R-DUR-01 hinge holds** on the production call graph, failure paths, and adversarial/mutation tests — the primary review question answers **no**: there is no reviewed path to `HostInvoked(E)` before `DurableIssued(E)`.
-- Capability authorization reuses M4; reference independence holds; dependencies match ownership; M1–M4 green; R-REG unpromoted; OADs unclosed.
-- Residual gaps are **disclosed evidence/depth limitations** (thin budget/Pending/completion, provisional encodings, R-DUR-07 strict journal-first nuance, some test matrix holes) — not host-before-Issued or authority-bypass blockers.
-
-**Not** unqualified `ACCEPTED` (disclosures material).  
-**Not** `BLOCKED` (no GI-SEC-07 failure, no reference coupling, no M7 scope grab, no silent OAD/R-REG).
-
+**Not** unqualified ACCEPTED (material disclosures).  
+**Not** BLOCKED (no BLOCK-\* gate).  
 **M5 semantic verification / PROVEN: NOT CLAIMED.**
 
----
-
-## 34. Next authorized operation
+Primary question answered:
 
 ```text
-NEXT = M6 PREFLIGHT
+Can any path produce HostInvoked(E) before DurableIssued(E)?
+→ NO on the production Request pipeline (G-09 PASS).
 ```
-
-**Do not implement M6** (actors/scheduler/mailboxes) in the review commit. M6 requires its own preflight against R-ORDER-02 and actor-section authority.
 
 ---
 
-## Final state board
+## 16. Final State
 
 ```text
 M0                         GREEN
@@ -629,23 +751,14 @@ M7                         NOT STARTED
 
 ---
 
-## Hinge proof summary (executive)
+## 17. Next Authorized Operation
 
 ```text
-Question: Can any execution path cause HostInvoked(E) before DurableIssued(E)?
-Answer:   NO — on the production Request pipeline (FACT from call-graph audit).
-
-Evidence:
-  1. Single production execute() after Issued+sync in run_effect_pipeline
-  2. All gate/persist denies return before execute; PanicHost proves non-invocation
-  3. Mutation calling host without Issued panics (GI-SEC-07)
-  4. runtime→persistence Cargo edge carries R-TRUST-05
-  5. MemoryJournal durability is sync-barrier based (disclosed substrate)
-
-Limitations do not punch the hinge: thin Pending, provisional codecs, and
-rollback-style R-DUR-07 ordering affect evidence depth, not host-before-Issued.
+NEXT = M6 PREFLIGHT
 ```
+
+**Do not implement M6** in this operation. Actors/scheduler require a separate preflight.
 
 ---
 
-*End of M5-REVIEW. Next authorized operation: M6 PREFLIGHT only.*
+*End of consolidated M5-REVIEW. Implementation subject remains f178562.*
