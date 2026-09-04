@@ -94,9 +94,7 @@ pub fn observe_reference_m7(wal_bytes: &[u8]) -> Result<RecoveryObservation, Str
 }
 
 /// Compare production vs reference recovery observations.
-pub fn compare_m7(
-    wal_bytes: &[u8],
-) -> Result<(), Box<(RecoveryObservation, RecoveryObservation)>> {
+pub fn compare_m7(wal_bytes: &[u8]) -> Result<(), Box<(RecoveryObservation, RecoveryObservation)>> {
     let p = observe_production_m7(wal_bytes).expect("prod");
     let r = observe_reference_m7(wal_bytes).expect("ref");
     if p == r {
