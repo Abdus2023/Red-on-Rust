@@ -1,49 +1,56 @@
-# M9 Mutation Matrix
+# M9 Mutation Matrix (campaign domain B)
 
-| ID | Classification | Build | Targeted fail | Diff fail | Security | Evidence |
-|---|---|---|---|---|---|---|
-| M001 | KILLED | True | True | True | False | targeted_tests_failed+differential_tests_failed |
-| M002 | KILLED | True | True | True | False | targeted_tests_failed+differential_tests_failed |
-| M003 | KILLED | True | True | True | False | targeted_tests_failed+differential_tests_failed |
-| M004 | KILLED | True | True | True | True | targeted_tests_failed+differential_tests_failed |
-| M005 | KILLED | True | True | False | True | targeted_tests_failed |
-| M006 | KILLED | True | True | True | True | targeted_tests_failed+differential_tests_failed |
-| M007 | KILLED | True | True | False | True | targeted_tests_failed |
-| M008 | KILLED | True | True | False | True | targeted_tests_failed |
-| M009 | KILLED | True | True | False | True | targeted_tests_failed |
-| M010 | KILLED | True | True | False | True | targeted_tests_failed |
-| M011 | KILLED | True | True | False | False | targeted_tests_failed |
-| M012 | KILLED | True | True | True | False | targeted_tests_failed+differential_tests_failed |
-| M013 | KILLED | True | True | True | False | targeted_tests_failed+differential_tests_failed |
-| M014 | KILLED | True | True | False | False | targeted_tests_failed |
-| M015 | KILLED | True | True | False | True | targeted_tests_failed |
-| M016 | KILLED | True | True | False | True | targeted_tests_failed |
-| M017 | KILLED | True | True | False | True | targeted_tests_failed |
-| M018 | KILLED | True | True | False | True | targeted_tests_failed |
-| M019 | KILLED | True | True | False | True | targeted_tests_failed |
-| M020 | KILLED | True | True | False | True | targeted_tests_failed |
-| M021 | KILLED | True | True | False | True | targeted_tests_failed |
-| M022 | KILLED | True | True | False | True | targeted_tests_failed |
-| M023 | KILLED | True | True | False | True | targeted_tests_failed |
-| M024 | KILLED | True | True | False | True | targeted_tests_failed |
-| M025 | KILLED | True | True | False | True | targeted_tests_failed |
-| M026 | KILLED | True | True | False | True | targeted_tests_failed |
-| M027 | KILLED | True | True | False | True | targeted_tests_failed |
-| M028 | KILLED | True | True | True | True | targeted_tests_failed+differential_tests_failed |
-| M029 | KILLED | True | True | False | True | targeted_tests_failed |
-| M030 | KILLED | True | True | False | True | targeted_tests_failed |
-| M031 | KILLED | True | True | False | False | targeted_tests_failed |
-| M032 | KILLED | True | True | False | True | targeted_tests_failed |
-| M033 | KILLED | True | True | False | False | targeted_tests_failed |
-| M034 | KILLED | True | True | False | True | targeted_tests_failed |
-| M035 | KILLED | True | True | False | True | targeted_tests_failed |
-| M036 | KILLED | True | True | False | False | audit/_checker_mutations.py -k M036 exit 0 (mutant killed by gate) |
-| M037 | KILLED | True | True | False | True | targeted_tests_failed |
-| M038 | KILLED | True | True | False | True | targeted_tests_failed |
-| M039 | KILLED | True | True | False | True | targeted_tests_failed |
-| M040 | KILLED | True | True | False | False | targeted_tests_failed |
-| M041 | KILLED | True | True | False | True | targeted_tests_failed |
-| M042 | KILLED | True | True | False | False | targeted_tests_failed |
+Baseline revision: `2e92bf48d624873512831c105601dbbd7e5738f0`  
+Baseline: PASS  
+Harness (domain A): PASS — not counted in kill-rate  
 
-**Kill rate:** 100%  (42/42 non-equivalent)
+| ID | Terminal | Materialize | Verify | Build | Targeted | Diff | Security | Evidence |
+|---|---|---|---|---|---|---|---|---|
+| M001 | KILLED | PASS | PASS | PASS | FAIL | FAIL | False | targeted_detection+differential_detection |
+| M002 | KILLED | PASS | PASS | PASS | FAIL | FAIL | False | targeted_detection+differential_detection |
+| M003 | KILLED | PASS | PASS | PASS | FAIL | FAIL | False | targeted_detection+differential_detection |
+| M004 | KILLED | PASS | PASS | PASS | FAIL | FAIL | True | targeted_detection+differential_detection |
+| M005 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M006 | KILLED | PASS | PASS | PASS | FAIL | FAIL | True | targeted_detection+differential_detection |
+| M007 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M008 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M009 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M010 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M011 | KILLED | PASS | PASS | PASS | FAIL | PASS | False | targeted_detection |
+| M012 | KILLED | PASS | PASS | PASS | FAIL | FAIL | False | targeted_detection+differential_detection |
+| M013 | KILLED | PASS | PASS | PASS | FAIL | FAIL | False | targeted_detection+differential_detection |
+| M014 | KILLED | PASS | PASS | PASS | FAIL | N-A | False | targeted_detection |
+| M015 | KILLED | PASS | PASS | PASS | FAIL | PASS | True | targeted_detection |
+| M016 | KILLED | PASS | PASS | PASS | FAIL | PASS | True | targeted_detection |
+| M017 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M018 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M019 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M020 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M021 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M022 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M023 | KILLED | PASS | PASS | PASS | FAIL | PASS | True | targeted_detection |
+| M024 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M025 | KILLED | PASS | PASS | PASS | FAIL | PASS | True | targeted_detection |
+| M026 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M027 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M028 | KILLED | PASS | PASS | PASS | FAIL | FAIL | True | targeted_detection+differential_detection |
+| M029 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M030 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M031 | KILLED | PASS | PASS | PASS | FAIL | N-A | False | targeted_detection |
+| M032 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M033 | KILLED | PASS | PASS | PASS | FAIL | N-A | False | targeted_detection |
+| M034 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M035 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M036 | KILLED | PASS | PASS | PASS | FAIL | N-A | False | audit/_checker_mutations.py -k M036 exit 0 (mutant killed by gate) |
+| M037 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M038 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M039 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M040 | KILLED | PASS | PASS | PASS | FAIL | N-A | False | targeted_detection |
+| M041 | KILLED | PASS | PASS | PASS | FAIL | N-A | True | targeted_detection |
+| M042 | KILLED | PASS | PASS | PASS | FAIL | N-A | False | targeted_detection |
+
+**Kill rate (domain B only):** 100%  (42/42 non-equivalent)
 **Critical survived:** False
+**Gate OK:** True
+
+Terminal states are mutually exclusive. Build failure ⇒ INCONCLUSIVE (never auto-KILLED). Harness pass ≠ MutationKillRate.

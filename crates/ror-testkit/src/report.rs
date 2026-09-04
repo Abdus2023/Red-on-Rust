@@ -201,4 +201,27 @@ mod tests {
             Classification::Killed.as_str()
         );
     }
+
+    /// Domain-A documentation lock: harness arithmetic must never treat
+    /// INCONCLUSIVE/NOT-RUN as KILLED when computing completeness.
+    #[test]
+    fn build_failure_is_not_killed() {
+        // Simulate a campaign row that only "built badly" — classified INCONCLUSIVE.
+        let rs = vec![r("M001", Classification::Inconclusive, false)];
+        let k = KillRate::from_results(&rs);
+        assert_eq!(k.killed, 0);
+        assert_eq!(k.inconclusive, 1);
+        assert!(!k.is_complete_100());
+        assert_ne!(k.percent(), Some(100));
+    }
+
+    #[test]
+    fn harness_pass_does_not_imply_kill_rate() {
+        // Empty campaign / not-run cannot be reported as 100% merely because
+        // infrastructure tests would pass — denominator with not-run fails gate.
+        let rs = vec![r("M001", Classification::NotRun, false)];
+        let k = KillRate::from_results(&rs);
+        assert_eq!(k.not_run, 1);
+        assert!(!k.is_complete_100());
+    }
 }

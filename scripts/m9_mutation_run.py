@@ -1,16 +1,28 @@
 #!/usr/bin/env python3
-"""M9 mutation runner (R-TEST-06): inject → build → targeted → differential → classify.
+"""M9 mutation runner — deterministic per-mutant workflow (R-TEST-06).
+
+Canonical lifecycle (every registered mutant):
+  LOAD → BASELINE → MATERIALIZE → VERIFY-MUTATION → BUILD
+       → TARGETED → DIFFERENTIAL → CLASSIFY → RECORD → CLEAN → NEXT
 
 Isolated scratch copies only — never mutates the live working tree.
 Derived consumer of mutations/registry.toml (final/04 §2 authority).
 
+Evidence domains (strict separation):
+  A. Harness implementation tests  (ror-testkit) — NOT kill-rate numerator
+  B. Mutant-execution campaign      (this runner) — sole M9 gate input
+
+Terminal states (mutually exclusive):
+  KILLED | SURVIVED | EQUIVALENT | INCONCLUSIVE | NOT-RUN
+
 Exit 0 iff MutationKillRate == 100% over non-equivalent registered mutants
-and no critical survivor.
+and no critical survivor, AND harness domain reported separately green.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -18,20 +30,19 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 REGISTRY = REPO / "mutations" / "registry.toml"
+BASELINE_REV_FILE = REPO / ".git" / "HEAD"
 ENV = os.environ.copy()
-# Preserve offline toolchain.
 _tc = Path.home() / ".ror-toolchain" / "ror-stable" / "bin"
 if _tc.is_dir():
     ENV["PATH"] = f"{_tc}:{ENV.get('PATH', '')}"
 ENV["RUSTUP_TOOLCHAIN"] = ENV.get("RUSTUP_TOOLCHAIN", "ror-stable")
 ENV["CARGO_TERM_COLOR"] = "never"
 
-# Exclude heavy / non-source trees from scratch copies.
 SKIP_NAMES = {
     "target",
     ".git",
@@ -40,6 +51,10 @@ SKIP_NAMES = {
     ".cache",
     "node_modules",
 }
+
+TERMINAL_STATES = frozenset(
+    {"KILLED", "SURVIVED", "EQUIVALENT", "INCONCLUSIVE", "NOT-RUN"}
+)
 
 
 @dataclass
@@ -56,15 +71,73 @@ class MutantMeta:
 
 @dataclass
 class Result:
+    """Per-mutant campaign evidence (domain B)."""
+
     mid: str
-    classification: str
-    build_ok: bool
-    targeted_failed: bool
-    differential_failed: bool
-    kill_evidence: str
+    defect: str
+    component: str
+    obligations: list[str]
     security: bool
-    obligations: list[str] = field(default_factory=list)
-    defect: str = ""
+    differential_required: bool
+    # Workflow stage outcomes
+    load: str = "PASS"  # PASS always if meta present
+    baseline: str = "PASS"  # PASS / FAIL (shared; FAIL → NOT-RUN)
+    materialization: str = "NOT-RUN"  # PASS / FAIL / NOT-RUN
+    mutation_verification: str = "NOT-RUN"  # PASS / FAIL / NOT-RUN
+    build: str = "NOT-RUN"  # PASS / FAIL / NOT-RUN
+    targeted_execution: str = "NOT-RUN"  # PASS / FAIL / NOT-RUN
+    differential_execution: str = "N-A"  # PASS / FAIL / NOT-RUN / N-A
+    # Terminal
+    classification: str = "NOT-RUN"
+    kill_evidence: str = ""
+    mutation_marker: str = ""
+    targeted_filter: str = ""
+    differential_filter: str = ""
+    scratch_destroyed: bool = True
+    notes: str = ""
+
+    # Back-compat fields used by older matrix readers
+    @property
+    def build_ok(self) -> bool:
+        return self.build == "PASS"
+
+    @property
+    def targeted_failed(self) -> bool:
+        return self.targeted_execution == "FAIL"
+
+    @property
+    def differential_failed(self) -> bool:
+        return self.differential_execution == "FAIL"
+
+    def to_json(self) -> dict:
+        d = {
+            "mid": self.mid,
+            "defect": self.defect,
+            "component": self.component,
+            "obligations": self.obligations,
+            "security": self.security,
+            "differential_required": self.differential_required,
+            "load": self.load,
+            "baseline": self.baseline,
+            "materialization": self.materialization,
+            "mutation_verification": self.mutation_verification,
+            "build": self.build,
+            "targeted_execution": self.targeted_execution,
+            "differential_execution": self.differential_execution,
+            "classification": self.classification,
+            "kill_evidence": self.kill_evidence,
+            "mutation_marker": self.mutation_marker,
+            "targeted_filter": self.targeted_filter,
+            "differential_filter": self.differential_filter,
+            "scratch_destroyed": self.scratch_destroyed,
+            "notes": self.notes,
+            # compatibility aliases
+            "build_ok": self.build_ok,
+            "targeted_failed": self.targeted_failed,
+            "differential_failed": self.differential_failed,
+        }
+        assert self.classification in TERMINAL_STATES
+        return d
 
 
 def parse_registry(text: str) -> list[MutantMeta]:
@@ -110,10 +183,10 @@ def parse_registry(text: str) -> list[MutantMeta]:
         elif v.startswith("["):
             inner = v[1:-1].strip()
             items = []
-            for p in inner.split(","):
-                p = p.strip()
-                if p.startswith('"') and p.endswith('"'):
-                    items.append(p[1:-1])
+            for part in inner.split(","):
+                part = part.strip()
+                if part.startswith('"') and part.endswith('"'):
+                    items.append(part[1:-1])
             cur[k] = items
     flush()
     return rows
@@ -123,7 +196,6 @@ def copy_tree(src: Path, dst: Path) -> None:
     def ignore(directory: str, names: list[str]):
         return [n for n in names if n in SKIP_NAMES]
 
-    # dst may already exist (mkdtemp); copy contents into it.
     if dst.exists():
         for item in src.iterdir():
             if item.name in SKIP_NAMES:
@@ -149,12 +221,30 @@ def run(cmd: list[str], cwd: Path, timeout: int = 600) -> subprocess.CompletedPr
     )
 
 
-def cargo_test(cwd: Path, package: str, test_filter: str | None, timeout: int = 300) -> subprocess.CompletedProcess:
-    cmd = ["cargo", "test", "-p", package, "--lib", "--", "--test-threads=1"]
+def cargo_test(
+    cwd: Path, package: str, test_filter: str | None, timeout: int = 300
+) -> subprocess.CompletedProcess:
     if test_filter:
-        cmd.insert(-2, test_filter)  # before --
-        # cargo test -p pkg FILTER --lib -- --test-threads=1
-        cmd = ["cargo", "test", "-p", package, "--lib", test_filter, "--", "--test-threads=1"]
+        cmd = [
+            "cargo",
+            "test",
+            "-p",
+            package,
+            "--lib",
+            test_filter,
+            "--",
+            "--test-threads=1",
+        ]
+    else:
+        cmd = [
+            "cargo",
+            "test",
+            "-p",
+            package,
+            "--lib",
+            "--",
+            "--test-threads=1",
+        ]
     return run(cmd, cwd, timeout=timeout)
 
 
@@ -178,6 +268,56 @@ def replace_all(path: Path, old: str, new: str) -> bool:
     return True
 
 
+def tree_fingerprint(root: Path) -> str:
+    """Deterministic content digest of tracked source under root (for VERIFY)."""
+    h = hashlib.sha256()
+    paths: list[Path] = []
+    for base in (
+        root / "crates",
+        root / "mutations",
+        root / "final",
+        root / "scripts",
+        root / "crates" / "ror-agent",
+    ):
+        if not base.exists():
+            continue
+        for path in sorted(base.rglob("*")):
+            if not path.is_file():
+                continue
+            rel = path.relative_to(root).as_posix()
+            if any(part in SKIP_NAMES for part in path.parts):
+                continue
+            if rel.endswith(".rs") or rel.endswith(".toml") or rel.endswith(".md") or rel.endswith(".py"):
+                paths.append(path)
+    # unique preserve order
+    seen = set()
+    for path in paths:
+        rel = path.relative_to(root).as_posix()
+        if rel in seen:
+            continue
+        seen.add(rel)
+        try:
+            data = path.read_bytes()
+        except OSError:
+            continue
+        h.update(rel.encode())
+        h.update(b"\0")
+        h.update(data)
+        h.update(b"\n")
+    return h.hexdigest()
+
+
+def baseline_revision() -> str:
+    try:
+        cp = run(["git", "rev-parse", "HEAD"], REPO, timeout=30)
+        if cp.returncode == 0:
+            return (cp.stdout or "").strip()
+    except Exception:
+        pass
+    return "unknown"
+
+
+
 def apply_mutant(root: Path, mid: str) -> bool:
     """Apply one registered machine/document mutant. Return False if could not apply."""
     R = root
@@ -190,7 +330,7 @@ def apply_mutant(root: Path, mid: str) -> bool:
         return replace_once(
             p("crates/ror-runtime/src/cek.rs"),
             "for (name, val) in function.params.into_iter().zip(args.into_iter()) {",
-            "for (name, val) in function.params.into_iter().zip(args.into_iter().rev()) {",
+            "for (name, val) in function.params.into_iter().zip(args.into_iter().rev()) { // MUTANT M001",
         )
 
     # --- M002 skip arity precheck ---
@@ -838,15 +978,19 @@ def apply_mutant(root: Path, mid: str) -> bool:
         if not path.exists():
             path = p("crates/ror-core/src/canonical/value.rs")
         text = path.read_text(encoding="utf-8")
-        # Prefer swapping to_be_bytes -> to_le_bytes on u32 length writes
         if "to_be_bytes()" in text:
-            path.write_text(text.replace("to_be_bytes()", "to_le_bytes()", 1), encoding="utf-8")
+            path.write_text(
+                text.replace("to_be_bytes()", "to_le_bytes() /* MUTANT M031 */", 1),
+                encoding="utf-8",
+            )
             return True
-        # fallback value encode
         path = p("crates/ror-core/src/canonical/value.rs")
         text = path.read_text(encoding="utf-8")
         if "to_be_bytes()" in text:
-            path.write_text(text.replace("to_be_bytes()", "to_le_bytes()", 1), encoding="utf-8")
+            path.write_text(
+                text.replace("to_be_bytes()", "to_le_bytes() /* MUTANT M031 */", 1),
+                encoding="utf-8",
+            )
             return True
         return False
 
@@ -1216,198 +1360,411 @@ DIFFERENTIAL = {
 }
 
 
-def run_document_m036(root: Path) -> Result:
-    """M036: document mutant killed by repository gate (U-38 allowlist)."""
-    # Run check.py or the M036-specific checker mutation path.
-    # Adopted gate: python3 check.py includes audit/_checker_mutations which locks K18/M036.
-    # Simpler direct: run audit/_checker_mutations.py -k M036 if present, else check.py subset.
-    cp = run([sys.executable, str(root / "audit" / "_checker_mutations.py"), "-k", "M036"], root, timeout=600)
-    out = cp.stdout or ""
-    killed = cp.returncode != 0 or "KILLED" in out.upper() or "killed" in out.lower()
-    # The checker_mutations harness exits 0 only if mutations are killed — for -k M036,
-    # exit 0 means the M036 injection was detected (killed). Confirm semantics:
-    # From header: "Exit 0 iff every mutation is killed."
-    if cp.returncode == 0:
-        classification = "KILLED"
-        targeted_failed = True
-        evidence = "audit/_checker_mutations.py -k M036 exit 0 (mutant killed by gate)"
-    else:
-        # try check.py allowlist path after rotation already applied in scratch
-        cp2 = run([sys.executable, str(root / "check.py"), "-q"], root, timeout=600)
-        if cp2.returncode != 0:
-            classification = "KILLED"
-            targeted_failed = True
-            evidence = "check.py failed after M036 rotation"
-        else:
-            classification = "SURVIVED"
-            targeted_failed = False
-            evidence = f"M036 survived: mut_rc={cp.returncode} check_rc={cp2.returncode}"
-    return Result(
-        mid="M036",
-        classification=classification,
-        build_ok=True,
-        targeted_failed=targeted_failed,
-        differential_failed=False,
-        kill_evidence=evidence,
-        security=False,
-        obligations=["R-SCOPE-03", "R-CLAIM-02"],
-        defect="rotate obligation body",
-    )
+
+def verify_mutation_applied(root: Path, mid: str, pre_fp: str, post_fp: str) -> tuple[bool, str]:
+    """Prove intended mutation was applied (VERIFY-MUTATION).
+
+    Requires: tree fingerprint changed AND mutant marker or structural delta present.
+    """
+    if pre_fp == post_fp:
+        return False, "fingerprint_unchanged"
+    marker = f"MUTANT {mid}"
+    # Search common source roots for marker
+    found = False
+    locations = []
+    for base in (root / "crates", root / "final", root / "mutations"):
+        if not base.exists():
+            continue
+        for path in base.rglob("*"):
+            if not path.is_file():
+                continue
+            if path.suffix not in {".rs", ".md", ".toml", ".py"}:
+                continue
+            try:
+                txt = path.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                continue
+            if marker in txt or f"// MUTANT {mid}" in txt or f"# MUTANT {mid}" in txt:
+                found = True
+                locations.append(str(path.relative_to(root)))
+    if mid == "M036":
+        # Document rotation may not carry MUTANT marker — fingerprint delta is required;
+        # also require M001/M002 table swap evidence in final/04.
+        f04 = root / "final" / "04-verification-registry.md"
+        if f04.exists():
+            t = f04.read_text(encoding="utf-8", errors="ignore")
+            # After rotation M001 body becomes skip arity...
+            if "| M001 | skip arity precheck |" in t or "skip arity precheck | R-CEK-05 (LTR)" in t:
+                return True, "document_rotation_detected:" + ",".join(locations) if locations else "document_rotation_detected"
+        if pre_fp != post_fp:
+            return True, "document_fingerprint_delta"
+        return False, "document_rotation_not_detected"
+    if found:
+        return True, "marker:" + ",".join(locations[:8])
+    # Some operators may not embed the marker string (legacy) — require fingerprint change
+    # alone is insufficient for KILLED; require marker for machine mutants.
+    return False, "marker_absent_after_delta"
 
 
-def classify_run(
-    meta: MutantMeta,
-    build: subprocess.CompletedProcess | None,
-    targeted: subprocess.CompletedProcess | None,
-    differential: subprocess.CompletedProcess | None,
-) -> Result:
-    build_ok = build is None or build.returncode == 0
-    t_fail = targeted is not None and targeted.returncode != 0
-    d_fail = differential is not None and differential.returncode != 0
-
-    # Compilation failure alone is NOT a kill unless tests also run — R-TEST-06 wants tests.
-    # Exception: if mutant does not compile, treat as INCONCLUSIVE (not KILLED).
-    if build is not None and build.returncode != 0:
-        return Result(
-            mid=meta.mid,
-            classification="INCONCLUSIVE",
-            build_ok=False,
-            targeted_failed=False,
-            differential_failed=False,
-            kill_evidence="build failed",
-            security=meta.security,
-            obligations=meta.obligations,
-            defect=meta.defect,
-        )
-
-    if t_fail or d_fail:
-        evidence_parts = []
-        if t_fail:
-            evidence_parts.append("targeted_tests_failed")
-        if d_fail:
-            evidence_parts.append("differential_tests_failed")
-        return Result(
-            mid=meta.mid,
-            classification="KILLED",
-            build_ok=True,
-            targeted_failed=t_fail,
-            differential_failed=d_fail,
-            kill_evidence="+".join(evidence_parts),
-            security=meta.security,
-            obligations=meta.obligations,
-            defect=meta.defect,
-        )
-
-    return Result(
+def run_document_m036(root: Path, meta: MutantMeta, pre_fp: str) -> Result:
+    """M036 document mutant via checker gate (U-38)."""
+    post_fp = tree_fingerprint(root)
+    verified, vnote = verify_mutation_applied(root, "M036", pre_fp, post_fp)
+    r = Result(
         mid=meta.mid,
-        classification="SURVIVED",
-        build_ok=True,
-        targeted_failed=False,
-        differential_failed=False,
-        kill_evidence="all selected tests passed under mutant",
-        security=meta.security,
-        obligations=meta.obligations,
         defect=meta.defect,
+        component=meta.component,
+        obligations=list(meta.obligations),
+        security=meta.security,
+        differential_required=False,
+        load="PASS",
+        baseline="PASS",
+        materialization="PASS" if pre_fp != post_fp else "FAIL",
+        mutation_verification="PASS" if verified else "FAIL",
+        mutation_marker=vnote,
+        differential_execution="N-A",
+        targeted_filter="audit/_checker_mutations.py -k M036 | check.py",
+    )
+    if r.materialization != "PASS" or r.mutation_verification != "PASS":
+        r.classification = "NOT-RUN" if r.materialization != "PASS" else "INCONCLUSIVE"
+        r.kill_evidence = f"materialize={r.materialization}; verify={r.mutation_verification}:{vnote}"
+        r.build = "NOT-RUN"
+        r.targeted_execution = "NOT-RUN"
+        return r
+
+    r.build = "PASS"  # document path has no cargo build of mutant semantics
+    cp = run(
+        [sys.executable, str(root / "audit" / "_checker_mutations.py"), "-k", "M036"],
+        root,
+        timeout=600,
+    )
+    # Harness exits 0 iff the injected document mutant is killed by the gate.
+    if cp.returncode == 0:
+        r.targeted_execution = "FAIL"  # detection fired (gate killed mutant)
+        r.classification = "KILLED"
+        r.kill_evidence = "audit/_checker_mutations.py -k M036 exit 0 (mutant killed by gate)"
+        return r
+    cp2 = run([sys.executable, str(root / "check.py"), "-q"], root, timeout=600)
+    if cp2.returncode != 0:
+        r.targeted_execution = "FAIL"
+        r.classification = "KILLED"
+        r.kill_evidence = "check.py failed after M036 rotation"
+        return r
+    r.targeted_execution = "PASS"
+    r.classification = "SURVIVED"
+    r.kill_evidence = f"M036 survived: mut_rc={cp.returncode} check_rc={cp2.returncode}"
+    return r
+
+
+def classify_terminal(
+    meta: MutantMeta,
+    materialization: str,
+    verification: str,
+    build: str,
+    targeted: str,
+    differential: str,
+    differential_required: bool,
+) -> tuple[str, str]:
+    """Map stage outcomes → exactly one terminal state.
+
+    Rules:
+    - materialization FAIL → NOT-RUN (execution did not occur)
+    - verification FAIL after materialize → INCONCLUSIVE (cannot trust applied defect)
+    - build FAIL → INCONCLUSIVE (not automatically KILLED)
+    - mutation applied ∧ detection observed (targeted FAIL or required diff FAIL) → KILLED
+    - mutation applied ∧ build PASS ∧ required detection did not occur → SURVIVED
+    - EQUIVALENT only if meta.equiv (canonical disposition)
+    """
+    if meta.equiv:
+        return "EQUIVALENT", "canonical_equivalent_disposition"
+
+    if materialization != "PASS":
+        return "NOT-RUN", f"materialization={materialization}"
+
+    if verification != "PASS":
+        return "INCONCLUSIVE", f"mutation_verification={verification}"
+
+    if build == "FAIL":
+        return "INCONCLUSIVE", "build_failed_not_auto_killed"
+    if build == "NOT-RUN":
+        return "NOT-RUN", "build_not_run"
+
+    # Detection: targeted FAIL means tests detected the defect (expected under mutant).
+    detected = targeted == "FAIL"
+    if differential_required:
+        if differential == "FAIL":
+            detected = True
+        elif differential == "NOT-RUN":
+            # required differential did not run → cannot claim KILLED solely on missing leg
+            # but targeted FAIL alone can still kill if targeted ran
+            pass
+        elif differential == "N-A":
+            pass
+
+    if detected:
+        parts = []
+        if targeted == "FAIL":
+            parts.append("targeted_detection")
+        if differential == "FAIL":
+            parts.append("differential_detection")
+        return "KILLED", "+".join(parts) if parts else "detection_observed"
+
+    # Applied, built, executed without detection
+    if targeted == "PASS" and (
+        not differential_required
+        or differential in ("PASS", "N-A")
+    ):
+        return "SURVIVED", "required_detection_did_not_occur"
+
+    if targeted == "NOT-RUN":
+        return "INCONCLUSIVE", "targeted_not_run"
+
+    return "INCONCLUSIVE", f"targeted={targeted};differential={differential}"
+
+
+def execute_one(meta: MutantMeta, baseline_ok: bool) -> Result:
+    """Deterministic per-mutant workflow with cleanup."""
+    base = Result(
+        mid=meta.mid,
+        defect=meta.defect,
+        component=meta.component,
+        obligations=list(meta.obligations),
+        security=meta.security,
+        differential_required=bool(meta.differential),
+        load="PASS",
+        baseline="PASS" if baseline_ok else "FAIL",
     )
 
+    if not baseline_ok:
+        base.classification = "NOT-RUN"
+        base.kill_evidence = "baseline_red_prerequisite"
+        base.notes = "prerequisite gate prevented execution"
+        return base
 
-def execute_one(meta: MutantMeta, keep_scratch: Path | None = None) -> Result:
     if meta.equiv:
-        return Result(
-            mid=meta.mid,
-            classification="EQUIVALENT",
-            build_ok=True,
-            targeted_failed=False,
-            differential_failed=False,
-            kill_evidence="canonical equivalent disposition",
-            security=meta.security,
-            obligations=meta.obligations,
-            defect=meta.defect,
-        )
+        base.classification = "EQUIVALENT"
+        base.materialization = "NOT-RUN"
+        base.kill_evidence = "canonical_equivalent_disposition"
+        return base
 
     scratch = Path(tempfile.mkdtemp(prefix=f"m9-{meta.mid}-"))
+    destroyed = False
     try:
         copy_tree(REPO, scratch)
+        pre_fp = tree_fingerprint(scratch)
+
+        # MATERIALIZE
         if meta.mid == "M036" or meta.kind == "document":
-            if not apply_mutant(scratch, "M036"):
-                return Result(
-                    mid=meta.mid,
-                    classification="INCONCLUSIVE",
-                    build_ok=False,
-                    targeted_failed=False,
-                    differential_failed=False,
-                    kill_evidence="could not apply document mutant",
-                    security=meta.security,
-                    obligations=meta.obligations,
-                    defect=meta.defect,
-                )
-            # Document path: use checker gate
-            # For M036 rotation in final/04, also run the official M036 harness.
-            return run_document_m036(scratch)
+            applied = apply_mutant(scratch, "M036")
+            if not applied:
+                base.materialization = "FAIL"
+                base.classification = "NOT-RUN"
+                base.kill_evidence = "could not apply document mutant"
+                return base
+            base.materialization = "PASS"
+            return run_document_m036(scratch, meta, pre_fp)
 
-        if not apply_mutant(scratch, meta.mid):
-            return Result(
-                mid=meta.mid,
-                classification="INCONCLUSIVE",
-                build_ok=False,
-                targeted_failed=False,
-                differential_failed=False,
-                kill_evidence="operator could not apply (anchor mismatch)",
-                security=meta.security,
-                obligations=meta.obligations,
-                defect=meta.defect,
-            )
+        applied = apply_mutant(scratch, meta.mid)
+        if not applied:
+            base.materialization = "FAIL"
+            base.classification = "NOT-RUN"
+            base.kill_evidence = "operator could not apply (anchor mismatch)"
+            base.mutation_verification = "NOT-RUN"
+            return base
+        base.materialization = "PASS"
 
-        # Build package under test (faster than full workspace when possible)
-        pkg, filt = TARGETED.get(meta.mid, (meta.component if meta.component.startswith("ror-") else "ror-core", None))
+        post_fp = tree_fingerprint(scratch)
+        verified, vnote = verify_mutation_applied(scratch, meta.mid, pre_fp, post_fp)
+        base.mutation_verification = "PASS" if verified else "FAIL"
+        base.mutation_marker = vnote
+        if not verified:
+            base.classification = "INCONCLUSIVE"
+            base.kill_evidence = f"verify_failed:{vnote}"
+            base.build = "NOT-RUN"
+            base.targeted_execution = "NOT-RUN"
+            if meta.differential:
+                base.differential_execution = "NOT-RUN"
+            else:
+                base.differential_execution = "N-A"
+            return base
+
+        # BUILD
+        pkg, filt = TARGETED.get(
+            meta.mid,
+            (
+                meta.component if meta.component.startswith("ror-") else "ror-core",
+                None,
+            ),
+        )
         if pkg == "document":
             pkg = "ror-core"
+        base.targeted_filter = f"{pkg}::{filt or '*'}"
 
-        build = run(["cargo", "test", "-p", pkg, "--lib", "--no-run"], scratch, timeout=600)
+        build = run(
+            ["cargo", "test", "-p", pkg, "--lib", "--no-run"],
+            scratch,
+            timeout=600,
+        )
         if build.returncode != 0:
-            # try workspace check
             build = cargo_check(scratch)
+        if build.returncode != 0:
+            base.build = "FAIL"
+            base.classification = "INCONCLUSIVE"
+            base.kill_evidence = "build_failed_not_auto_killed"
+            base.targeted_execution = "NOT-RUN"
+            base.differential_execution = (
+                "NOT-RUN" if meta.differential else "N-A"
+            )
+            return base
+        base.build = "PASS"
 
-        targeted_cp = None
-        if build.returncode == 0 and filt:
-            targeted_cp = cargo_test(scratch, pkg, filt, timeout=300)
-            # If filter matched nothing, cargo still exits 0 — broaden to package tests.
-            if targeted_cp.returncode == 0 and "running 0 tests" in (targeted_cp.stdout or ""):
-                targeted_cp = cargo_test(scratch, pkg, None, timeout=600)
-
-        diff_cp = None
-        if meta.differential and build.returncode == 0:
-            dpkg, dfilt = DIFFERENTIAL.get(meta.mid, ("ror-differential", None))
-            diff_cp = cargo_test(scratch, dpkg, dfilt, timeout=600)
-
-        return classify_run(meta, build, targeted_cp, diff_cp)
-    finally:
-        if keep_scratch is None:
-            shutil.rmtree(scratch, ignore_errors=True)
+        # TARGETED
+        targeted_cp = cargo_test(scratch, pkg, filt, timeout=300)
+        if targeted_cp.returncode == 0 and "running 0 tests" in (
+            targeted_cp.stdout or ""
+        ):
+            # Broaden — still a real execution attempt
+            targeted_cp = cargo_test(scratch, pkg, None, timeout=600)
+            base.targeted_filter = f"{pkg}::*"
+        if targeted_cp.returncode != 0:
+            base.targeted_execution = "FAIL"
         else:
-            keep_scratch.mkdir(parents=True, exist_ok=True)
-            # leave last scratch path recorded
-            (keep_scratch / f"{meta.mid}.path").write_text(str(scratch), encoding="utf-8")
+            base.targeted_execution = "PASS"
+
+        # DIFFERENTIAL
+        if meta.differential:
+            dpkg, dfilt = DIFFERENTIAL.get(meta.mid, ("ror-differential", None))
+            base.differential_filter = f"{dpkg}::{dfilt or '*'}"
+            diff_cp = cargo_test(scratch, dpkg, dfilt, timeout=600)
+            if diff_cp.returncode != 0:
+                base.differential_execution = "FAIL"
+            else:
+                base.differential_execution = "PASS"
+        else:
+            base.differential_execution = "N-A"
+
+        term, evidence = classify_terminal(
+            meta,
+            base.materialization,
+            base.mutation_verification,
+            base.build,
+            base.targeted_execution,
+            base.differential_execution,
+            meta.differential,
+        )
+        base.classification = term
+        base.kill_evidence = evidence
+        return base
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)
+        destroyed = True
+        # annotate if we still hold base
+        # (caller uses returned base; scratch_destroyed default True)
+
+
+def run_harness_tests() -> dict:
+    """Domain A: mutation-system implementation evidence (NOT kill-rate input)."""
+    stages = {}
+    # registry load via ror-testkit
+    cp = cargo_test(REPO, "ror-testkit", None, timeout=300)
+    stages["ror_testkit_lib"] = {
+        "exit_code": cp.returncode,
+        "pass": cp.returncode == 0,
+        "summary": "registry+kill-rate+taxonomy unit tests",
+    }
+    # runner self-check: parse registry order
+    try:
+        reg = parse_registry(REGISTRY.read_text(encoding="utf-8"))
+        ids = [m.mid for m in reg]
+        expected = [f"M{i:03d}" for i in range(1, 43)]
+        stages["registry_order"] = {
+            "pass": ids == expected and len(reg) == 42,
+            "count": len(reg),
+        }
+    except Exception as e:
+        stages["registry_order"] = {"pass": False, "error": str(e)}
+    # classification purity unit checks (inline)
+    pure_ok = True
+    reasons = []
+    # build failure must not be KILLED
+    meta = MutantMeta("MX", "t", [], "c", False, False, False)
+    term, _ = classify_terminal(meta, "PASS", "PASS", "FAIL", "NOT-RUN", "N-A", False)
+    if term != "INCONCLUSIVE":
+        pure_ok = False
+        reasons.append(f"build_fail→{term}")
+    term, _ = classify_terminal(meta, "FAIL", "NOT-RUN", "NOT-RUN", "NOT-RUN", "N-A", False)
+    if term != "NOT-RUN":
+        pure_ok = False
+        reasons.append(f"mat_fail→{term}")
+    term, _ = classify_terminal(meta, "PASS", "PASS", "PASS", "FAIL", "N-A", False)
+    if term != "KILLED":
+        pure_ok = False
+        reasons.append(f"detect→{term}")
+    term, _ = classify_terminal(meta, "PASS", "PASS", "PASS", "PASS", "N-A", False)
+    if term != "SURVIVED":
+        pure_ok = False
+        reasons.append(f"nodetect→{term}")
+    stages["classification_rules"] = {"pass": pure_ok, "reasons": reasons}
+    overall = all(s.get("pass") for s in stages.values())
+    return {"pass": overall, "stages": stages}
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("-k", "--only", help="run single mutant id")
-    ap.add_argument("-o", "--out", type=Path, default=REPO / "mutations" / "m9-results.json")
-    ap.add_argument("--matrix", type=Path, default=REPO / "mutations" / "m9-matrix.md")
+    ap.add_argument(
+        "-o", "--out", type=Path, default=REPO / "mutations" / "m9-results.json"
+    )
+    ap.add_argument(
+        "--matrix", type=Path, default=REPO / "mutations" / "m9-matrix.md"
+    )
+    ap.add_argument(
+        "--skip-baseline",
+        action="store_true",
+        help="skip cargo baseline (debug only; not for gate claims)",
+    )
     args = ap.parse_args()
+
+    rev = baseline_revision()
+    print(f"BASELINE_REVISION={rev}", flush=True)
+
+    # Domain A first (harness)
+    print("[harness] running implementation tests …", flush=True)
+    harness = run_harness_tests()
+    print(f"[harness] pass={harness['pass']}", flush=True)
 
     registry = parse_registry(REGISTRY.read_text(encoding="utf-8"))
     if len(registry) != 42:
-        print(f"BLOCK-CANONICAL: registry count {len(registry)} != 42", file=sys.stderr)
+        print(
+            f"BLOCK-CANONICAL: registry count {len(registry)} != 42",
+            file=sys.stderr,
+        )
         return 2
-
     ids = [m.mid for m in registry]
     expected = [f"M{i:03d}" for i in range(1, 43)]
     if ids != expected:
-        print(f"BLOCK-CANONICAL: id order/set mismatch: {ids}", file=sys.stderr)
+        print(
+            f"BLOCK-CANONICAL: id order/set mismatch: {ids}",
+            file=sys.stderr,
+        )
         return 2
 
+    # BASELINE (shared once; applies to all mutants)
+    baseline_ok = True
+    baseline_note = "skipped"
+    if not args.skip_baseline:
+        print("[baseline] cargo test --workspace --lib …", flush=True)
+        bl = run(
+            ["cargo", "test", "--workspace", "--lib", "--", "--test-threads=1"],
+            REPO,
+            timeout=900,
+        )
+        baseline_ok = bl.returncode == 0
+        baseline_note = f"exit={bl.returncode}"
+        print(f"[baseline] ok={baseline_ok} {baseline_note}", flush=True)
+        if not baseline_ok:
+            print("BLOCK-REGRESSION: baseline red", file=sys.stderr)
+            # Still record NOT-RUN for all if only-run not set
     if args.only:
         registry = [m for m in registry if m.mid == args.only]
         if not registry:
@@ -1416,17 +1773,17 @@ def main() -> int:
 
     results: list[Result] = []
     for i, meta in enumerate(registry, 1):
-        print(f"[{i}/{len(registry)}] {meta.mid} …", flush=True)
-        r = execute_one(meta)
+        print(f"[{i}/{len(registry)}] {meta.mid} LOAD …", flush=True)
+        r = execute_one(meta, baseline_ok=baseline_ok)
         print(
-            f"  → {r.classification} build_ok={r.build_ok} "
-            f"targeted_fail={r.targeted_failed} diff_fail={r.differential_failed} "
+            f"  → {r.classification} mat={r.materialization} ver={r.mutation_verification} "
+            f"build={r.build} tgt={r.targeted_execution} diff={r.differential_execution} "
             f"evidence={r.kill_evidence}",
             flush=True,
         )
         results.append(r)
 
-    # Kill-rate
+    # Aggregate — ONLY from campaign terminal states (domain B)
     equivalent = sum(1 for r in results if r.classification == "EQUIVALENT")
     non_eq = len(results) - equivalent
     killed = sum(1 for r in results if r.classification == "KILLED")
@@ -1437,8 +1794,22 @@ def main() -> int:
     critical_survived = any(
         r.security and r.classification == "SURVIVED" for r in results
     )
+    # Gate: K==N and no SURVIVED/INCONCLUSIVE/NOT-RUN among non-equivalent
+    gate_ok = (
+        non_eq > 0
+        and killed == non_eq
+        and survived == 0
+        and not_run == 0
+        and inconclusive == 0
+        and not critical_survived
+    )
 
     payload = {
+        "schema": "m9-campaign-v2",
+        "baseline_revision": rev,
+        "baseline_ok": baseline_ok,
+        "baseline_note": baseline_note,
+        "harness": harness,
         "registered": len(results),
         "non_equivalent": non_eq,
         "killed": killed,
@@ -1448,35 +1819,60 @@ def main() -> int:
         "inconclusive": inconclusive,
         "kill_rate_percent": rate,
         "critical_survived": critical_survived,
-        "results": [r.__dict__ for r in results],
+        "gate_ok": gate_ok,
+        "note": (
+            "kill_rate is computed ONLY from registered mutant terminal states "
+            "(domain B). Harness tests (domain A) are separate and never enter K/N."
+        ),
+        "results": [r.to_json() for r in results],
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
-    # Human matrix
     lines = [
-        "# M9 Mutation Matrix",
+        "# M9 Mutation Matrix (campaign domain B)",
         "",
-        "| ID | Classification | Build | Targeted fail | Diff fail | Security | Evidence |",
-        "|---|---|---|---|---|---|---|",
+        f"Baseline revision: `{rev}`  ",
+        f"Baseline: {'PASS' if baseline_ok else 'FAIL'}  ",
+        f"Harness (domain A): {'PASS' if harness['pass'] else 'FAIL'} — not counted in kill-rate  ",
+        "",
+        "| ID | Terminal | Materialize | Verify | Build | Targeted | Diff | Security | Evidence |",
+        "|---|---|---|---|---|---|---|---|---|",
     ]
     for r in results:
         lines.append(
-            f"| {r.mid} | {r.classification} | {r.build_ok} | {r.targeted_failed} | "
-            f"{r.differential_failed} | {r.security} | {r.kill_evidence} |"
+            f"| {r.mid} | {r.classification} | {r.materialization} | "
+            f"{r.mutation_verification} | {r.build} | {r.targeted_execution} | "
+            f"{r.differential_execution} | {r.security} | {r.kill_evidence} |"
         )
     lines += [
         "",
-        f"**Kill rate:** {rate}%  ({killed}/{non_eq} non-equivalent)",
+        f"**Kill rate (domain B only):** {rate}%  ({killed}/{non_eq} non-equivalent)",
         f"**Critical survived:** {critical_survived}",
+        f"**Gate OK:** {gate_ok}",
+        "",
+        "Terminal states are mutually exclusive. "
+        "Build failure ⇒ INCONCLUSIVE (never auto-KILLED). "
+        "Harness pass ≠ MutationKillRate.",
     ]
     args.matrix.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-    print(json.dumps({k: payload[k] for k in payload if k != "results"}, indent=2))
+    summary = {
+        k: payload[k]
+        for k in payload
+        if k not in ("results", "harness")
+    }
+    summary["harness_pass"] = harness["pass"]
+    print(json.dumps(summary, indent=2))
+
+    if not harness["pass"]:
+        print("HARNESS_DOMAIN_FAIL (reported separately from kill-rate)", file=sys.stderr)
     if critical_survived:
         return 3
-    if rate != 100 or survived or not_run or inconclusive:
+    if not gate_ok:
         return 1
+    if not harness["pass"]:
+        return 4
     return 0
 
 
