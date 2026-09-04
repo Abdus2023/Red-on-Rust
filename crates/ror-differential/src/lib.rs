@@ -14,11 +14,15 @@
 //! - **M10:** Crash/recovery verification gate — T0–T6 matrix + recovery
 //!   differential (R-ORDER-02 / R-TEST-08 / R-RECOV-02). Consumes M7; does not
 //!   redesign persistence. F-04 / OADs remain open; R-REG not promoted.
+//! - **M11:** Release Candidate verification gate (R-ORDER-02 / R-TEST-10/11).
+//!   Aggregates exhaustive/property/diff/crash/stress/det/ser/security evidence.
+//!   Not a resource-control subsystem. R-REG not promoted; OADs open.
 //!
 //! **F-04:** observation schema in [`system`] is provisional; OAD/UNKNOWN not closed.
 //! This crate orchestrates; it is not a second runtime.
 
 pub mod m10;
+pub mod m11;
 pub mod m2;
 pub mod m3;
 pub mod m4;
@@ -32,6 +36,11 @@ pub use m10::{
     assert_prepared_not_issued_is_discard, inject_crash, inject_crash_with_effect,
     inject_t1_journal_crash, m10_gate_status, run_full_matrix, run_row, ExpectedClass,
     MatrixReport, MatrixRow, MatrixSpec, RowResult, MATRIX,
+};
+pub use m11::{
+    m11_rc_status, run_budget_regression, run_crash_recovery, run_determinism, run_differential,
+    run_exhaustive, run_property, run_rc_in_process, run_security, run_serialization, run_stress,
+    DomainResult, RcReport,
 };
 pub use m2::{compare_m2, observe_production, observe_reference, Observation, M2_DIFF_MAX_STEPS};
 pub use m4::{compare_m4, observe_production_m4, observe_reference_m4};
